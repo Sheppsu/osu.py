@@ -3,17 +3,82 @@ from .objects import *
 
 
 class Client:
+    """
+    Main object for interacting with osu!api
+
+    Attributes
+    ----------
+    auth: :class:`AuthHandler`
+        The AuthHandler object passed in when initiating the Client object
+    http: :class:`HTTPHandler`
+        Object which handles making requests, rate limiting, and http errors.
+    """
     def __init__(self, auth):
         self.auth = auth
         self.http = HTTPHandler(auth)
 
     def lookup_beatmap(self, checksum=None, filename=None, id=None):
+        """
+        Returns beatmap.
+        Requires OAuth and scope public
+
+        Parameters
+        ----------
+        checksum(optional): :class:`str`
+            A beatmap checksum.
+        filename(optional): :class:`str`
+            A filename to lookup
+        id(optional): :class:`int`
+            A beatmap ID to lookup
+
+        Returns
+        -------
+        :class:`Beatmap`
+        """
         return Beatmap(self.http.get(self, Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
 
     def get_user_beatmap_score(self, beatmap, user, mode=None, mods=None):
+        """
+        Returns a :class:`User`'s score on a Beatmap
+        Requires OAuth and scope public
+
+        Parameters
+        ----------
+        beatmap: :class:`int`
+            Id of the beatmap
+        user: :class:`int`
+            Id of the user
+        mode(optional): :class:`str`
+            The GameMode to get scores for
+        mods(optional): :class:`array`
+            An array of matching Mods, or none
+
+        Returns
+        -------
+        :class:`BeatmapUserScore`
+        """
         return BeatmapUserScore(self.http.get(self, Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
     def get_beatmap_scores(self, beatmap, mode=None, mods=None, type=None):
+        """
+                Returns the top scores for a beatmap
+                Requires OAuth and scope public
+
+                Parameters
+                ----------
+                beatmap: :class:`int`
+                    Id of the beatmap
+                mode(optional): :class:`str`
+                    The GameMode to get scores for
+                mods(optional): :class:`array`
+                    An array of matching Mods, or none
+                type(optional): :class:`str`
+                    Beatmap score ranking type
+
+                Returns
+                -------
+                :class:`BeatmapUserScore`
+                """
         return BeatmapScores(self.http.get(self, Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
     def get_beatmap(self, beatmap):

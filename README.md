@@ -1,7 +1,13 @@
 osu.py
 -------
 
-Easy to use API wrapper for osu!api written in Python. This uses osu!api v2, which is still under development. So some code that was originally working may break overnight. However, I'll do my best to fix any issues I find as quick as possible. You can report issues [here](https://github.com/Sheepposu/osu.py/issues) or make a [pull request](https://github.com/Sheepposu/osu.py/pulls) if you'd like to contribute.
+Easy to use API wrapper for osu!api written in Python. 
+This uses osu!api v2, which is still under development. 
+So some code that was originally working may break overnight. 
+However, I'll do my best to fix any issues I find as quick as possible. 
+You can report issues [here](https://github.com/Sheepposu/osu.py/issues) 
+or make a [pull request](https://github.com/Sheepposu/osu.py/pulls) 
+if you'd like to contribute.
 
 # Installation
 *Installing the current version out on pypi:*

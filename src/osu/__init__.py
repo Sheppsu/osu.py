@@ -1,7 +1,7 @@
 from .auth import AuthHandler
-from .objects import Scope
+from .objects import *
 from .client import Client
-from .exceptions import ScopeError
+from .exceptions import *
 
 
-__version__ = '0.1.2'
+__version__ = '0.1.3'

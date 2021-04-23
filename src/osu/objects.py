@@ -23,8 +23,9 @@ class DataUnpacker:
 class Scope:
     """
     Scope object for telling the program what scope you are using
-    Valid scopes
-    ------------
+
+    **Valid scopes**
+
     public
         Allows reading of publicly available data on behalf of the user.
     identify (default)
@@ -80,27 +81,30 @@ class BeatmapCompact(DataUnpacker):
     """
     Represents a beatmap.
 
-    Attributes
-    ----------
+    **Attributes**
+
     difficulty_rating: :class:`float`
+
     id: :class:`int`
+
     mode: :class:`GameMode`
-        :class:`GameMode` can be one of four options: fruits, mania, osu_api, taiko
-        fruits = osu_api!catch
-        mania = osu_api!mania
-        osu_api = osu_api!standard
-        taiko = osu_api!taiko
+
     status: :class:`str`
         Possible values consist of graveyard, wip, pending, ranked, approved, qualified, loved
+
     total_length: :class:`int`
+
     version: :class:`str`
 
-    Possible Attributes
-    -------------------
-    beatmapset: :class:`Beatmapset`|:class:`BeatmapsetCompact`|:class:`NoneType`
+    **Possible Attributes**
+
+    beatmapset: :class:`Beatmapset` | :class:`BeatmapsetCompact` | :class:`NoneType`
         Beatmapset for Beatmap object, BeatmapsetCompact for BeatmapCompact object. null if the beatmap doesn't have associated beatmapset (e.g. deleted).
+
     checksum: :class:`str`
+
     failtimes: :class:`Failtimes`
+
     max_combo: :class:`int`
     """
     def __init__(self, data):
@@ -117,10 +121,11 @@ class Failtimes:
     """
     All attributes are optional but there's always at least one attribute returned.
 
-    Attributes
-    ----------
+    **Attributes**
+
     exit: :class:`list`
         Contains objects of type :class:`int`. List of length 100.
+
     fail: :class:`list`
         Contains objects of type :class:`int`. List of length 100.
     """
@@ -143,29 +148,47 @@ class Beatmap(BeatmapCompact):
     """
     Represent a beatmap. This extends :class:`BeatmapCompact` with additional attributes.
 
-    Attributes
-    ---------------------
+    **Attributes**
+
     accuracy: :class:`float`
+
     ar: :class:`float`
+
     beatmapset_id: :class:`int`
+
     bpm: :class:`float`
+
     convert: :class:`bool`
+
     count_circles: :class:`int`
+
     count_sliders: :class:`int`
+
     count_spinners: :class:`int`
+
     cs: :class:`float`
+
     deleted_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+        :class:`Timestamp`
+
     drain: :class:`float`
+
     hit_length: :class:`int`
+
     is_scoreable: :class:`bool`
+
     last_updated: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+        :class:`Timestamp`
+
     mode_int: :class:`int`
+
     passcount: :class:`int`
+
     playcount: :class:`int`
+
     ranked: :class:`str`
         Possible values consist of graveyard, wip, pending, ranked, approved, qualified, loved
+
     url: :class:`str`
     """
     def __init__(self, data):
@@ -177,13 +200,13 @@ class BeatmapScores:
     """
     Contains a list of scores as well as, possibly, a BeatmapUserScore object.
 
-    Attributes
-    ----------
+    **Attributes**
+
     scores: :class:`list`
         Contains objects of type :class:`Score`. The list of top scores for the beatmap in descending order.
 
-    Possible Attributes
-    -------------------
+    **Possible Attributes**
+
     user_score: :class:`BeatmapUserScore`
         The score of the current user. This is not returned if the current user does not have a score.
     """
@@ -199,40 +222,57 @@ class Score(DataUnpacker):
     """
     Contains information about a score
 
-    Attributes
-    ----------
+    **Attributes**
+
     id: :class:`int`
+
     best_id: :class:`int`
+
     user_id: :class:`int`
+
     accuracy: :class:`float`
+
     mods: :class:`list`
+
     score: :class:`int`
+
     max_combo: :class:`int`
+
     perfect: :class:`bool`
+
     statistics: :class:`ScoreStatistics`
+
     pp: :class:`float`
+
     rank: :class:`int`
+
     created_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     mode: :class:`str`
+
     mode_int: :class:`int`
+
     replay
     """
     def __init__(self, data):
         exceptions = {'statistics': (ScoreStatistics, False)}
         super().__init__(data, exceptions)
-        print(self.replay)
 
 
 class ScoreStatistics:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     count_50: :class:`int`
+
     count_100: :class:`int`
+
     count_300: :class:`int`
+
     count_genki: :class:`int`
+
     count_katu: :class:`int`
+
     count_miss: :class:`int`
     """
     def __init__(self, data):
@@ -246,8 +286,8 @@ class ScoreStatistics:
 
 class BeatmapUserScore:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     position: :class:`int`
         The position of the score within the requested beatmap ranking.
     score: :class:`Score`
@@ -262,40 +302,67 @@ class BeatmapsetCompact(DataUnpacker):
     """
     Represents a beatmapset.
 
-    Attributes
-    ----------
+    **Attributes**
+
     artist: :class:`str`
+
     artist_unicode: :class:`str`
+
     covers: :class:`Covers`
+
     creator: :class:`str`
+
     favourite_count: :class:`int`
+
     id: :class:`int`
+
     nsfw: :class:`bool`
+
     play_count: :class:`int`
+
     preview_url: :class:`str`
+
     source: :class:`str`
+
     status: :class:`str`
+
     title: :class:`str`
+
     title_unicode: :class:`str`
+
     user_id: :class:`int`
+
     video: :class:`str`
 
-    Possible Attributes
-    -------------------
+    **Possible Attributes**
+
     beatmaps: :class:`list`
         list containing objects of type :class:`Beatmap`
+
     converts
+
     current_user_attributes
+
     description
+
     discussions
+
     events
+
     genre
+
     has_favourited: :class:`bool`
+
     language
+
     nominations
+
     ratings
+
     recent_favourites
+
     related_users
+
     user
     """
     def __init__(self, data):
@@ -305,15 +372,22 @@ class BeatmapsetCompact(DataUnpacker):
 
 class Covers:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     cover: :class:`str`
+
     cover_2x: :class:`str`
+
     card: :class:`str`
+
     card_2x: :class:`str`
+
     list: :class:`str`
+
     list_2x: :class:`str`
+
     slimcover: :class:`str`
+
     slimcover_2x: :class:`str`
     """
     def __init__(self, data):
@@ -331,33 +405,47 @@ class Beatmapset(BeatmapsetCompact):
     """
     Represents a beatmapset. This extends :class:`BeatmapsetCompact` with additional attributes.
 
-    Attributes
-    ----------
+    **Attributes**
+
     availability: :class:`dict`
         Contains two items, download_disabled: :class:`bool` and more_information: :class:`str`
+
     bpm: :class:`float`
+
     can_be_hyped: :class:`bool`
+
     creator: :class:`str`
         Username of the mapper at the time of beatmapset creation.
+
     discussion_enabled: :class:`bool`
+
     discussion_locked: :class:`bool`
+
     hype: :class:`dict`
         Contains two items, current: :class:`int` and required: :class:`int`
+
     is_scoreable: :class:`bool`
+
     last_updated: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     legacy_thread_url: :class:`str`
+
     nominations: :class:`dict`
         Contains two items, current: :class:`int` and required: :class:`int`
+
     ranked: :class:`str`
         Possible values consist of graveyard, wip, pending, ranked, approved, qualified, loved
+
     ranked_date: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
-    source: :class:`string
-    storyboard: :class:`boolean
+
+    source: :class:`str`
+
+    storyboard: :class:`bool`
+
     submitted_date: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     tags: :class:`str`
+
     has_favourited
     """
     def __init__(self, data):
@@ -369,35 +457,52 @@ class BeatmapsetDiscussion(DataUnpacker):
     """
     Represents a Beatmapset modding discussion
 
-    Attributes
-    ----------
+    **Attributes**
+
     beatmap: :class:`BeatmapCompact`
+
     beatmap_id: :class:`int`
+
     beatmapset: :class:`BeatmapsetCompact`
+
     beatmapset_id: :class:`int`
+
     can_be_resolved: :class:`bool`
+
     can_grant_kudosu: :class:`bool`
+
     created_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     current_user_attributes: :class:`CurrentUserAttributes`
+
     deleted_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     deleted_by_id: :class:`int`
+
     id: :class:`int`
+
     kudosu_denied: :class:`bool`
+
     last_post_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     message_type: :class:`MessageType`
         :class:`MessageType` can be one of the following, all of which being :class:`str`, hype, mapper_note, praise, review, suggestion
+
     parent_id: :class:`int`
+
     posts: :class:`list`
         list contains objects of type :class:`BeatmapsetDiscussionPost`
+
     resolved: :class:`bool`
+
     starting_post: :class:`BeatmapsetDiscussionPost`
+
     timestamp: :class:`int`
+
     updated_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     user_id: :class:`int`
+
     votes: :class:`list`
         list containing objects of type :class:`BeatmapsetDiscussionVote`
     """
@@ -414,16 +519,20 @@ class CurrentUserAttributes:
     Represents user permissions related to an object, which decides what type it is.
     Valid types consist of BeatmapsetDiscussionPermissions
 
-    BeatmapDiscussionPermissions Attributes
-    ---------------------------------------
+    **BeatmapDiscussionPermissions Attributes**
+
     can_destroy: :class:`bool`
         Can delete the discussion.
+
     can_reopen: :class:`bool`
         Can reopen the discussion.
+
     can_moderate_kudosu: :class:`bool`
         Can allow or deny kudosu.
+
     can_resolve: :class:`bool`
         Can resolve the discussion.
+
     vote_score: :class:`bool`
         Current vote given to the discussion.
     """
@@ -436,20 +545,26 @@ class BeatmapsetDiscussionPost(DataUnpacker):
     """
     Represents a post in a :class:`BeatmapsetDiscussion`.
 
-    Attributes
-    ----------
+    **Attributes**
+
     beatmapset_discussion_id: :class:`number
+
     created_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     deleted_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     deleted_by_id: :class:`int`
+
     id: :class:`int`
+
     last_editor_id: :class:`int`
+
     message: :class:`str`
+
     system: :class:`bool`
+
     updated_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     user_id: :class:`int`
     """
     def __init__(self, data):
@@ -460,15 +575,18 @@ class BeatmapsetDiscussionVote:
     """
     Represents a vote on a :class:`BeatmapsetDiscussion`.
 
-    Attributes
-    ----------
+    **Attributes**
+
     beatmapset_discussion_id: :class:`int`
+
     created_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     id: :class:`int`
+
     score: :class:`int`
+
     updated_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     user_id: :class:`int`
     """
     def __init__(self, data):
@@ -484,13 +602,17 @@ class ChatChannel(DataUnpacker):
     """
     Represents an individual chat "channel" in the game.
 
-    Attributes
-    ----------
+    **Attributes**
+
     channel_id: :class:`int`
+
     name: :class:`str`
+
     description: :class:`str`
+
     icon: :class:`str`
         display icon for the channel
+
     type: :class:`str`
         Below are the channel types and their permission checks for joining/messaging:
         PUBLIC
@@ -508,16 +630,22 @@ class ChatChannel(DataUnpacker):
             Does the target only accept PMs from friends? Is the current user a friend? If not, deny.
         GROUP
             is player in channel? (user_channels)
+
     first_message_id: :class:`int`
         message_id of first message (only returned in presence responses)
+
     last_read_id: :class:`int`
         message_id of last message read (only returned in presence responses)
+
     last_message_id: :class:`int`
         message_id of last known message (only returned in presence responses)
+
     recent_messages: class:`list`
         list containing objects of type :class:`ChatMessage`. Up to 50 most recent messages.
+
     moderated: :class:`bool`
         user can't send message when the value is true (only returned in presence responses)
+
     users: :class:`list`
         list of user_id that are in the channel (not included for PUBLIC channels)
     """
@@ -530,20 +658,26 @@ class ChatMessage:
     """
     Represents an individual Message within a :class:`ChatChannel`.
 
-    Attributes
-    ----------
+    **Attributes**
+
     message_id: :class:`int`
         unique identifier for message
+
     sender_id: :class:`int`
         user_id of the sender
+
     channel_id: :class:`int`
         channel_id of where the message was sent
+
     timestamp: :class:`str`
         when the message was sent, ISO-8601
+
     content: :class:`str`
         message content
+
     is_action: :class:`bool`
         was this an action? i.e. /me dances
+
     sender: :class:`UserCompact`
         embeded :class:`UserCompact` object to save additional api lookups
     """
@@ -561,38 +695,53 @@ class Comment(DataUnpacker):
     """
     Represents a single comment.
 
-    Attributes
-    ----------
+    **Attributes**
+
     commentable_id: :class:`int`
         ID of the object the comment is attached to
+
     commentable_type: :class:`str`
         type of object the comment is attached to
+
     created_at: :class:`str`
         ISO 8601 date
+
     deleted_at: :class:`str`
         ISO 8601 date if the comment was deleted; null, otherwise
+
     edited_at: :class:`str`
         ISO 8601 date if the comment was edited; null, otherwise
+
     edited_by_id: :class:`
         int`user id of the user that edited the post; null, otherwise
+
     id: :class:`int`
         the ID of the comment
+
     legacy_name: :class:`str`
         username displayed on legacy comments
+
     message: :class:`str`
         markdown of the comment's content
+
     message_html: :class:`str`
         html version of the comment's content
+
     parent_id: :class:`int`
         ID of the comment's parent
+
     pinned: :class:`bool`
         Pin status of the comment
+
     replies_count: :class:`
         int`number of replies to the comment
+
     updated_at: :class:`str`
         ISO 8601 date
+
     user_id: :class:`int`
         user ID of the poster
+
     votes_count: :class:`int`
         number of votes
     """
@@ -604,33 +753,45 @@ class CommentBundle(DataUnpacker):
     """
     Comments and related data.
 
-    Attributes
-    ----------
+    **Attributes**
+
     commentable_meta: :class:`list`
         list containing objects of type :class:`CommentableMeta`. ID of the object the comment is attached to
+
     comments: :class:`list`
         list containing objects of type :class:`Comment`. List of comments ordered according to sort
+
     cursor	Cursor
+
     has_more: :class:`bool`
         If there are more comments or replies available
+
     has_more_id: :class:
+
     included_comments: :class:`list`
         list containing objects of type :class:`Comment`. Related comments; e.g. parent comments and nested replies
+
     pinned_comments: :class:`list`
         list containing objects of type :class:`Comment`. Pinned comments
+
     sort: :class:`str`
         one of the following:
             new (created_at (descending), id (descending))
             old (created_at (ascending), id (ascending))
             top (votes_count (descending), created_at (descending), id (descending))
+
     top_level_count: :class:`int`
         Number of comments at the top level. Not returned for replies.
+
     total: :class:`int`
         Total number of comments. Not retuned for replies.
+
     user_follow: :class:`bool`
         is the current user watching the comment thread?
+
     user_votes: :class:`list`
         list containing objects of type :class:`int`.IDs of the comments in the bundle the current user has upvoted
+
     users: :class:`list`
         list containing objects of type :class:`UserCompact`. list of users related to the comments
     """
@@ -645,14 +806,17 @@ class CommentableMeta:
     """
     Metadata of the object that a comment is attached to.
 
-    Attributes
-    ----------
+    **Attributes**
+
     id: :class:`int`
         the ID of the object
+
     title: :class:`str`
         display title
+
     type: :class:`str`
         the type of the object
+
     url: :class:`str`
         url of the object
     """
@@ -670,11 +834,14 @@ class Cursor:
     If there are no more results available, a cursor with a value of null is returned: "cursor": null.
     Note that sort option should also be specified for it to work.
 
-    Attributes
-    ----------
+    **Attributes**
+
     _id: :class:`int`
+
     _score: :class:`float`
+
     page: :class:`int`
+
     more_results: :class:`bool`
         Variable telling whether or not there are more results available.
     """
@@ -695,34 +862,49 @@ class Event(DataUnpacker):
     """
     The object has different attributes depending on its type. Following are attributes available to all types.
 
-    Attributes
-    ----------
+    **Attributes**
+
     created_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     id: :class:`int`
+
     type: :class:`Event.type`
         All types are listed under 'Event Types'
 
-    Event Types
-    -----------
+    **Event Types**
+
     :class:`Achievement`
+
     :class:`BeatmapPlaycount`
+
     :class:`BeatmapsetApprove`
+
     :class:`BeatmapsetDelete`
+
     :class:`BeatmapsetRevive`
+
     :class:`BeatmapsetUpdate`
+
     :class:`BeatmapsetUpload`
+
     :class:`Rank`
+
     :class:`RankLost`
+
     :class:`UserSupportAgain`
+
     :class:`UserSupportFirst`
+
     :class:`UserSupportGift`
+
     :class:`UsernameChange`
 
-    Event Objects
-    -------------
+    **Event Objects**
+
     :class:`EventBeatmap`
+
     :class:`EventBeatmapset`
+
     :class:`EventUser`
     """
     def __init__(self, data):
@@ -733,9 +915,10 @@ class Achievement:
     """
     When user obtained an achievement.
 
-    Attributes
-    ----------
+    **Attributes**
+
     achievement: :class:`str`
+
     user: :class:`EventUser`
     """
     def __init__(self, data):
@@ -747,9 +930,10 @@ class BeatmapPlaycount:
     """
     When a beatmap has been played for certain number of times.
 
-    Attributes
-    ----------
+    **Attributes**
+
     beatmap: :class:`EventBeatmap`
+
     count: :class:`int`
     """
     def __init__(self, data):
@@ -761,11 +945,13 @@ class BeatmapsetApprove:
     """
     When a beatmapset changes state.
 
-    Attributes
-    ----------
+    **Attributes**
+
     approval: :class:`str`
         Can be on of the following: ranked, approved, qualified, loved
+
     beatmapset: :class:`EventBeatmapset`
+
     user: :class:`EventUser`
         Beatmapset owner.
     """
@@ -779,8 +965,8 @@ class BeatmapsetDelete:
     """
     When a beatmapset is deleted.
 
-    Attributes
-    ----------
+    **Attributes**
+
     beatmapset: :class:`EventBeatmapset`
     """
     def __init__(self, data):
@@ -791,9 +977,10 @@ class BeatmapsetRevive:
     """
     When a beatmapset in graveyard state is updated.
 
-    Attributes
-    ----------
+    **Attributes**
+
     beatmapset: :class:`EventBeatmapset`
+
     user: :class:`EventUser`
         Beatmapset owner.
     """
@@ -806,9 +993,10 @@ class BeatmapsetUpdate:
     """
     When a beatmapset is updated.
 
-    Attributes
-    ----------
+    **Attributes**
+
     beatmapset: :class:`EventBeatmapset`
+
     user: :class:`EventUser`
         Beatmapset owner.
     """
@@ -821,9 +1009,10 @@ class BeatmapsetUpload:
     """
     When a new beatmapset is uploaded.
 
-    Attributes
-    ----------
+    **Attributes**
+
     beatmapset: :class:`EventBeatmapset`
+
     user: :class:`EventUser`
         Beatmapset owner.
     """
@@ -836,17 +1025,16 @@ class Rank:
     """
     When a user achieves a certain rank on a beatmap.
 
-    Attributes
-    ----------
+    **Attributes**
+
     scoreRank: :class:`str`
+
     rank: :class:`int`
+
     mode: :class:`GameMode`
-        :class:`GameMode` can be one of four options: fruits, mania, osu_api, taiko
-        fruits = osu_api!catch
-        mania = osu_api!mania
-        osu_api = osu_api!standard
-        taiko = osu_api!taiko
+
     beatmap: :class:`EventBeatmap`
+
     user: :class:`EventUser`
     """
     def __init__(self, data):
@@ -861,15 +1049,12 @@ class RankLost:
     """
     When a user loses first place to another user.
 
-    Attributes
-    ----------
+    **Attributes**
+
     mode: :class:`GameMode`
-        :class:`GameMode` can be one of four options: fruits, mania, osu_api, taiko
-        fruits = osu_api!catch
-        mania = osu_api!mania
-        osu_api = osu_api!standard
-        taiko = osu_api!taiko
+
     beatmap: :class:`EventBeatmap`
+
     user: :class:`EventUser`
     """
     def __init__(self, data):
@@ -882,8 +1067,8 @@ class UserSupportAgain:
     """
     When a user supports osu_api! for the second and onwards.
 
-    Attributes
-    ----------
+    **Attributes**
+
     user: :class:`EventUser`
     """
     def __init__(self, data):
@@ -894,8 +1079,8 @@ class UserSupportFirst:
     """
     When a user becomes a supporter for the first time.
 
-    Attributes
-    ----------
+    **Attributes**
+
     user: :class:`EventUser`
     """
     def __init__(self, data):
@@ -906,8 +1091,8 @@ class UserSupportGift:
     """
     When a user is gifted a supporter tag by another user.
 
-    Attributes
-    ----------
+    **Attributes**
+
     user: :class:`EventUser`
 
     """
@@ -919,8 +1104,8 @@ class UsernameChange:
     """
     When a user changes their username.
 
-    Attributes
-    ----------
+    **Attributes**
+
     user: :class:`EventUser`
         Includes previousUsername.
     """
@@ -930,9 +1115,10 @@ class UsernameChange:
 
 class EventBeatmap:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     title: :class:`str`
+
     url: :class:`str`
     """
     def __init__(self, data):
@@ -942,9 +1128,10 @@ class EventBeatmap:
 
 class EventBeatmapset:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     title: :class:`str`
+
     url: :class:`str`
     """
     def __init__(self, data):
@@ -954,10 +1141,12 @@ class EventBeatmapset:
 
 class EventUser:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     username: :class:`str`
+
     url: :class:`str`
+
     previousUsername: :class:`str`
         Only for :class:`UsernameChange` event.
     """
@@ -970,24 +1159,29 @@ class EventUser:
 
 class ForumPost:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     created_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     deleted_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     edited_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     edited_by_id: :class:`int`
+
     forum_id: :class:`int`
+
     id: :class:`int`
+
     topic_id: :class:`int`
+
     user_id: :class:`int`
 
-    Optional Attributes
-    -------------------
+    **Possible Attributes**
+
     body.html: :class:`str`
         Post content in HTML format.
+
     body.raw: :class:`str`
         content in BBCode format.
     """
@@ -1008,23 +1202,31 @@ class ForumPost:
 
 class ForumTopic:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     created_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     deleted_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     first_post_id: :class:`int`
+
     forum_id: :class:`int`
+
     id: :class:`int`
+
     is_locked: :class:`bool`
+
     last_post_id: :class:`int`
+
     post_count: :class:`int`
+
     title: :class:`str`
+
     type: :class:`str`
         normal, sticky, or announcement
+
     updated_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     user_id: :class:`int`
     """
     def __init__(self, data):
@@ -1046,19 +1248,26 @@ class Group:
     """
     This object isn't returned by any endpoints yet, it is here purely as a reference for :class:`UserGroup`
 
-    Attributes
-    ----------
+    **Attributes**
+
     id: :class:`int`
+
     identifier: :class:`str`
         Unique string to identify the group.
+
     is_probationary: :class:`str`
         Whether members of this group are considered probationary.
+
     has_playmodes: :class:`bool`
         If this group associates GameModes with a user's membership, e.g. BN/NAT members
+
     name: :class:`str`
+
     short_name: :class:`str`
         Short name of the group for display.
+
     description: :class:`str`
+
     colour: :class:`str`
     """
     def __init__(self, data):
@@ -1074,18 +1283,23 @@ class Group:
 
 class KudosuHistory:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     id: :class:`int`
+
     action: :class:`str`
         Either give, reset, or revoke.
+
     amount: :class:`int`
+
     model: :class:`str`
         Object type which the exchange happened on (forum_post, etc).
+
     created_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     giver: :class:`Giver`
         Simple detail of the user who started the exchange.
+
     post: :class:`Post`
         Simple detail of the object for display.
     """
@@ -1101,10 +1315,11 @@ class KudosuHistory:
 
 class Post:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     url: :class:`str`
         Url of the object.
+
     title: :class:`str`
         Title of the object. It'll be "[deleted beatmap]" for deleted beatmaps.
     """
@@ -1115,9 +1330,10 @@ class Post:
 
 class Giver:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     url: :class:`str`
+
     username: :class:`str`
     """
     def __init__(self, data):
@@ -1129,25 +1345,39 @@ class MultiplayerScore(DataUnpacker):
     """
     Score data.
 
-    Attributes
-    ----------
+    **Attributes**
+
     id: :class:`int`
+
     user_id: :class:`int`
+
     room_id: :class:`int`
+
     playlist_item_id: :class:`int`
+
     beatmap_id: :class:`int`
+
     rank: :class:`str`
         Can be one of the following: charts (Spotlight), country (Country), performance (Performance), score (Score)
+
     total_score: :class:`int`
+
     accuracy: :class:`int`
+
     max_combo: :class:`int`
+
     mods: :class:`list`
         list containing objects of type :class:`str`
+
     statistics: :class:`ScoreStatistics`
+
     passed: :class:`bool`
+
     position: :class:`int`
+
     scores_around: :class:`MultiplayerScoresAround`
         Scores around the specified score.
+
     user: :class:`User`
     """
     def __init__(self, data):
@@ -1159,20 +1389,26 @@ class MultiplayerScore(DataUnpacker):
 class MultiplayerScores:
     """
     An object which contains scores and related data for fetching next page of the result.
-    To fetch the next page, make request to scores index (Client.get_scores) with relevant room and playlist, use the data in attribute next_page_query to fill in the 3 other optional queries.
+    To fetch the next page, make request to scores index (Client.get_scores) with relevant
+    room and playlist, use the data in attribute next_page_query to fill in the 3 other optional queries.
 
-    Attributes
-    ----------
+    **Attributes**
+
     next_page_query: :class:`dict`
         Combines the data of cursor and params for easy use in querying the next page.
+
     cursor: :class:`MultiplayerScoresCursor`
         To be used to fetch the next page.
+
     params: :class:`dict`
         To be used to fetch the next page.
+
     scores: :class:`list`
         list containing objects of type :class:`MultiplayerScore`
+
     total: :class:`int`
         Index only. Total scores of the specified playlist item.
+
     user_score: :class:`MultiplayerScore`
         Index only. Score of the accessing user if exists.
     """
@@ -1196,9 +1432,10 @@ class MultiplayerScores:
 
 class MultiplayerScoresAround:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     higher: :class:`MultiplayerScores`
+
     lower: :class:`MultiplayerScores`
     """
     def __init__(self, data):
@@ -1210,10 +1447,11 @@ class MultiplayerScoresCursor:
     """
     An object which contains pointer for fetching further results of a request. It depends on the sort option.
 
-    Attributes
-    ----------
+    **Attributes**
+
     score_id: :class:`int`
         Last score id of current result (score_asc, score_desc).
+
     total_score: :class:`int`
         Last score's total score of current result (score_asc, score_desc).
     """
@@ -1227,62 +1465,79 @@ class Notification:
     Represents a notification object.
     Go to :class:`Details` object to see details for each event
 
-    Attributes
-    ----------
+    **Attributes**
+
     id: :class:`int`
+
     name: :class:`str`
         Name of the event
+
     created_at: :class:`str`
         ISO 8601 date
+
     object_type	: :class:`str`
+
     object_id: :class:`int`
+
     source_user_id: :class:`int`
+
     is_read: :class:`bool`
+
     details: :class:`Details`
         message_id of last known message (only returned in presence responses)
 
-    Event Names and Meanings
-    ------------------------
+    **Event Names and Meanings**
+
     beatmapset_discussion_lock
         object_id: Beatmapset id
         object_type: beatmapset
         source_user_id: User who locked discussion
+
     beatmapset_discussion_post_new
         object_id: Beatmapset id
         object_type: beatmapset
         source_user_id: Poster of the discussion
+
     beatmapset_discussion_unlock
         object_id: Beatmapset id
         object_type: beatmapset
         source_user_id: User who unlocked discussion
+
     beatmapset_disqualify
         object_id: Beatmapset id
         object_type: beatmapset
         source_user_id: User who disqualified beatmapset
+
     beatmapset_love
         object_id: Beatmapset id
         object_type: beatmapset
         source_user_id: User who promoted beatmapset to Loved
+
     beatmapset_nominate
         object_id: Beatmapset id
         object_type: beatmapset
         source_user_id: User who nominated beatmapset
+
     beatmapset_qualify
         object_id: Beatmapset id
         object_type: beatmapset
         source_user_id: User whom beatmapset nomination triggered qualification
+
     beatmapset_remove_from_loved
         object_id: Beatmapset id
         object_type: beatmapset
         source_user_id: User who removed beatmapset from Loved
+
     beatmapset_reset_nominations
         object_id: Beatmapset id
         object_type: beatmapset
         source_user_id: User who locked discussion
+
     channel_message
         object_id: Channel id
         object_type: channel
         source_user_id: User who posted message
+
     forum_topic_reply
         object_id: Topic id
         object_type: forum_topic
@@ -1305,8 +1560,8 @@ class Details(DataUnpacker):
     """
     Contains the details for an event
 
-    Attributes per Event Name
-    ------------------------
+    **Attributes for each Event**
+
     beatmapset_discussion_lock
         cover_url: :class:`str`
             Beatmap cover
@@ -1314,6 +1569,7 @@ class Details(DataUnpacker):
             Beatmap title
         username: :class:`str`
             Username of source_user_id
+
     beatmapset_discussion_post_new
         title: :class:`str`
             Beatmap title
@@ -1325,6 +1581,7 @@ class Details(DataUnpacker):
             null if posted to general all
         username: :class:`str`
             Username of source_user_id
+
     beatmapset_discussion_unlock
         title: :class:`str`
             Beatmap title
@@ -1332,6 +1589,7 @@ class Details(DataUnpacker):
             Beatmap cover
         username: :class:`str`
             Username of source_user_id
+
     beatmapset_disqualify
         title: :class:`str`
             Beatmap title
@@ -1339,6 +1597,7 @@ class Details(DataUnpacker):
             Beatmap cover
         username: :class:`str`
             Username of source_user_id
+
     beatmapset_love
         title: :class:`str`
             Beatmap title
@@ -1346,6 +1605,7 @@ class Details(DataUnpacker):
             Beatmap cover
         username: :class:`str`
             Username of source_user_id
+
     beatmapset_nominate
         title: :class:`str`
             Beatmap title
@@ -1353,6 +1613,7 @@ class Details(DataUnpacker):
             Beatmap cover
         username: :class:`str`
             Username of source_user_id
+
     beatmapset_qualify
         title: :class:`str`
             Beatmap title
@@ -1360,6 +1621,7 @@ class Details(DataUnpacker):
             Beatmap cover
         username: :class:`str`
             Username of source_user_id
+
     beatmapset_remove_from_loved
         title: :class:`str`
             Beatmap title
@@ -1367,6 +1629,7 @@ class Details(DataUnpacker):
             Beatmap cover
         username: :class:`str`
             Username of source_user_id
+
     beatmapset_reset_nominations
         title: :class:`str`
             Beatmap title
@@ -1374,6 +1637,7 @@ class Details(DataUnpacker):
             Beatmap cover
         username: :class:`str`
             Username of source_user_id
+
     channel_message
         title: :class:`str`
             Up to 36 characters of the message (ends with ... when exceeding 36 characters)
@@ -1381,6 +1645,7 @@ class Details(DataUnpacker):
             Avatar of source_user_id
         username: :class:`str`
             Username of source_user_id
+
     forum_topic_reply
         title: :class:`str`
             Title of the replied topic
@@ -1397,16 +1662,20 @@ class Details(DataUnpacker):
 
 class Rankings:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     beatmapsets: :class:`list`
         list containing objects of type :class:`Beatmapset`. The list of beatmaps in the requested spotlight for the given mode; only available if type is charts
+
     cursor: :class:`Cursor`
         A cursor
+
     ranking: :class:`list`
         list containing objects of type :class:`UserStatistics`. Score details ordered by rank in descending order.
+
     spotlight: :class:`Spotlight`
         Spotlight details; only available if type is charts
+
     total: :class:`int`
         An approximate count of ranks available
     """
@@ -1424,18 +1693,26 @@ class Spotlight:
     """
     The details of a spotlight.
 
+    **Attributes**
+
     end_date: :class:`str`
         In DatTime format. The end date of the spotlight.
+
     id: :class:`int`
         The ID of this spotlight.
+
     mode_specific: :class:`bool`
         If the spotlight has different mades specific to each GameMode.
+
     participant_count: :class:`int`
         The number of users participating in this spotlight. This is only shown when viewing a single spotlight.
+
     name: :class:`int`
         The name of the spotlight.
+
     start_date: :class:`str`
         In DatTime format. The starting date of the spotlight.
+
     type: :class:`str`
         The type of spotlight.
     """
@@ -1452,8 +1729,8 @@ class Spotlight:
 
 class Spotlights:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     spotlights: :class:`list`
         list containing objects of type :class:`Spotlight`
     """
@@ -1465,77 +1742,126 @@ class UserCompact(DataUnpacker):
     """
     Mainly used for embedding in certain responses to save additional api lookups.
 
-    Attributes
-    ----------
+    **Attributes**
+
     avatar_url: :class:`str`
         url of user's avatar
+
     country_code: :class:`str`
         two-letter code representing user's country
+
     default_group: :class:`str`
         Identifier of the default Group the user belongs to.
+
     id: :class:`int`
         unique identifier for user
+
     is_active: :class:`bool`
         has this account been active in the last x months?
+
     is_bot: :class:`bool`
         is this a bot account?
+
     is_deleted: :class:`bool`
+
     is_online: :class:`bool`
         is the user currently online? (either on lazer or the new website)
+
     is_supporter: :class:`bool`
         does this user have supporter?
+
     last_visit: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format. last access time. null if the user hides online presence
+        null if the user hides online presence
+
     pm_friends_only: :class:`bool`
         whether or not the user allows PM from other than friends
+
     profile_colour: :class:`str`
         colour of username/profile highlight, hex code (e.g. #333333)
+
     username: :class:`str`
         user's display name
 
-    Optional Attributes
-    -------------------
+    **Possible Attributes**
+
     account_history: :class:`list`
         list containing objects of type :class:`UserAccountHistory`
+
     active_tournament_banner: :class:`ProfileBanner`
+
     badges: :class:`list`
         list containing objects of type :class:`UserBadge`
+
     beatmap_playcounts_count: :class:`int`
+
     blocks
+
     country
+
     cover
+
     favourite_beatmapset_count: :class:`int`
+
     follower_count: :class:`int`
+
     friends
+
     graveyard_beatmapset_count: :class:`int`
+
     groups: :class:`list`
         list containing objects of type :class:`UserGroup`
+
     is_admin: :class:`bool`
+
     is_bng: :class:`bool`
+
     is_full_bn: :class:`bool`
+
     is_gmt: :class:`bool`
+
     is_limited_bn: :class:`bool`
+
     is_moderator: :class:`bool`
+
     is_nat: :class:`bool`
+
     is_restricted: :class:`bool`
+
     is_silenced: :class:`bool`
+
     loved_beatmapset_count: :class:`int`
+
     monthly_playcounts: :class:`list`
         list containing objects of type :class:`UserMonthlyPlaycount`
+
     page
+
     previous_usernames
+
     ranked_and_approved_beatmapset_count
+
     replays_watched_counts
+
     scores_best_count: :class:`int`
+
     scores_first_count: :class:`int`
+
     scores_recent_count: :class:`int`
+
     statistics
+
     statistics_rulesets: :class:`UserStatisticsRulesets`
+
     support_level
+
     unranked_beatmapset_count
+
     unread_pm_count
+
     user_achievements
+
     user_preferences
+
     rank_history
     """
     def __init__(self, data):
@@ -1550,51 +1876,75 @@ class User(UserCompact):
     """
     Represents a User. Extends UserCompact object with additional attributes.
 
-    Attributes
-    ----------
+    **Attributes**
+
     cover_url: :class:`str`
         url of profile cover
+
     discord: :class:`str`
-    has_supported	boolean	whether or not ever being a supporter in the past
+
+    has_supported: :class:`bool`
+        whether or not ever being a supporter in the past
+
     interests: :class:`str`
+
     join_date: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     kudosu.available: :class:`int`
+
     kudosu.total: :class:`int`
+
     location: :class:`str`
+
     max_blocks: :class:`int`
         maximum number of users allowed to be blocked
+
     max_friends: :class:`int`
         maximum number of friends allowed to be added
+
     occupation: :class:`str`
+
     playmode: :class:`GameMode`
-        :class:`GameMode` can be one of four options: fruits, mania, osu_api, taiko
-        fruits = osu_api!catch
-        mania = osu_api!mania
-        osu_api = osu_api!standard
-        taiko = osu_api!taiko
+
     playstyle: :class:`list`
         list containing objects of type :class:`str`. Device choices of the user.
+
     post_count: :class:`int`
         number of forum posts
+
     profile_order: :class:`list`
         list containing objects of type :class:`ProfilePage`. ordered list of sections in user profile page
+
     title: :class:`str`user-specific title
+
     title_url: :class:`str`
+
     twitter: :class:`str`
+
     website: :class:`str`
+
     country: :class:`dict`
         Contains keys 'code' and 'name', each representing the country.
+
     cover: :class:`dict`
         Contains keys 'custom_url', 'url', and 'id'.
+
     is_admin: :class:`bool`
+
     is_bng: :class:`bool`
+
     is_full_bn: :class:`bool`
+
     is_gmt: :class:`bool`
+
     is_limited_bn: :class:`bool`
+
     is_moderator: :class:`bool`
+
     is_nat: :class:`bool`
+
     is_restricted: :class:`bool`
+
     is_silenced: :class:`bool`
     """
     def __init__(self, data):
@@ -1603,10 +1953,12 @@ class User(UserCompact):
 
 class ProfileBanner:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     id: :class:`int`
+
     tournament_id: :class:`int`
+
     image: :class:`str`
     """
     def __init__(self, data):
@@ -1617,13 +1969,15 @@ class ProfileBanner:
 
 class UserAccountHistory:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     id: :class:`int`
+
     type: :class:`str`
         Can be one of the following: note, restriction, or silence.
+
     timestamp: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     length: :class:`int`
         In seconds.
     """
@@ -1636,12 +1990,14 @@ class UserAccountHistory:
 
 class UserBadge:
     """
-    Attributes
-    ----------
+    **Attributes**
+
     awarded_at: :class:`Timestamp`
-        :class:`Timestamp` = Timestamp string in ISO 8601 format.
+
     description: :class:`str`
+
     image_url: :class:`str`
+
     url: :class:`str`
     """
     def __init__(self, data):
@@ -1663,19 +2019,26 @@ class UserGroup:
     """
     Describes the :class:`Group` membership of a :class:`User` - most of the attributes will be the same as the relevant :class:`Group`
 
-    Attributes
-    ----------
+    **Attributes**
+
     id: :class:`int`
         ID (of Group)
+
     identifier: :class:`str`
         Unique string to identify the group.
+
     is_probationary: :class:`bool`
         Whether members of this group are considered probationary.
+
     name: :class:`str`
+
     short_name: :class:`str`
         Short name of the group for display.
+
     description: :class:`str`
+
     colour: :class:`str`
+
     playmodes: :class:`list`
         list containing objects of type :class:`str`. GameModes which the member is responsible for, e.g. in the case of BN/NAT (only present when has_playmodes is set on Group)
     """
@@ -1695,8 +2058,8 @@ class UserStatistics:
     """
     A summary of various gameplay statistics for a User. Specific to a GameMode
 
-    Attributes
-    ----------
+    **Attributes**
+
     grade_counts: :class:`dict`
         Below are the keys, their type, and meaning.
         a: :class:`int`
@@ -1709,32 +2072,46 @@ class UserStatistics:
             Number of SS ranked scores.
         ssh: :class:`int`
             Number of Silver SS ranked scores.
+
     hit_accuracy: :class:`int`
         Hit accuracy percentage
+
     is_ranked: :class:`bool`
         Is actively ranked
+
     level.current: :class:`int`
         Current level.
+
     level.progress: :class:`int`
         Progress to next level.
+
     maximum_combo: :class:`int`
         Highest maximum combo.
+
     play_count: :class:`int`
         Number of maps played.
+
     play_time: :class:`int`
         Cumulative time played.
+
     pp: :class:`int`
         Performance points
+
     global_rank: :class:`int`
         Current rank according to pp.
+
     ranked_score: :class:`int`
         Current ranked score.
+
     replays_watched_by_others: :class:`int`
         Number of replays watched by other users.
+
     total_hits: :class:`int`
         Total number of hits.
+
     total_score: :class:`int`
         Total score.
+
     user: :class:`UserCompact`
         The associated user.
     """
@@ -1760,18 +2137,26 @@ class WikiPage:
     """
     Represents a wiki article
 
+    **Attributes**
+
     layout: :class:`str`
         The layout type for the page.
+
     locale: :class:`str`
         All lowercase BCP 47 language tag.
+
     markdown: :class:`str`
         Markdown content.
+
     path: :class:`str`
         Path of the article.
+
     subtitle: :class:`str`
         The article's subtitle.
+
     tags: :class:`list`
         list containing objects of type :class:`str`. Associated tags for the article.
+
     title: :class:`str`
         The article's title.
     """
