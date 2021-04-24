@@ -857,6 +857,14 @@ class Cursor:
         else:
             self.page = data['page']
 
+    @property
+    def pagination_info(self):
+        if hasattr(self, 'page'):
+            info = f'cursor[page]={self.page}'
+        else:
+            info = f'cursor[_id]={self._id}&cursor[_score]={self._score}'
+        return info
+
 
 class Event(DataUnpacker):
     """
@@ -1458,6 +1466,10 @@ class MultiplayerScoresCursor:
     def __init__(self, data):
         self.score_id = data['score_id']
         self.total_score = data['total_score']
+
+    @property
+    def pagination_info(self):
+        return f"cursor[score_id]={self.score_id}&cursor[total_score]={self.total_score}"
 
 
 class Notification:

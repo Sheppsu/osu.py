@@ -352,3 +352,27 @@ Each GameMode has its own api name which is to be used instead of it's actual na
 Timestamp
 ^^^^^^^^^
 Timestamp string in ISO 8601 format.
+
+CommentSort
+^^^^^^^^^^^
+
+Available sort types are new, old, top.
+
+.. csv-table:: CommentSort
+   :file: _static/CommentSort.csv
+
+MultiplayerScoresSort
+^^^^^^^^^^^^^^^^^^^^^
+
+Sort option for multiplayer scores index.
+
+.. csv-table:: MultiplayerScoresSort
+   :file: _static/MultiplayerScoresSort.csv
+
+RankingType
+^^^^^^^^^^^^^^^^^^^^^
+
+Available ranking types:
+
+.. csv-table:: RankingType
+   :file: _static/RankingType.csv
