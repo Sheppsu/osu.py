@@ -6,10 +6,11 @@ class Client:
     """
     Main object for interacting with osu!api
 
-    Attributes
-    ----------
+    **Attributes**
+
     auth: :class:`AuthHandler`
         The AuthHandler object passed in when initiating the Client object
+
     http: :class:`HTTPHandler`
         Object which handles making requests, rate limiting, and http errors.
     """
@@ -22,17 +23,19 @@ class Client:
         Returns beatmap.
         Requires OAuth and scope public
 
-        Parameters
-        ----------
+        **Parameters**
+
         checksum(optional): :class:`str`
             A beatmap checksum.
+
         filename(optional): :class:`str`
             A filename to lookup
+
         id(optional): :class:`int`
             A beatmap ID to lookup
 
-        Returns
-        -------
+        **Returns**
+
         :class:`Beatmap`
         """
         return Beatmap(self.http.get(self, Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
@@ -42,49 +45,101 @@ class Client:
         Returns a :class:`User`'s score on a Beatmap
         Requires OAuth and scope public
 
-        Parameters
-        ----------
+        **Parameters**
+
         beatmap: :class:`int`
             Id of the beatmap
+
         user: :class:`int`
             Id of the user
+
         mode(optional): :class:`str`
             The GameMode to get scores for
+
         mods(optional): :class:`array`
             An array of matching Mods, or none
 
-        Returns
-        -------
+        **Returns**
+
         :class:`BeatmapUserScore`
         """
         return BeatmapUserScore(self.http.get(self, Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
     def get_beatmap_scores(self, beatmap, mode=None, mods=None, type=None):
         """
-                Returns the top scores for a beatmap
-                Requires OAuth and scope public
+        Returns the top scores for a beatmap
+        Requires OAuth and scope public
 
-                Parameters
-                ----------
-                beatmap: :class:`int`
-                    Id of the beatmap
-                mode(optional): :class:`str`
-                    The GameMode to get scores for
-                mods(optional): :class:`array`
-                    An array of matching Mods, or none
-                type(optional): :class:`str`
-                    Beatmap score ranking type
+        **Parameters**
 
-                Returns
-                -------
-                :class:`BeatmapUserScore`
-                """
+        beatmap: :class:`int`
+            Id of the beatmap
+
+        mode(optional): :class:`str`
+            The GameMode to get scores for
+
+        mods(optional): :class:`array`
+            An array of matching Mods, or none
+
+        type(optional): :class:`str`
+            Beatmap score ranking type
+
+        **Returns**
+
+        :class:`BeatmapUserScore`
+        """
         return BeatmapScores(self.http.get(self, Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
     def get_beatmap(self, beatmap):
+        """
+        Gets beatmap data for the specified beatmap ID.
+
+        **Parameters**
+
+        beatmap: :class:`int`
+            The ID of the beatmap
+
+        **Returns**
+
+        :class:`Beatmap`
+            Includes attributes beatmapset, failtimes, and max_combo
+        """
         return Beatmap(self.http.get(self, Path.beatmap(beatmap)))
 
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id=None, limit=None, page=None, sort=None, user=None, with_deleted=None):
+        """
+        Returns the posts of the beatmapset discussions
+
+        **Parameters**
+
+        beatmapset_discussion_id: :class:`id`
+            id of the BeatmapsetDiscussion
+
+        limit: :class:`id`
+            Maximum number of results
+
+        page: :class:`int`
+            Search results page.
+
+        sort: :class:`str`
+            id_desc for newest first; id_asc for oldest first. Defaults to id_desc
+
+        user: :class:`int`
+            The id of the User
+
+        with_deleted
+            The param has no effect as api calls do not currently receive group permissions
+
+        **Returns**
+
+        :class:`dict`
+            {
+            beatmapsets: :class:`BeatmapsetCompact`,
+            cursor: :class:`Cursor`,
+            posts: [ :class:`BeatmapsetDiscussionPost`, ...],
+            users: :class:`UserCompact`
+            }
+        """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
         resp = self.http.get(self, Path.beatmapset_discussion_posts(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, page=page, sort=sort, user=user, with_deleted=with_deleted)
@@ -96,6 +151,47 @@ class Client:
         }
 
     def get_beatmapset_discussion_votes(self, beatmapset_discussion_id=None, limit=None, page=None, receiver=None, score=None, sort=None, user=None, with_deleted=None):
+        """
+        Returns the votes given to beatmapset discussions
+
+        **Parameters**
+
+        **Parameters**
+
+        beatmapset_discussion_id: :class:`id`
+            id of the BeatmapsetDiscussion
+
+        limit: :class:`id`
+            Maximum number of results
+
+        page: :class:`int`
+            Search results page.
+
+        receiver: :class:`int`
+            The id of the User receiving the votes.
+
+        score: :class:`int`
+            1 for upvote, -1 for downvote
+
+        sort: :class:`str`
+            id_desc for newest first; id_asc for oldest first. Defaults to id_desc
+
+        user: :class:`int`
+            The id of the User giving the votes.
+
+        with_deleted
+            The param has no effect as api calls do not currently receive group permissions
+
+        **Returns**
+
+        :class:`dict`
+            {
+            cursor: :class:`Cursor`,
+            discussions: :class:`BeatmapsetDiscussions`,
+            users: :class:`UserCompact`,
+            votes: [ :class:`BeatmapsetDiscussionVote`, ...]
+            }
+        """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
         resp = self.http.get(self, Path.beatmapset_discussion_votes(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, receiver=receiver, score=score, page=page, sort=sort, user=user, with_deleted=with_deleted)
@@ -107,6 +203,59 @@ class Client:
         }
 
     def get_beatmapset_discussions(self, beatmap_id=None, beatmapset_id=None, beatmapset_status=None, limit=None, message_type=None, only_unresolved=None, page=None, sort=None, user=None, with_deleted=None):
+        """
+        Returns a list of beatmapset discussions
+
+        beatmap_id: :class:`int`
+            id of the Beatmap
+
+        beatmapset_id: :class:`int`
+            id of the Beatmapset
+
+        beatmapset_status: :class:`str`
+            One of all, ranked, qualified, disqualified, never_qualified. Defaults to all.
+
+        limit: :class:`int`
+            Maximum number of results.
+
+        message_types[]: :class:`str`
+            suggestion, problem, mapper_note, praise, hype, review. Blank defaults to all types.
+
+        only_unresolved: :class:`bool`
+            true to show only unresolved issues; false, otherwise. Defaults to false.
+
+        page: :class:`int`
+            Search result page.
+
+        sort: :class:`str`
+            id_desc for newest first; id_asc for oldest first. Defaults to id_desc.
+
+        user: :class:`int`
+            The id of the User.
+
+        with_deleted
+            This param has no effect as api calls do not currently receive group permissions.
+
+        **Returns**
+
+        :class:`dict`
+            {
+            beatmaps: [ :class:`Beatmap`, ...],
+                List of beatmaps associated with the discussions returned.
+            cursor: :class:`Cursor`,
+            discussions: [ :class:`BeatmapsetDiscussion`, ...],
+                List of discussions according to sort order.
+            included_discussions: [ :class:`BeatmapsetDiscussion`, ...],
+                Additional discussions related to discussions.
+            reviews_config: :class:`dict`
+                {
+                max_blocks: :class:`int`
+                    Maximum number of blocks allowed in a review.
+                },
+            users: [ :class:`UserCompact`, ...]
+                List of users associated with the discussions returned.
+            }
+        """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
         resp = self.http.get(self, Path.beatmapset_discussions(), beatmap_id=beatmap_id, beatmapset_id=beatmapset_id,
                              beatmapset_status=beatmapset_status, limit=limit, message_type=message_type,
@@ -116,7 +265,7 @@ class Client:
             'cursor': Cursor(resp['cursor']),
             'discussions': [BeatmapsetDiscussion(disc) for disc in resp['discussions']],
             'included_discussions': [BeatmapsetDiscussion(disc) for disc in resp['included_discussions']],
-            'reviews_config_max_blocks': resp['reviews_config_max_blocks'],
+            'reviews_config': resp['reviews_config'],
             'users': [UserCompact(user) for user in resp['users']]
         }
 
