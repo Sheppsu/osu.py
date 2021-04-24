@@ -34,6 +34,8 @@ class AuthHandler:
         and can't make with your scope. Default is 'identify' (Scope.default())
     """
     def __init__(self, client_id: int, client_secret: str, redirect_uri: str, scope: Scope = Scope.default()):
+        if scope == 'lazer':
+            raise NotImplementedError("lazer scope is not available for use at the moment.")
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
