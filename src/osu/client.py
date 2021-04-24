@@ -1179,9 +1179,23 @@ class Client:
         """
         return [UserCompact(user) for user in self.http.get(self, Path.get_users(), ids=ids)]
 
-    def get_wiki_page(self, locale, path, page):
+    def get_wiki_page(self, locale, path, page=None):
         """
-        *Will write documentation for this function soon...*
+        The wiki article or image data.
+        No OAuth required.
+
+        **Parameters**
+
+        locale
+
+        path
+
+        page: :class:`str`
+            The path name of the wiki page.
+
+        **Returns**
+
+        :class:`WikiPage`
         """
         return WikiPage(self.http.get(self, Path.get_wiki_page(locale, path), page=page))
 
