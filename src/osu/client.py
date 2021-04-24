@@ -156,8 +156,6 @@ class Client:
 
         **Parameters**
 
-        **Parameters**
-
         beatmapset_discussion_id: :class:`id`
             id of the BeatmapsetDiscussion
 
@@ -205,6 +203,8 @@ class Client:
     def get_beatmapset_discussions(self, beatmap_id=None, beatmapset_id=None, beatmapset_status=None, limit=None, message_type=None, only_unresolved=None, page=None, sort=None, user=None, with_deleted=None):
         """
         Returns a list of beatmapset discussions
+
+        **Parameters**
 
         beatmap_id: :class:`int`
             id of the Beatmap
