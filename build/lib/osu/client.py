@@ -137,8 +137,11 @@ class Client:
         :class:`dict`
             {
             beatmapsets: :class:`BeatmapsetCompact`,
+
             cursor: :class:`Cursor`,
+
             posts: [ :class:`BeatmapsetDiscussionPost`, ...],
+
             users: :class:`UserCompact`
             }
         """
@@ -188,8 +191,11 @@ class Client:
         :class:`dict`
             {
             cursor: :class:`Cursor`,
+
             discussions: :class:`BeatmapsetDiscussions`,
+
             users: :class:`UserCompact`,
+
             votes: [ :class:`BeatmapsetDiscussionVote`, ...]
             }
         """
@@ -246,13 +252,18 @@ class Client:
             {
             beatmaps: [ :class:`Beatmap`, ...],
                 List of beatmaps associated with the discussions returned.
+
             cursor: :class:`Cursor`,
+
             discussions: [ :class:`BeatmapsetDiscussion`, ...],
                 List of discussions according to sort order.
+
             included_discussions: [ :class:`BeatmapsetDiscussion`, ...],
                 Additional discussions related to discussions.
+
             reviews_config.max_blocks: :class:`int`
                 Maximum number of blocks allowed in a review.
+
             users: [ :class:`UserCompact`, ...]
                 List of users associated with the discussions returned.
             }
@@ -292,10 +303,13 @@ class Client:
             {
             new_channel_id: :class:`int`
                 channel_id of newly created ChatChannel
+
             presence: [ :class:`ChatChannel`, ...]
                 array of ChatChannel
+
             message: :class:`ChatMessage`
                 the sent ChatMessage
+
             }
         """
         data = {'target_id': target_id, 'message': message, 'is_action': is_action}
@@ -327,7 +341,9 @@ class Client:
         :class:`dict`
             {
             presence: [ :class:`ChatChannel`, ...],
+
             messages: [ :class:`ChatMessage`, ...]
+
             }
         """
         resp = self.http.post(self, Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
@@ -478,7 +494,9 @@ class Client:
         :class:`dict`
             {
             channel: :class:`ChatChannel`,
+
             users: :class:`UserCompact`
+
             }
         """
         resp = self.http.get(self, Path.get_channel(channel))
@@ -505,6 +523,7 @@ class Client:
 
         parent_id: :class:`int`
             Limit to comments which are reply to the specified id. Specify 0 to get top level comments.
+
         sort: :class:`str`
             Sort option as defined in CommentSort. Defaults to new for guests and user-specified default when authenticated.
 
@@ -695,8 +714,10 @@ class Client:
         :class:`dict`
             {
             topic: :class:`ForumTopic`
+
             post: :class:`ForumPost`
                 includes body
+
             }
         """
         data = {'body': body, 'forum_id': forum_id, 'title': title, 'with_poll': with_poll}
@@ -744,9 +765,13 @@ class Client:
         :class:`dict`
             {
             cursor: :class:`Cursor`,
+
             search: :class:`dict`,
+
             posts: [ :class:`ForumPost`, ...],
+
             topic: :class:`ForumTopic`
+
             }
         """
         cursor = cursor.pagination_info
@@ -820,14 +845,18 @@ class Client:
                 For all or user mode. Only first 100 results are accessible
                 {
                 results: :class:`list`
+
                 total: :class:`int`
                 }
+
             wiki_page: :class:`dict`
                 For all or wiki_page mode
                 {
                 results: :class:`list`
+
                 total: :class:`int`
                 }
+
             }
         """
         resp = self.http.get(self, Path.search(), mode=mode, query=query, page=page)
@@ -925,11 +954,15 @@ class Client:
             {
             has_more: :class:`bool`,
                 whether or not there are more notifications
+
             notifications: [ :class:`Notification`, ...],
+
             unread_count: :class:`bool`
                 total unread notifications
+
             notification_endpoint: :class:`str`
                 url to connect to websocket server
+
             }
         """
         resp = self.http.get(self, Path.get_notifications(), max_id=max_id)
@@ -1072,6 +1105,7 @@ class Client:
 
         :class:`list`
             list obtaining objects of type :class:`Score`. Includes attributes
+
             beatmap, beatmapset, weight: Only for type best, user
         """
         return [Score(score) for score in self.http.get(self, Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]

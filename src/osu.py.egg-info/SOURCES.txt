@@ -9,6 +9,7 @@ src/osu/client.py
 src/osu/constants.py
 src/osu/exceptions.py
 src/osu/http.py
+src/osu/notification.py
 src/osu/objects.py
 src/osu/util.py
 src/osu.py.egg-info/PKG-INFO

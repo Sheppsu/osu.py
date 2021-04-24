@@ -40,6 +40,7 @@ class Scope:
         Chat Bot and Client Credentials Grant exclusive scope.
     """
     valid_scopes = [
+        'lazer',
         'bot',
         'chat.write',
         'forum.write',
@@ -75,6 +76,10 @@ class Scope:
     @check_scope
     def __lt__(self, other):
         return self.valid_scopes.index(self.scope) > self.valid_scopes.index(other)
+
+    @check_scope
+    def __gt__(self, other):
+        return self.valid_scopes.index(self.scope) < self.valid_scopes.index(other)
 
 
 class BeatmapCompact(DataUnpacker):
