@@ -47,3 +47,5 @@ mode = 'osu'
 user = client.get_user(user_id, mode)
 print(user.username)
 ```
+
+To learn more you can go to the documentation [here](https://osupy.readthedocs.io/en/latest/)

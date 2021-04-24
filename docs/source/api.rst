@@ -24,6 +24,7 @@ Client
 
 .. autoclass:: osu.Client
     :members:
+    :undoc-members:
 
 Objects
 -------
