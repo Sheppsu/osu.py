@@ -18,14 +18,17 @@ class AuthHandler:
     before shutting down the program so you can use it to get a valid access token
     without having the user reauthorize.
 
-    Attributes
-    ----------
+    **Init Parameters**
+
     client_id: :class:`int`
         Client id
+
     client_secret: :class:`str`
         Client secret
+
     redirect_uri: :class:`str`
         Redirect uri
+
     scope: :class:`Scope`
         Scope object helps the program identify what requests you can
         and can't make with your scope. Default is 'identify' (Scope.default())
@@ -37,7 +40,7 @@ class AuthHandler:
         self.scope = scope
 
         self.refresh_token = None
-        self.token = None
+        self._token = None
         self.expire_time = time()
 
     def get_auth_url(self, state=''):
@@ -45,8 +48,8 @@ class AuthHandler:
         Returns a url that a user can authorize their account at. They'll then be returned to
         the redirect_uri with a code that can be used under get_auth_token.
 
-        Parameters
-        ----------
+        **Parameters**
+
         state: :class:`str`
             Will be returned to the redirect_uri along with the code.
         """
@@ -65,8 +68,8 @@ class AuthHandler:
         You can obtain a code by having a user authorize themselves under a url which
         you can get with get_auth_url. Read more about it under that function.
 
-        Parameters
-        ----------
+        **Parameters**
+
         code: :class:`str`
             code from user authorizing at a specific url
         """
@@ -92,7 +95,7 @@ class AuthHandler:
         response = response.json()
         if 'refresh_token' in response:
             self.refresh_token = response['refresh_token']
-        self.token = response['access_token']
+        self._token = response['access_token']
         self.expire_time = time() + response['expires_in'] - 5
 
     def refresh_access_token(self, refresh_token=None):
@@ -101,8 +104,8 @@ class AuthHandler:
         refresh token saved from the last session, then you can fill in the
         `refresh_token` argument which this function will use to get a valid token.
 
-        Parameters
-        ----------
+        **Parameters**
+
         refresh_token: :class:`str`
             A refresh token saved from the last session
             (ex. You authorize with a user, save the refresh token,
@@ -133,5 +136,11 @@ class AuthHandler:
         response = response.json()
         if 'refresh_token' in response:
             self.refresh_token = response['refresh_token']
-        self.token = response['access_token']
+        self._token = response['access_token']
         self.expire_time = time() + response['expires_in'] - 5
+
+    @property
+    def token(self):
+        if self.expire_time <= time():
+            self.refresh_access_token()
+        return self._token

@@ -24,7 +24,12 @@ Client
 
 .. autoclass:: osu.Client
     :members:
-    :undoc-members:
+
+NotificationWebsocket
+^^^^^^
+
+.. autoclass:: osu.NotificationWebsocket
+    :members:
 
 Objects
 -------

@@ -19,8 +19,6 @@ class HTTPHandler:
         return headers
 
     def __getattr__(self, method):
-        if self.auth.expire_time <= time.time():
-            self.auth.refresh_access_token()
         if not self.rate_limit.can_request:
             wait = Condition()
             wait.wait_for(self.rate_limit.get_can_request)
