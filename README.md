@@ -21,13 +21,6 @@ Windows
 py -3 -m pip install -U osu.py
 ```
 
-*Installing the development version straight from the github (make sure to replace 'version' with the version number shown on the whl file.):*
-```commandline
-git clone https://github.com/Sheepposu/osu.py
-cd osu.py/dist
-python3 -m pip install -U osu.py-version-py3-none-any.whl
-```
-
 # Example
 ```Python
 from osu import Client, AuthHandler
