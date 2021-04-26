@@ -9,7 +9,7 @@ class NotificationWebsocket:
     """
     This class allows you to receive notifications without constantly polling the server.
     To utilize it you should do either of:
-        - Make a class inheriting this one and redefine the event functions.
+        - Make a class inheriting this one and redefine the event functions (logout, new, ...).
         - Use the event function as a decorator, read more on its use under its docs.
 
     **Init Parameters**
@@ -79,11 +79,11 @@ class NotificationWebsocket:
         """
         Meant to be used as a decorator for adding event functions, example:
 
-        ```Python
-        notification_websocket.event()
-        def new(notification):
-            print(notification.name)
-        ```
+        .. code-block:: Python
+
+            notification_websocket.event()
+            def new(notification):
+                print(notification.name)
         """
         if func.__name__ not in self.valid_events:
             raise NameError(f"This is not a valid event name. Valid events consist of {', '.join(self.valid_events)}")
