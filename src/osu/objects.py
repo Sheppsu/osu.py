@@ -284,7 +284,8 @@ class ScoreStatistics:
         self.count_50 = data['count_50']
         self.count_100 = data['count_100']
         self.count_300 = data['count_300']
-        self.count_genki = data['count_genki']
+        if 'count_genki' in data:
+            self.count_genki = data['count_genki']
         self.count_katu = data['count_katu']
         self.count_miss = data['count_miss']
 
@@ -1988,7 +1989,7 @@ class UserAccountHistory:
     """
     **Attributes**
 
-    description: :class:`str`
+    id: :class:`int`
 
     type: :class:`str`
         Can be one of the following: note, restriction, or silence.
@@ -1999,7 +2000,7 @@ class UserAccountHistory:
         In seconds.
     """
     def __init__(self, data):
-        self.description = data['description']
+        self.id = data['id']
         self.type = data['type']
         self.timestamp = data['timestamp']
         self.length = data['length']

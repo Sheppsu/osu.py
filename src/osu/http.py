@@ -23,7 +23,7 @@ class HTTPHandler:
             wait = Condition()
             wait.wait_for(self.rate_limit.get_can_request)
 
-        def func(client, path, data=None, headers=None, **kwargs):
+        def func(client, path, data=None, headers=None, params=None, **kwargs):
             if headers is None:
                 headers = {}
             if data is None:
@@ -31,8 +31,8 @@ class HTTPHandler:
             scope_required = path.scope
             if client.auth.scope < scope_required:
                 raise ScopeError("You don't have the right scope to be able to do this.")
-            headers = self.get_headers(**kwargs, **headers)
-            response = getattr(requests, method)(base_url + path.path, headers=headers, data=data)
+            headers = self.get_headers(**headers)
+            response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, params=kwargs)
             response.raise_for_status()
             return response.json()
         return func
