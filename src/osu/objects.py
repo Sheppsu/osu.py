@@ -1988,7 +1988,7 @@ class UserAccountHistory:
     """
     **Attributes**
 
-    id: :class:`int`
+    description: :class:`str`
 
     type: :class:`str`
         Can be one of the following: note, restriction, or silence.
@@ -1999,7 +1999,7 @@ class UserAccountHistory:
         In seconds.
     """
     def __init__(self, data):
-        self.id = data['id']
+        self.description = data['description']
         self.type = data['type']
         self.timestamp = data['timestamp']
         self.length = data['length']
