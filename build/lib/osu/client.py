@@ -559,13 +559,13 @@ class Client:
 
         :class:`CommentBundle`
         """
-        headers = {
+        params = {
             'comment.commentable_id': commentable_id,
             'comment_commentable_type': commentable_type,
             'comment.message': message,
             'comment.parent_id': parent_id
         }
-        return CommentBundle(self.http.post(self, Path.post_new_comment(), headers=headers))
+        return CommentBundle(self.http.post(self, Path.post_new_comment(), params=params))
 
     def get_comment(self, comment):
         """
@@ -600,8 +600,8 @@ class Client:
 
         :class:`CommentBundle`
         """
-        headers = {'comment.message': message}
-        return CommentBundle(self.http.patch(self, Path.edit_comment(comment), headers=headers))
+        params = {'comment.message': message}
+        return CommentBundle(self.http.patch(self, Path.edit_comment(comment), params=params))
 
     def delete_comment(self, comment):
         """
@@ -861,8 +861,8 @@ class Client:
         """
         resp = self.http.get(self, Path.search(), mode=mode, query=query, page=page)
         return {
-            'user': {'results': resp['user']['data'], 'total': resp['user']['total']} if mode is None or mode is 'all' or mode is 'user' else None,
-            'wiki_page': {'results': resp['wiki_page']['data'], 'total': resp['wiki_page']['total']} if mode is None or mode is 'all' or mode is 'wiki_page' else None
+            'user': {'results': resp['user']['data'], 'total': resp['user']['total']} if mode is None or mode == 'all' or mode == 'user' else None,
+            'wiki_page': {'results': resp['wiki_page']['data'], 'total': resp['wiki_page']['total']} if mode is None or mode == 'all' or mode == 'wiki_page' else None
         }
 
     def get_user_highscore(self, room, playlist, user):
