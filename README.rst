@@ -19,7 +19,8 @@ if you'd like to contribute.
 Installation
 ------------
 
-.. code-block:: console
+.. code:: sh
+
     # Installs the latest version out on pypi
 
     # Linux/macOS
