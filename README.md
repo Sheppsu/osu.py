@@ -1,6 +1,13 @@
 osu.py
 -------
 
+.. image:: https://discordapp.com/api/guilds/836755328493420614/widget.png?style=shield
+   :target: https://discord.gg/Z2J6SSRPcE
+   :alt: Discord server invite
+.. image:: https://img.shields.io/pypi/v/osu.py.svg
+   :target: https://pypi.python.org/pypi/osu.py
+   :alt: PyPI version info
+
 Easy to use API wrapper for osu!api written in Python. 
 This uses osu!api v2, which is still under development. 
 So some code that was originally working may break overnight. 
