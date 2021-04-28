@@ -17,7 +17,7 @@ or make a `pull requests <https://github.com/Sheepposu/osu.py/pulls>`_
 if you'd like to contribute.
 
 Installation
-~~~~~~~~~~~~
+------------
 
 .. code:: sh
     # Installs the latest version out on pypi
@@ -29,7 +29,7 @@ Installation
     py -3 -m pip install -U osu.py
 
 Example
-~~~~~~~
+-------
 
 .. code:: py
 
