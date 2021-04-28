@@ -18,9 +18,10 @@ if you'd like to contribute.
 
 Installation
 ~~~~~~~~~~~~
-*Installing the current version out on pypi:*
 
 .. code:: sh
+    # Installs the latest version out on pypi
+
     # Linux/macOS
     python3 -m pip install -U osu.py
 
