@@ -16,9 +16,9 @@ You can report issues `here <https://github.com/Sheepposu/osu.py/issues>`_
 or make a `pull requests <https://github.com/Sheepposu/osu.py/pulls>`_
 if you'd like to contribute.
 
-# Installation
+Installation
+~~~~~~~~~~~~
 *Installing the current version out on pypi:*
-
 
 .. code:: sh
     # Linux/macOS
@@ -27,7 +27,8 @@ if you'd like to contribute.
     # Windows
     py -3 -m pip install -U osu.py
 
-# Example
+Example
+~~~~~~~
 
 .. code:: py
 
