@@ -7,8 +7,9 @@ from .exceptions import ScopeError
 
 
 class HTTPHandler:
-    def __init__(self, auth):
+    def __init__(self, auth, client):
         self.auth = auth
+        self.client = client
         self.rate_limit = RateLimiter()
 
     def get_headers(self, **kwargs):
@@ -23,13 +24,13 @@ class HTTPHandler:
             wait = Condition()
             wait.wait_for(self.rate_limit.get_can_request)
 
-        def func(client, path, data=None, headers=None, params=None, **kwargs):
+        def func(path, data=None, headers=None, **kwargs):
             if headers is None:
                 headers = {}
             if data is None:
                 data = {}
             scope_required = path.scope
-            if client.auth.scope < scope_required:
+            if self.client.auth.scope < scope_required:
                 raise ScopeError("You don't have the right scope to be able to do this.")
             headers = self.get_headers(**headers)
             response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, params=kwargs)

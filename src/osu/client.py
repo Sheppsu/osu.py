@@ -16,7 +16,7 @@ class Client:
     """
     def __init__(self, auth):
         self.auth = auth
-        self.http = HTTPHandler(auth)
+        self.http = HTTPHandler(auth, self)
 
     def lookup_beatmap(self, checksum=None, filename=None, id=None):
         """
@@ -38,7 +38,7 @@ class Client:
 
         :class:`Beatmap`
         """
-        return Beatmap(self.http.get(self, Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
+        return Beatmap(self.http.get(Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
 
     def get_user_beatmap_score(self, beatmap, user, mode=None, mods=None):
         """
@@ -63,7 +63,7 @@ class Client:
 
         :class:`BeatmapUserScore`
         """
-        return BeatmapUserScore(self.http.get(self, Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
+        return BeatmapUserScore(self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
     def get_beatmap_scores(self, beatmap, mode=None, mods=None, type=None):
         """
@@ -88,7 +88,7 @@ class Client:
 
         :class:`BeatmapUserScore`
         """
-        return BeatmapScores(self.http.get(self, Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
+        return BeatmapScores(self.http.get(Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
     def get_beatmap(self, beatmap):
         """
@@ -146,7 +146,7 @@ class Client:
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
-        resp = self.http.get(self, Path.beatmapset_discussion_posts(), beatmapset_discussion_id=beatmapset_discussion_id,
+        resp = self.http.get(Path.beatmapset_discussion_posts(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'beatmapsets': BeatmapsetCompact(resp['beatmapsets']),
@@ -200,7 +200,7 @@ class Client:
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
-        resp = self.http.get(self, Path.beatmapset_discussion_votes(), beatmapset_discussion_id=beatmapset_discussion_id,
+        resp = self.http.get(Path.beatmapset_discussion_votes(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, receiver=receiver, score=score, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'cursor': Cursor(resp['cursor']),
@@ -269,7 +269,7 @@ class Client:
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
-        resp = self.http.get(self, Path.beatmapset_discussions(), beatmap_id=beatmap_id, beatmapset_id=beatmapset_id,
+        resp = self.http.get(Path.beatmapset_discussions(), beatmap_id=beatmap_id, beatmapset_id=beatmapset_id,
                              beatmapset_status=beatmapset_status, limit=limit, message_type=message_type,
                              only_unresolved=only_unresolved, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
@@ -313,7 +313,7 @@ class Client:
             }
         """
         data = {'target_id': target_id, 'message': message, 'is_action': is_action}
-        resp = self.http.post(self, Path.create_new_pm(), data=data)
+        resp = self.http.post(Path.create_new_pm(), data=data)
         return {
             'new_channel_id': resp['new_channel_id'],
             'presence': [ChatChannel(channel) for channel in resp['presence']],
@@ -346,7 +346,7 @@ class Client:
 
             }
         """
-        resp = self.http.post(self, Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
+        resp = self.http.post(Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
         return {
             'presence': [ChatChannel(channel) for channel in resp['presence']],
             'messages': [ChatMessage(msg) for msg in resp['messages']]
@@ -376,7 +376,7 @@ class Client:
         :class:`list`
             list containing objects of type :class:`ChatMessage`
         """
-        return [ChatMessage(msg) for msg in self.http.post(self, Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)]
+        return [ChatMessage(msg) for msg in self.http.post(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)]
 
     def send_message_to_channel(self, channel_id, message, is_action):
         """
@@ -399,7 +399,7 @@ class Client:
         :class:`ChatMessage`
         """
         data = {'message': message, 'is_action': is_action}
-        return ChatMessage(self.http.post(self, Path.send_message_to_channel(channel_id), data=data))
+        return ChatMessage(self.http.post(Path.send_message_to_channel(channel_id), data=data))
 
     def join_channel(self, channel, user):
         """
@@ -416,7 +416,7 @@ class Client:
 
         :class:`ChatChannel`
         """
-        return ChatChannel(self.http.put(self, Path.join_channel(channel, user)))
+        return ChatChannel(self.http.put(Path.join_channel(channel, user)))
 
     def leave_channel(self, channel, user):
         """
@@ -429,7 +429,7 @@ class Client:
 
         user: :class:`int`
         """
-        self.http.delete(self, Path.leave_channel(channel, user))
+        self.http.delete(Path.leave_channel(channel, user))
 
     def mark_channel_as_read(self, channel, message, channel_id, message_id):
         """
@@ -444,7 +444,7 @@ class Client:
         message_id: :class:`int`
             The message_id of the message to mark as read up to
         """
-        self.http.put(self, Path.mark_channel_as_read(channel, message), channel_id=channel_id, message_id=message_id)
+        self.http.put(Path.mark_channel_as_read(channel, message), channel_id=channel_id, message_id=message_id)
 
     def get_channel_list(self):
         """
@@ -456,7 +456,7 @@ class Client:
         :class:`list`
             list containing objects of type :class:`ChatChannel`
         """
-        return [ChatChannel(channel) for channel in self.http.get(self, Path.get_channel_list())]
+        return [ChatChannel(channel) for channel in self.http.get(Path.get_channel_list())]
 
     def create_channel(self, type, target_id=None):
         """
@@ -478,7 +478,7 @@ class Client:
              most of the fields will be blank. In that case, send a message (create_new_pm) instead to create the channel.
         """
         data = {'type': type, 'target_id': target_id}
-        return ChatChannel(self.http.post(self, Path.create_channel(), data=data))
+        return ChatChannel(self.http.post(Path.create_channel(), data=data))
 
     def get_channel(self, channel):
         """
@@ -499,7 +499,7 @@ class Client:
 
             }
         """
-        resp = self.http.get(self, Path.get_channel(channel))
+        resp = self.http.get(Path.get_channel(channel))
         return {
             'channel': ChatChannel(resp['channel']),
             'users': UserCompact(resp['users']),
@@ -533,7 +533,7 @@ class Client:
             pinned_comments is only included when commentable_type and commentable_id are specified.
         """
         cursor = cursor.pagination_info
-        return CommentBundle(self.http.get(self, Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
+        return CommentBundle(self.http.get(Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
                                            cursor=cursor, parent_id=parent_id, sort=sort))
 
     def post_comment(self, commentable_id=None, commentable_type=None, message=None, parent_id=None):
@@ -565,7 +565,7 @@ class Client:
             'comment.message': message,
             'comment.parent_id': parent_id
         }
-        return CommentBundle(self.http.post(self, Path.post_new_comment(), params=params))
+        return CommentBundle(self.http.post(Path.post_new_comment(), params=params))
 
     def get_comment(self, comment):
         """
@@ -581,7 +581,7 @@ class Client:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(self.http.get(self, Path.get_comment(comment)))
+        return CommentBundle(self.http.get(Path.get_comment(comment)))
 
     def edit_comment(self, comment, message=None):
         """
@@ -601,7 +601,7 @@ class Client:
         :class:`CommentBundle`
         """
         params = {'comment.message': message}
-        return CommentBundle(self.http.patch(self, Path.edit_comment(comment), params=params))
+        return CommentBundle(self.http.patch(Path.edit_comment(comment), params=params))
 
     def delete_comment(self, comment):
         """
@@ -617,7 +617,7 @@ class Client:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(self.http.delete(self, Path.delete_comment(comment)))
+        return CommentBundle(self.http.delete(Path.delete_comment(comment)))
 
     def add_comment_vote(self, comment):
         """
@@ -633,7 +633,7 @@ class Client:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(self.http.post(self, Path.add_comment_vote(comment)))
+        return CommentBundle(self.http.post(Path.add_comment_vote(comment)))
 
     def remove_comment_vote(self, comment):
         """
@@ -649,7 +649,7 @@ class Client:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(self.http.delete(self, Path.remove_comment_vote(comment)))
+        return CommentBundle(self.http.delete(Path.remove_comment_vote(comment)))
 
     def reply_topic(self, topic, body):
         """
@@ -670,7 +670,7 @@ class Client:
             body attributes included
         """
         data = {'body': body}
-        return ForumPost(self.http.post(self, Path.reply_topic(topic), data=data))
+        return ForumPost(self.http.post(Path.reply_topic(topic), data=data))
 
     def create_topic(self, body, forum_id, title, with_poll=None, hide_results=None, length_days=None, max_options=None, poll_options=None, poll_title=None, vote_change=None):
         """
@@ -729,7 +729,7 @@ class Client:
                 'max_options': max_options, 'poll_options': poll_options,
                 'poll_title': poll_title, 'vote_change': vote_change
             }})
-        resp = self.http.post(self, Path.create_topic(), data=data)
+        resp = self.http.post(Path.create_topic(), data=data)
         return {
             'topic': ForumTopic(resp['topic']),
             'post': ForumPost(resp['post'])
@@ -775,7 +775,7 @@ class Client:
             }
         """
         cursor = cursor.pagination_info
-        resp = self.http.get(self, Path.get_topic_and_posts(topic), cursor=cursor, sort=sort, limit=limit, start=start, end=end)
+        resp = self.http.get(Path.get_topic_and_posts(topic), cursor=cursor, sort=sort, limit=limit, start=start, end=end)
         return {
             'cursor': Cursor(resp['cursor']),
             'search': resp['search'],
@@ -801,7 +801,7 @@ class Client:
         :class:`ForumTopic`
         """
         data = {'forum_topic': {'topic_title': topic_title}}
-        return ForumTopic(self.http.patch(self, Path.edit_topic(topic), data=data))
+        return ForumTopic(self.http.patch(Path.edit_topic(topic), data=data))
 
     def edit_post(self, post, body):
         """
@@ -819,7 +819,7 @@ class Client:
         :class:`ForumPost`
         """
         data = {'body': body}
-        return ForumPost(self.http.patch(self, Path.edit_post(post), data=data))
+        return ForumPost(self.http.patch(Path.edit_post(post), data=data))
 
     def search(self, mode=None, query=None, page=None):
         """
@@ -859,7 +859,7 @@ class Client:
 
             }
         """
-        resp = self.http.get(self, Path.search(), mode=mode, query=query, page=page)
+        resp = self.http.get(Path.search(), mode=mode, query=query, page=page)
         return {
             'user': {'results': resp['user']['data'], 'total': resp['user']['total']} if mode is None or mode == 'all' or mode == 'user' else None,
             'wiki_page': {'results': resp['wiki_page']['data'], 'total': resp['wiki_page']['total']} if mode is None or mode == 'all' or mode == 'wiki_page' else None
@@ -885,7 +885,7 @@ class Client:
         Return type is undocumented
         """
         # Doesn't say response type
-        return self.http.get(self, Path.get_user_high_score(room, playlist, user))
+        return self.http.get(Path.get_user_high_score(room, playlist, user))
 
     def get_scores(self, room, playlist, limit=None, sort=None, cursor=None):
         """
@@ -914,7 +914,7 @@ class Client:
         """
         # Doesn't say response type
         cursor = cursor.pagination_info
-        return self.http.get(self, Path.get_scores(room, playlist), limit=limit, sort=sort, cursor=cursor)
+        return self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, cursor=cursor)
 
     def get_score(self, room, playlist, score):
         """
@@ -936,7 +936,7 @@ class Client:
         Return type is undocumented
         """
         # Doesn't say response type
-        return self.http.get(self, Path.get_score(room, playlist, score))
+        return self.http.get(Path.get_score(room, playlist, score))
 
     def get_notification(self, max_id=None):
         """
@@ -965,7 +965,7 @@ class Client:
 
             }
         """
-        resp = self.http.get(self, Path.get_notifications(), max_id=max_id)
+        resp = self.http.get(Path.get_notifications(), max_id=max_id)
         return {
             'has_more': resp['has_more'],
             'notifications': [Notification(notif) for notif in resp['notifications']],
@@ -984,7 +984,7 @@ class Client:
             list containing object of type :class:`int`. id of notifications to be marked as read.
         """
         data = {'ids': ids}
-        self.http.post(self, Path.mark_notifications_as_read(), data=data)
+        self.http.post(Path.mark_notifications_as_read(), data=data)
 
     def revoke_current_token(self):
         """
@@ -1023,7 +1023,7 @@ class Client:
         :class:`Rankings`
         """
         cursor = cursor.pagination_info
-        return Rankings(self.http.get(self, Path.get_ranking(mode, type), country=country, cursor=cursor, filter=filter,
+        return Rankings(self.http.get(Path.get_ranking(mode, type), country=country, cursor=cursor, filter=filter,
                                       spotlight=spotlight, variant=variant))
 
     def get_spotlights(self):
@@ -1035,7 +1035,7 @@ class Client:
 
         :class:`Spotlights`
         """
-        return Spotlights(self.http.get(self, Path.get_spotlights()))
+        return Spotlights(self.http.get(Path.get_spotlights()))
 
     def get_own_data(self, mode):
         """
@@ -1051,7 +1051,7 @@ class Client:
 
         See return for get_user
         """
-        return User(self.http.get(self, Path.get_own_data(mode)))
+        return User(self.http.get(Path.get_own_data(mode)))
 
     def get_user_kudosu(self, user, limit=None, offset=None):
         """
@@ -1074,7 +1074,7 @@ class Client:
         :class:`list`
             list containing objects of type :class:`KudosuHistory`
         """
-        return [KudosuHistory(kud) for kud in self.http.get(self, Path.get_user_kudosu(user), limit=limit, offset=offset)]
+        return [KudosuHistory(kud) for kud in self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset)]
 
     def get_user_scores(self, user, type, include_fails=None, mode=None, limit=None, offset=None):
         """
@@ -1108,7 +1108,7 @@ class Client:
 
             beatmap, beatmapset, weight: Only for type best, user
         """
-        return [Score(score) for score in self.http.get(self, Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
+        return [Score(score) for score in self.http.get(Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
 
     def get_user_beatmaps(self, user, type, limit=None, offset=None):
         """
@@ -1134,7 +1134,7 @@ class Client:
         :class:`list`
             list containing objects of type Beatmapset
         """
-        return [Beatmapset(bm) for bm in self.http.get(self, Path.get_user_beatmaps(user, type), limit=limit, offset=offset)]
+        return [Beatmapset(bm) for bm in self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset)]
 
     def get_user_recent_activity(self, user, limit=None, offset=None):
         """
@@ -1157,7 +1157,7 @@ class Client:
         :class:`list`
             list containing objects of type :class:`Event`
         """
-        return [Event(event) for event in self.http.get(self, Path.get_user_recent_activity(user), limit=limit, offset=offset)]
+        return [Event(event) for event in self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset)]
 
     def get_user(self, user, mode='', key=None):
         """
@@ -1192,7 +1192,7 @@ class Client:
             statistics: For specified mode. Inludes rank and variants attributes.,
             support_level, unranked_beatmapset_count, user_achievements
         """
-        return User(self.http.get(self, Path.get_user(user, mode), key=key))
+        return User(self.http.get(Path.get_user(user, mode), key=key))
 
     def get_users(self, ids):
         """
@@ -1211,7 +1211,7 @@ class Client:
             Includes attributes: country, cover, groups, statistics_fruits,
             statistics_mania, statistics_osu, statistics_taiko.
         """
-        return [UserCompact(user) for user in self.http.get(self, Path.get_users(), ids=ids)]
+        return [UserCompact(user) for user in self.http.get(Path.get_users(), ids=ids)]
 
     def get_wiki_page(self, locale, path, page=None):
         """
@@ -1231,5 +1231,5 @@ class Client:
 
         :class:`WikiPage`
         """
-        return WikiPage(self.http.get(self, Path.get_wiki_page(locale, path), page=page))
+        return WikiPage(self.http.get(Path.get_wiki_page(locale, path), page=page))
 
