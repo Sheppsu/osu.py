@@ -859,7 +859,8 @@ class Cursor:
         self.more_results = True
         if '_id' in data:
             self._id = data['_id']
-            self._score = data['_score']
+            if '_score' in data:
+                self._score = data['_score']
         else:
             self.page = data['page']
 
@@ -868,7 +869,9 @@ class Cursor:
         if hasattr(self, 'page'):
             info = f'cursor[page]={self.page}'
         else:
-            info = f'cursor[_id]={self._id}&cursor[_score]={self._score}'
+            info = f'cursor[_id]={self._id}'
+            if hasattr(self, '_score'):
+                info += f'&cursor[_score]={self._score}'
         return info
 
 

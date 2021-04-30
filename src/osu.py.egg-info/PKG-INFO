@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: osu.py
-Version: 0.1.8
+Version: 0.1.9
 Summary: Easy to use API wrapper for osu!api written in Python.
 Home-page: https://github.com/Sheepposu/osu.py
 Author: Sheepposu
