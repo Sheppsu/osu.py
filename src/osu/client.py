@@ -1037,7 +1037,7 @@ class Client:
         """
         return Spotlights(self.http.get(Path.get_spotlights()))
 
-    def get_own_data(self, mode):
+    def get_own_data(self, mode=""):
         """
         Similar to get_user but with authenticated user (token owner) as user id.
         Requires OAuth and scope identify

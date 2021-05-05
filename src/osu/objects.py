@@ -258,9 +258,26 @@ class Score(DataUnpacker):
     mode_int: :class:`int`
 
     replay
+
+    **Optional Attributes**
+
+    beatmap: :class:`Beatmap`
+
+    beatmapset: :class:`Beatmapset`
+
+    rank_country
+
+    rank_global
+
+    weight
+
+    user
+
+    match
     """
     def __init__(self, data):
-        exceptions = {'statistics': (ScoreStatistics, False)}
+        exceptions = {'statistics': (ScoreStatistics, False), 'beatmap': (Beatmap, False),
+                      'beatmapset': (Beatmapset, False)}
         super().__init__(data, exceptions)
 
 
@@ -2352,7 +2369,7 @@ class Path:
 
     @classmethod
     def get_own_data(cls, mode=''):
-        return cls(f'me/{mode}', 'identity')
+        return cls(f'me/{mode}', 'identify')
 
     @classmethod
     def get_user_kudosu(cls, user):
