@@ -22,7 +22,7 @@ class DataUnpacker:
 
 class Scope:
     """
-    Scope object for telling the program what scope you are using
+    Scope object for telling the program what scopes you are using
 
     **Valid scopes**
 
@@ -40,7 +40,6 @@ class Scope:
         Chat Bot and Client Credentials Grant exclusive scope.
     """
     valid_scopes = [
-        'lazer',
         'bot',
         'chat.write',
         'forum.write',
@@ -49,37 +48,24 @@ class Scope:
         'public',
     ]
 
-    def __init__(self, scope):
-        if scope not in self.valid_scopes:
-            raise NameError(f"{scope} is not a valid scope. The valid scopes consist of {','.join(self.valid_scopes)}")
-        self.scope = scope
+    def __init__(self, scopes):
+        if type(scopes) == str:
+            scopes = [scopes]
+        for scope in scopes:
+            if scope in self.valid_scopes:
+                raise NameError(
+                    f"{scope} is not a valid scope. The valid scopes consist of {','.join(self.valid_scopes)}")
+        self.scopes = ' '.join(scopes)
 
     @classmethod
     def default(cls):
         return cls('identify')
 
     def __str__(self):
-        return self.scope
+        return self.scopes
 
-    @check_scope
-    def __eq__(self, other):
-        return self.scope == other
-
-    @check_scope
-    def __ge__(self, other):
-        return self.valid_scopes.index(self.scope) <= self.valid_scopes.index(other)
-
-    @check_scope
-    def __le__(self, other):
-        return self.valid_scopes.index(self.scope) >= self.valid_scopes.index(other)
-
-    @check_scope
-    def __lt__(self, other):
-        return self.valid_scopes.index(self.scope) > self.valid_scopes.index(other)
-
-    @check_scope
-    def __gt__(self, other):
-        return self.valid_scopes.index(self.scope) < self.valid_scopes.index(other)
+    def __contains__(self, item):
+        return item in self.scopes
 
 
 class BeatmapCompact(DataUnpacker):
