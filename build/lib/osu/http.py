@@ -30,12 +30,13 @@ class HTTPHandler:
             if data is None:
                 data = {}
             scope_required = path.scope
-            if self.client.auth.scope < scope_required:
+            if scope_required.scopes[0] not in self.client.auth.scope:
                 raise ScopeError("You don't have the right scope to be able to do this.")
             headers = self.get_headers(**headers)
             response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, params=kwargs)
             response.raise_for_status()
             return response.json()
+
         return func
 
 

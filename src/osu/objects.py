@@ -246,9 +246,9 @@ class Score(DataUnpacker):
 
     **Optional Attributes**
 
-    beatmap: :class:`Beatmap`
+    beatmap: :class:`BeatmapCompact`
 
-    beatmapset: :class:`Beatmapset`
+    beatmapset: :class:`BeatmapsetCompact`
 
     rank_country
 
@@ -261,8 +261,8 @@ class Score(DataUnpacker):
     match
     """
     def __init__(self, data):
-        exceptions = {'statistics': (ScoreStatistics, False), 'beatmap': (Beatmap, False),
-                      'beatmapset': (Beatmapset, False)}
+        exceptions = {'statistics': (ScoreStatistics, False), 'beatmap': (BeatmapCompact, False),
+                      'beatmapset': (BeatmapsetCompact, False)}
         super().__init__(data, exceptions)
 
 
