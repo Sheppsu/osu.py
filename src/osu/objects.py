@@ -52,17 +52,16 @@ class Scope:
         if type(scopes) == str:
             scopes = [scopes]
         for scope in scopes:
-            if scope in self.valid_scopes:
-                raise NameError(
-                    f"{scope} is not a valid scope. The valid scopes consist of {','.join(self.valid_scopes)}")
+            if scope not in self.valid_scopes:
+                raise NameError(f"{scope} is not a valid scope. The valid scopes consist of {','.join(self.valid_scopes)}")
         self.scopes = ' '.join(scopes)
 
     @classmethod
     def default(cls):
-        return cls('identify')
+        return cls(['public', 'identify'])
 
     def __str__(self):
-        return self.scopes
+        return ", ".join(self.scopes)
 
     def __contains__(self, item):
         return item in self.scopes

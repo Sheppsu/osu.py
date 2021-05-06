@@ -36,6 +36,7 @@ class HTTPHandler:
             response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, params=kwargs)
             response.raise_for_status()
             return response.json()
+
         return func
 
 
