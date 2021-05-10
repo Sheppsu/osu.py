@@ -1,5 +1,5 @@
 from .constants import int_to_status
-from .util import check_scope
+from .exceptions import ClientException
 
 
 class DataUnpacker:
@@ -2383,3 +2383,7 @@ class Path:
     @classmethod
     def get_wiki_page(cls, locale, path):
         return cls(f'wiki/{locale}/{path}', None)
+
+    @classmethod
+    def get_score_by_id(cls, mode, score):
+        return cls(f'scores/{mode}/{score}', 'public')

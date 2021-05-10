@@ -3,7 +3,7 @@ from .constants import base_url
 import time
 import math
 from threading import Condition
-from .exceptions import ScopeError
+from .exceptions import ScopeException
 
 
 class HTTPHandler:
@@ -24,16 +24,17 @@ class HTTPHandler:
             wait = Condition()
             wait.wait_for(self.rate_limit.get_can_request)
 
-        def func(path, data=None, headers=None, **kwargs):
+        def func(path, data=None, headers=None, stream=False, **kwargs):
             if headers is None:
                 headers = {}
             if data is None:
                 data = {}
             scope_required = path.scope
             if scope_required.scopes[0] not in self.client.auth.scope:
-                raise ScopeError("You don't have the right scope to be able to do this.")
+                raise ScopeException("You don't have the right scope to be able to do this.")
             headers = self.get_headers(**headers)
-            response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, params=kwargs)
+            response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, stream=stream, params=kwargs)
+            self.rate_limit.request_used()
             response.raise_for_status()
             return response.json()
 
@@ -54,13 +55,14 @@ class RateLimiter:
     def request_used(self):
         self.rate_counter += 1
 
-    # Made a function to be used with threading.wait_for
+    # Function for threading.wait_for
     def get_can_request(self):
         return self.can_request
 
     @property
     def can_request(self):
-        return self.rate_counter != 60
+        self.reset()
+        return self.rate_counter < 60
 
     @property
     def time(self):

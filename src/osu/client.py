@@ -1108,7 +1108,7 @@ class Client:
 
             beatmap, beatmapset, weight: Only for type best, user
         """
-        return [Score(score) for score in self.http.get(Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
+        return [Score(score, self) for score in self.http.get(Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
 
     def get_user_beatmaps(self, user, type, limit=None, offset=None):
         """
@@ -1244,3 +1244,5 @@ class Client:
             'total': resp['total']
         }
 
+    def get_score_by_id(self, mode, score):
+        return Score(self.http.get(Path.get_score_by_id(mode, score)))

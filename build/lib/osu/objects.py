@@ -1,5 +1,5 @@
 from .constants import int_to_status
-from .util import check_scope
+from .exceptions import ClientException
 
 
 class DataUnpacker:
@@ -246,9 +246,9 @@ class Score(DataUnpacker):
 
     **Optional Attributes**
 
-    beatmap: :class:`Beatmap`
+    beatmap: :class:`BeatmapCompact`
 
-    beatmapset: :class:`Beatmapset`
+    beatmapset: :class:`BeatmapsetCompact`
 
     rank_country
 
@@ -261,8 +261,8 @@ class Score(DataUnpacker):
     match
     """
     def __init__(self, data):
-        exceptions = {'statistics': (ScoreStatistics, False), 'beatmap': (Beatmap, False),
-                      'beatmapset': (Beatmapset, False)}
+        exceptions = {'statistics': (ScoreStatistics, False), 'beatmap': (BeatmapCompact, False),
+                      'beatmapset': (BeatmapsetCompact, False)}
         super().__init__(data, exceptions)
 
 
@@ -2383,3 +2383,7 @@ class Path:
     @classmethod
     def get_wiki_page(cls, locale, path):
         return cls(f'wiki/{locale}/{path}', None)
+
+    @classmethod
+    def get_score_by_id(cls, mode, score):
+        return cls(f'scores/{mode}/{score}', 'public')
