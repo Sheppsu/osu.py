@@ -1,5 +1,4 @@
 from .constants import int_to_status
-from .exceptions import ClientException
 
 
 class DataUnpacker:
@@ -1719,7 +1718,7 @@ class Spotlight:
     **Attributes**
 
     end_date: :class:`str`
-        In DatTime format. The end date of the spotlight.
+        In DateTime format. The end date of the spotlight.
 
     id: :class:`int`
         The ID of this spotlight.
@@ -1727,10 +1726,7 @@ class Spotlight:
     mode_specific: :class:`bool`
         If the spotlight has different mades specific to each GameMode.
 
-    participant_count: :class:`int`
-        The number of users participating in this spotlight. This is only shown when viewing a single spotlight.
-
-    name: :class:`int`
+    name: :class:`str`
         The name of the spotlight.
 
     start_date: :class:`str`
@@ -1738,6 +1734,11 @@ class Spotlight:
 
     type: :class:`str`
         The type of spotlight.
+
+    **Possible Attributes((
+
+    participant_count: :class:`int`
+        The number of users participating in this spotlight. This is only shown when viewing a single spotlight.
     """
     def __init__(self, data):
         self.end_date = data['end_date']
