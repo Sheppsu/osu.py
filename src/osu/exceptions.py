@@ -1,14 +1,6 @@
 class ScopeException(Exception):
-    def __init__(self, error):
-        self.error = error
-
-    def __str__(self):
-        return self.error
+    """Raised when there was an exception involving scopes"""
 
 
 class ClientException(Exception):
-    def __init__(self, error):
-        self.error = error
-
-    def __str__(self):
-        return self.error
+    """Raised when there was an exception involving scopes"""
