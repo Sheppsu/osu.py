@@ -2,6 +2,7 @@ import websockets
 import asyncio
 import json
 import threading
+
 from .objects import Notification
 
 

@@ -1,7 +1,8 @@
 import requests
+from time import time
+
 from .constants import auth_url, token_url
 from .objects import Scope
-from time import time
 
 
 class AuthHandler:

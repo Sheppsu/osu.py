@@ -1,9 +1,10 @@
 import requests
-from .constants import base_url
 import time
 import math
 from threading import Condition
+
 from .exceptions import ScopeException
+from .constants import base_url
 
 
 class HTTPHandler:
