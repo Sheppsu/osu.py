@@ -2124,6 +2124,9 @@ class UserStatistics:
     global_rank: :class:`int`
         Current rank according to pp.
 
+    country_rank: :class:`int`
+        Current country rank according to pp.
+
     ranked_score: :class:`int`
         Current ranked score.
 
