@@ -3,6 +3,7 @@ from time import time
 
 from .constants import auth_url, token_url
 from .objects import Scope
+from .exceptions import ScopeException
 
 
 class AuthHandler:
@@ -36,7 +37,7 @@ class AuthHandler:
     """
     def __init__(self, client_id: int, client_secret: str, redirect_uri: str, scope: Scope = Scope.default()):
         if scope == 'lazer':
-            raise NotImplementedError("lazer scope is not available for use at the moment.")
+            raise ScopeException("lazer scope is not available for use at the moment.")
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri

@@ -47,23 +47,22 @@ class Scope:
         'public',
     ]
 
-    def __init__(self, scopes):
-        if type(scopes) == str:
-            scopes = [scopes]
+    def __init__(self, *scopes):
         for scope in scopes:
             if scope not in self.valid_scopes:
                 raise NameError(f"{scope} is not a valid scope. The valid scopes consist of {','.join(self.valid_scopes)}")
         self.scopes = ' '.join(scopes)
+        self.scopes_list = list(scopes)
 
     @classmethod
     def default(cls):
-        return cls(['public', 'identify'])
+        return cls('public')
 
     def __str__(self):
         return ", ".join(self.scopes)
 
     def __contains__(self, item):
-        return item in self.scopes
+        return item in self.scopes_list
 
 
 class BeatmapCompact(DataUnpacker):

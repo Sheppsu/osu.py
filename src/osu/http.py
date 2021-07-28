@@ -31,8 +31,8 @@ class HTTPHandler:
             if data is None:
                 data = {}
             scope_required = path.scope
-            if scope_required.scopes[0] not in self.client.auth.scope:
-                raise ScopeException("You don't have the right scope to be able to do this.")
+            if scope_required.scopes not in self.client.auth.scope:
+                raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
             headers = self.get_headers(**headers)
             response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, stream=stream, params=kwargs)
             self.rate_limit.request_used()
