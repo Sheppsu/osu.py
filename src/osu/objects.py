@@ -1926,9 +1926,6 @@ class User(UserCompact):
 
     **Attributes**
 
-    cover_url: :class:`str`
-        url of profile cover
-
     discord: :class:`str`
 
     has_supported: :class:`bool`
