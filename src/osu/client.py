@@ -1132,7 +1132,7 @@ class Client:
         **Returns**
 
         :class:`list`
-            list containing objects of type Beatmapset
+            list containing objects of type BeatmapPlaycount (for type most_played) or Beatmapset (any other type).
         """
         object_type = Beatmapset
         if type == 'most_played':
