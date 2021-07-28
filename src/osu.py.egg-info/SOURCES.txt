@@ -15,4 +15,5 @@ src/osu/util.py
 src/osu.py.egg-info/PKG-INFO
 src/osu.py.egg-info/SOURCES.txt
 src/osu.py.egg-info/dependency_links.txt
+src/osu.py.egg-info/requires.txt
 src/osu.py.egg-info/top_level.txt

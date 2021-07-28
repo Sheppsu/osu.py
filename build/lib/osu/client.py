@@ -1121,7 +1121,7 @@ class Client:
             Id of the user.
 
         type: :class:`str`
-            Beatmap type.
+            Beatmap type. Can be one of the following - favourite, graveyard, loved, most_played, pending, ranked.
 
         limit: :class:`int`
             Maximum number of results.
@@ -1132,9 +1132,12 @@ class Client:
         **Returns**
 
         :class:`list`
-            list containing objects of type Beatmapset
+            list containing objects of type BeatmapPlaycount (for type most_played) or Beatmapset (any other type).
         """
-        return [Beatmapset(bm) for bm in self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset)]
+        object_type = Beatmapset
+        if type == 'most_played':
+            object_type = BeatmapPlaycount
+        return [object_type(bm) for bm in self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset)]
 
     def get_user_recent_activity(self, user, limit=None, offset=None):
         """

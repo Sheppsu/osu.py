@@ -47,23 +47,22 @@ class Scope:
         'public',
     ]
 
-    def __init__(self, scopes):
-        if type(scopes) == str:
-            scopes = [scopes]
+    def __init__(self, *scopes):
         for scope in scopes:
             if scope not in self.valid_scopes:
                 raise NameError(f"{scope} is not a valid scope. The valid scopes consist of {','.join(self.valid_scopes)}")
         self.scopes = ' '.join(scopes)
+        self.scopes_list = list(scopes)
 
     @classmethod
     def default(cls):
-        return cls(['public', 'identify'])
+        return cls('public')
 
     def __str__(self):
         return ", ".join(self.scopes)
 
     def __contains__(self, item):
-        return item in self.scopes
+        return item in self.scopes_list
 
 
 class BeatmapCompact(DataUnpacker):
@@ -183,6 +182,27 @@ class Beatmap(BeatmapCompact):
     def __init__(self, data):
         super().__init__(data)
         self.ranked = int_to_status[int(data['ranked'])]
+
+
+class BeatmapPlaycount:
+    """
+    Represent the playcount of a beatmap.
+
+    **Attributes**
+
+    beatmap_id: :class:`int`
+
+    beatmap: :class:`BeatmapCompact`
+
+    beatmapset: :class:`BeatmapsetCompact`
+
+    count: :class:`int`
+    """
+    def __init__(self, data):
+        self.beatmap_id = data['beatmap_id']
+        self.beatmap = BeatmapCompact(data['beatmap'])
+        self.beatmapset = BeatmapsetCompact(data['beatmapset'])
+        self.count = data['count']
 
 
 class BeatmapScores:
@@ -929,7 +949,7 @@ class Event(DataUnpacker):
         super().__init__(data)
 
 
-class Achievement:
+class achievement:
     """
     When user obtained an achievement.
 
@@ -941,10 +961,10 @@ class Achievement:
     """
     def __init__(self, data):
         self.achievement = data['achievement']
-        self.user = EventUser(data['user'])
+        self.user = eventUser(data['user'])
 
 
-class BeatmapPlaycount:
+class beatmapPlaycount:
     """
     When a beatmap has been played for certain number of times.
 
@@ -955,11 +975,11 @@ class BeatmapPlaycount:
     count: :class:`int`
     """
     def __init__(self, data):
-        self.beatmap = EventBeatmap(data['beatmap'])
+        self.beatmap = eventBeatmap(data['beatmap'])
         self.count = data['count']
 
 
-class BeatmapsetApprove:
+class beatmapsetApprove:
     """
     When a beatmapset changes state.
 
@@ -975,11 +995,11 @@ class BeatmapsetApprove:
     """
     def __init__(self, data):
         self.approval = data['approval']
-        self.beatmapset = EventBeatmapset(data['beatmapset'])
-        self.user = EventUser(data['user'])
+        self.beatmapset = eventBeatmapset(data['beatmapset'])
+        self.user = eventUser(data['user'])
 
 
-class BeatmapsetDelete:
+class beatmapsetDelete:
     """
     When a beatmapset is deleted.
 
@@ -988,10 +1008,10 @@ class BeatmapsetDelete:
     beatmapset: :class:`EventBeatmapset`
     """
     def __init__(self, data):
-        self.beatmapset = EventBeatmapset(data['beatmapset'])
+        self.beatmapset = eventBeatmapset(data['beatmapset'])
 
 
-class BeatmapsetRevive:
+class beatmapsetRevive:
     """
     When a beatmapset in graveyard state is updated.
 
@@ -1003,11 +1023,11 @@ class BeatmapsetRevive:
         Beatmapset owner.
     """
     def __init__(self, data):
-        self.beatmapset = EventBeatmapset(data['beatmapset'])
-        self.user = EventUser(data['user'])
+        self.beatmapset = eventBeatmapset(data['beatmapset'])
+        self.user = eventUser(data['user'])
 
 
-class BeatmapsetUpdate:
+class beatmapsetUpdate:
     """
     When a beatmapset is updated.
 
@@ -1019,11 +1039,11 @@ class BeatmapsetUpdate:
         Beatmapset owner.
     """
     def __init__(self, data):
-        self.beatmapset = EventBeatmapset(data['beatmapset'])
-        self.user = EventUser(data['user'])
+        self.beatmapset = eventBeatmapset(data['beatmapset'])
+        self.user = eventUser(data['user'])
 
 
-class BeatmapsetUpload:
+class beatmapsetUpload:
     """
     When a new beatmapset is uploaded.
 
@@ -1035,11 +1055,11 @@ class BeatmapsetUpload:
         Beatmapset owner.
     """
     def __init__(self, data):
-        self.beatmapset = EventBeatmapset(data['beatmapset'])
-        self.user = EventUser(data['user'])
+        self.beatmapset = eventBeatmapset(data['beatmapset'])
+        self.user = eventUser(data['user'])
 
 
-class Rank:
+class rank:
     """
     When a user achieves a certain rank on a beatmap.
 
@@ -1059,11 +1079,11 @@ class Rank:
         self.scoreRank = data['scoreRank']
         self.rank = data['rank']
         self.mode = data['mode']
-        self.beatmap = EventBeatmap(data['beatmap'])
-        self.user = EventUser(data['user'])
+        self.beatmap = eventBeatmap(data['beatmap'])
+        self.user = eventUser(data['user'])
 
 
-class RankLost:
+class rankLost:
     """
     When a user loses first place to another user.
 
@@ -1077,11 +1097,11 @@ class RankLost:
     """
     def __init__(self, data):
         self.mode = data['mode']
-        self.beatmap = EventBeatmap(data['beatmap'])
-        self.user = EventUser(data['user'])
+        self.beatmap = eventBeatmap(data['beatmap'])
+        self.user = eventUser(data['user'])
 
 
-class UserSupportAgain:
+class userSupportAgain:
     """
     When a user supports osu_api! for the second and onwards.
 
@@ -1090,10 +1110,10 @@ class UserSupportAgain:
     user: :class:`EventUser`
     """
     def __init__(self, data):
-        self.user = EventUser(data['user'])
+        self.user = eventUser(data['user'])
 
 
-class UserSupportFirst:
+class userSupportFirst:
     """
     When a user becomes a supporter for the first time.
 
@@ -1102,10 +1122,10 @@ class UserSupportFirst:
     user: :class:`EventUser`
     """
     def __init__(self, data):
-        self.user = EventUser(data['user'])
+        self.user = eventUser(data['user'])
 
 
-class UserSupportGift:
+class userSupportGift:
     """
     When a user is gifted a supporter tag by another user.
 
@@ -1115,10 +1135,10 @@ class UserSupportGift:
 
     """
     def __init__(self, data):
-        self.user = EventUser(data['user'])
+        self.user = eventUser(data['user'])
 
 
-class UsernameChange:
+class usernameChange:
     """
     When a user changes their username.
 
@@ -1128,10 +1148,10 @@ class UsernameChange:
         Includes previousUsername.
     """
     def __init__(self, data):
-        self.user = EventUser(data['user'])
+        self.user = eventUser(data['user'])
 
 
-class EventBeatmap:
+class eventBeatmap:
     """
     **Attributes**
 
@@ -1144,7 +1164,7 @@ class EventBeatmap:
         self.url = data['url']
 
 
-class EventBeatmapset:
+class eventBeatmapset:
     """
     **Attributes**
 
@@ -1157,7 +1177,7 @@ class EventBeatmapset:
         self.url = data['url']
 
 
-class EventUser:
+class eventUser:
     """
     **Attributes**
 
@@ -1284,9 +1304,12 @@ class Group:
     short_name: :class:`str`
         Short name of the group for display.
 
-    description: :class:`str`
-
     colour: :class:`str`
+
+    **Optional Attributes**
+
+    description: :class:`Description`
+        A dictionary with keys html and markdown.
     """
     def __init__(self, data):
         self.id = data['id']
@@ -1295,8 +1318,9 @@ class Group:
         self.has_playmodes = data['has_playmodes']
         self.name = data['name']
         self.short_name = data['short_name']
-        self.description = data['description']
         self.colour = data['colour']
+        if 'description' in data:
+            self.description = data['description']
 
 
 class KudosuHistory:
@@ -1862,7 +1886,7 @@ class UserCompact(DataUnpacker):
 
     previous_usernames
 
-    ranked_and_approved_beatmapset_count
+    ranked_beatmapset_count
 
     replays_watched_counts
 
@@ -1878,7 +1902,7 @@ class UserCompact(DataUnpacker):
 
     support_level
 
-    unranked_beatmapset_count
+    pending_beatmapset_count
 
     unread_pm_count
 
@@ -1902,9 +1926,6 @@ class User(UserCompact):
 
     **Attributes**
 
-    cover_url: :class:`str`
-        url of profile cover
-
     discord: :class:`str`
 
     has_supported: :class:`bool`
@@ -1914,9 +1935,9 @@ class User(UserCompact):
 
     join_date: :class:`Timestamp`
 
-    kudosu.available: :class:`int`
+    kudosu['available']: :class:`int`
 
-    kudosu.total: :class:`int`
+    kudosu['total']: :class:`int`
 
     location: :class:`str`
 
@@ -2041,27 +2062,9 @@ class UserMonthlyPlaycount(DataUnpacker):
 
 class UserGroup:
     """
-    Describes the :class:`Group` membership of a :class:`User` - most of the attributes will be the same as the relevant :class:`Group`
+    Describes the :class:`Group` membership of a :class:`User`. It contains all of the attributes of the :class:`Group`, in addition to what is listed here.
 
     **Attributes**
-
-    id: :class:`int`
-        ID (of Group)
-
-    identifier: :class:`str`
-        Unique string to identify the group.
-
-    is_probationary: :class:`bool`
-        Whether members of this group are considered probationary.
-
-    name: :class:`str`
-
-    short_name: :class:`str`
-        Short name of the group for display.
-
-    description: :class:`str`
-
-    colour: :class:`str`
 
     playmodes: :class:`list`
         list containing objects of type :class:`str`. GameModes which the member is responsible for, e.g. in the case of BN/NAT (only present when has_playmodes is set on Group)
@@ -2124,6 +2127,9 @@ class UserStatistics:
     global_rank: :class:`int`
         Current rank according to pp.
 
+    country_rank: :class:`int`
+        Current country rank according to pp.
+
     ranked_score: :class:`int`
         Current ranked score.
 
@@ -2150,6 +2156,7 @@ class UserStatistics:
         self.play_time = data['play_time']
         self.pp = data['pp']
         self.global_rank = data['global_rank']
+        self.country_rank = data['country_rank']
         self.ranked_score = data['ranked_score']
         self.replays_watched_by_others = data['replays_watched_by_others']
         self.total_hits = data['total_hits']
