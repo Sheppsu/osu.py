@@ -14,7 +14,8 @@ So some code that was originally working may break overnight.
 However, I'll do my best to fix any issues I find as quick as possible. 
 You can report issues `here <https://github.com/Sheepposu/osu.py/issues>`_
 or make a `pull requests <https://github.com/Sheepposu/osu.py/pulls>`_
-if you'd like to contribute.
+if you'd like to contribute. General discussion can go `here <https://github.com/Sheepposu/osu.py/discussions>`_
+or you can join the `Discord server <https://discord.gg/Z2J6SSRPcE>`_
 
 Installation
 ------------
