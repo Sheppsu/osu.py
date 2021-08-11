@@ -29,11 +29,12 @@ setuptools.setup(
     version=version,
     author="Sheepposu",
     description="API Wrapper for osu!api v2 written in Python.",
-    long_description=readme,
-    long_description_content_type="text/x-rst",
+    long_description="See the readme on github :)",
+    long_description_content_type="text/plain",
     install_requires=requirements,
     project_urls=project_urls,
     classifiers=classifiers,
     python_requires=">=3.8.0",
-    license="MIT"
+    license="MIT",
+    url="https://github.com/Sheepposu/osu.py",
 )
