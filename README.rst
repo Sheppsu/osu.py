@@ -29,6 +29,9 @@ Installation
     # Windows
     py -3 -m pip install -U osu.py
 
+    # Installing straight from github
+    [python prefix used above] pip install git+https://github.com/Sheepposu/osu.py.git
+
 Example
 -------
 

@@ -34,6 +34,6 @@ setuptools.setup(
     install_requires=requirements,
     project_urls=project_urls,
     classifiers=classifiers,
-    python_requires=">=3.6",
+    python_requires=">=3.8.0",
     license="MIT"
 )
