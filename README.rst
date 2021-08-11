@@ -55,4 +55,5 @@ Example
     user = client.get_user(user_id, mode)
     print(user.username)
 
-To learn more you can go to the documentation `here <https://osupy.readthedocs.io/en/latest/>`_
+You can see more examples `here <https://github.com/Sheepposu/osu.py/tree/main/examples>`_ and
+to learn more you can go to the documentation `here <https://osupy.readthedocs.io/en/latest/>`_
