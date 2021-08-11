@@ -1,6 +1,6 @@
 Metadata-Version: 2.1
 Name: osu.py
-Version: 0.1.13
+Version: 0.1.14
 Summary: Easy to use API wrapper for osu!api written in Python.
 Home-page: https://github.com/Sheepposu/osu.py
 Author: Sheepposu
@@ -14,7 +14,7 @@ Classifier: Programming Language :: Python :: 3
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Operating System :: OS Independent
 Requires-Python: >=3.6
-Description-Content-Type: text/markdown
+Description-Content-Type: text/x-rst
 License-File: LICENSE
 
 osu.py
