@@ -33,14 +33,14 @@ class Scope:
         Allows reading of the user's friend list.
     forum.write
         Allows creating and editing forum posts on a user's behalf.
+    delegate
+        Allows acting as the owner of a client; only available for Client Credentials Grant.
     chat.write
-        Allows sending chat messages on a user's behalf; exclusive to Chat Bots
-    bot
-        Chat Bot and Client Credentials Grant exclusive scope.
+        Allows sending chat messages on a user's behalf.
     """
     valid_scopes = [
-        'bot',
         'chat.write',
+        'delegate',
         'forum.write',
         'friends.read',
         'identify',
