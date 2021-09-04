@@ -2127,13 +2127,19 @@ class UserBadge:
         self.url = data['url']
 
 
-class UserMonthlyPlaycount(DataUnpacker):
-    # TODO: Stop being lazy and figure it out yourself by just printing it.
+class UserMonthlyPlaycount:
     """
-    Not documented
+    **Attributes**
+
+    start_date: :class:`str`
+        year-month-day format
+
+    count: class:`int`
+        playcount
     """
     def __init__(self, data):
-        super().__init__(data)
+        self.start_date = data['start_date']
+        self.count = data['count']
 
 
 class UserGroup:

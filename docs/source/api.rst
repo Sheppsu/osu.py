@@ -56,6 +56,11 @@ Beatmap
 .. autoclass:: osu.Beatmap
    :members:
 
+BeatmapPlaycount
+^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapPlaycount
+   :members:
+
 BeatmapScores
 ^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapScores
@@ -94,6 +99,11 @@ Beatmapset
 BeatmapsetDiscussion
 ^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapsetDiscussion
+   :members:
+
+MessageType
+^^^^^^^^^^^
+.. autoclass:: osu.MessageType
    :members:
 
 CurrentUserAttributes
@@ -146,69 +156,9 @@ Event
 .. autoclass:: osu.Event
    :members:
 
-Achievement
-^^^^^^^^^^^
-.. autoclass:: osu.Achievement
-   :members:
-
-BeatmapPlaycount
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.BeatmapPlaycount
-   :members:
-
-BeatmapsetApprove
-^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.BeatmapsetApprove
-   :members:
-
-BeatmapsetDelete
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.BeatmapsetDelete
-   :members:
-
-BeatmapsetRevive
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.BeatmapsetRevive
-   :members:
-
-BeatmapsetUpdate
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.BeatmapsetUpdate
-   :members:
-
-BeatmapsetUpload
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.BeatmapsetUpload
-   :members:
-
-Rank
-^^^^
-.. autoclass:: osu.Rank
-   :members:
-
-RankLost
-^^^^^^^^
-.. autoclass:: osu.RankLost
-   :members:
-
-UserSupportAgain
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.UserSupportAgain
-   :members:
-
-UserSupportFirst
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.UserSupportFirst
-   :members:
-
-UserSupportGift
-^^^^^^^^^^^^^^^
-.. autoclass:: osu.UserSupportGift
-   :members:
-
-UsernameChange
-^^^^^^^^^^^^^^
-.. autoclass:: osu.UsernameChange
+EventUser
+^^^^^^^^^
+.. autoclass:: osu.EventUser
    :members:
 
 EventBeatmap
@@ -219,11 +169,6 @@ EventBeatmap
 EventBeatmapset
 ^^^^^^^^^^^^^^^
 .. autoclass:: osu.EventBeatmapset
-   :members:
-
-EventUser
-^^^^^^^^^
-.. autoclass:: osu.EventUser
    :members:
 
 ForumPost
