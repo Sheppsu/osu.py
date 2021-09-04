@@ -1,8 +1,9 @@
 from osu import Client, AuthHandler
+import os
 
 
-client_id = 0
-client_secret = "****"
+client_id = int(os.getenv('osu_client_id'))
+client_secret = os.getenv('osu_client_secret')
 redirect_uri = "http://127.0.0.1:8080"
 
 auth = AuthHandler(client_id, client_secret, redirect_uri)

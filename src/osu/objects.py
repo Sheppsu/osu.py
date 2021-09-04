@@ -119,7 +119,7 @@ class BeatmapCompact:
                 self.beatmapset = Beatmapset(data['beatmapset'])
             else:
                 self.beatmapset = BeatmapsetCompact(data['beatmapset'])
-        elif data['beatmapset'] is None:
+        elif 'beatmapset' in data and data['beatmapset'] is None:
             self.beatmapset = None
 
 
@@ -315,9 +315,9 @@ class Score:
         self.replay = data['replay']
 
         if 'beatmap' in data:
-            self.beatmap = data['beatmap']
+            self.beatmap = BeatmapCompact(data['beatmap'])
         if 'beatmapset' in data:
-            self.beatmapset = data['beatmapset']
+            self.beatmapset = BeatmapsetCompact(data['beatmapset'])
         if 'rank_country' in data:
             self.rank_country = data['rank_country']
         if 'rank_global' in data:
@@ -1976,7 +1976,10 @@ class UserCompact:
         if 'account_history' in data:
             self.account_history = [UserAccountHistory(acc_his) for acc_his in data['account_history']]
         if 'active_tournament_banner' in data:
-            self.active_tournament_banner = ProfileBanner(data['active_tournament_banner'])
+            if data['active_tournament_banner'] is None:
+                self.active_tournament_banner = None
+            else:
+                self.active_tournament_banner = ProfileBanner(data['active_tournament_banner'])
         if 'badges' in data:
             self.badges = [UserBadge(badge) for badge in data['badges']]
         if 'groups' in data:
@@ -2179,11 +2182,8 @@ class UserStatistics:
     is_ranked: :class:`bool`
         Is actively ranked
 
-    level.current: :class:`int`
-        Current level.
-
-    level.progress: :class:`int`
-        Progress to next level.
+    level: :class:`dict`
+        Contains keys 'current' (current level) and 'progress' (progress to next level).
 
     maximum_combo: :class:`int`
         Highest maximum combo.
@@ -2220,8 +2220,7 @@ class UserStatistics:
     """
     def __init__(self, data):
         self.grade_counts = data['grade_counts']
-        self.level_current = data['level.current']
-        self.level_progress = data['level.progress']
+        self.level_current = data['level']
         self.hit_accuracy = data['hit_accuracy']
         self.is_ranked = data['is_ranked']
         self.maximum_combo = data['maximum_combo']
@@ -2234,7 +2233,8 @@ class UserStatistics:
         self.replays_watched_by_others = data['replays_watched_by_others']
         self.total_hits = data['total_hits']
         self.total_score = data['total_score']
-        self.user = UserCompact(data['user'])
+        if 'user' in data:
+            self.user = UserCompact(data['user'])
 
 
 class WikiPage:
