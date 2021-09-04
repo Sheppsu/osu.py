@@ -2,6 +2,10 @@ from .constants import int_to_status
 
 
 class DataUnpacker:
+    """
+    I am limiting the use of this class so that IDE's can use autofill features when typing.
+    When using DataUnpacker, the IDE has no idea what the attributes of the class are.
+    """
     def __init__(self, data, exceptions=None, ignore=None):
         if ignore is None:
             ignore = []
@@ -65,7 +69,7 @@ class Scope:
         return item in self.scopes_list
 
 
-class BeatmapCompact(DataUnpacker):
+class BeatmapCompact:
     """
     Represents a beatmap.
 
@@ -96,13 +100,27 @@ class BeatmapCompact(DataUnpacker):
     max_combo: :class:`int`
     """
     def __init__(self, data):
-        exceptions = {'failtimes': (Failtimes, False)}
-        super().__init__(data, exceptions, ('beatmapset',))
+        self.difficulty_rating = data['difficulty_rating']
+        self.id = data['id']
+        self.mode = data['mode']
+        self.status = data['status']
+        self.total_length = data['total_length']
+        self.version = data['version']
+
+        if 'checksum' in data:
+            self.checksum = data['checksum']
+        if 'max_combo' in data:
+            self.max_combo = data['max_combo']
+        if 'failtimes' in data:
+            self.failtimes = Failtimes(data['failtimes'])
+
         if 'beatmapset' in data and data['beatmapset'] is not None:
             if type(self).__name__ == 'Beatmap':
                 self.beatmapset = Beatmapset(data['beatmapset'])
             else:
                 self.beatmapset = BeatmapsetCompact(data['beatmapset'])
+        elif data['beatmapset'] is None:
+            self.beatmapset = None
 
 
 class Failtimes:
@@ -227,7 +245,7 @@ class BeatmapScores:
             self.user_score = BeatmapUserScore(data['user_score'])
 
 
-class Score(DataUnpacker):
+class Score:
     """
     Contains information about a score
 
@@ -280,9 +298,36 @@ class Score(DataUnpacker):
     match
     """
     def __init__(self, data):
-        exceptions = {'statistics': (ScoreStatistics, False), 'beatmap': (BeatmapCompact, False),
-                      'beatmapset': (BeatmapsetCompact, False)}
-        super().__init__(data, exceptions)
+        self.id = data['id']
+        self.best_id = data['best_id']
+        self.user_id = data['user_id']
+        self.accuracy = data['accuracy']
+        self.mods = data['mods']
+        self.score = data['score']
+        self.max_combo = data['max_combo']
+        self.perfect = data['perfect']
+        self.statistics = ScoreStatistics(data['statistics'])
+        self.pp = data['pp']
+        self.rank = data['rank']
+        self.created_at = data['created_at']
+        self.mode = data['mode']
+        self.mode_int = data['mode_int']
+        self.replay = data['replay']
+
+        if 'beatmap' in data:
+            self.beatmap = data['beatmap']
+        if 'beatmapset' in data:
+            self.beatmapset = data['beatmapset']
+        if 'rank_country' in data:
+            self.rank_country = data['rank_country']
+        if 'rank_global' in data:
+            self.rank_global = data['rank_global']
+        if 'weight' in data:
+            self.weight = data['weight']
+        if 'user' in data:
+            self.user = UserCompact(data['user'])  # Doesn't say exactly what type it should be under so I assume UserCompact
+        if 'match' in data:
+            self.match = data['match']
 
 
 class ScoreStatistics:
@@ -325,7 +370,7 @@ class BeatmapUserScore:
         self.score = Score(data['score'])
 
 
-class BeatmapsetCompact(DataUnpacker):
+class BeatmapsetCompact:
     """
     Represents a beatmapset.
 
@@ -382,7 +427,8 @@ class BeatmapsetCompact(DataUnpacker):
 
     language
 
-    nominations
+    nominations: :class:`dict`
+        Contains keys current and required.
 
     ratings
 
@@ -393,8 +439,32 @@ class BeatmapsetCompact(DataUnpacker):
     user
     """
     def __init__(self, data):
-        exceptions = {'covers': (Covers, False), 'beatmaps': (Beatmap, True)}
-        super().__init__(data, exceptions)
+        self.artist = data['artist']
+        self.artist_unicode = data['artist_unicode']
+        self.covers = Covers(data['covers'])
+        self.creator = data['creator']
+        self.favourite_count = data['favourite_count']
+        self.id = data['id']
+        self.nsfw = data['nsfw']
+        self.play_count = data['play_count']
+        self.preview_url = data['preview_url']
+        self.source = data['source']
+        self.status = data['status']
+        self.title = data['title']
+        self.title_unicode = data['title_unicode']
+        self.user_id = data['user_id']
+        self.video = data['video']
+
+        # Documentation lacks information on all the possible attributes :/
+        if 'beatmaps' in data:
+            self.beatmaps = [Beatmap(beatmap) for beatmap in data['beatmaps']]
+        if 'current_user_attributes' in data:
+            self.current_user_attributes = CurrentUserAttributes(['current_user_attributes'], 'BeatmapsetDiscussionPermissions')
+        if 'user' in data:
+            self.user = UserCompact(data['user'])
+        for attr in ("converts", "description", "discussions", "events", "genre", "has_favourited", "language", "nominations", 'ratings', 'recent_favourites', 'related_users'):
+            if attr in data:
+                setattr(self, attr, data[attr])
 
 
 class Covers:
@@ -480,7 +550,7 @@ class Beatmapset(BeatmapsetCompact):
         self.ranked = int_to_status[int(data['ranked'])]
 
 
-class BeatmapsetDiscussion(DataUnpacker):
+class BeatmapsetDiscussion:
     """
     Represents a Beatmapset modding discussion
 
@@ -534,14 +604,58 @@ class BeatmapsetDiscussion(DataUnpacker):
         list containing objects of type :class:`BeatmapsetDiscussionVote`
     """
     def __init__(self, data):
-        exceptions = {'beatmap': (BeatmapCompact, False), 'beatmapset': (BeatmapsetCompact, False),
-                      'current_user_attributes': (CurrentUserAttributes, False), 'starting_post': (BeatmapsetDiscussionPost, False),
-                      'posts': (BeatmapsetDiscussionPost, True), 'votes': (BeatmapsetDiscussionVote, True)}
-        super().__init__(data, exceptions)
+        self.beatmap = BeatmapCompact(data['beatmap'])
+        self.beatmap_id = data['beatmap_id']
+        self.beatmapset = BeatmapsetCompact(data['beatmapset'])
+        self.beatmapset_id = data['beatmapset_id']
+        self.can_be_resolved = data['can_be_resolved']
+        self.can_grant_kudosu = data['can_grant_kudosu']
+        self.created_at = data['created_at']
+        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], 'BeatmapsetDiscussionPermissions')
+        self.deleted_at = data['deleted_at']
+        self.deleted_by_id = data['deleted_by_id']
+        self.id = data['id']
+        self.kudosu_denied = data['kudosu_denied']
+        self.last_post_at = data['last_post_at']
+        self.message_type = MessageType(data['message_type'])
+        self.parent_id = data['parent_id']
+        self.posts = [BeatmapsetDiscussionPost(post) for post in data['posts']]
+        self.resolved = data['resolved']
+        self.starting_post = BeatmapsetDiscussionPost(data['starting_post'])
+        self.timestamp = data['timestamp']
+        self.updated_at = data['updated_at']
+        self.user_id = data['user_id']
+        self.votes = [BeatmapsetDiscussionVote(vote) for vote in data['votes']]
+
+
+class MessageType:
+    """
+    **Attributes**
+
+    hype
+
+    mapper_note
+
+    praise
+
+    problem
+
+    review
+
+    suggestion
+    """
+
+    def __init__(self, data):
+        self.hype = data['hype']
+        self.mapper_note = data['mapper_note']
+        self.praise = data['praise']
+        self.problem = data['problem']
+        self.review = data['review']
+        self.suggestion = data['suggestion']
 
 
 class CurrentUserAttributes:
-    # TODO: Name for type will be changing so look out for that
+    # Note: Name for BeatmapsetDiscussionPermissions will be changing eventually
     """
     Represents user permissions related to an object, which decides what type it is.
     Valid types consist of BeatmapsetDiscussionPermissions
@@ -562,19 +676,39 @@ class CurrentUserAttributes:
 
     vote_score: :class:`bool`
         Current vote given to the discussion.
+
+    **ChatChannelUserAttributes Attributes**
+
+    can_message: :class:`bool`
+        Can send messages to this channel.
+
+    last_read_id: :class:`int`
+        message_id of last message read.
     """
-    def __init__(self, data, type):
-        self.type = type
-        self.data = data
+    def __init__(self, data, attr_type):
+        self.type = attr_type
+        if attr_type == "BeatmapsetDiscussionPermissions":
+            self.can_destroy = data['can_destroy']
+            self.can_reopen = data['can_reopen']
+            self.can_moderate_kudosu = data['can_moderate_kudosu']
+            self.can_resolve = data['can_resolve']
+            self.vote_score = data['vote_score']
+        elif attr_type == "ChatChannelUserAttributes":
+            self.can_message = data['can_message']
+            self.last_read_id = data['last_read_id']
+        else:
+            print(f"WARNING: Unrecognized attr_type \"{attr_type}\"")
+            for k, v in data.items():
+                setattr(self, k, v)
 
 
-class BeatmapsetDiscussionPost(DataUnpacker):
+class BeatmapsetDiscussionPost:
     """
     Represents a post in a :class:`BeatmapsetDiscussion`.
 
     **Attributes**
 
-    beatmapset_discussion_id: :class:`number
+    beatmapset_discussion_id: :class:`int`
 
     created_at: :class:`Timestamp`
 
@@ -595,7 +729,16 @@ class BeatmapsetDiscussionPost(DataUnpacker):
     user_id: :class:`int`
     """
     def __init__(self, data):
-        super().__init__(data)
+        self.beatmapset_discussion_id = data['beatmapset_discussion_id']
+        self.created_at = data['created_at']
+        self.deleted_at = data['deleted_at']
+        self.deleted_by_id = data['deleted_by_id']
+        self.id = data['id']
+        self.last_editor_id = data['last_editor_id']
+        self.message = data['message']
+        self.system = data['system']
+        self.updated_at = data['updated_at']
+        self.user_id = data['user_id']
 
 
 class BeatmapsetDiscussionVote:
@@ -625,13 +768,16 @@ class BeatmapsetDiscussionVote:
         self.user_id = data['user']
 
 
-class ChatChannel(DataUnpacker):
+class ChatChannel:
     """
     Represents an individual chat "channel" in the game.
 
     **Attributes**
 
     channel_id: :class:`int`
+
+    current_user_attributes: :class:`CurrentUserAttributes`
+        only present on some responses
 
     name: :class:`str`
 
@@ -661,9 +807,6 @@ class ChatChannel(DataUnpacker):
     first_message_id: :class:`int`
         message_id of first message (only returned in presence responses)
 
-    last_read_id: :class:`int`
-        message_id of last message read (only returned in presence responses)
-
     last_message_id: :class:`int`
         message_id of last known message (only returned in presence responses)
 
@@ -677,8 +820,17 @@ class ChatChannel(DataUnpacker):
         list of user_id that are in the channel (not included for PUBLIC channels)
     """
     def __init__(self, data):
-        exceptions = {'recent_messages': (ChatMessage, True)}
-        super().__init__(data, exceptions)
+        self.channel_id = data['channel_id']
+        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], "ChatChannelUserAttributes")
+        self.name = data['name']
+        self.description = data['description']
+        self.icon = data['icon']
+        self.type = data['type']
+        self.first_message_id = data['first_message_id']
+        self.last_message_id = data['last_message_id']
+        self.recent_messages = [ChatMessage(message) for message in data['recent_messages']]
+        self.moderated = data['moderated']
+        self.users = data['users']
 
 
 class ChatMessage:
@@ -718,7 +870,7 @@ class ChatMessage:
         self.sender = UserCompact(data['sender'])
 
 
-class Comment(DataUnpacker):
+class Comment:
     """
     Represents a single comment.
 
@@ -730,17 +882,17 @@ class Comment(DataUnpacker):
     commentable_type: :class:`str`
         type of object the comment is attached to
 
-    created_at: :class:`str`
+    created_at: :class:`Timestamp`
         ISO 8601 date
 
-    deleted_at: :class:`str`
+    deleted_at: :class:`Timestamp`
         ISO 8601 date if the comment was deleted; null, otherwise
 
-    edited_at: :class:`str`
+    edited_at: :class:`Timestamp`
         ISO 8601 date if the comment was edited; null, otherwise
 
-    edited_by_id: :class:`
-        int`user id of the user that edited the post; null, otherwise
+    edited_by_id: :class:`int`
+        user id of the user that edited the post; null, otherwise
 
     id: :class:`int`
         the ID of the comment
@@ -760,10 +912,10 @@ class Comment(DataUnpacker):
     pinned: :class:`bool`
         Pin status of the comment
 
-    replies_count: :class:`
-        int`number of replies to the comment
+    replies_count: :class:`int`
+        number of replies to the comment
 
-    updated_at: :class:`str`
+    updated_at: :class:`Timestamp`
         ISO 8601 date
 
     user_id: :class:`int`
@@ -773,10 +925,25 @@ class Comment(DataUnpacker):
         number of votes
     """
     def __init__(self, data):
-        super().__init__(data)
+        self.commentable_id = data['commentable_id']
+        self.commentable_type = data['commentable_type']
+        self.created_at = data['created_at']
+        self.deleted_at = data['deleted_at']
+        self.edited_at = data['edited_at']
+        self.edited_by_id = data['edited_by_id']
+        self.id = data['id']
+        self.legacy_name = data['legacy_name']
+        self.message = data['message']
+        self.message_html = data['message_html']
+        self.parent_id = data['parent_id']
+        self.pinned = data['pinned']
+        self.replies_count = data['replies_count']
+        self.updated_at = data['updated_at']
+        self.user_id = data['user_id']
+        self.votes_count = data['votes_count']
 
 
-class CommentBundle(DataUnpacker):
+class CommentBundle:
     """
     Comments and related data.
 
@@ -788,12 +955,12 @@ class CommentBundle(DataUnpacker):
     comments: :class:`list`
         list containing objects of type :class:`Comment`. List of comments ordered according to sort
 
-    cursor	Cursor
+    cursor:	:class:`Cursor`
 
     has_more: :class:`bool`
         If there are more comments or replies available
 
-    has_more_id: :class:
+    has_more_id: :class:`id`
 
     included_comments: :class:`list`
         list containing objects of type :class:`Comment`. Related comments; e.g. parent comments and nested replies
@@ -823,10 +990,19 @@ class CommentBundle(DataUnpacker):
         list containing objects of type :class:`UserCompact`. list of users related to the comments
     """
     def __init__(self, data):
-        exceptions = {'commentable_meta': (CommentableMeta, True), 'comments': (Comment, True),
-                      'cursor': (Cursor, False), 'included_comments': (Comment, True),
-                      'pinned_comments': (Comment, True), 'users': (UserCompact, True)}
-        super().__init__(data, exceptions)
+        self.commentable_meta = [CommentableMeta(comment) for comment in data['commentable_meta']]
+        self.comments = [Comment(comment) for comment in data['comments']]
+        self.cursor = Cursor(data['cursor'])
+        self.has_more = data['has_more']
+        self.has_more_id = data['has_more_id']
+        self.included_comments = [Comment(comment) for comment in data['included_comments']]
+        self.pinned_comments = [Comment(comment) for comment in data['pinned_comments']]
+        self.sort = data['sort']
+        self.top_level_count = data['top_level_count']
+        self.total = data['total']
+        self.user_follow = data['user_follow']
+        self.user_votes = data['user_votes']
+        self.users = [UserCompact(user) for user in data['users']]
 
 
 class CommentableMeta:
@@ -896,7 +1072,7 @@ class Cursor:
         return info
 
 
-class Event(DataUnpacker):
+class Event:
     """
     The object has different attributes depending on its type. Following are attributes available to all types.
 
@@ -906,278 +1082,98 @@ class Event(DataUnpacker):
 
     id: :class:`int`
 
-    type: :class:`Event.type`
-        All types are listed under 'Event Types'
+    type:
+        All types and the additional attributes they provide are listed under 'Event Types'
 
     **Event Types**
 
-    :class:`Achievement`
+    :class:`achievement`
+        achievement: :class:`Achievement`
+        user: :class:`EventUser`
 
-    :class:`BeatmapPlaycount`
+    :class:`beatmapPlaycount`
+        beatmap: :class:`EventBeatmap`
+        count: :class:`int`
 
-    :class:`BeatmapsetApprove`
+    :class:`beatmapsetApprove`
+        approval: :class:`str`
+        beatmapset: :class:`EventBeatmapset`
+        user: :class:`EventUser`
 
-    :class:`BeatmapsetDelete`
+    :class:`beatmapsetDelete`
+        beatmapset: :class:`EventBeatmapset`
 
-    :class:`BeatmapsetRevive`
+    :class:`beatmapsetRevive`
+        beatmapset: :class:`EventBeatmapset`
+        user: :class:`EventUser`
 
-    :class:`BeatmapsetUpdate`
+    :class:`beatmapsetUpdate`
+        beatmapset: :class:`EventBeatmapset`
+        user: :class:`EventUser`
 
-    :class:`BeatmapsetUpload`
+    :class:`beatmapsetUpload`
+        beatmapset: :class:`EventBeatmapset`
+        user: :class:`EventUser`
 
-    :class:`Rank`
+    :class:`rank`
+        score_rank: :class:`str`
+        rank: :class:`int`
+        mode: :class:`GameMode`
+        beatmap: :class:`EventBeatmap`
+        user: :class:`EventUser`
 
-    :class:`RankLost`
+    :class:`rankLost`
+        mode: :class:`GameMode`
+        beatmap: :class:`EventBeatmap`
+        user: :class:`EventUser`
 
-    :class:`UserSupportAgain`
+    :class:`userSupportAgain`
+        user: :class:`EventUser`
 
-    :class:`UserSupportFirst`
+    :class:`userSupportFirst`
+        user: :class:`EventUser`
 
-    :class:`UserSupportGift`
+    :class:`userSupportGift`
+        user: :class:`EventUser`
 
-    :class:`UsernameChange`
-
-    **Event Objects**
-
-    :class:`EventBeatmap`
-
-    :class:`EventBeatmapset`
-
-    :class:`EventUser`
+    :class:`usernameChange`
+        user: :class:`EventUser`
     """
     def __init__(self, data):
-        super().__init__(data)
-
-
-class achievement:
-    """
-    When user obtained an achievement.
-
-    **Attributes**
-
-    achievement: :class:`str`
-
-    user: :class:`EventUser`
-    """
-    def __init__(self, data):
-        self.achievement = data['achievement']
-        self.user = eventUser(data['user'])
-
-
-class beatmapPlaycount:
-    """
-    When a beatmap has been played for certain number of times.
-
-    **Attributes**
-
-    beatmap: :class:`EventBeatmap`
-
-    count: :class:`int`
-    """
-    def __init__(self, data):
-        self.beatmap = eventBeatmap(data['beatmap'])
-        self.count = data['count']
-
-
-class beatmapsetApprove:
-    """
-    When a beatmapset changes state.
-
-    **Attributes**
-
-    approval: :class:`str`
-        Can be on of the following: ranked, approved, qualified, loved
-
-    beatmapset: :class:`EventBeatmapset`
-
-    user: :class:`EventUser`
-        Beatmapset owner.
-    """
-    def __init__(self, data):
-        self.approval = data['approval']
-        self.beatmapset = eventBeatmapset(data['beatmapset'])
-        self.user = eventUser(data['user'])
-
-
-class beatmapsetDelete:
-    """
-    When a beatmapset is deleted.
-
-    **Attributes**
-
-    beatmapset: :class:`EventBeatmapset`
-    """
-    def __init__(self, data):
-        self.beatmapset = eventBeatmapset(data['beatmapset'])
-
-
-class beatmapsetRevive:
-    """
-    When a beatmapset in graveyard state is updated.
-
-    **Attributes**
-
-    beatmapset: :class:`EventBeatmapset`
-
-    user: :class:`EventUser`
-        Beatmapset owner.
-    """
-    def __init__(self, data):
-        self.beatmapset = eventBeatmapset(data['beatmapset'])
-        self.user = eventUser(data['user'])
-
-
-class beatmapsetUpdate:
-    """
-    When a beatmapset is updated.
-
-    **Attributes**
-
-    beatmapset: :class:`EventBeatmapset`
-
-    user: :class:`EventUser`
-        Beatmapset owner.
-    """
-    def __init__(self, data):
-        self.beatmapset = eventBeatmapset(data['beatmapset'])
-        self.user = eventUser(data['user'])
-
-
-class beatmapsetUpload:
-    """
-    When a new beatmapset is uploaded.
-
-    **Attributes**
-
-    beatmapset: :class:`EventBeatmapset`
-
-    user: :class:`EventUser`
-        Beatmapset owner.
-    """
-    def __init__(self, data):
-        self.beatmapset = eventBeatmapset(data['beatmapset'])
-        self.user = eventUser(data['user'])
-
-
-class rank:
-    """
-    When a user achieves a certain rank on a beatmap.
-
-    **Attributes**
-
-    scoreRank: :class:`str`
-
-    rank: :class:`int`
-
-    mode: :class:`GameMode`
-
-    beatmap: :class:`EventBeatmap`
-
-    user: :class:`EventUser`
-    """
-    def __init__(self, data):
-        self.scoreRank = data['scoreRank']
-        self.rank = data['rank']
-        self.mode = data['mode']
-        self.beatmap = eventBeatmap(data['beatmap'])
-        self.user = eventUser(data['user'])
-
-
-class rankLost:
-    """
-    When a user loses first place to another user.
-
-    **Attributes**
-
-    mode: :class:`GameMode`
-
-    beatmap: :class:`EventBeatmap`
-
-    user: :class:`EventUser`
-    """
-    def __init__(self, data):
-        self.mode = data['mode']
-        self.beatmap = eventBeatmap(data['beatmap'])
-        self.user = eventUser(data['user'])
-
-
-class userSupportAgain:
-    """
-    When a user supports osu_api! for the second and onwards.
-
-    **Attributes**
-
-    user: :class:`EventUser`
-    """
-    def __init__(self, data):
-        self.user = eventUser(data['user'])
-
-
-class userSupportFirst:
-    """
-    When a user becomes a supporter for the first time.
-
-    **Attributes**
-
-    user: :class:`EventUser`
-    """
-    def __init__(self, data):
-        self.user = eventUser(data['user'])
-
-
-class userSupportGift:
-    """
-    When a user is gifted a supporter tag by another user.
-
-    **Attributes**
-
-    user: :class:`EventUser`
-
-    """
-    def __init__(self, data):
-        self.user = eventUser(data['user'])
-
-
-class usernameChange:
-    """
-    When a user changes their username.
-
-    **Attributes**
-
-    user: :class:`EventUser`
-        Includes previousUsername.
-    """
-    def __init__(self, data):
-        self.user = eventUser(data['user'])
-
-
-class eventBeatmap:
-    """
-    **Attributes**
-
-    title: :class:`str`
-
-    url: :class:`str`
-    """
-    def __init__(self, data):
-        self.title = data['title']
-        self.url = data['url']
-
-
-class eventBeatmapset:
-    """
-    **Attributes**
-
-    title: :class:`str`
-
-    url: :class:`str`
-    """
-    def __init__(self, data):
-        self.title = data['title']
-        self.url = data['url']
-
-
-class eventUser:
+        self.created_at = data['created_at']
+        self.id = data['id']
+        self.type = data['type']
+
+        if self.type == 'achievement':
+            self.achievement = data['achievement']
+            self.user = EventUser(data['user'])
+        elif self.type == 'beatmapPlaycount':
+            self.beatmap = EventBeatmap(data['beatmap'])
+            self.count = data['count']
+        elif self.type == 'beatmapsetApprove':
+            self.approval = data['approval']
+            self.beatmapset = EventBeatmapset(data['beatmapset'])
+            self.user = EventUser(data['user'])
+        elif self.type == 'beatmapsetDelete':
+            self.beatmapset = EventBeatmapset(data['beatmapset'])
+        elif self.type in ("beatmapsetRevive", "beatmapsetUpdate", "beatmapsetUpload"):
+            self.beatmapset = EventBeatmapset(data['beatmapset'])
+            self.user = EventUser(data['user'])
+        elif self.type == 'rank':
+            self.score_rank = data['scoreRank']
+            self.rank = data['rank']
+            self.mode = data['mode']
+            self.beatmap = EventBeatmap(data['beatmap'])
+            self.user = EventUser(data['user'])
+        elif self.type == 'rankLost':
+            self.mode = data['mode']
+            self.beatmap = EventBeatmap(data['beatmap'])
+            self.user = EventUser(data['user'])
+        elif self.type in ("userSupportAgain", "userSupportFirst", "userSupportGift", "usernameChange"):
+            self.user = EventUser(data['user'])
+
+
+class EventUser:
     """
     **Attributes**
 
@@ -1185,14 +1181,38 @@ class eventUser:
 
     url: :class:`str`
 
-    previousUsername: :class:`str`
-        Only for :class:`UsernameChange` event.
+    previous_username: :class:`str`
     """
     def __init__(self, data):
         self.username = data['username']
         self.url = data['url']
-        if 'previousUsername' in data:
-            self.previousUsername = data['previousUsername']
+        self.previous_username = data['previous_username']
+
+
+class EventBeatmap:
+    """
+    **Attributes**
+
+    title: :class:`str`
+
+    url: :class:`str`
+    """
+    def __init__(self, data):
+        self.title = data['title']
+        self.url = data['url']
+
+
+class EventBeatmapset:
+    """
+    **Attributes**
+
+    title: :class:`str`
+
+    url: :class:`str`
+    """
+    def __init__(self, data):
+        self.title = data['title']
+        self.url = data['url']
 
 
 class ForumPost:
@@ -1383,7 +1403,7 @@ class Giver:
         self.username = data['username']
 
 
-class MultiplayerScore(DataUnpacker):
+class MultiplayerScore:
     """
     Score data.
 
@@ -1423,9 +1443,20 @@ class MultiplayerScore(DataUnpacker):
     user: :class:`User`
     """
     def __init__(self, data):
-        exceptions = {'scores_around': (MultiplayerScoresAround, False),
-                      'user': (User, False), 'statistics': (ScoreStatistics, False)}
-        super().__init__(data, exceptions)
+        self.id = data['id']
+        self.user_id = data['user_id']
+        self.room_id = data['room_id']
+        self.playlist_item_id = data['playlist_item_id']
+        self.beatmap_id = data['beatmap_id']
+        self.rank = data['rank']
+        self.total_score = data['total_score']
+        self.accuracy = data['accuracy']
+        self.max_combo = data['max_combo']
+        self.mods = data['mods']
+        self.statistics = ScoreStatistics(data['statistics'])
+        self.passed = data['passed']
+        self.position = data['position']
+        self.scores_around = MultiplayerScoresAround(data['scores_around'])
 
 
 class MultiplayerScores:
@@ -1599,10 +1630,10 @@ class Notification:
         if 'source_user_id' in data:
             self.source_user_id = data['source_user_id']
         if 'details' in data:
-            self.details = Details(data['details'])
+            self.details = Details(data['details'], self.name)
 
 
-class Details(DataUnpacker):
+class Details:
     """
     Contains the details for an event
 
@@ -1702,8 +1733,23 @@ class Details(DataUnpacker):
         username: :class:`str`
             Username of source_user_id
     """
-    def __init__(self, data):
-        super().__init__(data)
+    def __init__(self, data, event_name):
+        if event_name in ('beatmapset_discussion_lock', 'beatmapset_discussion_unlock', 'beatmapset_disqualify', 'beatmapset_love', 'beatmapset_nominate', 'beatmapset_qualify', 'beatmapset_remove_from_loved', 'beatmapset_reset_nominations', 'channel_message'):
+            self.cover_url = data['cover_url']
+            self.title = data['title']
+            self.username = data['username']
+        elif event_name == 'beatmapset_discussion_post_new':
+            self.title = data['title']
+            self.cover_url = data['cover_url']
+            self.discussion_id = data['discussion_id']
+            self.post_id = data['post_id']
+            self.beatmap_id = data['beatmap_id']
+            self.username = data['username']
+        elif event_name == 'forum_topic_reply':
+            self.title = data['title']
+            self.cover_url = data['cover_url']
+            self.post_id = data['post_id']
+            self.username = data['username']
 
 
 class Rankings:
@@ -1786,7 +1832,7 @@ class Spotlights:
         self.spotlights = [Spotlight(spotlight) for spotlight in data['spotlights']]
 
 
-class UserCompact(DataUnpacker):
+class UserCompact:
     """
     Mainly used for embedding in certain responses to save additional api lookups.
 
@@ -1913,11 +1959,37 @@ class UserCompact(DataUnpacker):
     rank_history
     """
     def __init__(self, data):
-        exceptions = {'active_tournament_banner': (ProfileBanner, False),
-                      'account_history': (UserAccountHistory, True),
-                      'badges': (UserBadge, True), 'monthly_playcount': (UserMonthlyPlaycount, True),
-                      'groups': (UserGroup, True)}
-        super().__init__(data, exceptions)
+        self.avatar_url = data['avatar_url']
+        self.country_code = data['country_code']
+        self.default_group = data['default_group']
+        self.id = data['id']
+        self.is_active = data['is_active']
+        self.is_bot = data['is_bot']
+        self.is_deleted = data['is_deleted']
+        self.is_online = data['is_online']
+        self.is_supporter = data['is_supporter']
+        self.last_visit = data['last_visit']
+        self.pm_friends_only = data['pm_friends_only']
+        self.profile_colour = data['profile_colour']
+        self.username = data['username']
+
+        if 'account_history' in data:
+            self.account_history = [UserAccountHistory(acc_his) for acc_his in data['account_history']]
+        if 'active_tournament_banner' in data:
+            self.active_tournament_banner = ProfileBanner(data['active_tournament_banner'])
+        if 'badges' in data:
+            self.badges = [UserBadge(badge) for badge in data['badges']]
+        if 'groups' in data:
+            self.groups = [UserGroup(group) for group in data['groups']]
+        if 'monthly_playcounts' in data:
+            self.monthly_playcounts = [UserMonthlyPlaycount(playcount) for playcount in data['monthly_playcounts']]
+        if 'statistics' in data:
+            self.statistics = UserStatistics(data['statistics'])
+        for attr in ('page', 'pending_beatmapset_count', 'previous_usernames', 'rank_history', 'ranked_beatmapset_counts',
+                     'replays_watched_counts', 'scores_best_count', 'scores_first_count', 'scores_recent_count',
+                     'statistics_rulesets', 'support_level', 'unread_pm_count', 'user_achievement', 'user_preferences'):
+            if attr in data:
+                setattr(self, attr, data[attr])
 
 
 class User(UserCompact):
@@ -2053,6 +2125,7 @@ class UserBadge:
 
 
 class UserMonthlyPlaycount(DataUnpacker):
+    # TODO: Stop being lazy and figure it out yourself by just printing it.
     """
     Not documented
     """
