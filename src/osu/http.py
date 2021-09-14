@@ -21,12 +21,8 @@ class HTTPHandler:
         return headers
 
     def __getattr__(self, method):
-        # Handles all request methods
-        if method not in ['get', 'post', 'put', 'delete', 'head', 'patch']:
-            raise AttributeError(f"{method} is neither an attribute of {self.__class__.__name__} or a valid request method.")
         if not self.rate_limit.can_request:
-            wait = Condition()
-            wait.wait_for(self.rate_limit.get_can_request)
+            self.rate_limit.wait()
 
         def func(path, data=None, headers=None, stream=False, **kwargs):
             if headers is None:
@@ -47,27 +43,14 @@ class HTTPHandler:
 
 class RateLimiter:
     def __init__(self):
-        self.offset = time.perf_counter() % 60
-        self.minute_counter = 0
-        self.rate_counter = 0
-
-    def reset(self):
-        if math.floor(self.time/60) != self.minute_counter:
-            self.minute_counter = math.floor(self.time/60)
-            self.rate_counter = 0
+        self.last_request = time.perf_counter()-1
 
     def request_used(self):
-        self.rate_counter += 1
+        self.last_request = time.perf_counter()
 
-    # Function for threading.wait_for
-    def get_can_request(self):
-        return self.can_request
+    def wait(self):
+        time.sleep(1-(time.perf_counter()-self.last_request))
 
     @property
     def can_request(self):
-        self.reset()
-        return self.rate_counter < 60
-
-    @property
-    def time(self):
-        return time.perf_counter()-self.offset
+        return time.perf_counter()-self.last_request>=1
