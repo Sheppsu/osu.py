@@ -86,7 +86,7 @@ class Client:
 
         **Returns**
 
-        :class:`BeatmapUserScore`
+        :class:`BeatmapScores`
         """
         return BeatmapScores(self.http.get(Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
@@ -105,7 +105,7 @@ class Client:
         :class:`Beatmap`
             Includes attributes beatmapset, failtimes, and max_combo
         """
-        return Beatmap(self.http.get(self, Path.beatmap(beatmap)))
+        return Beatmap(self.http.get(Path.beatmap(beatmap)))
 
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id=None, limit=None, page=None, sort=None, user=None, with_deleted=None):
         """
@@ -1236,8 +1236,8 @@ class Client:
         """
         return WikiPage(self.http.get(Path.get_wiki_page(locale, path), page=page))
 
-    def search_beatmapsets(self, filters=None):
-        resp = self.http.get(Path(f'beatmapsets/search', 'public'), **filters)
+    def search_beatmapsets(self, filters=None, page=None):
+        resp = self.http.get(Path(f'beatmapsets/search', 'public'), **filters, page=page)
         return {
             'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
             'cursor': Cursor(resp['cursor']),

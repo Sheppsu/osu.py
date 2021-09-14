@@ -9,7 +9,7 @@ with open('README.rst') as f:
     readme = f.read()
 
 version = ''
-with open('src/osu/__init__.py') as f:
+with open('osu/__init__.py') as f:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
 
 project_urls = {
@@ -25,7 +25,7 @@ classifiers = [
 ]
 
 packages = [
-    'src/osu'
+    'osu'
 ]
 
 setuptools.setup(

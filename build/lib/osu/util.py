@@ -26,4 +26,3 @@ def create_autoclass_for_sphinx():
                     f2.close()
             info = f.readline()
         f.close()
-
