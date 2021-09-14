@@ -5,4 +5,4 @@ from .exceptions import *
 from .notification import NotificationWebsocket
 
 
-__version__ = '0.1.17'
+__version__ = '0.1.18'
