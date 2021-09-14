@@ -25,7 +25,7 @@ classifiers = [
 ]
 
 packages = [
-    'osu'
+    'src/osu'
 ]
 
 setuptools.setup(
