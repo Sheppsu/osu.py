@@ -21,6 +21,9 @@ class HTTPHandler:
         return headers
 
     def __getattr__(self, method):
+        # Handles all request methods
+        if method not in ['get', 'post', 'put', 'delete', 'head', 'patch']:
+            raise AttributeError(f"{method} is neither an attribute of {self.__class__.__name__} or a valid request method.")
         if not self.rate_limit.can_request:
             wait = Condition()
             wait.wait_for(self.rate_limit.get_can_request)
