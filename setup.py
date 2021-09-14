@@ -24,9 +24,14 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 
+packages = [
+    'osu'
+]
+
 setuptools.setup(
     name="osu.py",
     version=version,
+    packages=packages,
     author="Sheepposu",
     description="API Wrapper for osu!api v2 written in Python.",
     long_description="See the readme on github :)",
