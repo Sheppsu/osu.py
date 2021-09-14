@@ -1047,6 +1047,9 @@ class Cursor:
 
     more_results: :class:`bool`
         Variable telling whether or not there are more results available.
+
+    pagination_info: :class:`str`
+        Formats the cursor data into a usable string.
     """
     def __init__(self, data):
         if not data:
