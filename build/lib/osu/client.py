@@ -138,7 +138,7 @@ class Client:
             {
             beatmapsets: :class:`BeatmapsetCompact`,
 
-            cursor: :class:`Cursor`,
+            cursor: :class:`dict`,
 
             posts: [ :class:`BeatmapsetDiscussionPost`, ...],
 
@@ -150,7 +150,7 @@ class Client:
                              limit=limit, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'beatmapsets': BeatmapsetCompact(resp['beatmapsets']),
-            'cursor': Cursor(resp['cursor']),
+            'cursor': resp['cursor'],
             'posts': [BeatmapsetDiscussionPost(post) for post in resp['posts']],
             'users': UserCompact(resp['users'])
         }
@@ -190,7 +190,7 @@ class Client:
 
         :class:`dict`
             {
-            cursor: :class:`Cursor`,
+            cursor: :class:`dict`,
 
             discussions: :class:`BeatmapsetDiscussions`,
 
@@ -203,7 +203,7 @@ class Client:
         resp = self.http.get(Path.beatmapset_discussion_votes(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, receiver=receiver, score=score, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
-            'cursor': Cursor(resp['cursor']),
+            'cursor': resp['cursor'],
             'discussions': BeatmapsetDiscussion(resp['discussions']),
             'users': UserCompact(resp['users']),
             'votes': [BeatmapsetDiscussionVote(vote) for vote in resp['votes']]
@@ -253,7 +253,7 @@ class Client:
             beatmaps: [ :class:`Beatmap`, ...],
                 List of beatmaps associated with the discussions returned.
 
-            cursor: :class:`Cursor`,
+            cursor: :class:`dict`,
 
             discussions: [ :class:`BeatmapsetDiscussion`, ...],
                 List of discussions according to sort order.
@@ -274,7 +274,7 @@ class Client:
                              only_unresolved=only_unresolved, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'beatmaps': [Beatmap(beatmap) for beatmap in resp['beatmaps']],
-            'cursor': Cursor(resp['cursor']),
+            'cursor': resp['cursor'],
             'discussions': [BeatmapsetDiscussion(disc) for disc in resp['discussions']],
             'included_discussions': [BeatmapsetDiscussion(disc) for disc in resp['included_discussions']],
             'reviews_config.max_blocks': resp['reviews_config'],
@@ -518,7 +518,7 @@ class Client:
         commentable_id: :class:`int`
             The id of the resource to get comments for.
 
-        cursor: :class:`Cursor`
+        cursor: :class:`dict`
             Pagination option. See CommentSort for detail. The format follows Cursor except it's not currently included in the response.
 
         parent_id: :class:`int`
@@ -533,7 +533,7 @@ class Client:
             pinned_comments is only included when commentable_type and commentable_id are specified.
         """
         return CommentBundle(self.http.get(Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
-                                           **cursor.pagination_info if cursor else {}, parent_id=parent_id, sort=sort))
+                                           **cursor if cursor else {}, parent_id=parent_id, sort=sort))
 
     def post_comment(self, commentable_id=None, commentable_type=None, message=None, parent_id=None):
         """
@@ -745,7 +745,7 @@ class Client:
             Id of the topic.
 
         cursor: :class:`Cursor`
-            Cursor for pagination.
+            To be used to fetch the next page of results
 
         sort: :class:`str`
             Post sorting option. Valid values are id_asc (default) and id_desc.
@@ -763,7 +763,7 @@ class Client:
 
         :class:`dict`
             {
-            cursor: :class:`Cursor`,
+            cursor: :class:`dict`,
 
             search: :class:`dict`,
 
@@ -773,9 +773,9 @@ class Client:
 
             }
         """
-        resp = self.http.get(Path.get_topic_and_posts(topic), **cursor.pagination_info if cursor else {}, sort=sort, limit=limit, start=start, end=end)
+        resp = self.http.get(Path.get_topic_and_posts(topic), **cursor if cursor else {}, sort=sort, limit=limit, start=start, end=end)
         return {
-            'cursor': Cursor(resp['cursor']),
+            'cursor': resp['cursor'],
             'search': resp['search'],
             'posts': [ForumPost(post) for post in resp['posts']],
             'topic': ForumTopic(resp['topic'])
@@ -903,15 +903,14 @@ class Client:
         sort: :class:`str`
             MultiplayerScoresSort parameter.
 
-        cursor: :class:`MultiplayerScoresCursor`
-            MultiplayerScoresCursor parameter.
+        cursor: :class:`dict`
 
         **Returns**
 
         Return type is undocumented
         """
         # Doesn't say response type
-        return self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor.pagination_info if cursor else {})
+        return self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {})
 
     def get_score(self, room, playlist, score):
         """
@@ -1003,8 +1002,7 @@ class Client:
         country: :class:`str`
             Filter ranking by country code. Only available for type of performance.
 
-        cursor: :class:`Cursor`
-            Cursor
+        cursor: :class:`dict`
 
         filter: :class:`str`
             Either all (default) or friends.
@@ -1019,7 +1017,7 @@ class Client:
 
         :class:`Rankings`
         """
-        return Rankings(self.http.get(Path.get_ranking(mode, type), country=country, **cursor.pagination_info if cursor else {}, filter=filter,
+        return Rankings(self.http.get(Path.get_ranking(mode, type), country=country, **cursor if cursor else {}, filter=filter,
                                       spotlight=spotlight, variant=variant))
 
     def get_spotlights(self):
@@ -1236,7 +1234,7 @@ class Client:
         resp = self.http.get(Path(f'beatmapsets/search', 'public'), page=page, **filters)
         return {
             'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
-            'cursor': Cursor(resp['cursor']),
+            'cursor': resp['cursor'],
             'search': resp['search'],
             'recommended_difficulty': resp['recommended_difficulty'],
             'error': resp['error'],
