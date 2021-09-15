@@ -1232,7 +1232,6 @@ class Client:
 
     def search_beatmapsets(self, filters=None, page=None):
         resp = self.http.get(Path(f'beatmapsets/search', 'public'), page=page, **filters)
-        print(resp)
         return {
             'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
             'cursor': resp['cursor'],
