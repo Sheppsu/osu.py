@@ -970,7 +970,8 @@ class CommentBundle:
     comments: :class:`list`
         list containing objects of type :class:`Comment`. List of comments ordered according to sort
 
-    cursor:	:class:`Cursor`
+    cursor:	:class:`dict`
+        To be used to query the next page
 
     has_more: :class:`bool`
         If there are more comments or replies available
@@ -1007,7 +1008,7 @@ class CommentBundle:
     def __init__(self, data):
         self.commentable_meta = [CommentableMeta(comment) for comment in data['commentable_meta']]
         self.comments = [Comment(comment) for comment in data['comments']]
-        self.cursor = Cursor(data['cursor'])
+        self.cursor = data['cursor']
         self.has_more = data['has_more']
         self.has_more_id = data['has_more_id']
         self.included_comments = [Comment(comment) for comment in data['included_comments']]
@@ -1043,51 +1044,6 @@ class CommentableMeta:
         self.title = data['title']
         self.type = data['type']
         self.url = data['url']
-
-
-class Cursor:
-    """
-    A structure included in some API responses containing the parameters to get the next set of results.
-    The values of the cursor should be provided to next request of the same endpoint to get the next set of results.
-    If there are no more results available, a cursor with a value of null is returned: "cursor": null.
-    Note that sort option should also be specified for it to work.
-
-    **Attributes**
-
-    _id: :class:`int`
-
-    _score: :class:`float`
-
-    page: :class:`int`
-
-    more_results: :class:`bool`
-        Variable telling whether or not there are more results available.
-
-    pagination_info: :class:`str`
-        Formats the cursor data into a usable string.
-    """
-    def __init__(self, data):
-        if not data:
-            self.more_results = False
-            return
-
-        self.more_results = True
-        if '_id' in data:
-            self._id = data['_id']
-            if '_score' in data:
-                self._score = data['_score']
-        else:
-            self.page = data['page']
-
-    @property
-    def pagination_info(self):
-        if hasattr(self, 'page'):
-            info = {'page': self.page}
-        else:
-            info = {'_id': self._id}
-            if hasattr(self, '_score'):
-                info.update({'_score': self._score})
-        return info
 
 
 class Event:
@@ -1481,14 +1437,11 @@ class MultiplayerScores:
     """
     An object which contains scores and related data for fetching next page of the result.
     To fetch the next page, make request to scores index (Client.get_scores) with relevant
-    room and playlist, use the data in attribute next_page_query to fill in the 3 other optional queries.
+    room and playlist, use the data in attribute params and cursor to fill in the 3 other optional queries.
 
     **Attributes**
 
-    next_page_query: :class:`dict`
-        Combines the data of cursor and params for easy use in querying the next page.
-
-    cursor: :class:`MultiplayerScoresCursor`
+    cursor: :class:`dict`
         To be used to fetch the next page.
 
     params: :class:`dict`
@@ -1504,21 +1457,13 @@ class MultiplayerScores:
         Index only. Score of the accessing user if exists.
     """
     def __init__(self, data):
-        self.cursor = MultiplayerScoresCursor(data['cursor'])
+        self.cursor = data['cursor']
         self.params = data['params']
         self.scores = [MultiplayerScore(score) for score in data['scores']]
         if 'total' in data:
             self.total = data['total']
         if 'user_score' in data:
             self.user_score = MultiplayerScore(data['user_score'])
-        self.next_page_query = "&".join([f'{key}={value}' for key, value in {
-            'sort': self.params['sort'],
-            'limit': self.params['limit'],
-            'cursor': {
-                'score_id': self.cursor.score_id,
-                'total_score': self.cursor.total_score
-            }
-        }])
 
 
 class MultiplayerScoresAround:
@@ -1532,27 +1477,6 @@ class MultiplayerScoresAround:
     def __init__(self, data):
         self.higher = MultiplayerScores(data['higher'])
         self.lower = MultiplayerScores(data['lower'])
-
-
-class MultiplayerScoresCursor:
-    """
-    An object which contains pointer for fetching further results of a request. It depends on the sort option.
-
-    **Attributes**
-
-    score_id: :class:`int`
-        Last score id of current result (score_asc, score_desc).
-
-    total_score: :class:`int`
-        Last score's total score of current result (score_asc, score_desc).
-    """
-    def __init__(self, data):
-        self.score_id = data['score_id']
-        self.total_score = data['total_score']
-
-    @property
-    def pagination_info(self):
-        return f"cursor[score_id]={self.score_id}&cursor[total_score]={self.total_score}"
 
 
 class Notification:
@@ -1777,8 +1701,8 @@ class Rankings:
     beatmapsets: :class:`list`
         list containing objects of type :class:`Beatmapset`. The list of beatmaps in the requested spotlight for the given mode; only available if type is charts
 
-    cursor: :class:`Cursor`
-        A cursor
+    cursor: :class:`dict`
+        To be used to query the next page
 
     ranking: :class:`list`
         list containing objects of type :class:`UserStatistics`. Score details ordered by rank in descending order.
@@ -1790,7 +1714,7 @@ class Rankings:
         An approximate count of ranks available
     """
     def __init__(self, data):
-        self.cursor = Cursor(data['cursor'])
+        self.cursor = data['cursor']
         self.ranking = UserStatistics(data['ranking'])
         self.total = data['total']
         if 'spotlight' in data:
