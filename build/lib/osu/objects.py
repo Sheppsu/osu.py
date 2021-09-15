@@ -527,9 +527,6 @@ class Beatmapset(BeatmapsetCompact):
 
     legacy_thread_url: :class:`str`
 
-    nominations: :class:`dict`
-        Contains two items, current: :class:`int` and required: :class:`int`
-
     ranked: :class:`str`
         Possible values consist of graveyard, wip, pending, ranked, approved, qualified, loved
 
@@ -542,11 +539,29 @@ class Beatmapset(BeatmapsetCompact):
     submitted_date: :class:`Timestamp`
 
     tags: :class:`str`
-
-    has_favourited
     """
+
+    # nominations: :class:`dict`
+    #         Contains two items, current: :class:`int` and required: :class:`int`
     def __init__(self, data):
         super().__init__(data)
+        self.availability = data['availability']
+        self.bpm = data['bpm']
+        self.can_be_hyped = data['can_be_hyped']
+        self.creator = data['creator']
+        self.discussion_enabled = data['discussion_enabled']
+        self.discussion_locked = data['discussion_locked']
+        self.hype = data['hype']
+        self.is_scoreable = data['is_scoreable']
+        self.last_updated = data['last_updated']
+        self.legacy_thread_url = data['legacy_thread_url']
+        # self.nominations = data['nominations']  # docs says this should be there but it's not ?
+        self.ranked = data['ranked']
+        self.ranked_date = data['ranked_date']
+        self.source = data['source']
+        self.storyboard = data['storyboard']
+        self.tags = data['tags']
+        # self.has_favourited = data['has_favourited']  # should be included but it's not ?
         self.ranked = int_to_status[int(data['ranked'])]
 
 
