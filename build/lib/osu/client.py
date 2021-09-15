@@ -532,9 +532,8 @@ class Client:
         :class:`CommentBundle`
             pinned_comments is only included when commentable_type and commentable_id are specified.
         """
-        cursor = cursor.pagination_info
         return CommentBundle(self.http.get(Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
-                                           cursor=cursor, parent_id=parent_id, sort=sort))
+                                           **cursor.pagination_info if cursor else {}, parent_id=parent_id, sort=sort))
 
     def post_comment(self, commentable_id=None, commentable_type=None, message=None, parent_id=None):
         """
@@ -774,8 +773,7 @@ class Client:
 
             }
         """
-        cursor = cursor.pagination_info
-        resp = self.http.get(Path.get_topic_and_posts(topic), cursor=cursor, sort=sort, limit=limit, start=start, end=end)
+        resp = self.http.get(Path.get_topic_and_posts(topic), **cursor.pagination_info if cursor else {}, sort=sort, limit=limit, start=start, end=end)
         return {
             'cursor': Cursor(resp['cursor']),
             'search': resp['search'],
@@ -913,8 +911,7 @@ class Client:
         Return type is undocumented
         """
         # Doesn't say response type
-        cursor = cursor.pagination_info
-        return self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, cursor=cursor)
+        return self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor.pagination_info if cursor else {})
 
     def get_score(self, room, playlist, score):
         """
@@ -1022,8 +1019,7 @@ class Client:
 
         :class:`Rankings`
         """
-        cursor = cursor.pagination_info
-        return Rankings(self.http.get(Path.get_ranking(mode, type), country=country, cursor=cursor, filter=filter,
+        return Rankings(self.http.get(Path.get_ranking(mode, type), country=country, **cursor.pagination_info if cursor else {}, filter=filter,
                                       spotlight=spotlight, variant=variant))
 
     def get_spotlights(self):
@@ -1237,7 +1233,7 @@ class Client:
         return WikiPage(self.http.get(Path.get_wiki_page(locale, path), page=page))
 
     def search_beatmapsets(self, filters=None, page=None):
-        resp = self.http.get(Path(f'beatmapsets/search', 'public'), **filters, page=page)
+        resp = self.http.get(Path(f'beatmapsets/search', 'public'), page=page, **filters)
         return {
             'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
             'cursor': Cursor(resp['cursor']),
