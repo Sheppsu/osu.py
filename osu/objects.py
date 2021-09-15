@@ -1082,11 +1082,11 @@ class Cursor:
     @property
     def pagination_info(self):
         if hasattr(self, 'page'):
-            info = f'cursor[page]={self.page}'
+            info = {'page': self.page}
         else:
-            info = f'cursor[_id]={self._id}'
+            info = {'_id': self._id}
             if hasattr(self, '_score'):
-                info += f'&cursor[_score]={self._score}'
+                info.update({'_score': self._score})
         return info
 
 
