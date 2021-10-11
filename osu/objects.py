@@ -53,6 +53,8 @@ class Scope:
 
     def __init__(self, *scopes):
         for scope in scopes:
+            if scope == "lazer":
+                raise NotImplementedError("Currently, anything involving the lazer scope is not usable with neither Authorization Code or Client Credentials")
             if scope not in self.valid_scopes:
                 raise NameError(f"{scope} is not a valid scope. The valid scopes consist of {','.join(self.valid_scopes)}")
         self.scopes = ' '.join(scopes)
