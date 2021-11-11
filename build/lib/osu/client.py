@@ -934,7 +934,7 @@ class Client:
         # Doesn't say response type
         return self.http.get(Path.get_score(room, playlist, score))
 
-    def get_notification(self, max_id=None):
+    def get_notifications(self, max_id=None):
         """
         This endpoint returns a list of the user's unread notifications. Sorted descending by id with limit of 50.
         Requires OAuth and scope lazer

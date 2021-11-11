@@ -2,10 +2,8 @@ from .constants import int_to_status
 
 
 class DataUnpacker:
-    """
-    I am limiting the use of this class so that IDE's can use autofill features when typing.
-    When using DataUnpacker, the IDE has no idea what the attributes of the class are.
-    """
+    # I am limiting the use of this class so that IDE's can use autofill features when typing.
+    # When using DataUnpacker, the IDE has no idea what the attributes of the class are.
     def __init__(self, data, exceptions=None, ignore=None):
         if ignore is None:
             ignore = []
@@ -53,8 +51,6 @@ class Scope:
 
     def __init__(self, *scopes):
         for scope in scopes:
-            if scope == "lazer":
-                raise NotImplementedError("Currently, anything involving the lazer scope is not usable with neither Authorization Code or Client Credentials")
             if scope not in self.valid_scopes:
                 raise NameError(f"{scope} is not a valid scope. The valid scopes consist of {','.join(self.valid_scopes)}")
         self.scopes = ' '.join(scopes)
@@ -1717,7 +1713,7 @@ class Rankings:
     """
     def __init__(self, data):
         self.cursor = data['cursor']
-        self.ranking = UserStatistics(data['ranking'])
+        self.ranking = [UserStatistics(ranking) for ranking in data['ranking']]
         self.total = data['total']
         if 'spotlight' in data:
             self.spotlight = Spotlight(data['spotlight'])
@@ -2169,8 +2165,9 @@ class UserStatistics:
         The associated user.
     """
     def __init__(self, data):
+        print(data)
         self.grade_counts = data['grade_counts']
-        self.level_current = data['level']
+        self.level = data['level']
         self.hit_accuracy = data['hit_accuracy']
         self.is_ranked = data['is_ranked']
         self.maximum_combo = data['maximum_combo']
