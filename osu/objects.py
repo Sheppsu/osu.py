@@ -200,6 +200,24 @@ class Beatmap(BeatmapCompact):
     def __init__(self, data):
         super().__init__(data)
         self.ranked = int_to_status[int(data['ranked'])]
+        self.url = data['url']
+        self.playcount = data['playcount']
+        self.passcount = data['passcount']
+        self.mode_int = data['mode_int']
+        self.last_updated = data['last_updated']
+        self.is_scoreable = data['is_scoreable']
+        self.hit_length = data['hit_length']
+        self.drain = data['drain']
+        self.deleted_at = data['deleted_at']
+        self.cs = data['cs']
+        self.count_spinners = data['count_spinners']
+        self.count_sliders = data['count_sliders']
+        self.count_circles = data['count_circles']
+        self.convert = data['convert']
+        self.bpm = data['bpm']
+        self.beatmapset_id = data['beatmapset_id']
+        self.ar = data['ar']
+        self.accuracy = data['accuracy']
 
 
 class BeatmapPlaycount:
