@@ -1865,23 +1865,7 @@ class UserCompact:
     groups: :class:`list`
         list containing objects of type :class:`UserGroup`
 
-    is_admin: :class:`bool`
-
-    is_bng: :class:`bool`
-
-    is_full_bn: :class:`bool`
-
-    is_gmt: :class:`bool`
-
-    is_limited_bn: :class:`bool`
-
-    is_moderator: :class:`bool`
-
-    is_nat: :class:`bool`
-
     is_restricted: :class:`bool`
-
-    is_silenced: :class:`bool`
 
     loved_beatmapset_count: :class:`int`
 
@@ -1950,7 +1934,10 @@ class UserCompact:
             self.statistics = UserStatistics(data['statistics'])
         for attr in ('page', 'pending_beatmapset_count', 'previous_usernames', 'rank_history', 'ranked_beatmapset_counts',
                      'replays_watched_counts', 'scores_best_count', 'scores_first_count', 'scores_recent_count',
-                     'statistics_rulesets', 'support_level', 'unread_pm_count', 'user_achievement', 'user_preferences'):
+                     'statistics_rulesets', 'support_level', 'unread_pm_count', 'user_achievement', 'user_preferences',
+                     'beatmap_playcounts_count', 'blocks', 'country', 'cover', 'favourite_beatmapset_count', 'follower_count',
+                     'friends', 'graveyard_beatmapset_count', 'is_restricted', 'loved_beatmapset_count') + \
+                    ('discord', 'interests', 'location', 'occupation', 'title', 'title_url', 'twitter', 'website'):  # Second tuple is optional User attributes.
             if attr in data:
                 setattr(self, attr, data[attr])
 
@@ -1970,9 +1957,8 @@ class User(UserCompact):
 
     join_date: :class:`Timestamp`
 
-    kudosu['available']: :class:`int`
-
-    kudosu['total']: :class:`int`
+    kudosu: :class:`dict`
+        a map containing keys total and available
 
     location: :class:`str`
 
@@ -2006,29 +1992,34 @@ class User(UserCompact):
     country: :class:`dict`
         Contains keys 'code' and 'name', each representing the country.
 
+    cover_url: :class:`str`
+        url of profile cover. Deprecated, use cover['url'] instead.
+
     cover: :class:`dict`
-        Contains keys 'custom_url', 'url', and 'id'.
+        map containing keys custom_url, url, and id.
 
-    is_admin: :class:`bool`
-
-    is_bng: :class:`bool`
-
-    is_full_bn: :class:`bool`
-
-    is_gmt: :class:`bool`
-
-    is_limited_bn: :class:`bool`
-
-    is_moderator: :class:`bool`
-
-    is_nat: :class:`bool`
+    country: :class:`dict`
+        map containing keys code and name.
 
     is_restricted: :class:`bool`
+        present only if this is the currently authenticated user
 
-    is_silenced: :class:`bool`
+    **Possible Attributes**
+
+    All possible attributes come from :class:`UserCompact`
     """
     def __init__(self, data):
         super().__init__(data)
+        self.has_supported = data['has_supported']
+        self.join_date = data['join_date']
+        self.kudosu = data['kudosu']
+        self.location = data['location']
+        self.max_blocks = data['max_blocks']
+        self.max_friends = data['max_friends']
+        self.playmode = data['playmode']
+        self.playstyle = data['playstyle']
+        self.post_count = data['post_count']
+        self.profile_order = data['profile_order']
 
 
 class ProfileBanner:
@@ -2045,6 +2036,21 @@ class ProfileBanner:
         self.id = data['id']
         self.tournament_id = data['tournament_id']
         self.image = data['image']
+
+
+class UserSilence:
+    """
+    **Attributes**
+
+    id: :class:`int`
+        id of this object.
+
+    user_id: :class:`int`
+        id of the User that was silenced
+    """
+    def __init__(self, data):
+        self.id = data['id']
+        self.user_id = data['user_id']
 
 
 class UserAccountHistory:
