@@ -349,7 +349,8 @@ class Client:
         resp = self.http.post(Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
         return {
             'presence': [ChatChannel(channel) for channel in resp['presence']],
-            'messages': [ChatMessage(msg) for msg in resp['messages']]
+            'messages': [ChatMessage(msg) for msg in resp['messages']],
+            'silences': [UserSilence(silence) for silence in resp['silences']]
         }
 
     def get_channel_messages(self, channel_id, limit=None, since=None, until=None):
