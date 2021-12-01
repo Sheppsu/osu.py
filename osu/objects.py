@@ -1950,7 +1950,8 @@ class UserCompact:
             self.statistics = UserStatistics(data['statistics'])
         for attr in ('page', 'pending_beatmapset_count', 'previous_usernames', 'rank_history', 'ranked_beatmapset_counts',
                      'replays_watched_counts', 'scores_best_count', 'scores_first_count', 'scores_recent_count',
-                     'statistics_rulesets', 'support_level', 'unread_pm_count', 'user_achievement', 'user_preferences'):
+                     'statistics_rulesets', 'support_level', 'unread_pm_count', 'user_achievement', 'user_preferences',
+                     'discord'):
             if attr in data:
                 setattr(self, attr, data[attr])
 
