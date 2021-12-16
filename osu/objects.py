@@ -1,6 +1,7 @@
 from .constants import int_to_status
 
 
+# Unused class, left here just in case ig.
 class DataUnpacker:
     """
     I am limiting the use of this class so that IDE's can use autofill features when typing.
@@ -99,6 +100,11 @@ class BeatmapCompact:
 
     max_combo: :class:`int`
     """
+    __slots__ = (
+        "difficulty_rating", "id", "mode", "status", "total_length", "version",
+        "checksum", "max_combo", "failtimes", "beatmapset"
+    )
+
     def __init__(self, data):
         self.difficulty_rating = data['difficulty_rating']
         self.id = data['id']
@@ -107,19 +113,16 @@ class BeatmapCompact:
         self.total_length = data['total_length']
         self.version = data['version']
 
-        if 'checksum' in data:
-            self.checksum = data['checksum']
-        if 'max_combo' in data:
-            self.max_combo = data['max_combo']
-        if 'failtimes' in data:
-            self.failtimes = Failtimes(data['failtimes'])
+        for attribute in ("checksum", "max_combo"):
+            setattr(self, attribute, data[attribute] if attribute in data else None)
+        self.failtimes = Failtimes(data['failtimes']) if "failtimes" in data else None
 
         if 'beatmapset' in data and data['beatmapset'] is not None:
             if type(self).__name__ == 'Beatmap':
                 self.beatmapset = Beatmapset(data['beatmapset'])
             else:
                 self.beatmapset = BeatmapsetCompact(data['beatmapset'])
-        elif 'beatmapset' in data and data['beatmapset'] is None:
+        else:
             self.beatmapset = None
 
 
@@ -197,6 +200,13 @@ class Beatmap(BeatmapCompact):
 
     url: :class:`str`
     """
+    __slots__ = (
+        "ranked", "url", "playcount", "passcount", "mode_int", "last_updated",
+        "is_scoreable", "hit_length", "drain", "deleted_at", "cs", "count_spinners",
+        "count_circles", "count_sliders", "convert", "bpm", "beatmapset_id", "ar",
+        "accuracy"
+    )
+
     def __init__(self, data):
         super().__init__(data)
         self.ranked = int_to_status[int(data['ranked'])]
@@ -234,6 +244,10 @@ class BeatmapPlaycount:
 
     count: :class:`int`
     """
+    __slots__ = (
+        "beatmap_id", "beatmap", "beatmapset", "count"
+    )
+
     def __init__(self, data):
         self.beatmap_id = data['beatmap_id']
         self.beatmap = BeatmapCompact(data['beatmap'])
@@ -255,12 +269,18 @@ class BeatmapScores:
     user_score: :class:`BeatmapUserScore`
         The score of the current user. This is not returned if the current user does not have a score.
     """
+    __slots__ = (
+        "scores", "user_score"
+    )
+
     def __init__(self, data):
         self.scores = [Score(score) for score in data['scores']]
         if 'userScore' in data:
             self.user_score = BeatmapUserScore(data['userScore'])
         elif 'user_score' in data:  # Is being renamed to this in the future
             self.user_score = BeatmapUserScore(data['user_score'])
+        else:
+            self.user_score = None
 
 
 class Score:
@@ -315,6 +335,12 @@ class Score:
 
     match
     """
+    __slots__ =  (
+        "id", "best_id", "user_id", "accuracy", "mods", "score", "max_combo", "perfect", "statistics",
+        "pp", "rank", "created_at", "mode", "mode_int", "replay", "beatmap", "beatmapset", "rank_country",
+        "rank_global", "weight", "user", "match"
+    )
+
     def __init__(self, data):
         self.id = data['id']
         self.best_id = data['best_id']
@@ -332,20 +358,12 @@ class Score:
         self.mode_int = data['mode_int']
         self.replay = data['replay']
 
-        if 'beatmap' in data:
-            self.beatmap = BeatmapCompact(data['beatmap'])
-        if 'beatmapset' in data:
-            self.beatmapset = BeatmapsetCompact(data['beatmapset'])
-        if 'rank_country' in data:
-            self.rank_country = data['rank_country']
-        if 'rank_global' in data:
-            self.rank_global = data['rank_global']
-        if 'weight' in data:
-            self.weight = data['weight']
-        if 'user' in data:
-            self.user = UserCompact(data['user'])  # Doesn't say exactly what type it should be under so I assume UserCompact
-        if 'match' in data:
-            self.match = data['match']
+        # Optional Attributes
+        self.beatmap = BeatmapCompact(data['beatmap']) if 'beatmap' in data else None
+        self.beatmapset = BeatmapsetCompact(data['beatmapset']) if 'beatmapset' in data else None
+        self.user = UserCompact(data['user']) if 'user' in data else None  # Doesn't say exactly what type it should be under so I assume UserCompact
+        for attribute in ('rank_country', 'rank_global', 'weight', 'match'):
+            setattr(self, attribute, data[attribute] if attribute in data else None)
 
 
 class ScoreStatistics:
@@ -358,18 +376,22 @@ class ScoreStatistics:
 
     count_300: :class:`int`
 
-    count_genki: :class:`int`
+    count_geki: :class:`int`
 
     count_katu: :class:`int`
 
     count_miss: :class:`int`
     """
+    __slots__ = (
+        "count_50", "count_100", "count_300", "count_geki",
+        "count_katu", "count_miss"
+    )
+
     def __init__(self, data):
         self.count_50 = data['count_50']
         self.count_100 = data['count_100']
         self.count_300 = data['count_300']
-        if 'count_genki' in data:
-            self.count_genki = data['count_genki']
+        self.count_geki = data['count_geki']
         self.count_katu = data['count_katu']
         self.count_miss = data['count_miss']
 
@@ -383,6 +405,10 @@ class BeatmapUserScore:
     score: :class:`Score`
         The details of the score.
     """
+    __slots__ = (
+        "position", "score"
+    )
+
     def __init__(self, data):
         self.position = data['position']
         self.score = Score(data['score'])
@@ -456,6 +482,14 @@ class BeatmapsetCompact:
 
     user
     """
+    __slots__ = (
+        "artist", "artist_unicode", "covers", "creator", "favourite_count", "id", "nsfw",
+        "play_count", "preview_url", "source", "status", "title", "title_unicode", "user_id",
+        "video", "beatmaps", "current_user_attributes", "user", "converts", "description", "discussions",
+        "events", "genre", "has_favourited", "language", "nominations", "ratings", "recent_favourites",
+        "related_users"
+    )
+
     def __init__(self, data):
         self.artist = data['artist']
         self.artist_unicode = data['artist_unicode']
@@ -474,15 +508,11 @@ class BeatmapsetCompact:
         self.video = data['video']
 
         # Documentation lacks information on all the possible attributes :/
-        if 'beatmaps' in data:
-            self.beatmaps = [Beatmap(beatmap) for beatmap in data['beatmaps']]
-        if 'current_user_attributes' in data:
-            self.current_user_attributes = CurrentUserAttributes(['current_user_attributes'], 'BeatmapsetDiscussionPermissions')
-        if 'user' in data:
-            self.user = UserCompact(data['user'])
+        self.beatmaps = [Beatmap(beatmap) for beatmap in data['beatmaps']] if 'beatmaps' in data else None
+        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], 'BeatmapsetDiscussionPermissions') if 'current_user_attributes' in data else None
+        self.user = UserCompact(data['user']) if 'user' in data else None
         for attr in ("converts", "description", "discussions", "events", "genre", "has_favourited", "language", "nominations", 'ratings', 'recent_favourites', 'related_users'):
-            if attr in data:
-                setattr(self, attr, data[attr])
+            setattr(self, attr, data[attr] if attr in data else None)
 
 
 class Covers:
@@ -505,6 +535,10 @@ class Covers:
 
     slimcover_2x: :class:`str`
     """
+    __slots__ = (
+        "cover", "cover_2x", "card", "card_2x", "list", "list_2x", "slimcover", "slimcover_2x"
+    )
+
     def __init__(self, data):
         self.cover = data['cover']
         self.cover_2x = data['cover@2x']
@@ -558,6 +592,11 @@ class Beatmapset(BeatmapsetCompact):
 
     tags: :class:`str`
     """
+    __slots__ = (
+        "availability", "bpm", "can_be_hyped", "creator", "discussion_enabled", "discussion_locked",
+        "hype", "is_scoreable", "last_updated", "legacy_thread_url", "ranked", "ranked_date", "storyboard",
+        "tags", "has_favourited", "nominations"
+    )
 
     # nominations: :class:`dict`
     #         Contains two items, current: :class:`int` and required: :class:`int`
@@ -581,6 +620,8 @@ class Beatmapset(BeatmapsetCompact):
         self.tags = data['tags']
         # self.has_favourited = data['has_favourited']  # should be included but it's not ?
         self.ranked = int_to_status[int(data['ranked'])]
+        for attr in ("has_favourited", "nominations"):
+            setattr(self, attr, data[attr] if attr in data else None)
 
 
 class BeatmapsetDiscussion:
@@ -636,6 +677,13 @@ class BeatmapsetDiscussion:
     votes: :class:`list`
         list containing objects of type :class:`BeatmapsetDiscussionVote`
     """
+    __slots__ = (
+        "beatmap", "beatmap_id", "beatmapset", "beatmapset_id", "can_be_resolved", "can_grant_kudosu",
+        "created_at", "current_user_attributes", "deleted_at", "deleted_by_id", "id", "kudosu_denied",
+        "last_post_at", "message_type", "parent_id", "posts", "resolved", "starting_post", "timestamp",
+        "updated_at", "user_id", "votes"
+    )
+
     def __init__(self, data):
         self.beatmap = BeatmapCompact(data['beatmap'])
         self.beatmap_id = data['beatmap_id']
@@ -677,6 +725,9 @@ class MessageType:
 
     suggestion
     """
+    __slots__ = (
+        "hype", "mapper_note", "praise", "problem", "review", "suggestion"
+    )
 
     def __init__(self, data):
         self.hype = data['hype']
@@ -715,6 +766,9 @@ class CurrentUserAttributes:
     can_message: :class:`bool`
         Can send messages to this channel.
 
+    can_message_error: :class:`str`
+        Reason messages cannot be sent to this channel
+
     last_read_id: :class:`int`
         message_id of last message read.
     """
@@ -728,9 +782,10 @@ class CurrentUserAttributes:
             self.vote_score = data['vote_score']
         elif attr_type == "ChatChannelUserAttributes":
             self.can_message = data['can_message']
+            self.can_message_error = data['can_message_erorr']
             self.last_read_id = data['last_read_id']
         else:
-            print(f"WARNING: Unrecognized attr_type \"{attr_type}\"")
+            print(f"WARNING: Unrecognized attr_type for CurrentUserAttributes \"{attr_type}\"")
             for k, v in data.items():
                 setattr(self, k, v)
 
@@ -761,6 +816,11 @@ class BeatmapsetDiscussionPost:
 
     user_id: :class:`int`
     """
+    __slots__ = (
+        "beatmapset_discussion_id", "created_at", "deleted_at", "deleted_by_id", "id",
+        "last_editor_id", "message", "system", "updated_at", "user_id"
+    )
+
     def __init__(self, data):
         self.beatmapset_discussion_id = data['beatmapset_discussion_id']
         self.created_at = data['created_at']
@@ -792,6 +852,11 @@ class BeatmapsetDiscussionVote:
 
     user_id: :class:`int`
     """
+    __slots__ = (
+        "beatmapset_discussion_id", "created_at", "id", "score",
+        "updated_at", "user_id"
+    )
+
     def __init__(self, data):
         self.beatmapset_discussion_id = data['beatmapset_discussion_id']
         self.created_at = data['created_at']
@@ -852,6 +917,12 @@ class ChatChannel:
     users: :class:`list`
         list of user_id that are in the channel (not included for PUBLIC channels)
     """
+    __slots__ = (
+        "channel_id", "current_user_attributes", "name", "description", "icon",
+        "type", "first_message_id", "last_message_id", "recent_messages",
+        "moderated", "users"
+    )
+
     def __init__(self, data):
         self.channel_id = data['channel_id']
         self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], "ChatChannelUserAttributes")
@@ -893,6 +964,11 @@ class ChatMessage:
     sender: :class:`UserCompact`
         embeded :class:`UserCompact` object to save additional api lookups
     """
+    __slots__ = (
+        "message_id", "sender_id", "channel_id", "timestamp", "content", "is_action",
+        "sender"
+    )
+
     def __init__(self, data):
         self.message_id = data['message_id']
         self.sender_id = data['sender_id']
@@ -957,6 +1033,12 @@ class Comment:
     votes_count: :class:`int`
         number of votes
     """
+    __slots__ = (
+        "commentable_id", "commentable_type", "created_at", "deleted_at", "edited_at", "edited_by_id",
+        "id", "legacy_name", "message", "message_html", "parent_id", "pinned", "replies_count", "updated_at",
+        "user_id", "votes_count"
+    )
+
     def __init__(self, data):
         self.commentable_id = data['commentable_id']
         self.commentable_type = data['commentable_type']
@@ -1023,6 +1105,11 @@ class CommentBundle:
     users: :class:`list`
         list containing objects of type :class:`UserCompact`. list of users related to the comments
     """
+    __slots__ = (
+        "commentable_meta", "comments", "cursor", "has_more", "has_more_id", "included_comments",
+        "pinned_comments", "sort", "top_level_count", "total", "user_follow", "user_votes", "users"
+    )
+
     def __init__(self, data):
         self.commentable_meta = [CommentableMeta(comment) for comment in data['commentable_meta']]
         self.comments = [Comment(comment) for comment in data['comments']]
@@ -1057,6 +1144,10 @@ class CommentableMeta:
     url: :class:`str`
         url of the object
     """
+    __slots__ = (
+        "id", "title", "type", "url"
+    )
+
     def __init__(self, data):
         self.id = data['id']
         self.title = data['title']
@@ -1175,6 +1266,10 @@ class EventUser:
 
     previous_username: :class:`str`
     """
+    __slots__ = (
+        "username", "url", "previous_username"
+    )
+
     def __init__(self, data):
         self.username = data['username']
         self.url = data['url']
@@ -1189,6 +1284,10 @@ class EventBeatmap:
 
     url: :class:`str`
     """
+    __slots__ = (
+        "title", "url"
+    )
+
     def __init__(self, data):
         self.title = data['title']
         self.url = data['url']
@@ -1202,6 +1301,10 @@ class EventBeatmapset:
 
     url: :class:`str`
     """
+    __slots__ = (
+        "title", "url"
+    )
+
     def __init__(self, data):
         self.title = data['title']
         self.url = data['url']
@@ -1229,12 +1332,14 @@ class ForumPost:
 
     **Possible Attributes**
 
-    body.html: :class:`str`
-        Post content in HTML format.
-
-    body.raw: :class:`str`
-        content in BBCode format.
+    body: :class:`dict`
+        dictionary containing keys html and raw. html: Post content in HTML format. raw: content in BBCode format.
     """
+    __slots__ = (
+        "created_at", "deleted_at", "edited_at", "edited_by_id", "forum_id",
+        "id", "topic_id", "user_id", "body"
+    )
+
     def __init__(self, data):
         self.created_at = data['created_at']
         self.deleted_at = data['deleted_at']
@@ -1244,10 +1349,7 @@ class ForumPost:
         self.id = data['id']
         self.topic_id = data['topic_id']
         self.user_id = data['user_id']
-        if 'body.html' in data:
-            self.body_html = data['body.html']
-        if 'body.raw' in data:
-            self.body_raw = data['body.raw']
+        self.body = data['body'] if 'body' in data else None
 
 
 class ForumTopic:
@@ -1279,6 +1381,11 @@ class ForumTopic:
 
     user_id: :class:`int`
     """
+    __slots__ = (
+        "created_at", "deleted_at", "first_post_id", "forum_id", "id", "is_locked",
+        "last_post_id", "post_count", "title", "type", "updated_at", "user_id"
+    )
+
     def __init__(self, data):
         self.created_at = data['created_at']
         self.deleted_at = data['deleted_at']
@@ -1323,6 +1430,11 @@ class Group:
     description: :class:`Description`
         A dictionary with keys html and markdown.
     """
+    __slots__ = (
+        "id", "identifier", "is_probationary", "has_playmodes", "name", "short_name",
+        "colour", "description"
+    )
+
     def __init__(self, data):
         self.id = data['id']
         self.identifier = data['identifier']
@@ -1331,8 +1443,7 @@ class Group:
         self.name = data['name']
         self.short_name = data['short_name']
         self.colour = data['colour']
-        if 'description' in data:
-            self.description = data['description']
+        self.description = data['description'] if 'description' in data else None
 
 
 class KudosuHistory:
@@ -1357,6 +1468,10 @@ class KudosuHistory:
     post: :class:`Post`
         Simple detail of the object for display.
     """
+    __slots__ = (
+        "id", "action", "amount", "model", "created_at", "giver", "post"
+    )
+
     def __init__(self, data):
         self.id = data['id']
         self.action = data['action']
@@ -1377,6 +1492,10 @@ class Post:
     title: :class:`str`
         Title of the object. It'll be "[deleted beatmap]" for deleted beatmaps.
     """
+    __slots__ = (
+        "url", "title"
+    )
+
     def __init__(self, data):
         self.url = data['url']
         self.title = data['title']
@@ -1390,6 +1509,10 @@ class Giver:
 
     username: :class:`str`
     """
+    __slots__ = (
+        "url", "username"
+    )
+
     def __init__(self, data):
         self.url = data['url']
         self.username = data['username']
@@ -1434,6 +1557,12 @@ class MultiplayerScore:
 
     user: :class:`User`
     """
+    __slots__ = (
+        "id", "user_id", "room_id", "playlist_item_id", "beatmap_id", "rank",
+        "total_score", "accuracy", "max_combo", "mods", "statistics", "passed",
+        "position", "scores_around"
+    )
+
     def __init__(self, data):
         self.id = data['id']
         self.user_id = data['user_id']
@@ -1474,14 +1603,17 @@ class MultiplayerScores:
     user_score: :class:`MultiplayerScore`
         Index only. Score of the accessing user if exists.
     """
+    __slots__ = (
+        "cursor", "params", "scores", "total", "user_score"
+    )
+
     def __init__(self, data):
         self.cursor = data['cursor']
         self.params = data['params']
         self.scores = [MultiplayerScore(score) for score in data['scores']]
-        if 'total' in data:
-            self.total = data['total']
-        if 'user_score' in data:
-            self.user_score = MultiplayerScore(data['user_score'])
+
+        self.total = data['total'] if 'total' in data else None
+        self.user_score = MultiplayerScore(data['user_score']) if 'user_score' in data else None
 
 
 class MultiplayerScoresAround:
@@ -1492,6 +1624,10 @@ class MultiplayerScoresAround:
 
     lower: :class:`MultiplayerScores`
     """
+    __slots__ = (
+        "higher", "lower"
+    )
+
     def __init__(self, data):
         self.higher = MultiplayerScores(data['higher'])
         self.lower = MultiplayerScores(data['lower'])
@@ -1580,6 +1716,11 @@ class Notification:
         object_type: forum_topic
         source_user_id: User who posted message
     """
+    __slots__ = (
+        "id", "name", "created_at", "object_type", "object_id", "is_read",
+        "source_user_id", "details"
+    )
+
     def __init__(self, data):
         self.id = data['id']
         self.name = data['name']
@@ -1587,10 +1728,9 @@ class Notification:
         self.object_type = data['object_type']
         self.object_id = data['object_id']
         self.is_read = data['is_read']
-        if 'source_user_id' in data:
-            self.source_user_id = data['source_user_id']
-        if 'details' in data:
-            self.details = Details(data['details'], self.name)
+
+        self.source_user_id = data['source_user_id'] if 'source_user_id' in data else None
+        self.details = Details(data['details'], self.name) if 'details' in data else None
 
 
 class Details:
@@ -1731,14 +1871,17 @@ class Rankings:
     total: :class:`int`
         An approximate count of ranks available
     """
+    __slots__ = (
+        "beatmapsets", "cursor", "ranking", "spotlight", "total"
+    )
+
     def __init__(self, data):
         self.cursor = data['cursor']
         self.ranking = [UserStatistics(ranking) for ranking in data['ranking']]
         self.total = data['total']
-        if 'spotlight' in data:
-            self.spotlight = Spotlight(data['spotlight'])
-        if 'beatmapsets' in data:
-            self.beatmapsets = [Beatmapset(beatmapset) for beatmapset in data['beatmapsets']]
+
+        self.spotlight = Spotlight(data['spotlight']) if 'spotlight' in data else None
+        self.beatmapsets = [Beatmapset(beatmapset) for beatmapset in data['beatmapsets']] if 'beatmapsets' in data else None
 
 
 class Spotlight:
@@ -1765,20 +1908,24 @@ class Spotlight:
     type: :class:`str`
         The type of spotlight.
 
-    **Possible Attributes((
+    **Possible Attributes**
 
     participant_count: :class:`int`
         The number of users participating in this spotlight. This is only shown when viewing a single spotlight.
     """
+    __slots__ = (
+        "end_date", "id", "mode_specific", "name", "start_date", "type", "participant_count"
+    )
+
     def __init__(self, data):
         self.end_date = data['end_date']
         self.id = data['id']
         self.mode_specific = data['mode_specific']
         self.name = data['name']
-        self.start_data = data['start_date']
+        self.start_date = data['start_date']
         self.type = data['type']
-        if 'participant_count' in data:
-            self.participant_count = data['participant_count']
+
+        self.participant_count = data['participant_count'] if 'participant_count' in data else None
 
 
 class Spotlights:
@@ -1788,6 +1935,10 @@ class Spotlights:
     spotlights: :class:`list`
         list containing objects of type :class:`Spotlight`
     """
+    __slots__ = (
+        "spotlights",
+    )
+
     def __init__(self, data):
         self.spotlights = [Spotlight(spotlight) for spotlight in data['spotlights']]
 
@@ -1917,29 +2068,21 @@ class UserCompact:
         self.profile_colour = data['profile_colour']
         self.username = data['username']
 
-        if 'account_history' in data:
-            self.account_history = [UserAccountHistory(acc_his) for acc_his in data['account_history']]
         if 'active_tournament_banner' in data:
-            if data['active_tournament_banner'] is None:
-                self.active_tournament_banner = None
-            else:
-                self.active_tournament_banner = ProfileBanner(data['active_tournament_banner'])
-        if 'badges' in data:
-            self.badges = [UserBadge(badge) for badge in data['badges']]
-        if 'groups' in data:
-            self.groups = [UserGroup(group) for group in data['groups']]
-        if 'monthly_playcounts' in data:
-            self.monthly_playcounts = [UserMonthlyPlaycount(playcount) for playcount in data['monthly_playcounts']]
-        if 'statistics' in data:
-            self.statistics = UserStatistics(data['statistics'])
+            self.active_tournament_banner = ProfileBanner(data['active_tournament_banner']) if data['active_tournament_banner'] is not None else None
+        else:
+            self.active_tournament_banner = None
+        self.account_history = [UserAccountHistory(acc_his) for acc_his in data['account_history']] if 'account_history' in data else None
+        self.badges = [UserBadge(badge) for badge in data['badges']] if 'badges' in data else None
+        self.groups = [UserGroup(group) for group in data['groups']] if 'groups' in data else None
+        self.monthly_playcounts = [UserMonthlyPlaycount(playcount) for playcount in data['monthly_playcounts']] if 'monthly_playcounts' in data else None
+        self.statistics = UserStatistics(data['statistics']) if 'statistics' in data else None
         for attr in ('page', 'pending_beatmapset_count', 'previous_usernames', 'rank_history', 'ranked_beatmapset_counts',
                      'replays_watched_counts', 'scores_best_count', 'scores_first_count', 'scores_recent_count',
                      'statistics_rulesets', 'support_level', 'unread_pm_count', 'user_achievement', 'user_preferences',
                      'beatmap_playcounts_count', 'blocks', 'country', 'cover', 'favourite_beatmapset_count', 'follower_count',
-                     'friends', 'graveyard_beatmapset_count', 'is_restricted', 'loved_beatmapset_count') + \
-                    ('discord', 'interests', 'location', 'occupation', 'title', 'title_url', 'twitter', 'website'):  # Second tuple is optional User attributes.
-            if attr in data:
-                setattr(self, attr, data[attr])
+                     'friends', 'graveyard_beatmapset_count', 'is_restricted', 'loved_beatmapset_count'):
+            setattr(self, attr, data[attr] if attr in data else None)
 
 
 class User(UserCompact):
@@ -2008,6 +2151,12 @@ class User(UserCompact):
 
     All possible attributes come from :class:`UserCompact`
     """
+    __slots__ = (
+        "has_supported", "join_date", "kudosu", "location", "max_blocks", "max_friends", "playmode",
+        "playstyle", "post_count", "profile_order", "discord", "interests", "location", "occupation", "title",
+        "title_url", "twitter", "website"
+    )
+
     def __init__(self, data):
         super().__init__(data)
         self.has_supported = data['has_supported']
@@ -2020,6 +2169,14 @@ class User(UserCompact):
         self.playstyle = data['playstyle']
         self.post_count = data['post_count']
         self.profile_order = data['profile_order']
+        self.discord = data['discord']
+        self.interests = data['interests']
+        self.location = data['location']
+        self.occupation = data['occupation']
+        self.title = data['title']
+        self.title_url = data['title_url']
+        self.twitter = data['twitter']
+        self.website = data['website']
 
 
 class ProfileBanner:
@@ -2032,6 +2189,10 @@ class ProfileBanner:
 
     image: :class:`str`
     """
+    __slots__ = (
+        "id", "tournament_id", "image"
+    )
+
     def __init__(self, data):
         self.id = data['id']
         self.tournament_id = data['tournament_id']
@@ -2048,6 +2209,10 @@ class UserSilence:
     user_id: :class:`int`
         id of the User that was silenced
     """
+    __slots__ = (
+        "id", "user_id"
+    )
+
     def __init__(self, data):
         self.id = data['id']
         self.user_id = data['user_id']
@@ -2067,6 +2232,10 @@ class UserAccountHistory:
     length: :class:`int`
         In seconds.
     """
+    __slots__ = (
+        "id", "type", "timestamp", "length"
+    )
+
     def __init__(self, data):
         self.id = data['id']
         self.type = data['type']
@@ -2086,6 +2255,10 @@ class UserBadge:
 
     url: :class:`str`
     """
+    __slots__ = (
+        "awarded_at", "description", "image_url", "url"
+    )
+
     def __init__(self, data):
         self.awarded_at = data['awarded_at']
         self.description = data['description']
@@ -2103,6 +2276,10 @@ class UserMonthlyPlaycount:
     count: class:`int`
         playcount
     """
+    __slots__ = (
+        "start_date", "count"
+    )
+
     def __init__(self, data):
         self.start_date = data['start_date']
         self.count = data['count']
@@ -2117,10 +2294,13 @@ class UserGroup(Group):
     playmodes: :class:`list`
         list containing objects of type :class:`str`. GameModes associated with this membership (null if has_playmodes is unset).
     """
+    __slots__ = (
+        "playmodes",
+    )
+
     def __init__(self, data):
         super().__init__(data)
-        if 'playmodes' in data:
-            self.playmodes = data['playmodes']
+        self.playmodes = data['playmodes']
 
 
 class UserStatistics:
@@ -2184,6 +2364,12 @@ class UserStatistics:
     user: :class:`UserCompact`
         The associated user.
     """
+    __slots__ = (
+        "grade_counts", "level", "hit_accuracy", "is_ranked", "maximum_combo",
+        "play_count", "play_time", "pp", "global_rank", "ranked_score",
+        "replays_watched_by_others", "total_hits", "total_score", "user"
+    )
+
     def __init__(self, data):
         self.grade_counts = data['grade_counts']
         self.level = data['level']
@@ -2198,8 +2384,8 @@ class UserStatistics:
         self.replays_watched_by_others = data['replays_watched_by_others']
         self.total_hits = data['total_hits']
         self.total_score = data['total_score']
-        if 'user' in data:
-            self.user = UserCompact(data['user'])
+
+        self.user = UserCompact(data['user']) if 'user' in data else None
 
 
 class WikiPage:
@@ -2229,6 +2415,11 @@ class WikiPage:
     title: :class:`str`
         The article's title.
     """
+    __slots__ = (
+        "layout", "locale", "markdown", "path", "subtitle",
+        "tags", "title"
+    )
+
     def __init__(self, data):
         self.layout = data['layout']
         self.locale = data['locale']
