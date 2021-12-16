@@ -6,21 +6,34 @@ class Client:
     """
     Main object for interacting with osu!api
 
-    **Attributes**
+    **Init Parameters**
 
     auth: :class:`AuthHandler`
         The AuthHandler object passed in when initiating the Client object
 
     http: :class:`HTTPHandler`
         Object which handles making requests, rate limiting, and http errors.
+
+    limit_per_second: :class:`float`
+        This defines the amount of time that should pass before you can make another request. Peppy has requested that
+        only 60 requests per minute maximum be made to the api. If you lower the limit, please be
+        knowledgeable of the Terms of Use and be careful about making too many requests. The Terms of Use are
+        stated in the osu!api v2 documentation as follows:
+
+        Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :). this section may expand as necessary.
+
+        Current rate limit is set at an insanely high 1200 requests per minute, with burst capability of up to 200 beyond that.
+        If you require more, you probably fall into the above category of abuse. If you are doing more than 60 requests a minute,
+        you should probably give peppy a yell.
     """
-    def __init__(self, auth):
+    def __init__(self, auth, limit_per_second=1):
         self.auth = auth
-        self.http = HTTPHandler(auth, self)
+        self.http = HTTPHandler(auth, self, limit_per_second)
 
     def lookup_beatmap(self, checksum=None, filename=None, id=None):
         """
         Returns beatmap.
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -43,6 +56,7 @@ class Client:
     def get_user_beatmap_score(self, beatmap, user, mode=None, mods=None):
         """
         Returns a :class:`User`'s score on a Beatmap
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -68,6 +82,7 @@ class Client:
     def get_beatmap_scores(self, beatmap, mode=None, mods=None, type=None):
         """
         Returns the top scores for a beatmap
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -93,6 +108,7 @@ class Client:
     def get_beatmap(self, beatmap):
         """
         Gets beatmap data for the specified beatmap ID.
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -110,6 +126,7 @@ class Client:
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id=None, limit=None, page=None, sort=None, user=None, with_deleted=None):
         """
         Returns the posts of the beatmapset discussions
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -158,6 +175,7 @@ class Client:
     def get_beatmapset_discussion_votes(self, beatmapset_discussion_id=None, limit=None, page=None, receiver=None, score=None, sort=None, user=None, with_deleted=None):
         """
         Returns the votes given to beatmapset discussions
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -212,6 +230,7 @@ class Client:
     def get_beatmapset_discussions(self, beatmap_id=None, beatmapset_id=None, beatmapset_status=None, limit=None, message_type=None, only_unresolved=None, page=None, sort=None, user=None, with_deleted=None):
         """
         Returns a list of beatmapset discussions
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -284,6 +303,7 @@ class Client:
     def create_new_pm(self, target_id, message, is_action):
         """
         This endpoint allows you to create a new PM channel.
+
         Requires OAuth and scope chat.write
 
         **Parameters**
@@ -323,6 +343,7 @@ class Client:
     def get_updates(self, since, channel_id=None, limit=None):
         """
         This endpoint returns new messages since the given message_id along with updated channel 'presence' data.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -356,6 +377,7 @@ class Client:
     def get_channel_messages(self, channel_id, limit=None, since=None, until=None):
         """
         This endpoint returns the chat messages for a specific channel.
+
         Requires OAuth and scope lazer
 
         **Parameter**
@@ -382,6 +404,7 @@ class Client:
     def send_message_to_channel(self, channel_id, message, is_action):
         """
         This endpoint returns the chat messages for a specific channel.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -405,6 +428,7 @@ class Client:
     def join_channel(self, channel, user):
         """
         This endpoint allows you to join a public channel.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -422,6 +446,7 @@ class Client:
     def leave_channel(self, channel, user):
         """
         This endpoint allows you to leave a public channel.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -435,6 +460,7 @@ class Client:
     def mark_channel_as_read(self, channel, message, channel_id, message_id):
         """
         This endpoint marks the channel as having being read up to the given message_id.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -450,6 +476,7 @@ class Client:
     def get_channel_list(self):
         """
         This endpoint returns a list of all joinable public channels.
+
         Requires OAuth and scope lazer
 
         **Returns**
@@ -462,6 +489,7 @@ class Client:
     def create_channel(self, type, target_id=None):
         """
         This endpoint creates a new channel if doesn't exist and joins it. Currently only for rejoining existing PM channels which the user has left.
+
         Requires OAuth and scope lazer
 
         **Parameter**
@@ -484,6 +512,7 @@ class Client:
     def get_channel(self, channel):
         """
         Gets details of a chat channel.
+
         Requires OAuth and scope lazer
 
         **Parameter**
@@ -509,6 +538,7 @@ class Client:
     def get_comments(self, commentable_type=None, commentable_id=None, cursor=None, parent_id=None, sort=None):
         """
         Returns a list comments and their replies up to 2 levels deep.
+
         Does not require OAuth
 
         **Parameter**
@@ -539,6 +569,7 @@ class Client:
     def post_comment(self, commentable_id=None, commentable_type=None, message=None, parent_id=None):
         """
         Posts a new comment to a comment thread.
+
         Requires OAuth and scope lazer
 
         **Parameter**
@@ -570,6 +601,7 @@ class Client:
     def get_comment(self, comment):
         """
         Gets a comment and its replies up to 2 levels deep.
+
         Does not require OAuth
 
         **Parameters**
@@ -586,6 +618,7 @@ class Client:
     def edit_comment(self, comment, message=None):
         """
         Edit an existing comment.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -606,6 +639,7 @@ class Client:
     def delete_comment(self, comment):
         """
         Deletes the specified comment.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -622,6 +656,7 @@ class Client:
     def add_comment_vote(self, comment):
         """
         Upvotes a comment.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -638,6 +673,7 @@ class Client:
     def remove_comment_vote(self, comment):
         """
         Un-upvotes a comment.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -654,6 +690,7 @@ class Client:
     def reply_topic(self, topic, body):
         """
         Create a post replying to the specified topic.
+
         Requires OAuth and scope forum.write
 
         **Parameters**
@@ -675,6 +712,7 @@ class Client:
     def create_topic(self, body, forum_id, title, with_poll=None, hide_results=None, length_days=None, max_options=None, poll_options=None, poll_title=None, vote_change=None):
         """
         Create a new topic.
+
         Requires OAuth and scope forum.write
 
         **Parameters**
@@ -738,6 +776,7 @@ class Client:
     def get_topic_and_posts(self, topic, cursor=None, sort=None, limit=None, start=None, end=None):
         """
         Get topic and its posts.
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -785,6 +824,7 @@ class Client:
     def edit_topic(self, topic, topic_title):
         """
         Edit topic. Only title can be edited through this endpoint.
+
         Requires OAuth and scope forum.write
 
         **Parameters**
@@ -805,6 +845,7 @@ class Client:
     def edit_post(self, post, body):
         """
         Edit specified forum post.
+
         Requires OAuth and scope forum.write
 
         post: :class:`int`
@@ -823,6 +864,7 @@ class Client:
     def search(self, mode=None, query=None, page=None):
         """
         Searches users and wiki pages.
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -938,6 +980,7 @@ class Client:
     def get_notifications(self, max_id=None):
         """
         This endpoint returns a list of the user's unread notifications. Sorted descending by id with limit of 50.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -973,6 +1016,7 @@ class Client:
     def mark_notifications_read(self, ids):
         """
         This endpoint allows you to mark notifications read.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -992,6 +1036,7 @@ class Client:
     def get_ranking(self, mode, type, country=None, cursor=None, filter=None, spotlight=None, variant=None):
         """
         Gets the current ranking for the specified type and game mode.
+
         Requires OAuth and scope public
 
         mode: :class:`str`
@@ -1024,6 +1069,7 @@ class Client:
     def get_spotlights(self):
         """
         Gets the list of spotlights.
+
         Requires OAuth and scope public
 
         **Returns**
@@ -1035,6 +1081,7 @@ class Client:
     def get_own_data(self, mode=""):
         """
         Similar to get_user but with authenticated user (token owner) as user id.
+
         Requires OAuth and scope identify
 
         **Parameters**
@@ -1051,6 +1098,7 @@ class Client:
     def get_user_kudosu(self, user, limit=None, offset=None):
         """
         Returns kudosu history.
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -1074,6 +1122,7 @@ class Client:
     def get_user_scores(self, user, type, include_fails=None, mode=None, limit=None, offset=None):
         """
         This endpoint returns the scores of specified user.
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -1108,6 +1157,7 @@ class Client:
     def get_user_beatmaps(self, user, type, limit=None, offset=None):
         """
         Returns the beatmaps of specified user.
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -1137,6 +1187,7 @@ class Client:
     def get_user_recent_activity(self, user, limit=None, offset=None):
         """
         Returns recent activity.
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -1160,6 +1211,7 @@ class Client:
     def get_user(self, user, mode='', key=None):
         """
         This endpoint returns the detail of specified user.
+
         Requires OAuth and scope public
 
         **Parameters**
@@ -1195,6 +1247,7 @@ class Client:
     def get_users(self, ids):
         """
         Returns list of users.
+
         Requires OAuth and scope lazer
 
         **Parameters**
@@ -1214,6 +1267,7 @@ class Client:
     def get_wiki_page(self, locale, path, page=None):
         """
         The wiki article or image data.
+
         No OAuth required.
 
         **Parameters**
