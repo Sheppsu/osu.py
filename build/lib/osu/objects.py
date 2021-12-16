@@ -2108,23 +2108,17 @@ class UserMonthlyPlaycount:
         self.count = data['count']
 
 
-class UserGroup:
+class UserGroup(Group):
     """
     Describes the :class:`Group` membership of a :class:`User`. It contains all of the attributes of the :class:`Group`, in addition to what is listed here.
 
     **Attributes**
 
     playmodes: :class:`list`
-        list containing objects of type :class:`str`. GameModes which the member is responsible for, e.g. in the case of BN/NAT (only present when has_playmodes is set on Group)
+        list containing objects of type :class:`str`. GameModes associated with this membership (null if has_playmodes is unset).
     """
     def __init__(self, data):
-        self.id = data['id']
-        self.identifier = data['identifier']
-        self.is_probationary = data['is_probationary']
-        self.name = data['name']
-        self.short_name = data['short_name']
-        self.description = data['description']
-        self.colour = data['colour']
+        super().__init__(data)
         if 'playmodes' in data:
             self.playmodes = data['playmodes']
 
