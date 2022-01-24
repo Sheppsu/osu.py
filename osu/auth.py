@@ -99,7 +99,7 @@ class AuthHandler:
         if code is None:
             data.update({
                 'grant_type': 'client_credentials',
-                'scope': 'public' if not 'delegate' in self.scope.scopes_list else self.scope.scopes,
+                'scope': 'public' if 'delegate' not in self.scope else self.scope.scopes,
             })
         else:
             data.update({
