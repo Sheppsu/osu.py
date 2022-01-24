@@ -1285,15 +1285,38 @@ class Client:
         """
         return WikiPage(self.http.get(Path.get_wiki_page(locale, path), page=page))
 
+    def make_request(self, method, path, scope, **kwargs):
+        """
+        Gives you freedom to format the contents of the request.
+
+        **Parameters**
+
+        method: :class:`str`
+            The request method (get, post, delete, patch, or put)
+
+        path: :class:`str`
+            Url path to send request to (excluding the base api url) Ex. "beatmapsets/search"
+
+        scope: :class:`str`
+            Used for the purpose of creating the Path object but will also be checked against the scopes you are valid for.
+            For valid scopes check :class:`Scope.valid_scopes`
+        """
+        return getattr(self.http, method)(Path(path, scope), **kwargs)
+
+    # Undocumented
+
     def search_beatmapsets(self, filters=None, page=None):
         resp = self.http.get(Path(f'beatmapsets/search', 'public'), page=page, **filters)
         return {
-            'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
-            'cursor': resp['cursor'],
-            'search': resp['search'],
-            'recommended_difficulty': resp['recommended_difficulty'],
-            'error': resp['error'],
-            'total': resp['total']
+            'content': {
+                'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['content']['beatmapsets']],
+                'cursor': resp['content']['cursor'],
+                'search': resp['content']['search'],
+                'recommended_difficulty': resp['content']['recommended_difficulty'],
+                'error': resp['content']['error'],
+                'total': resp['content']['total']
+            },
+            'status': resp['status']
         }
 
     def get_score_by_id(self, mode, score):
