@@ -1,7 +1,5 @@
 import requests
 import time
-import math
-from threading import Condition
 
 from .exceptions import ScopeException
 from .constants import base_url
@@ -20,25 +18,39 @@ class HTTPHandler:
         }
         return headers
 
-    def __getattr__(self, method):
+    def _make_request(self, method, path, data=None, headers=None, stream=False, **kwargs):
+        if headers is None:
+            headers = {}
+        if data is None:
+            data = {}
+
         if not self.rate_limit.can_request:
             self.rate_limit.wait()
 
-        def func(path, data=None, headers=None, stream=False, **kwargs):
-            if headers is None:
-                headers = {}
-            if data is None:
-                data = {}
-            scope_required = path.scope
-            if scope_required.scopes not in self.client.auth.scope:
-                raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
-            headers = self.get_headers(**headers)
-            response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, stream=stream, params=kwargs)
-            self.rate_limit.request_used()
-            response.raise_for_status()
-            return response.json()
+        scope_required = path.scope
+        if scope_required.scopes not in self.client.auth.scope:
+            raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
 
-        return func
+        headers = self.get_headers(**headers)
+        response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, stream=stream, params=kwargs)
+        self.rate_limit.request_used()
+        response.raise_for_status()
+        return response.json()
+
+    def get(self, path, data=None, headers=None, stream=False, **kwargs):
+        return self._make_request('get', path, data=data, headers=headers, stream=stream, **kwargs)
+
+    def post(self, path, data=None, headers=None, stream=False, **kwargs):
+        return self._make_request('post', path, data=data, headers=headers, stream=stream, **kwargs)
+
+    def delete(self, path, data=None, headers=None, stream=False, **kwargs):
+        return self._make_request('delete', path, data=data, headers=headers, stream=stream, **kwargs)
+
+    def patch(self, path, data=None, headers=None, stream=False, **kwargs):
+        return self._make_request('patch', path, data=data, headers=headers, stream=stream, **kwargs)
+
+    def put(self, path, data=None, headers=None, stream=False, **kwargs):
+        return self._make_request('put', path, data=data, headers=headers, stream=stream, **kwargs)
 
 
 class RateLimiter:

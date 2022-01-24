@@ -1,29 +1,6 @@
 from .constants import int_to_status
 
 
-# Unused class, left here just in case ig.
-class DataUnpacker:
-    """
-    I am limiting the use of this class so that IDE's can use autofill features when typing.
-    When using DataUnpacker, the IDE has no idea what the attributes of the class are.
-    """
-    def __init__(self, data, exceptions=None, ignore=None):
-        if ignore is None:
-            ignore = []
-        if exceptions is None:
-            exceptions = []
-        for key, value in data.items():
-            if key in ignore:
-                continue
-            if key in exceptions and value is not None:
-                if exceptions[key][1]:
-                    setattr(self, key, [exceptions[key][0](obj_data) for obj_data in data[key]])
-                else:
-                    setattr(self, key, exceptions[key][0](data[key]))
-                continue
-            setattr(self, key, value)
-
-
 class Scope:
     """
     Scope object for telling the program what scopes you are using

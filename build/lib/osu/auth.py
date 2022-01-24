@@ -37,7 +37,7 @@ class AuthHandler:
     """
     def __init__(self, client_id: int, client_secret: str, redirect_uri: str, scope: Scope = Scope.default()):
         if scope == 'lazer':
-            raise ScopeException("lazer scope is not available for use at the moment.")
+            raise ScopeException("The lazer scope signifies that an endpoint only meant for use by the lazer client.")
         self.client_id = client_id
         self.client_secret = client_secret
         self.redirect_uri = redirect_uri
@@ -59,23 +59,37 @@ class AuthHandler:
         """
         params = {
             'client_id': self.client_id,
-            'redirect_url': self.redirect_uri,
+            'redirect_uri': self.redirect_uri,
             'response_type': 'code',
-            'scope': self.scope.scope,
+            'scope': self.scope.scopes,
             'state': state,
         }
+        if not params['state']:
+            del params['state']
         return auth_url + "?" + "&".join([f'{key}={value}' for key, value in params.items()])
 
     def get_auth_token(self, code=None):
         """
-        `code` parameter is not required, but without a code the scope is required to be public.
-        You can obtain a code by having a user authorize themselves under a url which
-        you can get with get_auth_url. Read more about it under that function.
+        `code` parameter is not required, but without a code the scopes are restricted to
+        public and delegate (more on delegation below). You can obtain a code by having
+        a user authorize themselves under a url which you can get with get_auth_url.
+        Read more about it under that function.
+
+        **Client Credentials Delegation**
+
+        Client Credentials Grant tokens may be allowed to act on behalf of the owner of the OAuth client
+        (delegation) by requesting the delegate scope, in addition to other scopes supporting delegation.
+        When using delegation, scopes that support delegation cannot be used together with scopes that do
+        not support delegation. Delegation is only available to Chat Bots. Currently, chat.write is the only
+        other scope that supports delegation.
 
         **Parameters**
 
         code: :class:`str`
             code from user authorizing at a specific url
+
+        delegate: :class:`bool`
+            Whether or not to use delegate scope. This scope is only available for Client Credential Grants.
         """
         data = {
             'client_id': self.client_id,
@@ -85,7 +99,7 @@ class AuthHandler:
         if code is None:
             data.update({
                 'grant_type': 'client_credentials',
-                'scope': 'public',
+                'scope': 'public' if not 'delegate' in self.scope.scopes_list else self.scope.scopes,
             })
         else:
             data.update({
