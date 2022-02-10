@@ -1,5 +1,6 @@
 from .http import HTTPHandler
 from .objects import *
+from .auth import AuthHandler
 
 
 class Client:
@@ -10,9 +11,6 @@ class Client:
 
     auth: :class:`AuthHandler`
         The AuthHandler object passed in when initiating the Client object
-
-    http: :class:`HTTPHandler`
-        Object which handles making requests, rate limiting, and http errors.
 
     limit_per_second: :class:`float`
         This defines the amount of time that should pass before you can make another request. Peppy has requested that
@@ -29,6 +27,12 @@ class Client:
     def __init__(self, auth, limit_per_second=1):
         self.auth = auth
         self.http = HTTPHandler(auth, self, limit_per_second)
+
+    @classmethod
+    def from_client_credentials(cls, client_id: int, client_secret: str, redirect_url: str, scope: Scope = Scope.default(), last_session_code=None, limit_per_second=1):
+        auth = AuthHandler(client_id, client_secret, redirect_url, scope)
+        auth.get_auth_token(last_session_code)
+        return cls(auth, limit_per_second)
 
     def lookup_beatmap(self, checksum=None, filename=None, id=None):
         """

@@ -40,6 +40,10 @@ class Scope:
     def default(cls):
         return cls('public')
 
+    @classmethod
+    def identify(cls):
+        return cls('public', 'identify')
+
     def __str__(self):
         return ", ".join(self.scopes)
 
@@ -312,7 +316,7 @@ class Score:
 
     match
     """
-    __slots__ =  (
+    __slots__ = (
         "id", "best_id", "user_id", "accuracy", "mods", "score", "max_combo", "perfect", "statistics",
         "pp", "rank", "created_at", "mode", "mode_int", "replay", "beatmap", "beatmapset", "rank_country",
         "rank_global", "weight", "user", "match"

@@ -35,12 +35,12 @@ class AuthHandler:
         Scope object helps the program identify what requests you can
         and can't make with your scope. Default is 'identify' (Scope.default())
     """
-    def __init__(self, client_id: int, client_secret: str, redirect_uri: str, scope: Scope = Scope.default()):
+    def __init__(self, client_id: int, client_secret: str, redirect_url: str, scope: Scope = Scope.default()):
         if scope == 'lazer':
             raise ScopeException("The lazer scope signifies that an endpoint only meant for use by the lazer client.")
         self.client_id = client_id
         self.client_secret = client_secret
-        self.redirect_uri = redirect_uri
+        self.redirect_url = redirect_url
         self.scope = scope
 
         self.refresh_token = None
@@ -59,7 +59,7 @@ class AuthHandler:
         """
         params = {
             'client_id': self.client_id,
-            'redirect_uri': self.redirect_uri,
+            'redirect_uri': self.redirect_url,
             'response_type': 'code',
             'scope': self.scope.scopes,
             'state': state,
@@ -99,13 +99,13 @@ class AuthHandler:
         if code is None:
             data.update({
                 'grant_type': 'client_credentials',
-                'scope': 'public' if not 'delegate' in self.scope.scopes_list else self.scope.scopes,
+                'scope': 'public' if 'delegate' not in self.scope else self.scope.scopes,
             })
         else:
             data.update({
                 'code': code,
                 'grant_type': 'authorization_code',
-                'redirect_uri': self.redirect_uri,
+                'redirect_uri': self.redirect_url,
             })
 
         response = requests.post(token_url, data=data)
@@ -125,11 +125,7 @@ class AuthHandler:
         **Parameters**
 
         refresh_token: :class:`str`
-            A refresh token saved from the last session
-            (ex. You authorize with a user, save the refresh token,
-            don't use the api long enough for the token to expire, but
-            use the saved refresh token to get a valid access token
-            without the user having to authorize again.)
+            A refresh token used to get a new access token.
         """
         if refresh_token:
             self.refresh_token = refresh_token
