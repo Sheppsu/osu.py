@@ -12,9 +12,6 @@ class Client:
     auth: :class:`AuthHandler`
         The AuthHandler object passed in when initiating the Client object
 
-    http: :class:`HTTPHandler`
-        Object which handles making requests, rate limiting, and http errors.
-
     limit_per_second: :class:`float`
         This defines the amount of time that should pass before you can make another request. Peppy has requested that
         only 60 requests per minute maximum be made to the api. If you lower the limit, please be
