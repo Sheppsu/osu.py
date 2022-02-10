@@ -40,6 +40,10 @@ class Scope:
     def default(cls):
         return cls('public')
 
+    @classmethod
+    def identify(cls):
+        return cls('public', 'identify')
+
     def __str__(self):
         return ", ".join(self.scopes)
 
