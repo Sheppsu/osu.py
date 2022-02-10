@@ -10,30 +10,22 @@ class NotificationWebsocket:
     """
     This class allows you to receive notifications without constantly polling the server.
     To utilize it you should do either of:
-        - Make a class inheriting this one and redefine the event functions (logout, new, ...).
+        - Make a class inheriting this one and redefine the event functions (on_logout, on_new, ...).
         - Use the event function as a decorator, read more on its use under its docs.
-
-    **Init Parameters**
-
-    notification_url: :class:`str`
-        url endpoint to connect to. Can obtain one via get_notifications
-
-    auth: :class:`AuthHandler`
-        The same auth handler used for Client
 
     **Event types**
 
-    logout
+    on_logout
         Server will disconnect session after sending this event so don't try to reconnect.
 
-    new
+    on_new
         New notification. See :class:`Notification` object for notification types.
 
         **Arguments**
 
         notification: :class:`Notification`
 
-    read
+    on_read
         Notification has been read.
 
         **Arguments**
@@ -41,7 +33,7 @@ class NotificationWebsocket:
         ids: :class:`int`
             list of ids of Notifications which are read.
 
-    unplanned_disconnect
+    on_unplanned_disconnect
         Event fired by NotificationWebsocket object when connection without having been sent a logout event.
         Default function fires connect to try and reconnect.
     """
@@ -50,6 +42,16 @@ class NotificationWebsocket:
     ]
 
     def __init__(self, notification_uri, auth):
+        """
+        **Arguments**
+
+        notification_url: :class:`str`
+            url endpoint to connect to. Can obtain one via get_notifications
+
+        auth: :class:`AuthHandler`
+            The same auth handler used for Client
+        """
+
         self.auth = auth
         self.uri = notification_uri
         self.loop = asyncio.get_event_loop()
