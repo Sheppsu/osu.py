@@ -125,11 +125,7 @@ class AuthHandler:
         **Parameters**
 
         refresh_token: :class:`str`
-            A refresh token saved from the last session
-            (ex. You authorize with a user, save the refresh token,
-            don't use the api long enough for the token to expire, but
-            use the saved refresh token to get a valid access token
-            without the user having to authorize again.)
+            A refresh token used to get a new access token.
         """
         if refresh_token:
             self.refresh_token = refresh_token
