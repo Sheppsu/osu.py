@@ -32,7 +32,7 @@ AsynchronousClient
 ^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: osu.AsynchronousClient
-    :members:
+    Exactly the same as :class:`Client`, but all the functions are asynchronous
 
 NotificationWebsocket
 ^^^^^^
