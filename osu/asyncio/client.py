@@ -34,7 +34,7 @@ class AsynchronousClient:
         auth.get_auth_token(last_session_code)
         return cls(auth, limit_per_second)
 
-    def lookup_beatmap(self, checksum=None, filename=None, id=None):
+    async def lookup_beatmap(self, checksum=None, filename=None, id=None):
         """
         Returns beatmap.
 
@@ -57,7 +57,7 @@ class AsynchronousClient:
         """
         return Beatmap(await self.http.get(Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
 
-    def get_user_beatmap_score(self, beatmap, user, mode=None, mods=None):
+    async def get_user_beatmap_score(self, beatmap, user, mode=None, mods=None):
         """
         Returns a :class:`User`'s score on a Beatmap
 
@@ -83,7 +83,7 @@ class AsynchronousClient:
         """
         return BeatmapUserScore(await self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
-    def get_beatmap_scores(self, beatmap, mode=None, mods=None, type=None):
+    async def get_beatmap_scores(self, beatmap, mode=None, mods=None, type=None):
         """
         Returns the top scores for a beatmap
 
@@ -109,7 +109,7 @@ class AsynchronousClient:
         """
         return BeatmapScores(await self.http.get(Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
-    def get_beatmap(self, beatmap):
+    async def get_beatmap(self, beatmap):
         """
         Gets beatmap data for the specified beatmap ID.
 
@@ -127,7 +127,7 @@ class AsynchronousClient:
         """
         return Beatmap(await self.http.get(Path.beatmap(beatmap)))
 
-    def get_beatmapset_discussion_posts(self, beatmapset_discussion_id=None, limit=None, page=None, sort=None, user=None, with_deleted=None):
+    async def get_beatmapset_discussion_posts(self, beatmapset_discussion_id=None, limit=None, page=None, sort=None, user=None, with_deleted=None):
         """
         Returns the posts of the beatmapset discussions
 
@@ -176,7 +176,7 @@ class AsynchronousClient:
             'users': UserCompact(resp['users'])
         }
 
-    def get_beatmapset_discussion_votes(self, beatmapset_discussion_id=None, limit=None, page=None, receiver=None, score=None, sort=None, user=None, with_deleted=None):
+    async def get_beatmapset_discussion_votes(self, beatmapset_discussion_id=None, limit=None, page=None, receiver=None, score=None, sort=None, user=None, with_deleted=None):
         """
         Returns the votes given to beatmapset discussions
 
@@ -231,7 +231,7 @@ class AsynchronousClient:
             'votes': [BeatmapsetDiscussionVote(vote) for vote in resp['votes']]
         }
 
-    def get_beatmapset_discussions(self, beatmap_id=None, beatmapset_id=None, beatmapset_status=None, limit=None, message_type=None, only_unresolved=None, page=None, sort=None, user=None, with_deleted=None):
+    async def get_beatmapset_discussions(self, beatmap_id=None, beatmapset_id=None, beatmapset_status=None, limit=None, message_type=None, only_unresolved=None, page=None, sort=None, user=None, with_deleted=None):
         """
         Returns a list of beatmapset discussions
 
@@ -304,7 +304,7 @@ class AsynchronousClient:
             'users': [UserCompact(user) for user in resp['users']]
         }
 
-    def create_new_pm(self, target_id, message, is_action):
+    async def create_new_pm(self, target_id, message, is_action):
         """
         This endpoint allows you to create a new PM channel.
 
@@ -344,7 +344,7 @@ class AsynchronousClient:
             'message': ChatMessage(resp['message'])
         }
 
-    def get_updates(self, since, channel_id=None, limit=None):
+    async def get_updates(self, since, channel_id=None, limit=None):
         """
         This endpoint returns new messages since the given message_id along with updated channel 'presence' data.
 
@@ -378,7 +378,7 @@ class AsynchronousClient:
             'silences': [UserSilence(silence) for silence in resp['silences']]
         }
 
-    def get_channel_messages(self, channel_id, limit=None, since=None, until=None):
+    async def get_channel_messages(self, channel_id, limit=None, since=None, until=None):
         """
         This endpoint returns the chat messages for a specific channel.
 
@@ -405,7 +405,7 @@ class AsynchronousClient:
         """
         return [ChatMessage(msg) for msg in await self.http.post(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)]
 
-    def send_message_to_channel(self, channel_id, message, is_action):
+    async def send_message_to_channel(self, channel_id, message, is_action):
         """
         This endpoint returns the chat messages for a specific channel.
 
@@ -429,7 +429,7 @@ class AsynchronousClient:
         data = {'message': message, 'is_action': is_action}
         return ChatMessage(await self.http.post(Path.send_message_to_channel(channel_id), data=data))
 
-    def join_channel(self, channel, user):
+    async def join_channel(self, channel, user):
         """
         This endpoint allows you to join a public channel.
 
@@ -447,7 +447,7 @@ class AsynchronousClient:
         """
         return ChatChannel(await self.http.put(Path.join_channel(channel, user)))
 
-    def leave_channel(self, channel, user):
+    async def leave_channel(self, channel, user):
         """
         This endpoint allows you to leave a public channel.
 
@@ -461,7 +461,7 @@ class AsynchronousClient:
         """
         await self.http.delete(Path.leave_channel(channel, user))
 
-    def mark_channel_as_read(self, channel, message, channel_id, message_id):
+    async def mark_channel_as_read(self, channel, message, channel_id, message_id):
         """
         This endpoint marks the channel as having being read up to the given message_id.
 
@@ -477,7 +477,7 @@ class AsynchronousClient:
         """
         await self.http.put(Path.mark_channel_as_read(channel, message), channel_id=channel_id, message_id=message_id)
 
-    def get_channel_list(self):
+    async def get_channel_list(self):
         """
         This endpoint returns a list of all joinable public channels.
 
@@ -490,7 +490,7 @@ class AsynchronousClient:
         """
         return [ChatChannel(channel) for channel in await self.http.get(Path.get_channel_list())]
 
-    def create_channel(self, type, target_id=None):
+    async def create_channel(self, type, target_id=None):
         """
         This endpoint creates a new channel if doesn't exist and joins it. Currently only for rejoining existing PM channels which the user has left.
 
@@ -513,7 +513,7 @@ class AsynchronousClient:
         data = {'type': type, 'target_id': target_id}
         return ChatChannel(await self.http.post(Path.create_channel(), data=data))
 
-    def get_channel(self, channel):
+    async def get_channel(self, channel):
         """
         Gets details of a chat channel.
 
@@ -539,7 +539,7 @@ class AsynchronousClient:
             'users': UserCompact(resp['users']),
         }
 
-    def get_comments(self, commentable_type=None, commentable_id=None, cursor=None, parent_id=None, sort=None):
+    async def get_comments(self, commentable_type=None, commentable_id=None, cursor=None, parent_id=None, sort=None):
         """
         Returns a list comments and their replies up to 2 levels deep.
 
@@ -570,7 +570,7 @@ class AsynchronousClient:
         return CommentBundle(await self.http.get(Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
                                            **cursor if cursor else {}, parent_id=parent_id, sort=sort))
 
-    def post_comment(self, commentable_id=None, commentable_type=None, message=None, parent_id=None):
+    async def post_comment(self, commentable_id=None, commentable_type=None, message=None, parent_id=None):
         """
         Posts a new comment to a comment thread.
 
@@ -602,7 +602,7 @@ class AsynchronousClient:
         }
         return CommentBundle(await self.http.post(Path.post_new_comment(), params=params))
 
-    def get_comment(self, comment):
+    async def get_comment(self, comment):
         """
         Gets a comment and its replies up to 2 levels deep.
 
@@ -619,7 +619,7 @@ class AsynchronousClient:
         """
         return CommentBundle(await self.http.get(Path.get_comment(comment)))
 
-    def edit_comment(self, comment, message=None):
+    async def edit_comment(self, comment, message=None):
         """
         Edit an existing comment.
 
@@ -640,7 +640,7 @@ class AsynchronousClient:
         params = {'comment.message': message}
         return CommentBundle(await self.http.patch(Path.edit_comment(comment), params=params))
 
-    def delete_comment(self, comment):
+    async def delete_comment(self, comment):
         """
         Deletes the specified comment.
 
@@ -657,7 +657,7 @@ class AsynchronousClient:
         """
         return CommentBundle(await self.http.delete(Path.delete_comment(comment)))
 
-    def add_comment_vote(self, comment):
+    async def add_comment_vote(self, comment):
         """
         Upvotes a comment.
 
@@ -674,7 +674,7 @@ class AsynchronousClient:
         """
         return CommentBundle(await self.http.post(Path.add_comment_vote(comment)))
 
-    def remove_comment_vote(self, comment):
+    async def remove_comment_vote(self, comment):
         """
         Un-upvotes a comment.
 
@@ -691,7 +691,7 @@ class AsynchronousClient:
         """
         return CommentBundle(await self.http.delete(Path.remove_comment_vote(comment)))
 
-    def reply_topic(self, topic, body):
+    async def reply_topic(self, topic, body):
         """
         Create a post replying to the specified topic.
 
@@ -713,7 +713,7 @@ class AsynchronousClient:
         data = {'body': body}
         return ForumPost(await self.http.post(Path.reply_topic(topic), data=data))
 
-    def create_topic(self, body, forum_id, title, with_poll=None, hide_results=None, length_days=None, max_options=None, poll_options=None, poll_title=None, vote_change=None):
+    async def create_topic(self, body, forum_id, title, with_poll=None, hide_results=None, length_days=None, max_options=None, poll_options=None, poll_title=None, vote_change=None):
         """
         Create a new topic.
 
@@ -777,7 +777,7 @@ class AsynchronousClient:
             'post': ForumPost(resp['post'])
         }
 
-    def get_topic_and_posts(self, topic, cursor=None, sort=None, limit=None, start=None, end=None):
+    async def get_topic_and_posts(self, topic, cursor=None, sort=None, limit=None, start=None, end=None):
         """
         Get topic and its posts.
 
@@ -825,7 +825,7 @@ class AsynchronousClient:
             'topic': ForumTopic(resp['topic'])
         }
 
-    def edit_topic(self, topic, topic_title):
+    async def edit_topic(self, topic, topic_title):
         """
         Edit topic. Only title can be edited through this endpoint.
 
@@ -846,7 +846,7 @@ class AsynchronousClient:
         data = {'forum_topic': {'topic_title': topic_title}}
         return ForumTopic(await self.http.patch(Path.edit_topic(topic), data=data))
 
-    def edit_post(self, post, body):
+    async def edit_post(self, post, body):
         """
         Edit specified forum post.
 
@@ -865,7 +865,7 @@ class AsynchronousClient:
         data = {'body': body}
         return ForumPost(await self.http.patch(Path.edit_post(post), data=data))
 
-    def search(self, mode=None, query=None, page=None):
+    async def search(self, mode=None, query=None, page=None):
         """
         Searches users and wiki pages.
 
@@ -910,7 +910,7 @@ class AsynchronousClient:
             'wiki_page': {'results': resp['wiki_page']['data'], 'total': resp['wiki_page']['total']} if mode is None or mode == 'all' or mode == 'wiki_page' else None
         }
 
-    def get_user_highscore(self, room, playlist, user):
+    async def get_user_highscore(self, room, playlist, user):
         """
         Requires OAuth and scope lazer
 
@@ -932,7 +932,7 @@ class AsynchronousClient:
         # Doesn't say response type
         return await self.http.get(Path.get_user_high_score(room, playlist, user))
 
-    def get_scores(self, room, playlist, limit=None, sort=None, cursor=None):
+    async def get_scores(self, room, playlist, limit=None, sort=None, cursor=None):
         """
         Requires OAuth and scope public
 
@@ -959,7 +959,7 @@ class AsynchronousClient:
         # Doesn't say response type
         return await self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {})
 
-    def get_score(self, room, playlist, score):
+    async def get_score(self, room, playlist, score):
         """
         Requires OAuth and scope lazer
 
@@ -981,7 +981,7 @@ class AsynchronousClient:
         # Doesn't say response type
         return await self.http.get(Path.get_score(room, playlist, score))
 
-    def get_notifications(self, max_id=None):
+    async def get_notifications(self, max_id=None):
         """
         This endpoint returns a list of the user's unread notifications. Sorted descending by id with limit of 50.
 
@@ -1017,7 +1017,7 @@ class AsynchronousClient:
             'notification_endpoint': resp['notification_endpoint'],
         }
 
-    def mark_notifications_read(self, ids):
+    async def mark_notifications_read(self, ids):
         """
         This endpoint allows you to mark notifications read.
 
@@ -1031,13 +1031,13 @@ class AsynchronousClient:
         data = {'ids': ids}
         await self.http.post(Path.mark_notifications_as_read(), data=data)
 
-    def revoke_current_token(self):
+    async def revoke_current_token(self):
         """
         Requires OAuth
         """
         await self.http.delete(self, Path.revoke_current_token())
 
-    def get_ranking(self, mode, type, country=None, cursor=None, filter=None, spotlight=None, variant=None):
+    async def get_ranking(self, mode, type, country=None, cursor=None, filter=None, spotlight=None, variant=None):
         """
         Gets the current ranking for the specified type and game mode.
 
@@ -1070,7 +1070,7 @@ class AsynchronousClient:
         return Rankings(await self.http.get(Path.get_ranking(mode, type), country=country, **cursor if cursor else {}, filter=filter,
                                       spotlight=spotlight, variant=variant))
 
-    def get_spotlights(self):
+    async def get_spotlights(self):
         """
         Gets the list of spotlights.
 
@@ -1082,7 +1082,7 @@ class AsynchronousClient:
         """
         return Spotlights(await self.http.get(Path.get_spotlights()))
 
-    def get_own_data(self, mode=""):
+    async def get_own_data(self, mode=""):
         """
         Similar to get_user but with authenticated user (token owner) as user id.
 
@@ -1099,7 +1099,7 @@ class AsynchronousClient:
         """
         return User(await self.http.get(Path.get_own_data(mode)))
 
-    def get_user_kudosu(self, user, limit=None, offset=None):
+    async def get_user_kudosu(self, user, limit=None, offset=None):
         """
         Returns kudosu history.
 
@@ -1123,7 +1123,7 @@ class AsynchronousClient:
         """
         return [KudosuHistory(kud) for kud in await self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset)]
 
-    def get_user_scores(self, user, type, include_fails=None, mode=None, limit=None, offset=None):
+    async def get_user_scores(self, user, type, include_fails=None, mode=None, limit=None, offset=None):
         """
         This endpoint returns the scores of specified user.
 
@@ -1158,7 +1158,7 @@ class AsynchronousClient:
         """
         return [Score(score) for score in await self.http.get(Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
 
-    def get_user_beatmaps(self, user, type, limit=None, offset=None):
+    async def get_user_beatmaps(self, user, type, limit=None, offset=None):
         """
         Returns the beatmaps of specified user.
 
@@ -1188,7 +1188,7 @@ class AsynchronousClient:
             object_type = BeatmapPlaycount
         return [object_type(bm) for bm in await self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset)]
 
-    def get_user_recent_activity(self, user, limit=None, offset=None):
+    async def get_user_recent_activity(self, user, limit=None, offset=None):
         """
         Returns recent activity.
 
@@ -1212,7 +1212,7 @@ class AsynchronousClient:
         """
         return [Event(event) for event in await self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset)]
 
-    def get_user(self, user, mode='', key=None):
+    async def get_user(self, user, mode='', key=None):
         """
         This endpoint returns the detail of specified user.
 
@@ -1248,7 +1248,7 @@ class AsynchronousClient:
         """
         return User(await self.http.get(Path.get_user(user, mode), key=key))
 
-    def get_users(self, ids):
+    async def get_users(self, ids):
         """
         Returns list of users.
 
@@ -1268,7 +1268,7 @@ class AsynchronousClient:
         """
         return [UserCompact(user) for user in await self.http.get(Path.get_users(), ids=ids)]
 
-    def get_wiki_page(self, locale, path, page=None):
+    async def get_wiki_page(self, locale, path, page=None):
         """
         The wiki article or image data.
 
@@ -1289,7 +1289,7 @@ class AsynchronousClient:
         """
         return WikiPage(await self.http.get(Path.get_wiki_page(locale, path), page=page))
 
-    def make_request(self, method, path, scope, **kwargs):
+    async def make_request(self, method, path, scope, **kwargs):
         """
         Gives you freedom to format the contents of the request.
 
@@ -1309,7 +1309,7 @@ class AsynchronousClient:
 
     # Undocumented
 
-    def search_beatmapsets(self, filters=None, page=None):
+    async def search_beatmapsets(self, filters=None, page=None):
         resp = await self.http.get(Path(f'beatmapsets/search', 'public'), page=page, **filters)
         return {
             'content': {
@@ -1323,5 +1323,5 @@ class AsynchronousClient:
             'status': resp['status']
         }
 
-    def get_score_by_id(self, mode, score):
+    async def get_score_by_id(self, mode, score):
         return Score(await self.http.get(Path.get_score_by_id(mode, score)))
