@@ -29,20 +29,29 @@ class NotificationWebsocket:
     new
         New notification. See :class:`Notification` object for notification types.
 
+        **Arguments**
+
+        notification: :class:`Notification`
+
     read
         Notification has been read.
+
+        **Arguments**
+
+        ids: :class:`int`
+            list of ids of Notifications which are read.
 
     unplanned_disconnect
         Event fired by NotificationWebsocket object when connection without having been sent a logout event.
         Default function fires connect to try and reconnect.
     """
     valid_events = [
-        'logout', 'new', 'read'
+        'logout', 'new', 'read', 'unplanned_disconnect'
     ]
 
-    def __init__(self, notification_url, auth):
+    def __init__(self, notification_uri, auth):
         self.auth = auth
-        self.uri = notification_url
+        self.uri = notification_uri
         self.loop = asyncio.get_event_loop()
         self.ws = None
         self.connected = False
@@ -60,7 +69,7 @@ class NotificationWebsocket:
                 except websockets.exceptions.ConnectionClosed:
                     self.ws = None
                     self.connected = False
-                    self.unplanned_disconnect()
+                    self._on_unplanned_disconnect()
                     return
 
                 event = json.loads(event)
@@ -78,11 +87,13 @@ class NotificationWebsocket:
 
     def event(self, func):
         """
-        Meant to be used as a decorator for adding event functions, example:
+        Decorator for adding event functions. Example:
 
         .. code-block:: Python
 
-            notification_websocket.event()
+            notification_websocket = NotificationWebsocket(notif_uri, auth)
+
+            @notification_websocket.event()
             def new(notification):
                 print(notification.name)
         """
@@ -90,47 +101,27 @@ class NotificationWebsocket:
             raise NameError(f"This is not a valid event name. Valid events consist of {', '.join(self.valid_events)}")
         setattr(self, func.__name__, func)
 
-    # _Events (executed before regular event functions)
-
-    def _logout(self):
-        self.connected = False
-        self.logout()
-
-    def _new(self, data):
-        data = Notification(data)
-        self.new(data)
-
     # Events
 
-    def logout(self):
-        """
-        Server will disconnect session after sending this event so don't try to reconnect.
-        """
-        pass
+    def _on_logout(self):
+        self.connected = False
+        if hasattr(self, 'on_logout'):
+            self.on_logout()
 
-    def new(self, notification):
-        """
-        New notification. See :class:`Notification` object for notification types.
+    def _on_new(self, data):
+        data = Notification(data)
+        if hasattr(self, 'on_new'):
+            self.on_new(data)
 
-        **Arguments**
+    def _on_read(self, data):
+        if hasattr(self, 'on_read'):
+            self.on_read(data)
 
-        notification: :class:`Notification`
-        """
-        pass
-
-    def read(self, ids):
-        """
-        Notification has been read.
-
-        **Arguments**
-
-        ids: :class:`int`
-            list of ids of Notifications which are read.
-        """
-
-    def unplanned_disconnect(self):
+    def _on_unplanned_disconnect(self):
         """
         Event fired by NotificationWebsocket object when connection without having been sent a logout event.
         Default function fires connect to try and reconnect.
         """
         self.connect()
+        if hasattr(self, 'on_unplanned_disconnect'):
+            self.on_unplanned_disconnect()
