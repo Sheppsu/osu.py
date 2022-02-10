@@ -28,6 +28,12 @@ Client
 .. autoclass:: osu.Client
     :members:
 
+AsynchronousClient
+^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: osu.AsynchronousClient
+    :members:
+
 NotificationWebsocket
 ^^^^^^
 
