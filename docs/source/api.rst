@@ -32,10 +32,9 @@ AsynchronousClient
 ^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: osu.AsynchronousClient
-    Exactly the same as :class:`Client`, but all the functions are asynchronous
 
 NotificationWebsocket
-^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: osu.NotificationWebsocket
     :members:
@@ -152,11 +151,6 @@ CommentableMeta
 .. autoclass:: osu.CommentableMeta
    :members:
 
-Cursor
-^^^^^^
-.. autoclass:: osu.Cursor
-   :members:
-
 Event
 ^^^^^
 .. autoclass:: osu.Event
@@ -220,11 +214,6 @@ MultiplayerScores
 MultiplayerScoresAround
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.MultiplayerScoresAround
-   :members:
-
-MultiplayerScoresCursor
-^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.MultiplayerScoresCursor
    :members:
 
 Notification

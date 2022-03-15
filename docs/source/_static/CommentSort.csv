@@ -1,4 +1,0 @@
-Type,Sort Fields
-new,"created_at (descending), id (descending)"
-old,"created_at (ascending), id (ascending)"
-top,"votes_count (descending), created_at (descending), id (descending)"

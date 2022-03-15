@@ -1734,7 +1734,9 @@ class Details:
         cover_url: :class:`str`
             Beatmap cover
         discussion_id: :class:`int`
+
         post_i: :class:`int`
+
         beatmap_id: :class:`int`
             null if posted to general all
         username: :class:`str`
@@ -2105,7 +2107,8 @@ class User(UserCompact):
     profile_order: :class:`list`
         list containing objects of type :class:`ProfilePage`. ordered list of sections in user profile page
 
-    title: :class:`str`user-specific title
+    title: :class:`str`
+        user-specific title
 
     title_url: :class:`str`
 
@@ -2292,14 +2295,19 @@ class UserStatistics:
 
     grade_counts: :class:`dict`
         Below are the keys, their type, and meaning.
+
         a: :class:`int`
             Number of A ranked scores.
+
         s: :class:`int`
             Number of S ranked scores.
+
         sh: :class:`int`
             Number of Silver S ranked scores.
+
         ss: :class:`int`
             Number of SS ranked scores.
+
         ssh: :class:`int`
             Number of Silver SS ranked scores.
 

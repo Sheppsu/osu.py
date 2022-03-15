@@ -1,7 +1,7 @@
 import setuptools
 import re
 
-with open('requirements.txt', 'r') as f:
+with open("osu.py.egg-info/requires.txt", 'r') as f:
     requirements = f.readlines()
 
 readme = ''

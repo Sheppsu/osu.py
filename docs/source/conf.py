@@ -14,14 +14,14 @@ import os
 import sys
 from pathlib import Path
 
-path = os.path.join(Path(os.path.abspath('.')).parent.parent, 'src')
+path = os.path.join(Path(os.path.abspath('.')).parent.parent)
 sys.path.insert(0, path)
 
 
 # -- Project information -----------------------------------------------------
 
 project = 'osu.py'
-copyright = '2021, Sheepposu'
+copyright = '2022, Sheepposu'
 author = 'Sheepposu'
 
 # The full version, including alpha/beta/rc tags

@@ -273,6 +273,7 @@ class Client:
 
         :class:`dict`
             {
+
             beatmaps: [ :class:`Beatmap`, ...],
                 List of beatmaps associated with the discussions returned.
 
@@ -289,6 +290,7 @@ class Client:
 
             users: [ :class:`UserCompact`, ...]
                 List of users associated with the discussions returned.
+
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
@@ -325,6 +327,7 @@ class Client:
 
         :class:`dict`
             {
+
             new_channel_id: :class:`int`
                 channel_id of newly created ChatChannel
 
@@ -886,6 +889,7 @@ class Client:
 
         :class:`dict`
             {
+
             user: :class:`dict`
                 For all or user mode. Only first 100 results are accessible
                 {
@@ -996,6 +1000,7 @@ class Client:
 
         :class:`dict`
             {
+
             has_more: :class:`bool`,
                 whether or not there are more notifications
 

@@ -5,24 +5,7 @@ from ..auth import AuthHandler
 
 class AsynchronousClient:
     """
-    Same as :class:`Client` but all functions are asynchronous.
-
-    **Init Parameters**
-
-    auth: :class:`AuthHandler`
-        The AuthHandler object passed in when initiating the Client object
-
-    limit_per_second: :class:`float`
-        This defines the amount of time that should pass before you can make another request. Peppy has requested that
-        only 60 requests per minute maximum be made to the api. If you lower the limit, please be
-        knowledgeable of the Terms of Use and be careful about making too many requests. The Terms of Use are
-        stated in the osu!api v2 documentation as follows:
-
-        Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :). this section may expand as necessary.
-
-        Current rate limit is set at an insanely high 1200 requests per minute, with burst capability of up to 200 beyond that.
-        If you require more, you probably fall into the above category of abuse. If you are doing more than 60 requests a minute,
-        you should probably give peppy a yell.
+    Same as :class:`osu.Client` but all functions are asynchronous.
     """
     def __init__(self, auth, limit_per_second=1):
         self.auth = auth
@@ -273,6 +256,7 @@ class AsynchronousClient:
 
         :class:`dict`
             {
+
             beatmaps: [ :class:`Beatmap`, ...],
                 List of beatmaps associated with the discussions returned.
 
@@ -289,6 +273,7 @@ class AsynchronousClient:
 
             users: [ :class:`UserCompact`, ...]
                 List of users associated with the discussions returned.
+
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
@@ -325,6 +310,7 @@ class AsynchronousClient:
 
         :class:`dict`
             {
+
             new_channel_id: :class:`int`
                 channel_id of newly created ChatChannel
 
@@ -886,6 +872,7 @@ class AsynchronousClient:
 
         :class:`dict`
             {
+
             user: :class:`dict`
                 For all or user mode. Only first 100 results are accessible
                 {
@@ -996,6 +983,7 @@ class AsynchronousClient:
 
         :class:`dict`
             {
+
             has_more: :class:`bool`,
                 whether or not there are more notifications
 

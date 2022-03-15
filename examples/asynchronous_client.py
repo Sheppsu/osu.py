@@ -81,7 +81,7 @@ class Bot:
                 await self.start()
 
     async def run(self):
-        await self.join("sheepposu727")
+        await self.join("sheepposu")
 
     async def connect(self):
         await self.ws.send(f"PASS {self.oauth}")
