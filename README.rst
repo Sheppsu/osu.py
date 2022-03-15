@@ -8,7 +8,17 @@ osu.py
    :target: https://pypi.python.org/pypi/osu.py
    :alt: PyPI version info
 
-Easy to use API wrapper for osu!api written in Python. 
+Easy to use API wrapper for osu!api written in Python.
+
+Major features/capabilties:
+ - Client class which carries out all api requests.
+ - AsynchronousClient class which is the same as Client but all api request functions are asynchronous.
+ - NotificationWebsocket class for using the notification websocket feature of osu api v2
+ - Objects used to contain almost all the data returned from osu.py for any given api request.
+ - Support for Authorization Code Grant and Client Credentials Grant.
+ - Automatically refresh and manage the access token.
+ - Support for all scopes (even lazer which is an unusable scope).
+ - Documentation that covers everything osu.py is capable of.
 This uses osu!api v2, which is still under development. 
 So some code that was originally working may break overnight. 
 However, I'll do my best to fix any issues I find as quick as possible. 
