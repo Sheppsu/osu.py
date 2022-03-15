@@ -1,8 +1,20 @@
 import setuptools
 import re
 
-with open("osu.py.egg-info/requires.txt", 'r') as f:
-    requirements = f.readlines()
+requirements = [
+    "requests>=2.25.0",
+    "websockets>=9.1"
+]  # Fallback
+
+try:
+    with open("osu.py.egg-info/requires.txt", 'r') as f:
+        requirements = f.readlines()
+except FileNotFoundError:
+    try:
+        with open("requirements.txt", 'r') as f:
+            requirements = f.readlines()
+    except FileNotFoundError:
+        pass
 
 readme = ''
 with open('README.rst') as f:
