@@ -16,8 +16,8 @@ Major features/capabilties:
  - NotificationWebsocket class for using the notification websocket feature of osu api v2
  - Objects used to contain almost all the data returned from osu.py for any given api request.
  - Support for Authorization Code Grant and Client Credentials Grant.
- - Automatically refresh and manage the access token.
- - Support for all scopes (even lazer which is an unusable scope).
+ - Refresh and access token is automatically managed.
+ - Support for all scopes (even lazer which is not usable by the general public).
  - Documentation that covers everything osu.py is capable of.
 This uses osu!api v2, which is still under development. 
 So some code that was originally working may break overnight. 
