@@ -29,9 +29,36 @@ class Client:
         self.http = HTTPHandler(auth, self, limit_per_second)
 
     @classmethod
-    def from_client_credentials(cls, client_id: int, client_secret: str, redirect_url: str, scope: Scope = Scope.default(), last_session_code=None, limit_per_second=1):
+    def from_client_credentials(cls, client_id: int, client_secret: str, redirect_url: str, scope: Scope = Scope.default(), code=None, limit_per_second=1):
+        """
+        Returns a :class:`Client` object from client id, client secret, redirect uri, and scope.
+
+        **Parameters**
+
+        client_id: :class:`int`
+            API Client id
+
+        client_secret: :class:`int`
+            API Client secret
+
+        redirect_uri: :class:`str`
+            API redirect uri
+
+        scope: :class:`Scope`
+            Scopes to use. Default is Scope.default() which is just the public scope.
+
+        code: :class:`str`
+            Optional parameter. If provided, is used to authorize. Read more about this under :class:`AuthHandler.get_auth_token`
+
+        limit_per_second: :class:`float`
+            Read under Client init parameters.
+
+        **Returns**
+
+        :class:`Client`
+        """
         auth = AuthHandler(client_id, client_secret, redirect_url, scope)
-        auth.get_auth_token(last_session_code)
+        auth.get_auth_token(code)
         return cls(auth, limit_per_second)
 
     def lookup_beatmap(self, checksum=None, filename=None, id=None):
