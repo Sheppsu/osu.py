@@ -1,4 +1,5 @@
 from .constants import int_to_status
+from util import get_item_else
 
 
 class Scope:
@@ -105,6 +106,122 @@ class BeatmapCompact:
                 self.beatmapset = BeatmapsetCompact(data['beatmapset'])
         else:
             self.beatmapset = None
+
+
+class BeatmapDifficultyAttributes:
+    """
+    Represent beatmap difficulty attributes. Following fields are always present and then there are additional fields for different rulesets.
+
+    **Attributes**
+
+    The parameters depend on the ruleset, but the following two attributes are present in all rulesets.
+
+    max_combo: :class:`int`
+
+    star_rating: :class:`float`
+
+    osu
+        aim_difficulty: :class:`float`
+
+        approach_rate: :class:`float`
+
+        flashlight_difficulty: :class:`float`
+
+        overall_difficulty: :class:`float`
+
+        slider_factor: :class:`float`
+
+        speed_difficulty: :class:`float`
+
+    taiko
+        stamina_difficulty: :class:`float`
+
+        rhythm_difficulty: :class:`float`
+
+        colour_difficulty: :class:`float`
+
+        approach_rate: :class:`float`
+
+        great_hit_window: :class:`float`
+
+    fruits
+        approach_rate: :class:`float`
+
+    mania
+        great_hit_window: :class:`float`
+
+        score_multiplier: :class:`float`
+    """
+    __slots__ = (
+        "max_combo", "star_rating", "type", "mode_attributes"
+    )
+
+    def __init__(self, data):
+        self.max_combo = data['max_combo']
+        self.star_rating = data['star_rating']
+        if "aim_difficulty" in data:
+            self.type = "osu"
+            self.mode_attributes = OsuBeatmapDifficultyAttributes(data)
+        elif "stamina_difficulty" in data:
+            self.type = "taiko"
+            self.mode_attributes = TaikoBeatmapDifficultyAttributes(data)
+        elif "score_multiplier" in data:
+            self.type = "mania"
+            self.mode_attributes = ManiaBeatmapDifficultyAttributes(data)
+        else:
+            self.type = 'fruits'
+            self.mode_attributes = FruitsBeatmapDifficultyAttributes(data)
+
+    def __getattr__(self, item):
+        return getattr(self.mode_attributes, item)
+
+
+class OsuBeatmapDifficultyAttributes:
+    __slots__ = (
+        "aim_difficulty", "approach_rate", "flashlight_difficulty",
+        "overall_difficulty", "slider_factor", "speed_difficulty"
+    )
+
+    def __init__(self, data):
+        self.aim_difficulty = data['aim_difficulty']
+        self.approach_rate = data['approach_rate']
+        self.flashlight_difficulty = data['flashlight_difficulty']
+        self.overall_difficulty = data['overall_difficulty']
+        self.slider_factor = data['slider_factor']
+        self.speed_difficulty = data['speed_difficulty']
+
+
+class TaikoBeatmapDifficultyAttributes:
+    __slots__ = (
+        "stamina_difficulty", "approach_rate", "rhythm_difficulty",
+        "colour_difficulty", "great_hit_window"
+    )
+
+    def __init__(self, data):
+        self.stamina_difficulty = data['stamina_difficulty']
+        self.approach_rate = data['approach_rate']
+        self.rhythm_difficulty = data['rhythm_difficulty']
+        self.colour_difficulty = data['colour_difficulty']
+        self.great_hit_window = data['great_hit_window']
+
+
+class FruitsBeatmapDifficultyAttributes:
+    __slots__ = (
+        "approach_rate"
+    )
+
+    def __init__(self, data):
+        self.approach_rate = data['approach_rate']
+
+
+class ManiaBeatmapDifficultyAttributes:
+    __slots__ = (
+        "score_multiplier", "great_hit_window"
+    )
+
+    def __init__(self, data):
+        self.score_multiplier = data['score_multiplier']
+        self.great_hit_window = data['great_hit_window']
 
 
 class Failtimes:
@@ -843,6 +960,156 @@ class BeatmapsetDiscussionVote:
         self.score = data['score']
         self.updated_at = data['updated_at']
         self.user_id = data['user']
+
+
+class Build:
+    """
+    **Attributes**
+
+    created_at: :ref:`Timestamp`
+
+    display_version: :class:`str`
+
+    id: :class:`int`
+
+    update_stream: :class:`UpdateStream`
+
+    users: :class:`int`
+
+    version :class:`str`
+
+    **Optional Parameters**
+
+    changelog_entries: :class:`list`
+        list of :class:`ChangelogEntry` objects. If the build has no changelog entries, a placeholder is generated.
+
+    versions: :class:`Versions`
+    """
+    __slots__ = (
+        "created_at", "display_version", "id", "update_stream", "users", "version",
+        "changelog_entries", "versions"
+    )
+
+    def __init__(self, data):
+        self.created_at = data['created_at']
+        self.display_version = data['display_version']
+        self.id = data['id']
+        self.update_stream = UpdateStream(data['update_stream']) if data['update_stream'] else None
+        self.users = data['users']
+        self.version = data['versions']
+        self.changelog_entries = [ChangelogEntry(entry) for entry in data['changelog_entries']] if "changelog_entries" in data else []
+        self.version = Versions(data) if "versions" in data else None
+
+
+class Versions:
+    """
+    **Attributes**
+
+    next: :class:`Build`
+        May be null if there is not a next build.
+
+    previous: :class:`Build`
+        May be null if there is not a previous build.
+    """
+    __slots__ = ("next", "previous")
+
+    def __init__(self, data):
+        self.next = Build(data['next']) if data['next'] else None
+        self.previous = Build(data['previous']) if data['previous'] else None
+
+
+class UpdateStream:
+    __slots__ = ()
+
+    def __init__(self, data):
+        pass
+
+
+class ChangelogEntry:
+    """
+    **Attributes**
+
+    category: :class:`str`
+
+    created_at: :ref:`Timestamp`
+
+    github_pull_request_id: :class:`int`
+
+    github_url: :class:`str`
+
+    id: :class:`int`
+
+    major: :class:`bool`
+
+    repository: :class:`str`
+
+    title: :class:`str`
+
+    type: :class:`str`
+
+    url: :class:`str`
+
+    **Optional Attributes**
+
+    github_user: :class:`GithubUser`
+        If the changelog entry has no GitHub user, a placeholder is generated.
+
+    message: :class:`str`
+        Entry message in Markdown format. Embedded HTML is allowed.
+
+    message_html: :class:`str`
+        Entry message in HTML format.
+    """
+    __slots__ = (
+        "category", "created_at", "github_pull_request_id", "github_url",
+        "id", "major", "repository", "title", "type", "url", "github_user",
+        "message", "message_html"
+    )
+
+    def __init__(self, data):
+        self.category = data['category']
+        self.created_at = data['created_at']
+        self.github_pull_request_id = data['github_pull_request_id']
+        self.github_url = data['github_url']
+        self.id = data['id']
+        self.major = data['major']
+        self.repository = data['repository']
+        self.title = data['title']
+        self.type = data['type']
+        self.url = data['url']
+        self.github_user = GithubUser(data['github_user']) if 'github_user' in data else None
+        self.message = data['message'] if 'message' in data else ''
+        self.message_html = data['message_html'] if 'message_html' in data else ''
+
+
+class GithubUser:
+    """
+    **Attributes**
+
+    display_name: :class:`str`
+
+    github_url: :class:`str`
+
+    id: :class:`int`
+
+    osu_username: :class:`str`
+
+    user_id: :class:`int`
+
+    user_url: :class:`str`
+    """
+    __slots__ = (
+        "display_name", "github_url", "id", "osu_username",
+        "user_id", "user_url"
+    )
+
+    def __init__(self, data):
+        self.display_name = data['display_name']
+        self.github_url = data['github_url']
+        self.id = data['id']
+        self.osu_username = data['osu_username']
+        self.user_id = data['user_id']
+        self.user_url = data['user_url']
 
 
 class ChatChannel:
@@ -1610,6 +1877,77 @@ class MultiplayerScoresAround:
     def __init__(self, data):
         self.higher = MultiplayerScores(data['higher'])
         self.lower = MultiplayerScores(data['lower'])
+
+
+class NewsPost:
+    """
+    **Attributes**
+
+    author: :class:`str`
+
+    edit_url: :class:`str`
+        Link to the file view on GitHub.
+
+    first_image: :class:`str`
+        Link to the first image in the document.
+
+    id: :class:`int`
+
+    published_at: :ref:`Timestamp`
+
+    slug: :class:`str`
+        Filename without the extension, used in URLs.
+
+    title: :class:`str`
+
+    updated_at: :ref:`Timestamp`
+
+    **Optional Attributes**
+
+    content: :class:`str`
+        HTML post content.
+
+    navigation: :class:`Navigation`
+        Navigation metadata.
+
+    preview: :class:`str`
+        First paragraph of content with HTML markup stripped.
+    """
+    __slots__ = (
+        "author", "edit_url", "first_image", "id",
+        "published_at", "slug", "title", "updated_at",
+        "content", "navigation", "preview"
+    )
+
+    def __init__(self, data):
+        self.author = data['author']
+        self.edit_url = data['edit_url']
+        self.first_image = data['first_image']
+        self.id = data['id']
+        self.published_at = data['published_at']
+        self.slug = data['slug']
+        self.title = data['title']
+        self.updated_at = data['updated_at']
+        self.content = get_item_else(data, "content", "")
+        self.navigation = Navigation(data) if "navigation" in data else None
+        self.preview = get_item_else(data, "preview", "")
+
+
+class Navigation:
+    """
+    **Attributes**
+
+    newer: :class:`NewsPost`
+        null if the next post is not present.
+
+    older: :class:`NewsPost`
+        null if the previous post is not present.
+    """
+    __slots__ = ("newer", "older")
+
+    def __init__(self, data):
+        self.newer = NewsPost(data['newer']) if "newer" in data else None
+        self.older = NewsPost(data['older']) if "newer" in data else None
 
 
 class Notification:
