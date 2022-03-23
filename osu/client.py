@@ -99,7 +99,7 @@ class Client:
             Id of the user
 
         mode(optional): :class:`str`
-            The GameMode to get scores for
+            The :ref:`GameMode` to get scores for
 
         mods(optional): :class:`array`
             An array of matching Mods, or none
@@ -109,6 +109,29 @@ class Client:
         :class:`BeatmapUserScore`
         """
         return BeatmapUserScore(self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
+
+    def get_user_beatmap_scores(self, beatmap, user, mode=None):
+        """
+        Returns a :class:`User`'s scores on a Beatmap
+
+        Requires OAuth and scope public
+
+        **Parameters**
+
+        beatmap: :class:`int`
+            Id of the beatmap
+
+        user: :class:`int`
+            Id of the user
+
+        mode(optional): :class:`str`
+            The :ref:`GameMode` to get scores for
+
+        **Returns**
+
+        :class:`Score`[]
+        """
+        return BeatmapUserScore(self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode))
 
     def get_beatmap_scores(self, beatmap, mode=None, mods=None, type=None):
         """
@@ -134,9 +157,9 @@ class Client:
 
         :class:`BeatmapScores`
         """
-        return BeatmapScores(self.http.get(Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
+        return BeatmapScores(self.http.get(Path.beatmap_scores(beatmap)))
 
-    def get_beatmap(self, beatmap):
+    def get_beatmap(self, beatmap, mode=None, mods=None, type=None):
         """
         Gets beatmap data for the specified beatmap ID.
 
@@ -153,6 +176,50 @@ class Client:
             Includes attributes beatmapset, failtimes, and max_combo
         """
         return Beatmap(self.http.get(Path.beatmap(beatmap)))
+
+    def get_beatmaps(self, ids=None):
+        """
+        Returns list of beatmaps.
+
+        Requires OAuth and scope public
+
+        **Parameters**
+
+        ids: :class:`int`[]
+            Beatmap id to be returned. Specify once for each beatmap id requested. Up to 50 beatmaps can be requested at once.
+
+        **Returns**
+
+        :class:`BeatmapCompact`
+            Includes: beatmapset (with ratings), failtimes, max_combo.
+        """
+        return Beatmap(self.http.get(Path.beatmaps(), ids=ids))
+
+    def get_beatmap_attributes(self, beatmap, mods=None, ruleset=None, ruleset_id=None):
+        """
+        Returns difficulty attributes of beatmap with specific mode and mods combination.
+
+        Requires OAuth and scope public
+
+        **Parameters**
+
+        beatmap: :class:`int`
+            Beatmap id.
+
+        mods: :class:`int`|:class:`string`[]|:class:`Mod`[]
+            Mod combination. Can be either a bitset of mods, array of mod acronyms, or array of mods. Defaults to no mods.
+
+        ruleset: :ref:`GameMode`
+            Ruleset of the difficulty attributes. Only valid if it's the beatmap ruleset or the beatmap can be converted to the specified ruleset. Defaults to ruleset of the specified beatmap.
+
+        ruleset_id: :class:`int`
+            The same as ruleset but in integer form.
+
+        **Returns**
+
+        :class:`BeatmapDifficultyAttributes`
+        """
+        return BeatmapDifficultyAttributes(self.http.get(Path.get_beatmap_attributes(beatmap), mods=mods, ruleset=ruleset, ruleset_id=ruleset_id))
 
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id=None, limit=None, page=None, sort=None, user=None, with_deleted=None):
         """
@@ -332,6 +399,102 @@ class Client:
             'reviews_config.max_blocks': resp['reviews_config'],
             'users': [UserCompact(user) for user in resp['users']]
         }
+
+    def get_changelog_build(self, stream, build):
+        """
+        Returns details of the specified build.
+
+        **Parameters**
+
+        stream: :class:`str`
+            Update stream name.
+
+        build: :class:`str`
+            Build version.
+
+        **Returns**
+
+        A :class:`Build` with changelog_entries, changelog_entries.github_user, and versions included.
+        """
+        return Build(self.http.get(Path.get_changelog_build(stream, build)))
+
+    def get_changelog_listing(self, from_version=None, max_id=None, stream=None, to=None, message_formats=None):
+        """
+        Returns a listing of update streams, builds, and changelog entries.
+
+        **Parameters**
+
+        from_version: :class:`str`
+            Minimum build version.
+
+        max_id: :class:`int`
+            Maximum build ID.
+
+        stream: :class:`str`
+            Stream name to return builds from.
+
+        to: :class:`str`
+            Maximum build version.
+
+        message_formats: :class:`str`[]
+            html, markdown. Default to both.
+
+        **Returns**
+
+        {
+
+        "build": :class:`Build`[]
+
+        "search": {
+
+            "from": :class:`str`
+                from_version input.
+
+            "limit": :class:`int`
+                Always 21.
+
+            "max_id": :class:`int`
+                max_id input.
+
+            "stream": :class:`str`
+                stream input.
+
+            "to": :class:`str`
+                to input.
+
+        "streams": :class:`UpdateStream`[]
+
+        }
+
+        }
+        """
+        response = self.http.get(Path.get_changelog_listing(), max_id=max_id, stream=stream, to=to, message_formats=message_formats, **{"from": from_version})
+        return {
+            "build": [Build(build) for build in response['builds']],
+            "search": response['search'],
+            "streams": [UpdateStream(ustream) for ustream in response['streams']],
+        }
+
+    def lookup_changelog_build(self, changelog, key=None, message_formats=None):
+        """
+        Returns details of the specified build.
+
+        **Parameter**
+
+        changelog: :class:`str`
+            Build version, update stream name, or build ID.
+
+        key: :class:`str`
+            Unset to query by build version or stream name, or id to query by build ID.
+
+        message_formats: :class:`str`[]
+            html, markdown. Default to both.
+
+        **Returns**
+
+        A :class:`Build` with changelog_entries, changelog_entries.github_user, and versions included.
+        """
+        return Build(self.http.get(Path.lookup_changelog_build(changelog), key=key, message_formats=message_formats))
 
     def create_new_pm(self, target_id, message, is_action):
         """
@@ -818,7 +981,7 @@ class Client:
         topic: :class:`int`
             Id of the topic.
 
-        cursor: :class:`Cursor`
+        cursor: :class:`dict`
             To be used to fetch the next page of results
 
         sort: :class:`str`
@@ -1011,6 +1174,85 @@ class Client:
         """
         # Doesn't say response type
         return self.http.get(Path.get_score(room, playlist, score))
+
+    def get_news_listing(self, limit=None, year=None, cursor=None):
+        """
+        Returns a list of news posts and related metadata.
+
+        **Parameters**
+
+        limit: :class:`int`
+            Maximum number of posts (12 default, 1 minimum, 21 maximum).
+
+        year: :class:`int`
+            Year to return posts from.
+
+        cursor: :class:`dict`
+            Cursor for pagination.
+
+        **Returns**
+
+        {
+
+        cursor: :class:`dict`
+
+        news_posts: :class:`NewsPost`[]
+            Includes preview.
+
+        news_sidebar: {
+
+            current_year: :class:`int`
+                Year of the first post's publish time, or current year if no posts returned.
+
+            years: :class:`int`
+                All years during which posts have been published.
+
+            news_posts: :class:`NewsPost`[]
+                All posts published during current_year.
+
+        }
+
+        search: {
+
+        limit: :class:`int`
+            Clamped limit input.
+
+        sort: :class:`str`
+            Always published_desc.
+
+        }
+
+        }
+        """
+        response = self.http.get(Path.get_news_listing(), limit=limit, year=year, cursor=cursor)
+        return {
+            "cursor": response['cursor'],
+            "news_posts": [NewsPost(post) for post in response["news_posts"]],
+            "news_sidebar": {
+                "current_year": response['news_sidebar']['current_year'],
+                "years": response['news_sidebar']['years'],
+                "news_posts": [NewsPost(post) for post in response['news_sidebar']['news_posts']],
+            },
+            "search": response['search']
+        }
+
+    def get_news_post(self, news, key=None):
+        """
+        Returns details of the specified news post.
+
+        **Parameters**
+
+        news: class:`str`
+            News post slug or ID.
+
+        key: :class:`str`
+            Unset to query by slug, or id to query by ID.
+
+        **Returns**
+
+        Returns a :class:`NewsPost` with content and navigation included.
+        """
+        return NewsPost(self.http.get(Path.get_news_post(news), key=key))
 
     def get_notifications(self, max_id=None):
         """
