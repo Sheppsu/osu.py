@@ -50,12 +50,17 @@ BeatmapCompact
 ^^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapCompact
    :members:
+   
+BeatmapDifficultyAttributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapDifficultyAttributes
+   :members:
 
 Failtimes
 ^^^^^^^^^
 .. autoclass:: osu.Failtimes
    :members:
-
+wwwwwwwwwwwwwwwwwwwww
 Beatmap
 ^^^^^^^
 .. autoclass:: osu.Beatmap
@@ -104,6 +109,31 @@ Beatmapset
 BeatmapsetDiscussion
 ^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapsetDiscussion
+   :members:
+   
+Build
+^^^^^
+.. autoclass:: osu.Build
+   :members:
+   
+Versions
+^^^^^^^^
+.. autoclass:: osu.Versions
+   :members:
+   
+UpdateStream
+^^^^^^^^^^^^
+.. autoclass:: osu.UpdateStream
+   :members:
+   
+ChangelogEntry
+^^^^^^^^^^^^^^
+.. autoclass:: osu.ChangelogEntry
+   :members:
+   
+GithubUser
+^^^^^^^^^^
+.. autoclass:: osu.GithubUser
    :members:
 
 MessageType
@@ -214,6 +244,16 @@ MultiplayerScores
 MultiplayerScoresAround
 ^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.MultiplayerScoresAround
+   :members:
+   
+NewsPost
+^^^^^^^^
+.. autoclass:: osu.NewsPost
+   :members:
+   
+Navigation
+^^^^^^^^^^
+.. autoclass:: osu.Navigation
    :members:
 
 Notification
