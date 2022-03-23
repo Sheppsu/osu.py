@@ -1,5 +1,5 @@
 from .constants import int_to_status
-from util import get_item_else
+from .util import get_item_else
 
 
 class Scope:
@@ -996,14 +996,14 @@ class Build:
         self.id = data['id']
         self.update_stream = UpdateStream(data['update_stream']) if data['update_stream'] else None
         self.users = data['users']
-        self.version = data['versions']
+        self.version = data['version']
         self.changelog_entries = [ChangelogEntry(entry) for entry in data['changelog_entries']] if "changelog_entries" in data else []
         self.version = Versions(data) if "versions" in data else None
 
 
 class Versions:
     """
-    **Attributes**
+    **Optional Attributes**
 
     next: :class:`Build`
         May be null if there is not a next build.
@@ -1014,15 +1014,41 @@ class Versions:
     __slots__ = ("next", "previous")
 
     def __init__(self, data):
-        self.next = Build(data['next']) if data['next'] else None
-        self.previous = Build(data['previous']) if data['previous'] else None
+        self.next = Build(data['next']) if 'next' in data else None
+        self.previous = Build(data['previous']) if 'previous' in data else None
 
 
 class UpdateStream:
-    __slots__ = ()
+    """
+    **Attributes**
+
+    display_name: :class:`str`
+
+    id: :class:`int`
+
+    is_featured: :class:`bool`
+
+    name: :class:`str`
+
+    **Optional Attributes**
+
+    latest_build: :class:`Build`
+
+    user_count: :class:`number`
+    """
+    __slots__ = (
+        "display_name", "id", "is_featured", "name",
+        "latest_build", "user_count"
+    )
 
     def __init__(self, data):
-        pass
+        self.display_name = data['display_name']
+        self.id = data['id']
+        self.is_featured = data['is_featured']
+        self.name = data['name']
+        self.latest_build = Build(data['latest_build']) if 'latest_build' in data else None
+        self.user_count = data['user_count'] if 'user_count' in data else None
+
 
 
 class ChangelogEntry:
@@ -2771,12 +2797,24 @@ class Path:
         return cls(f"beatmaps/{beatmap}/scores/users/{user}", 'public')
 
     @classmethod
+    def user_beatmap_scores(cls, beatmap, user):
+        return cls(f"beatmaps/{beatmap}/scores/users/{user}/all", 'public')
+
+    @classmethod
     def beatmap_scores(cls, beatmap):
         return cls(f"beatmaps/{beatmap}/scores", 'public')
 
     @classmethod
     def beatmap(cls, beatmap):
         return cls(f"beatmaps/{beatmap}", 'public')
+
+    @classmethod
+    def beatmaps(cls):
+        return cls("beatmaps", 'public')
+
+    @classmethod
+    def get_beatmap_attributes(cls, beatmap):
+        return cls(f"beatmaps/{beatmap}/attributes", 'public')
 
     @classmethod
     def beatmapset_discussion_posts(cls):
@@ -2789,6 +2827,18 @@ class Path:
     @classmethod
     def beatmapset_discussions(cls):
         return cls('beatmapsets/discussions', 'public')
+
+    @classmethod
+    def get_changelog_build(cls, stream, build):
+        return cls(f"changelog/{stream}/{build}", Scope())
+
+    @classmethod
+    def get_changelog_listing(cls):
+        return cls('changelog', Scope())
+
+    @classmethod
+    def lookup_changelog_build(cls, changelog):
+        return cls(f'changelog/{changelog}', Scope())
 
     @classmethod
     def create_new_pm(cls):
@@ -2893,6 +2943,14 @@ class Path:
     @classmethod
     def get_score(cls, room, playlist, score):
         return cls(f'rooms/{room}/playlist/{playlist}/scores/{score}', 'lazer')
+
+    @classmethod
+    def get_news_listing(cls):
+        return cls('news', Scope())
+
+    @classmethod
+    def get_news_post(cls, news):
+        return cls(f'news/{news}', Scope())
 
     @classmethod
     def get_notifications(cls):
