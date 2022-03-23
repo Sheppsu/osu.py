@@ -65,5 +65,6 @@ Example
     user = client.get_user(user_id, mode)
     print(user.username)
 
-You can see more examples `here <https://github.com/Sheepposu/osu.py/tree/main/examples>`_ and
-to learn more you can go to the documentation `here <https://osupy.readthedocs.io/en/latest/>`_
+You can see more examples `here <https://github.com/Sheepposu/osu.py/tree/main/examples>`_, 
+check out the `guide <https://osupy.readthedocs.io/en/latest/guide.html>`_ if you're new to osu.py, and 
+to learn more you can go to the `documentation <https://osupy.readthedocs.io/en/latest/>`_
