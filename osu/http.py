@@ -28,7 +28,7 @@ class HTTPHandler:
             self.rate_limit.wait()
 
         scope_required = path.scope
-        if scope_required.scopes not in self.client.auth.scope:
+        if scope_required.scopes not in self.client.auth.scope and scope_required.scopes != "":
             raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
 
         headers = self.get_headers(**headers)
