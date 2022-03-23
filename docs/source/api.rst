@@ -60,7 +60,7 @@ Failtimes
 ^^^^^^^^^
 .. autoclass:: osu.Failtimes
    :members:
-wwwwwwwwwwwwwwwwwwwww
+
 Beatmap
 ^^^^^^^
 .. autoclass:: osu.Beatmap
