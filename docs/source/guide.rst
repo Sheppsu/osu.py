@@ -87,8 +87,7 @@ You can create a Scope object in any of the ways shown below.
 
 	scope = Scope.default()  # public
 	scope = Scope.identify() # public, identify
-	scope = Scope(["pubic", "identify", "friends.read"])
-	scope = Scope("public identify chat.write")
+	scope = Scope("pubic", "identify", "friends.read")
 	
 You can see a list of all valid scopes and their descriptions either on the `official osu!api v2 documentation <https://osu.ppy.sh/docs/index.html#scopes>`_ or on the `osu.py documentation of the Scope class <api.html#osu.Scope>`_.
 
