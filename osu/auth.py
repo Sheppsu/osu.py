@@ -33,7 +33,7 @@ class AuthHandler:
 
     scope: :class:`Scope`
         Scope object helps the program identify what requests you can
-        and can't make with your scope. Default is 'identify' (Scope.default())
+        and can't make with your scope. Default is 'public' (Scope.default())
     """
     def __init__(self, client_id: int, client_secret: str, redirect_url: str, scope: Scope = Scope.default()):
         if scope == 'lazer':
