@@ -158,8 +158,7 @@ class Beatmap(BeatmapCompact):
 
     cs: :class:`float`
 
-    deleted_at: :class:`Timestamp`
-        :class:`Timestamp`
+    deleted_at: :ref:`Timestamp`
 
     drain: :class:`float`
 
@@ -167,8 +166,7 @@ class Beatmap(BeatmapCompact):
 
     is_scoreable: :class:`bool`
 
-    last_updated: :class:`Timestamp`
-        :class:`Timestamp`
+    last_updated: :ref:`Timestamp`
 
     mode_int: :class:`int`
 
@@ -292,7 +290,7 @@ class Score:
 
     rank: :class:`int`
 
-    created_at: :class:`Timestamp`
+    created_at: :ref:`Timestamp`
 
     mode: :class:`str`
 
@@ -556,20 +554,20 @@ class Beatmapset(BeatmapsetCompact):
 
     is_scoreable: :class:`bool`
 
-    last_updated: :class:`Timestamp`
+    last_updated: :ref:`Timestamp`
 
     legacy_thread_url: :class:`str`
 
     ranked: :class:`str`
         Possible values consist of graveyard, wip, pending, ranked, approved, qualified, loved
 
-    ranked_date: :class:`Timestamp`
+    ranked_date: :ref:`Timestamp`
 
     source: :class:`str`
 
     storyboard: :class:`bool`
 
-    submitted_date: :class:`Timestamp`
+    submitted_date: :ref:`Timestamp`
 
     tags: :class:`str`
     """
@@ -623,11 +621,11 @@ class BeatmapsetDiscussion:
 
     can_grant_kudosu: :class:`bool`
 
-    created_at: :class:`Timestamp`
+    created_at: :ref:`Timestamp`
 
     current_user_attributes: :class:`CurrentUserAttributes`
 
-    deleted_at: :class:`Timestamp`
+    deleted_at: :ref:`Timestamp`
 
     deleted_by_id: :class:`int`
 
@@ -635,7 +633,7 @@ class BeatmapsetDiscussion:
 
     kudosu_denied: :class:`bool`
 
-    last_post_at: :class:`Timestamp`
+    last_post_at: :ref:`Timestamp`
 
     message_type: :class:`MessageType`
         :class:`MessageType` can be one of the following, all of which being :class:`str`, hype, mapper_note, praise, review, suggestion
@@ -651,7 +649,7 @@ class BeatmapsetDiscussion:
 
     timestamp: :class:`int`
 
-    updated_at: :class:`Timestamp`
+    updated_at: :ref:`Timestamp`
 
     user_id: :class:`int`
 
@@ -779,9 +777,9 @@ class BeatmapsetDiscussionPost:
 
     beatmapset_discussion_id: :class:`int`
 
-    created_at: :class:`Timestamp`
+    created_at: :ref:`Timestamp`
 
-    deleted_at: :class:`Timestamp`
+    deleted_at: :ref:`Timestamp`
 
     deleted_by_id: :class:`int`
 
@@ -793,7 +791,7 @@ class BeatmapsetDiscussionPost:
 
     system: :class:`bool`
 
-    updated_at: :class:`Timestamp`
+    updated_at: :ref:`Timestamp`
 
     user_id: :class:`int`
     """
@@ -823,13 +821,13 @@ class BeatmapsetDiscussionVote:
 
     beatmapset_discussion_id: :class:`int`
 
-    created_at: :class:`Timestamp`
+    created_at: :ref:`Timestamp`
 
     id: :class:`int`
 
     score: :class:`int`
 
-    updated_at: :class:`Timestamp`
+    updated_at: :ref:`Timestamp`
 
     user_id: :class:`int`
     """
@@ -972,13 +970,13 @@ class Comment:
     commentable_type: :class:`str`
         type of object the comment is attached to
 
-    created_at: :class:`Timestamp`
+    created_at: :ref:`Timestamp`
         ISO 8601 date
 
-    deleted_at: :class:`Timestamp`
+    deleted_at: :ref:`Timestamp`
         ISO 8601 date if the comment was deleted; null, otherwise
 
-    edited_at: :class:`Timestamp`
+    edited_at: :ref:`Timestamp`
         ISO 8601 date if the comment was edited; null, otherwise
 
     edited_by_id: :class:`int`
@@ -1005,7 +1003,7 @@ class Comment:
     replies_count: :class:`int`
         number of replies to the comment
 
-    updated_at: :class:`Timestamp`
+    updated_at: :ref:`Timestamp`
         ISO 8601 date
 
     user_id: :class:`int`
@@ -1142,7 +1140,7 @@ class Event:
 
     **Attributes**
 
-    created_at: :class:`Timestamp`
+    created_at: :ref:`Timestamp`
 
     id: :class:`int`
 
@@ -1295,11 +1293,11 @@ class ForumPost:
     """
     **Attributes**
 
-    created_at: :class:`Timestamp`
+    created_at: :ref:`Timestamp`
 
-    deleted_at: :class:`Timestamp`
+    deleted_at: :ref:`Timestamp`
 
-    edited_at: :class:`Timestamp`
+    edited_at: :ref:`Timestamp`
 
     edited_by_id: :class:`int`
 
@@ -1337,9 +1335,9 @@ class ForumTopic:
     """
     **Attributes**
 
-    created_at: :class:`Timestamp`
+    created_at: :ref:`Timestamp`
 
-    deleted_at: :class:`Timestamp`
+    deleted_at: :ref:`Timestamp`
 
     first_post_id: :class:`int`
 
@@ -1358,7 +1356,7 @@ class ForumTopic:
     type: :class:`str`
         normal, sticky, or announcement
 
-    updated_at: :class:`Timestamp`
+    updated_at: :ref:`Timestamp`
 
     user_id: :class:`int`
     """
@@ -1441,7 +1439,7 @@ class KudosuHistory:
     model: :class:`str`
         Object type which the exchange happened on (forum_post, etc).
 
-    created_at: :class:`Timestamp`
+    created_at: :ref:`Timestamp`
 
     giver: :class:`Giver`
         Simple detail of the user who started the exchange.
@@ -1880,7 +1878,7 @@ class Spotlight:
         The ID of this spotlight.
 
     mode_specific: :class:`bool`
-        If the spotlight has different mades specific to each GameMode.
+        If the spotlight has different mades specific to each :ref:`GameMode`.
 
     name: :class:`str`
         The name of the spotlight.
@@ -1958,7 +1956,7 @@ class UserCompact:
     is_supporter: :class:`bool`
         does this user have supporter?
 
-    last_visit: :class:`Timestamp`
+    last_visit: :ref:`Timestamp`
         null if the user hides online presence
 
     pm_friends_only: :class:`bool`
@@ -2081,7 +2079,7 @@ class User(UserCompact):
 
     interests: :class:`str`
 
-    join_date: :class:`Timestamp`
+    join_date: :ref:`Timestamp`
 
     kudosu: :class:`dict`
         a map containing keys total and available
@@ -2096,7 +2094,7 @@ class User(UserCompact):
 
     occupation: :class:`str`
 
-    playmode: :class:`GameMode`
+    playmode: :ref:`GameMode`
 
     playstyle: :class:`list`
         list containing objects of type :class:`str`. Device choices of the user.
@@ -2211,7 +2209,7 @@ class UserAccountHistory:
     type: :class:`str`
         Can be one of the following: note, restriction, or silence.
 
-    timestamp: :class:`Timestamp`
+    timestamp: :ref:`Timestamp`
 
     length: :class:`int`
         In seconds.
@@ -2231,7 +2229,7 @@ class UserBadge:
     """
     **Attributes**
 
-    awarded_at: :class:`Timestamp`
+    awarded_at: :ref:`Timestamp`
 
     description: :class:`str`
 
@@ -2289,7 +2287,7 @@ class UserGroup(Group):
 
 class UserStatistics:
     """
-    A summary of various gameplay statistics for a User. Specific to a GameMode
+    A summary of various gameplay statistics for a User. Specific to a :ref:`GameMode`
 
     **Attributes**
 

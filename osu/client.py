@@ -584,13 +584,13 @@ class Client:
             The id of the resource to get comments for.
 
         cursor: :class:`dict`
-            Pagination option. See CommentSort for detail. The format follows Cursor except it's not currently included in the response.
+            Pagination option. See :ref:`CommentSort` for detail. The format follows Cursor except it's not currently included in the response.
 
         parent_id: :class:`int`
             Limit to comments which are reply to the specified id. Specify 0 to get top level comments.
 
         sort: :class:`str`
-            Sort option as defined in CommentSort. Defaults to new for guests and user-specified default when authenticated.
+            Sort option as defined in :ref:`CommentSort`. Defaults to new for guests and user-specified default when authenticated.
 
         **Returns**
 
@@ -979,7 +979,7 @@ class Client:
             Number of scores to be returned.
 
         sort: :class:`str`
-            MultiplayerScoresSort parameter.
+            :ref:`MultiplayerScoresSort` parameter.
 
         cursor: :class:`dict`
 
@@ -1079,7 +1079,7 @@ class Client:
             GameMode
 
         type: :class:`str`
-            RankingType
+            :ref:`RankingType`
 
         country: :class:`str`
             Filter ranking by country code. Only available for type of performance.

@@ -1,3 +1,8 @@
+"""
+Note: Docstrings in this file may be outdated due to laziness of not copying
+over docstring edits in the osu/client.py file.
+"""
+
 from .http import AsynchronousHTTPHandler
 from ..objects import *
 from ..auth import AuthHandler
@@ -1063,7 +1068,7 @@ class AsynchronousClient:
             GameMode
 
         type: :class:`str`
-            RankingType
+            :ref:`RankingType`
 
         country: :class:`str`
             Filter ranking by country code. Only available for type of performance.
