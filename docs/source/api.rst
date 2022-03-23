@@ -16,12 +16,6 @@ This page covers *everything* osu.py is capable of.
 
 Interactive Classes
 -------------------
-AuthHandler
-^^^^^^^^^^^
-
-.. autoclass:: osu.AuthHandler
-    :members:
-
 Client
 ^^^^^^
 
@@ -32,6 +26,12 @@ AsynchronousClient
 ^^^^^^^^^^^^^^^^^^
 
 .. autoclass:: osu.AsynchronousClient
+
+AuthHandler
+^^^^^^^^^^^
+
+.. autoclass:: osu.AuthHandler
+    :members:
 
 NotificationWebsocket
 ^^^^^^^^^^^^^^^^^^^^^
@@ -289,6 +289,9 @@ WikiPage
 
 Other Information
 -----------------
+
+.. _GameMode:
+
 GameMode
 ^^^^^^^^
 
@@ -297,9 +300,13 @@ Each GameMode has its own api name which is to be used instead of it's actual na
 .. csv-table:: GameMode
    :file: _static/GameMode.csv
 
+.. _Timestamp:
+
 Timestamp
 ^^^^^^^^^
 Timestamp string in ISO 8601 format.
+
+.. _CommentSort:
 
 CommentSort
 ^^^^^^^^^^^
@@ -309,6 +316,8 @@ Available sort types are new, old, top.
 .. csv-table:: CommentSort
    :file: _static/CommentSort.csv
 
+.. _MultiplayerScoresSort:
+
 MultiplayerScoresSort
 ^^^^^^^^^^^^^^^^^^^^^
 
@@ -316,6 +325,8 @@ Sort option for multiplayer scores index.
 
 .. csv-table:: MultiplayerScoresSort
    :file: _static/MultiplayerScoresSort.csv
+
+.. _RankingType:
 
 RankingType
 ^^^^^^^^^^^^^^^^^^^^^
