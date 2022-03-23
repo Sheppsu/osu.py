@@ -26,3 +26,7 @@ def create_autoclass_for_sphinx():
                     f2.close()
             info = f.readline()
         f.close()
+
+
+def get_item_else(data, key, default):
+    return data[key] if key in data else default
