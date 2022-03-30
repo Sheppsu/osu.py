@@ -242,14 +242,6 @@ class Failtimes:
         if 'fail' in data:
             self.fail = data['fail']
 
-    @property
-    def type(self):
-        if getattr(self, 'exit', None) is None:
-            return 'fail'
-        if getattr(self, 'fail', None) is None:
-            return 'exit'
-        return 'both'
-
 
 class Beatmap(BeatmapCompact):
     """
