@@ -8,7 +8,7 @@ osu.py
    :target: https://pypi.python.org/pypi/osu.py
    :alt: PyPI version info
 
-Easy to use API wrapper for osu!api written in Python.
+Easy to use API wrapper for osu!api v2 written in Python.
 
 Major features/capabilties:
  - Client class which carries out all api requests.
