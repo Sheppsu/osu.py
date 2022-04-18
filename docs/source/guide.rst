@@ -6,7 +6,7 @@ Structure of osu.py
 There are three classes responsible for making and assisting with api requests/authentication. 
 The Client class contains a function for all documented api requests. 
 For each request, a path object is made and passed to the HTTPHandler class. 
-The HTTPHandler class makes all checks the user's scopes against the url required scopes and makes the request with the given info. 
+The HTTPHandler class checks the user's scopes against the url required scopes and makes the request with the given info. 
 The data returned from the endpoint is then formatted correctly and returned. 
 The third class is the AuthHandler class. 
 This class handles everything around authorizing with the api.
