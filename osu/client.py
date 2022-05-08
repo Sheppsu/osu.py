@@ -44,13 +44,13 @@ class Client:
         redirect_uri: :class:`str`
             API redirect uri
 
-        scope: :class:`Scope`
+        scope: Optional[:class:`Scope`]
             Scopes to use. Default is Scope.default() which is just the public scope.
 
-        code: :class:`str`
-            Optional parameter. If provided, is used to authorize. Read more about this under :class:`AuthHandler.get_auth_token`
+        code: Optional[:class:`str`]
+            If provided, is used to authorize. Read more about this under :class:`AuthHandler.get_auth_token`
 
-        limit_per_second: :class:`float`
+        limit_per_second: Optional[:class:`float`]
             Read under Client init parameters.
 
         **Returns**
@@ -69,13 +69,13 @@ class Client:
 
         **Parameters**
 
-        checksum(optional): :class:`str`
+        checksum: Optional[:class:`str`]
             A beatmap checksum.
 
-        filename(optional): :class:`str`
+        filename: Optional[:class:`str`]
             A filename to lookup
 
-        id(optional): :class:`int`
+        id: Optional[:class:`int`]
             A beatmap ID to lookup
 
         **Returns**
@@ -98,10 +98,10 @@ class Client:
         user: :class:`int`
             Id of the user
 
-        mode(optional): :class:`str`
+        mode: Optional[:class:`str`]
             The :ref:`GameMode` to get scores for
 
-        mods(optional): :class:`array`
+        mods: Optional[List[:class:`str`]]
             An array of matching Mods, or none
 
         **Returns**
@@ -144,13 +144,13 @@ class Client:
         beatmap: :class:`int`
             Id of the beatmap
 
-        mode(optional): :class:`str`
+        mode: Optional[:class:`str`]
             The GameMode to get scores for
 
-        mods(optional): :class:`array`
+        mods: Optional[List[:class:`str`]]
             An array of matching Mods, or none
 
-        type(optional): :class:`str`
+        type: Optional[List[:class:`str`]]
             Beatmap score ranking type
 
         **Returns**
@@ -159,7 +159,7 @@ class Client:
         """
         return BeatmapScores(self.http.get(Path.beatmap_scores(beatmap)))
 
-    def get_beatmap(self, beatmap, mode=None, mods=None, type=None):
+    def get_beatmap(self, beatmap):
         """
         Gets beatmap data for the specified beatmap ID.
 
@@ -185,12 +185,12 @@ class Client:
 
         **Parameters**
 
-        ids: :class:`int`[]
+        ids: Optional[List[:class:`int`]]
             Beatmap id to be returned. Specify once for each beatmap id requested. Up to 50 beatmaps can be requested at once.
 
         **Returns**
 
-        :class:`BeatmapCompact`
+        List[:class:`BeatmapCompact`]
             Includes: beatmapset (with ratings), failtimes, max_combo.
         """
         return Beatmap(self.http.get(Path.beatmaps(), ids=ids))
@@ -206,13 +206,13 @@ class Client:
         beatmap: :class:`int`
             Beatmap id.
 
-        mods: :class:`int`|:class:`string`[]|:class:`Mod`[]
+        mods: Optional[Union[:class:`int`, List[:class:`str`], List[:class:`Mod`]]]
             Mod combination. Can be either a bitset of mods, array of mod acronyms, or array of mods. Defaults to no mods.
 
-        ruleset: :ref:`GameMode`
+        ruleset: Optional[:ref:`GameMode`]
             Ruleset of the difficulty attributes. Only valid if it's the beatmap ruleset or the beatmap can be converted to the specified ruleset. Defaults to ruleset of the specified beatmap.
 
-        ruleset_id: :class:`int`
+        ruleset_id: Optional[:class:`int`]
             The same as ruleset but in integer form.
 
         **Returns**
@@ -229,22 +229,22 @@ class Client:
 
         **Parameters**
 
-        beatmapset_discussion_id: :class:`id`
+        beatmapset_discussion_id: Optional[:class:`id`]
             id of the BeatmapsetDiscussion
 
-        limit: :class:`id`
+        limit: Optional[:class:`id`]
             Maximum number of results
 
-        page: :class:`int`
+        page: Optional[:class:`int`]
             Search results page.
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             id_desc for newest first; id_asc for oldest first. Defaults to id_desc
 
-        user: :class:`int`
+        user: Optional[:class:`int`]
             The id of the User
 
-        with_deleted
+        with_deleted: Optional[:class:`str`]
             The param has no effect as api calls do not currently receive group permissions
 
         **Returns**
@@ -255,7 +255,7 @@ class Client:
 
             cursor: :class:`dict`,
 
-            posts: [ :class:`BeatmapsetDiscussionPost`, ...],
+            posts: List[:class:`BeatmapsetDiscussionPost`],
 
             users: :class:`UserCompact`
             }
@@ -278,28 +278,28 @@ class Client:
 
         **Parameters**
 
-        beatmapset_discussion_id: :class:`id`
+        beatmapset_discussion_id: Optional[:class:`id`]
             id of the BeatmapsetDiscussion
 
-        limit: :class:`id`
+        limit: Optional[:class:`id`]
             Maximum number of results
 
-        page: :class:`int`
+        page: Optional[:class:`int`]
             Search results page.
 
-        receiver: :class:`int`
+        receiver: Optional[:class:`int`]
             The id of the User receiving the votes.
 
-        score: :class:`int`
+        score: Optional[:class:`int`]
             1 for upvote, -1 for downvote
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             id_desc for newest first; id_asc for oldest first. Defaults to id_desc
 
-        user: :class:`int`
+        user: Optional[:class:`int`]
             The id of the User giving the votes.
 
-        with_deleted
+        with_deleted: Optional[:class:`str`]
             The param has no effect as api calls do not currently receive group permissions
 
         **Returns**
@@ -312,7 +312,7 @@ class Client:
 
             users: :class:`UserCompact`,
 
-            votes: [ :class:`BeatmapsetDiscussionVote`, ...]
+            votes: List[:class:`BeatmapsetDiscussionVote`]
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
@@ -333,34 +333,34 @@ class Client:
 
         **Parameters**
 
-        beatmap_id: :class:`int`
+        beatmap_id: Optional[:class:`int`]
             id of the Beatmap
 
-        beatmapset_id: :class:`int`
+        beatmapset_id: Optional[:class:`int`]
             id of the Beatmapset
 
-        beatmapset_status: :class:`str`
+        beatmapset_status: Optional[:class:`str`]
             One of all, ranked, qualified, disqualified, never_qualified. Defaults to all.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        message_types[]: :class:`str`
+        message_types: Optional[List[:class:`str`]]
             suggestion, problem, mapper_note, praise, hype, review. Blank defaults to all types.
 
-        only_unresolved: :class:`bool`
+        only_unresolved: Optional[:class:`bool`]
             true to show only unresolved issues; false, otherwise. Defaults to false.
 
-        page: :class:`int`
+        page: Optional[:class:`int`]
             Search result page.
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             id_desc for newest first; id_asc for oldest first. Defaults to id_desc.
 
-        user: :class:`int`
+        user: Optional[:class:`int`]
             The id of the User.
 
-        with_deleted
+        with_deleted: Optional[:class:`str`]
             This param has no effect as api calls do not currently receive group permissions.
 
         **Returns**
@@ -368,21 +368,21 @@ class Client:
         :class:`dict`
             {
 
-            beatmaps: [ :class:`Beatmap`, ...],
+            beatmaps: List[:class:`Beatmap`],
                 List of beatmaps associated with the discussions returned.
 
             cursor: :class:`dict`,
 
-            discussions: [ :class:`BeatmapsetDiscussion`, ...],
+            discussions: List[:class:`BeatmapsetDiscussion`],
                 List of discussions according to sort order.
 
-            included_discussions: [ :class:`BeatmapsetDiscussion`, ...],
+            included_discussions: List[:class:`BeatmapsetDiscussion`],
                 Additional discussions related to discussions.
 
-            reviews_config.max_blocks: :class:`int`
+            reviews_config.max_blocks: :class:`int`,
                 Maximum number of blocks allowed in a review.
 
-            users: [ :class:`UserCompact`, ...]
+            users: List[:class:`UserCompact`]
                 List of users associated with the discussions returned.
 
             }
@@ -424,26 +424,26 @@ class Client:
 
         **Parameters**
 
-        from_version: :class:`str`
+        from_version: Optional[:class:`str`]
             Minimum build version.
 
-        max_id: :class:`int`
+        max_id: Optional[:class:`int`]
             Maximum build ID.
 
-        stream: :class:`str`
+        stream: Optional[:class:`str`]
             Stream name to return builds from.
 
-        to: :class:`str`
+        to: Optional[:class:`str`]
             Maximum build version.
 
-        message_formats: :class:`str`[]
+        message_formats: Optional[List[:class:`str`]]
             html, markdown. Default to both.
 
         **Returns**
 
         {
 
-        "build": :class:`Build`[]
+        "build": List[:class:`Build`]
 
         "search": {
 
@@ -462,7 +462,7 @@ class Client:
             "to": :class:`str`
                 to input.
 
-        "streams": :class:`UpdateStream`[]
+        "streams": List[:class:`UpdateStream`]
 
         }
 
@@ -484,10 +484,10 @@ class Client:
         changelog: :class:`str`
             Build version, update stream name, or build ID.
 
-        key: :class:`str`
+        key: Optional[:class:`str`]
             Unset to query by build version or stream name, or id to query by build ID.
 
-        message_formats: :class:`str`[]
+        message_formats: List[:class:`str`]
             html, markdown. Default to both.
 
         **Returns**
@@ -521,7 +521,7 @@ class Client:
             new_channel_id: :class:`int`
                 channel_id of newly created ChatChannel
 
-            presence: [ :class:`ChatChannel`, ...]
+            presence: List[:class:`ChatChannel`]
                 array of ChatChannel
 
             message: :class:`ChatMessage`
@@ -548,19 +548,19 @@ class Client:
         since: :class:`int`
             The message_id of the last message to retrieve messages since
 
-        channel_id: :class:`int`
+        channel_id: Optional[:class:`int`]
             If provided, will only return messages for the given channel
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             number of messages to return (max of 50)
 
         **Returns**
 
         :class:`dict`
             {
-            presence: [ :class:`ChatChannel`, ...],
+            presence: List[:class:`ChatChannel`],
 
-            messages: [ :class:`ChatMessage`, ...]
+            messages: List[:class:`ChatMessage`]
 
             }
         """
@@ -582,19 +582,19 @@ class Client:
         channel_id: :class:`int`
             The ID of the channel to retrieve messages for
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             number of messages to return (max of 50)
 
-        since: :class:`int`
+        since: Optional[:class:`int`]
             messages after the specified message id will be returned
 
-        until: :class:`int`
+        until: Optional[:class:`int`]
             messages up to but not including the specified message id will be returned
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type :class:`ChatMessage`
+        List[:class:`ChatMessage`]
+            list containing :class:`ChatMessage` objects
         """
         return [ChatMessage(msg) for msg in self.http.post(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)]
 
@@ -694,7 +694,7 @@ class Client:
         type: :class:`str`
             channel type (currently only supports "PM")
 
-        target_id: :class:`int`
+        target_id: Optional[:class:`int`]
             target user id for type PM
 
         **Returns**
@@ -740,19 +740,19 @@ class Client:
 
         **Parameter**
 
-        commentable_type: :class:`str`
+        commentable_type: Optional[:class:`str`]
             The type of resource to get comments for.
 
-        commentable_id: :class:`int`
+        commentable_id: Optional[:class:`int`]
             The id of the resource to get comments for.
 
-        cursor: :class:`dict`
+        cursor: Optional[:class:`dict`]
             Pagination option. See :ref:`CommentSort` for detail. The format follows Cursor except it's not currently included in the response.
 
-        parent_id: :class:`int`
+        parent_id: Optional[:class:`int`]
             Limit to comments which are reply to the specified id. Specify 0 to get top level comments.
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             Sort option as defined in :ref:`CommentSort`. Defaults to new for guests and user-specified default when authenticated.
 
         **Returns**
@@ -771,16 +771,16 @@ class Client:
 
         **Parameter**
 
-        commentable_id: :class:`int`
+        commentable_id: Optional[:class:`int`]
             Resource ID the comment thread is attached to
 
-        commentable_type: :class:`str`
+        commentable_type: Optional[:class:`str`]
             Resource type the comment thread is attached to
 
-        message: :class:`str`
+        message: Optional[:class:`str`]
             Text of the comment
 
-        parent_id: :class:`int`
+        parent_id: Optional[:class:`int`]
             The id of the comment to reply to, null if not a reply
 
         **Returns**
@@ -823,7 +823,7 @@ class Client:
         comment: :class:`int`
             Comment id
 
-        message: :class:`str`
+        message: Optional[:class:`str`]
             New text of the comment
 
         **Returns**
@@ -923,25 +923,25 @@ class Client:
         title: :class:`str`
             Title of the topic.
 
-        with_poll: :class:`bool`
+        with_poll: Optional[:class:`bool`]
             Enable this to also create poll in the topic (default: false).
 
-        hide_results: :class:`bool`
+        hide_results: Optional[:class:`bool`]
             Enable this to hide result until voting period ends (default: false).
 
-        length_days: :class:`int`
+        length_days: Optional[:class:`int`]
             Number of days for voting period. 0 means the voting will never ends (default: 0). This parameter is required if hide_results option is enabled.
 
-        max_options: :class:`int`
+        max_options: Optional[:class:`int`]
             Maximum number of votes each user can cast (default: 1).
 
-        poll_options: :class:`str`
+        poll_options: Optional[:class:`str`]
             Newline-separated list of voting options. BBCode is supported.
 
-        poll_title: :class:`str`
+        poll_title: Optional[:class:`str`]
             Title of the poll.
 
-        vote_change: :class:`bool`
+        vote_change: Optional[:class:`bool`]
             Enable this to allow user to change their votes (default: false).
 
         **Returns**
@@ -981,19 +981,19 @@ class Client:
         topic: :class:`int`
             Id of the topic.
 
-        cursor: :class:`dict`
+        cursor: Optional[:class:`dict`]
             To be used to fetch the next page of results
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             Post sorting option. Valid values are id_asc (default) and id_desc.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of posts to be returned (20 default, 50 at most).
 
-        start: :class:`int`
+        start: Optional[:class:`int`]
             First post id to be returned with sort set to id_asc. This parameter is ignored if cursor is specified.
 
-        end: :class:`int`
+        end: Optional[:class:`int`]
             First post id to be returned with sort set to id_desc. This parameter is ignored if cursor is specified.
 
         **Returns**
@@ -1004,7 +1004,7 @@ class Client:
 
             search: :class:`dict`,
 
-            posts: [ :class:`ForumPost`, ...],
+            posts: List[:class:`ForumPost`],
 
             topic: :class:`ForumTopic`
 
@@ -1066,13 +1066,13 @@ class Client:
 
         **Parameters**
 
-        mode: :class:`str`
+        mode: Optional[:class:`str`]
             Either all, user, or wiki_page. Default is all.
 
-        query: :class:`str`
+        query: Optional[:class:`str`]
             Search keyword.
 
-        page: :class:`int`
+        page: Optional[:class:`int`]
             Search result page. Ignored for mode all.
 
         **Returns**
@@ -1083,7 +1083,7 @@ class Client:
             user: :class:`dict`
                 For all or user mode. Only first 100 results are accessible
                 {
-                results: :class:`list`
+                results: List
 
                 total: :class:`int`
                 }
@@ -1091,7 +1091,7 @@ class Client:
             wiki_page: :class:`dict`
                 For all or wiki_page mode
                 {
-                results: :class:`list`
+                results: List
 
                 total: :class:`int`
                 }
@@ -1121,10 +1121,10 @@ class Client:
 
         **Returns**
 
-        Return type is undocumented
+        :class:`MultiplayerScores`
         """
         # Doesn't say response type
-        return self.http.get(Path.get_user_high_score(room, playlist, user))
+        return MultiplayerScores(self.http.get(Path.get_user_high_score(room, playlist, user)))
 
     def get_scores(self, room, playlist, limit=None, sort=None, cursor=None):
         """
@@ -1138,20 +1138,20 @@ class Client:
         playlist: :class:`int`
             Id of the playlist item.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Number of scores to be returned.
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             :ref:`MultiplayerScoresSort` parameter.
 
-        cursor: :class:`dict`
+        cursor: Optional[:class:`dict`]
 
         **Returns**
 
-        Return type is undocumented
+        :class:`MultiplayerScores`
         """
         # Doesn't say response type
-        return self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {})
+        return MultiplayerScores(self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {}))
 
     def get_score(self, room, playlist, score):
         """
@@ -1170,10 +1170,10 @@ class Client:
 
         **Returns**
 
-        Return type is undocumented
+        :class:`MultiplayerScore`
         """
         # Doesn't say response type
-        return self.http.get(Path.get_score(room, playlist, score))
+        return MultiplayerScore(self.http.get(Path.get_score(room, playlist, score)))
 
     def get_news_listing(self, limit=None, year=None, cursor=None):
         """
@@ -1181,13 +1181,13 @@ class Client:
 
         **Parameters**
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of posts (12 default, 1 minimum, 21 maximum).
 
-        year: :class:`int`
+        year: Optional[:class:`int`]
             Year to return posts from.
 
-        cursor: :class:`dict`
+        cursor: Optional[:class:`dict`]
             Cursor for pagination.
 
         **Returns**
@@ -1196,7 +1196,7 @@ class Client:
 
         cursor: :class:`dict`
 
-        news_posts: :class:`NewsPost`[]
+        news_posts: List[:class:`NewsPost`]
             Includes preview.
 
         news_sidebar: {
@@ -1207,7 +1207,7 @@ class Client:
             years: :class:`int`
                 All years during which posts have been published.
 
-            news_posts: :class:`NewsPost`[]
+            news_posts: List[:class:`NewsPost`]
                 All posts published during current_year.
 
         }
@@ -1245,7 +1245,7 @@ class Client:
         news: class:`str`
             News post slug or ID.
 
-        key: :class:`str`
+        key: Optional[:class:`str`]
             Unset to query by slug, or id to query by ID.
 
         **Returns**
@@ -1262,7 +1262,7 @@ class Client:
 
         **Parameters**
 
-        max_id: :class:`int`
+        max_id: Optional[:class:`int`]
             Maximum id fetched. Can be used to load earlier notifications. Defaults to no limit (fetch latest notifications)
 
         **Returns**
@@ -1273,7 +1273,7 @@ class Client:
             has_more: :class:`bool`,
                 whether or not there are more notifications
 
-            notifications: [ :class:`Notification`, ...],
+            notifications: List[:class:`Notification`],
 
             unread_count: :class:`bool`
                 total unread notifications
@@ -1323,18 +1323,18 @@ class Client:
         type: :class:`str`
             :ref:`RankingType`
 
-        country: :class:`str`
+        country: Optional[:class:`str`]
             Filter ranking by country code. Only available for type of performance.
 
-        cursor: :class:`dict`
+        cursor: Optional[:class:`dict`]
 
-        filter: :class:`str`
+        filter: Optional[:class:`str`]
             Either all (default) or friends.
 
-        spotlight: :class:`int`
+        spotlight: Optional[:class:`int`]
             The id of the spotlight if type is charts. Ranking for latest spotlight will be returned if not specified.
 
-        variant: :class:`str`
+        variant: Optional[:class:`str`]
             Filter ranking to specified mode variant. For mode of mania, it's either 4k or 7k. Only available for type of performance.
 
         **Returns**
@@ -1364,7 +1364,7 @@ class Client:
 
         **Parameters**
 
-        mode: :class:`str`
+        mode: Optional[:class:`str`]
             GameMode. User default mode will be used if not specified.
 
         **Returns**
@@ -1384,16 +1384,16 @@ class Client:
         user: :class:`int`
             Id of the user.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        offset: :class:`int`
+        offset: Optional[:class:`int`]
             Result offset for pagination.
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type :class:`KudosuHistory`
+        List[:class:`KudosuHistory`]
+            list of :class:`KudosuHistory` objects
         """
         return [KudosuHistory(kud) for kud in self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset)]
 
@@ -1411,24 +1411,22 @@ class Client:
         type: :class:`str`
             Score type. Must be one of these: best, firsts, recent
 
-        include_fails: :class:`int`
+        include_fails: Optional[:class:`int`]
             Only for recent scores, include scores of failed plays. Set to 1 to include them. Defaults to 0.
 
-        mode: :class:`str`
+        mode: Optional[:class:`str`]
             GameMode of the scores to be returned. Defaults to the specified user's mode.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        offset: :class:`int`
+        offset: Optional[:class:`int`]
             Result offset for pagination.
 
         **Returns**
 
-        :class:`list`
-            list obtaining objects of type :class:`Score`. Includes attributes
-
-            beatmap, beatmapset, weight: Only for type best, user
+        List[:class:`Score`]
+            list of :class:`Score` objects. Includes attributes beatmap, beatmapset, weight: Only for type best, user
         """
         return [Score(score) for score in self.http.get(Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
 
@@ -1446,16 +1444,16 @@ class Client:
         type: :class:`str`
             Beatmap type. Can be one of the following - favourite, graveyard, loved, most_played, pending, ranked.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        offset: :class:`int`
+        offset: Optional[:class:`int`]
             Result offset for pagination.
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type BeatmapPlaycount (for type most_played) or Beatmapset (any other type).
+        List[:class:`BeatmapPlaycount`]
+            list of :class:`BeatmapPlaycount` for type most_played or :class:`Beatmapset` for any other type.
         """
         object_type = Beatmapset
         if type == 'most_played':
@@ -1473,16 +1471,16 @@ class Client:
         user: :class:`int`
             Id of the user.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        offset: :class:`int`
+        offset: Optional[:class:`int`]
             Result offset for pagination.
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type :class:`Event`
+        List[:class:`Event`]
+            list of :class:`Event` objects
         """
         return [Event(event) for event in self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset)]
 
@@ -1498,10 +1496,10 @@ class Client:
             Id or username of the user. Id lookup is prioritised unless key parameter is specified.
             Previous usernames are also checked in some cases.
 
-        mode: :class:`str`
+        mode: Optional[:class:`str`]
             GameMode. User default mode will be used if not specified.
 
-        key: :class:`str`
+        key: Optional[:class:`str`]
             Type of user passed in url parameter. Can be either id or username
             to limit lookup by their respective type. Passing empty or invalid
             value will result in id lookup followed by username lookup if not found.
@@ -1509,16 +1507,14 @@ class Client:
         **Returns**
 
         :class:`User`
-            Includes attributes account_history, active_tournament_banner,
-            badges, beatmap_playcounts_count, favourite_beatmapset_count,
-            follower_count, graveyard_beatmapset_count, groups,
-            loved_beatmapset_count, monthly_playcounts, page,
-            previous_usernames, rank_history: For specified mode,
-            ranked_and_approved_beatmapset_count, replays_watched_counts,
-            scores_best_count: For specified mode., scores_first_count: For specified mode.,
-            scores_recent_count: For specified mode.,
-            statistics: For specified mode. Inludes rank and variants attributes.,
-            support_level, unranked_beatmapset_count, user_achievements
+            Includes following attributes: account_history, active_tournament_banner,
+            badges, beatmap_playcounts_count, favourite_beatmapset_count, follower_count,
+            graveyard_beatmapset_count, groups, loved_beatmapset_count,
+            mapping_follower_count, monthly_playcounts, page, pending_beatmapset_count,
+            previous_usernames, rank_history, ranked_beatmapset_count, replays_watched_counts,
+            scores_best_count, scores_first_count, scores_recent_count, statistics,
+            statistics.country_rank, statistics.rank, statistics.variants, support_level,
+            user_achievements.
         """
         return User(self.http.get(Path.get_user(user, mode), key=key))
 
@@ -1535,8 +1531,8 @@ class Client:
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type :class:`UserCompact`.
+        List[:class:`UserCompact`]
+            list of :class:`UserCompact` objects.
             Includes attributes: country, cover, groups, statistics_fruits,
             statistics_mania, statistics_osu, statistics_taiko.
         """
@@ -1554,7 +1550,7 @@ class Client:
 
         path
 
-        page: :class:`str`
+        page: Optional[:class:`str`]
             The path name of the wiki page.
 
         **Returns**

@@ -195,7 +195,7 @@ class AsynchronousClient:
         beatmap: :class:`int`
             Beatmap id.
 
-        mods: :class:`int`|:class:`string`[]|:class:`Mod`[]
+        mods: Union[:class:`int`, :class:`string`[], :class:`Mod`[]]
             Mod combination. Can be either a bitset of mods, array of mod acronyms, or array of mods. Defaults to no mods.
 
         ruleset: :ref:`GameMode`

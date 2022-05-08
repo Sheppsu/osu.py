@@ -11,8 +11,7 @@ class AuthHandler:
     Helps to go through the oauth process easily, as well as refresh
     tokens without the user needing to worry about it.
 
-    Note
-    ----
+    Note:
     If you're not authorizing a user with a url for a code, this does not apply to you.
     AuthHandler does not save refresh tokens past the program finishing.
     AuthHandler will save the refresh token to refresh the access token

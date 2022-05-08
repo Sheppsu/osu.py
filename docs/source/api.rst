@@ -1,4 +1,4 @@
-Entire API Documentation
+API Reference
 ========================
 
 This page covers *everything* osu.py is capable of.
