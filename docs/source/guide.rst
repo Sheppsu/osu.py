@@ -23,7 +23,7 @@ The simplest way to initialise the client class using client credential grant is
 	
 If you're unsure of where to obtain a client id and secret, read `here <https://osu.ppy.sh/docs/index.html#managing-oauth-applications>`_.
 	
-There are also three more optional arguments you can use (scope, code, and limit_per_second). You can read more about them `here <api.html#osu.Client.from_client_credentials>`_.
+There are also three more optional arguments you can use (scope, code, and seconds_per_request). You can read more about them `here <api.html#osu.Client.from_client_credentials>`_.
 
 The other way to initialise the Client class is as normally.
 
@@ -33,7 +33,7 @@ The other way to initialise the Client class is as normally.
 	
 	client = Client(auth)
 	
-There's also an optional parameter limit_per_second which you can read about `here <api.html#osu.Client>`_.
+There's also an optional parameter seconds_per_request which you can read about `here <api.html#osu.Client>`_.
 
 The auth parameter for the client is an AuthHandler object. You can initialise it like so.
 
