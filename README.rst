@@ -51,7 +51,7 @@ Example
 
 .. code:: py
 
-    from osu import Client
+	from osu import Client
 
 	client_id = 0
 	client_secret = "***"
