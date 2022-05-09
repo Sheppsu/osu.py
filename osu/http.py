@@ -6,10 +6,10 @@ from .constants import base_url
 
 
 class HTTPHandler:
-    def __init__(self, auth, client, limit_per_second=1):
+    def __init__(self, auth, client, seconds_per_request=1):
         self.auth = auth
         self.client = client
-        self.rate_limit = RateLimiter(limit_per_second)
+        self.rate_limit = RateLimiter(seconds_per_request)
 
     def get_headers(self, **kwargs):
         headers = {
@@ -54,15 +54,15 @@ class HTTPHandler:
 
 
 class RateLimiter:
-    def __init__(self, limit_per_second=1):
-        self.limit = limit_per_second
+    def __init__(self, seconds_per_request=1):
+        self.limit = seconds_per_request
         self.last_request = time.perf_counter() - self.limit
 
     def request_used(self):
         self.last_request = time.perf_counter()
 
     def wait(self):
-        time.sleep(1-(time.perf_counter()-self.last_request))
+        time.sleep(self.limit-(time.perf_counter()-self.last_request))
 
     @property
     def can_request(self):
