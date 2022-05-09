@@ -7,6 +7,9 @@ osu.py
 .. image:: https://img.shields.io/pypi/v/osu.py.svg
    :target: https://pypi.python.org/pypi/osu.py
    :alt: PyPI version info
+.. image:: https://static.pepy.tech/personalized-badge/osu-py?period=month&units=international_system&left_color=blue&right_color=brightgreen&left_text=Downloads/month
+   :target: https://pepy.tech/project/osu-py
+   :alt: Download metric
 
 Easy to use API wrapper for osu!api v2 written in Python.
 
