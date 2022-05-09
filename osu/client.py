@@ -24,12 +24,12 @@ class Client:
         If you require more, you probably fall into the above category of abuse. If you are doing more than 60 requests a minute,
         you should probably give peppy a yell.
     """
-    def __init__(self, auth, limit_per_second=1):
+    def __init__(self, auth, seconds_per_request=1):
         self.auth = auth
-        self.http = HTTPHandler(auth, self, limit_per_second)
+        self.http = HTTPHandler(auth, self, seconds_per_request)
 
     @classmethod
-    def from_client_credentials(cls, client_id: int, client_secret: str, redirect_url: str, scope: Scope = Scope.default(), code=None, limit_per_second=1):
+    def from_client_credentials(cls, client_id: int, client_secret: str, redirect_url: str, scope: Scope = Scope.default(), code=None, seconds_per_request=1):
         """
         Returns a :class:`Client` object from client id, client secret, redirect uri, and scope.
 
@@ -59,7 +59,7 @@ class Client:
         """
         auth = AuthHandler(client_id, client_secret, redirect_url, scope)
         auth.get_auth_token(code)
-        return cls(auth, limit_per_second)
+        return cls(auth, seconds_per_request)
 
     def lookup_beatmap(self, checksum=None, filename=None, id=None):
         """
