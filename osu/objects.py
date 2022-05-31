@@ -1,5 +1,6 @@
 from .constants import int_to_status
 from .util import get_item_else
+import math
 
 
 class Scope:
@@ -2687,6 +2688,9 @@ class UserStatistics:
     pp: :class:`int`
         Performance points
 
+    recommended_difficulty: :class:`float`
+        Recommended difficulty for a player. This value is not received from the api, but locally calculated.
+
     global_rank: :class:`int`
         Current rank according to pp.
 
@@ -2730,6 +2734,10 @@ class UserStatistics:
         self.total_score = data['total_score']
 
         self.user = UserCompact(data['user']) if 'user' in data else None
+
+    @property
+    def recommended_difficulty(self):
+        return math.pow(self.pp, 0.4) * 0.195
 
 
 class WikiPage:
