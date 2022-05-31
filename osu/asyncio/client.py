@@ -6,6 +6,8 @@ over docstring edits in the osu/client.py file.
 from .http import AsynchronousHTTPHandler
 from ..objects import *
 from ..auth import AuthHandler
+from collections.abc import Sequence
+from typing import Union, Optional
 
 
 class AsynchronousClient:
@@ -18,7 +20,8 @@ class AsynchronousClient:
 
     @classmethod
     def from_client_credentials(cls, client_id: int, client_secret: str, redirect_url: str,
-                                scope: Scope = Scope.default(), code=None, seconds_per_request=1):
+                                scope: Optional[Scope] = Scope.default(), code: Optional[str] = None,
+                                seconds_per_request: Optional[float] = 1.0):
         """
         Returns a :class:`Client` object from client id, client secret, redirect uri, and scope.
 
@@ -33,13 +36,13 @@ class AsynchronousClient:
         redirect_uri: :class:`str`
             API redirect uri
 
-        scope: :class:`Scope`
+        scope: Optional[:class:`Scope`]
             Scopes to use. Default is Scope.default() which is just the public scope.
 
-        code: :class:`str`
-            Optional parameter. If provided, is used to authorize. Read more about this under :class:`AuthHandler.get_auth_token`
+        code: Optional[:class:`str`]
+            If provided, is used to authorize. Read more about this under :class:`AuthHandler.get_auth_token`
 
-        limit_per_second: :class:`float`
+        limit_per_second: Optional[:class:`float`]
             Read under Client init parameters.
 
         **Returns**
@@ -50,7 +53,7 @@ class AsynchronousClient:
         auth.get_auth_token(code)
         return cls(auth, seconds_per_request)
 
-    async def lookup_beatmap(self, checksum=None, filename=None, id=None):
+    async def lookup_beatmap(self, checksum: Optional[str] = None, filename: Optional[str] = None, id: Optional[int] = None) -> Beatmap:
         """
         Returns beatmap.
 
@@ -58,13 +61,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        checksum(optional): :class:`str`
+        checksum: Optional[:class:`str`]
             A beatmap checksum.
 
-        filename(optional): :class:`str`
+        filename: Optional[:class:`str`]
             A filename to lookup
 
-        id(optional): :class:`int`
+        id: Optional[:class:`int`]
             A beatmap ID to lookup
 
         **Returns**
@@ -73,7 +76,7 @@ class AsynchronousClient:
         """
         return Beatmap(await self.http.get(Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
 
-    async def get_user_beatmap_score(self, beatmap, user, mode=None, mods=None):
+    async def get_user_beatmap_score(self, beatmap: int, user: int, mode: Optional[str] = None, mods: Optional[Sequence[str]] = None) -> BeatmapUserScore:
         """
         Returns a :class:`User`'s score on a Beatmap
 
@@ -87,10 +90,10 @@ class AsynchronousClient:
         user: :class:`int`
             Id of the user
 
-        mode(optional): :class:`str`
-            The GameMode to get scores for
+        mode: Optional[:class:`str`]
+            The :ref:`GameMode` to get scores for
 
-        mods(optional): :class:`array`
+        mods: Optional[Sequence[:class:`str`]]
             An array of matching Mods, or none
 
         **Returns**
@@ -99,7 +102,7 @@ class AsynchronousClient:
         """
         return BeatmapUserScore(await self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
-    async def get_user_beatmap_scores(self, beatmap, user, mode=None):
+    async def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[str] = None) -> BeatmapUserScore:
         """
         Returns a :class:`User`'s scores on a Beatmap
 
@@ -113,16 +116,16 @@ class AsynchronousClient:
         user: :class:`int`
             Id of the user
 
-        mode(optional): :class:`str`
+        mode: Optional[:class:`str`]
             The :ref:`GameMode` to get scores for
 
         **Returns**
 
-        :class:`Score`[]
+        :class:`BeatmapUserScore`
         """
         return BeatmapUserScore(await self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode))
 
-    async def get_beatmap_scores(self, beatmap, mode=None, mods=None, type=None):
+    async def get_beatmap_scores(self, beatmap: int, mode: Optional[str] = None, mods: Optional[Sequence[str]] = None, type: Optional[Sequence[str]] = None) -> BeatmapScores:
         """
         Returns the top scores for a beatmap
 
@@ -133,13 +136,13 @@ class AsynchronousClient:
         beatmap: :class:`int`
             Id of the beatmap
 
-        mode(optional): :class:`str`
+        mode: Optional[:class:`str`]
             The GameMode to get scores for
 
-        mods(optional): :class:`array`
+        mods: Optional[Sequence[:class:`str`]]
             An array of matching Mods, or none
 
-        type(optional): :class:`str`
+        type: Optional[Sequence[:class:`str`]]
             Beatmap score ranking type
 
         **Returns**
@@ -148,7 +151,7 @@ class AsynchronousClient:
         """
         return BeatmapScores(await self.http.get(Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
-    async def get_beatmap(self, beatmap):
+    async def get_beatmap(self, beatmap: int) -> Beatmap:
         """
         Gets beatmap data for the specified beatmap ID.
 
@@ -166,7 +169,7 @@ class AsynchronousClient:
         """
         return Beatmap(await self.http.get(Path.beatmap(beatmap)))
 
-    async def get_beatmaps(self, ids=None):
+    async def get_beatmaps(self, ids: Optional[Sequence[int]] = None) -> Sequence[Beatmap]:
         """
         Returns list of beatmaps.
 
@@ -174,17 +177,18 @@ class AsynchronousClient:
 
         **Parameters**
 
-        ids: :class:`int`[]
+        ids: Optional[List[:class:`int`]]
             Beatmap id to be returned. Specify once for each beatmap id requested. Up to 50 beatmaps can be requested at once.
 
         **Returns**
 
-        :class:`BeatmapCompact`
+        Sequence[:class:`BeatmapCompact`]
             Includes: beatmapset (with ratings), failtimes, max_combo.
         """
-        return Beatmap(await self.http.get(Path.beatmaps(), ids=ids))
+        results = await self.http.get(Path.beatmaps(), **{"ids[]": ids})
+        return map(Beatmap, results['beatmaps']) if results else []
 
-    async def get_beatmap_attributes(self, beatmap, mods=None, ruleset=None, ruleset_id=None):
+    async def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Sequence[str]]]=None, ruleset: Optional[str] = None, ruleset_id: Optional[int] = None) -> BeatmapDifficultyAttributes:
         """
         Returns difficulty attributes of beatmap with specific mode and mods combination.
 
@@ -195,13 +199,13 @@ class AsynchronousClient:
         beatmap: :class:`int`
             Beatmap id.
 
-        mods: Union[:class:`int`, :class:`string`[], :class:`Mod`[]]
+        mods: Optional[Union[:class:`int`, Sequence[:class:`str`]]]
             Mod combination. Can be either a bitset of mods, array of mod acronyms, or array of mods. Defaults to no mods.
 
-        ruleset: :ref:`GameMode`
+        ruleset: Optional[:ref:`GameMode`]
             Ruleset of the difficulty attributes. Only valid if it's the beatmap ruleset or the beatmap can be converted to the specified ruleset. Defaults to ruleset of the specified beatmap.
 
-        ruleset_id: :class:`int`
+        ruleset_id: Optional[:class:`int`]
             The same as ruleset but in integer form.
 
         **Returns**
@@ -210,7 +214,9 @@ class AsynchronousClient:
         """
         return BeatmapDifficultyAttributes(await self.http.post(Path.get_beatmap_attributes(beatmap), mods=mods, ruleset=ruleset, ruleset_id=ruleset_id))
 
-    async def get_beatmapset_discussion_posts(self, beatmapset_discussion_id=None, limit=None, page=None, sort=None, user=None, with_deleted=None):
+    async def get_beatmapset_discussion_posts(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
+                                        page: Optional[int] = None, sort: Optional[str] = None, user: Optional[int] = None,
+                                        with_deleted: Optional[str] = None) -> dict:
         """
         Returns the posts of the beatmapset discussions
 
@@ -218,22 +224,22 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmapset_discussion_id: :class:`id`
+        beatmapset_discussion_id: Optional[:class:`int`]
             id of the BeatmapsetDiscussion
 
-        limit: :class:`id`
+        limit: Optional[:class:`int`]
             Maximum number of results
 
-        page: :class:`int`
+        page: Optional[:class:`int`]
             Search results page.
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             id_desc for newest first; id_asc for oldest first. Defaults to id_desc
 
-        user: :class:`int`
+        user: Optional[:class:`int`]
             The id of the User
 
-        with_deleted
+        with_deleted: Optional[:class:`str`]
             The param has no effect as api calls do not currently receive group permissions
 
         **Returns**
@@ -244,7 +250,7 @@ class AsynchronousClient:
 
             cursor: :class:`dict`,
 
-            posts: [ :class:`BeatmapsetDiscussionPost`, ...],
+            posts: Sequence[:class:`BeatmapsetDiscussionPost`],
 
             users: :class:`UserCompact`
             }
@@ -255,11 +261,13 @@ class AsynchronousClient:
         return {
             'beatmapsets': BeatmapsetCompact(resp['beatmapsets']),
             'cursor': resp['cursor'],
-            'posts': [BeatmapsetDiscussionPost(post) for post in resp['posts']],
+            'posts': map(BeatmapsetDiscussionPost, resp['posts']),
             'users': UserCompact(resp['users'])
         }
 
-    async def get_beatmapset_discussion_votes(self, beatmapset_discussion_id=None, limit=None, page=None, receiver=None, score=None, sort=None, user=None, with_deleted=None):
+    async def get_beatmapset_discussion_votes(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
+                                        page: Optional[int] = None, receiver: Optional[int] = None, score: Optional[int] = None,
+                                        sort: Optional[str] = None, user: Optional[int] = None, with_deleted: Optional[str] = None) -> dict:
         """
         Returns the votes given to beatmapset discussions
 
@@ -267,28 +275,28 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmapset_discussion_id: :class:`id`
+        beatmapset_discussion_id: Optional[:class:`int`]
             id of the BeatmapsetDiscussion
 
-        limit: :class:`id`
+        limit: Optional[:class:`int`]
             Maximum number of results
 
-        page: :class:`int`
+        page: Optional[:class:`int`]
             Search results page.
 
-        receiver: :class:`int`
+        receiver: Optional[:class:`int`]
             The id of the User receiving the votes.
 
-        score: :class:`int`
+        score: Optional[:class:`int`]
             1 for upvote, -1 for downvote
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             id_desc for newest first; id_asc for oldest first. Defaults to id_desc
 
-        user: :class:`int`
+        user: Optional[:class:`int`]
             The id of the User giving the votes.
 
-        with_deleted
+        with_deleted: Optional[:class:`str`]
             The param has no effect as api calls do not currently receive group permissions
 
         **Returns**
@@ -301,7 +309,7 @@ class AsynchronousClient:
 
             users: :class:`UserCompact`,
 
-            votes: [ :class:`BeatmapsetDiscussionVote`, ...]
+            votes: List[:class:`BeatmapsetDiscussionVote`]
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
@@ -314,7 +322,11 @@ class AsynchronousClient:
             'votes': [BeatmapsetDiscussionVote(vote) for vote in resp['votes']]
         }
 
-    async def get_beatmapset_discussions(self, beatmap_id=None, beatmapset_id=None, beatmapset_status=None, limit=None, message_type=None, only_unresolved=None, page=None, sort=None, user=None, with_deleted=None):
+    async def get_beatmapset_discussions(self, beatmap_id: Optional[int] = None, beatmapset_id: Optional[int] = None,
+                                   beatmapset_status: Optional[str] = None, limit: Optional[int] = None,
+                                   message_type: Optional[Sequence[str]] = None, only_unresolved: Optional[bool] = None,
+                                   page: Optional[int] = None, sort: Optional[str] = None, user: Optional[int] = None,
+                                   with_deleted: Optional[str] = None) -> dict:
         """
         Returns a list of beatmapset discussions
 
@@ -322,34 +334,34 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmap_id: :class:`int`
+        beatmap_id: Optional[:class:`int`]
             id of the Beatmap
 
-        beatmapset_id: :class:`int`
+        beatmapset_id: Optional[:class:`int`]
             id of the Beatmapset
 
-        beatmapset_status: :class:`str`
+        beatmapset_status: Optional[:class:`str`]
             One of all, ranked, qualified, disqualified, never_qualified. Defaults to all.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        message_types[]: :class:`str`
+        message_types: Optional[Sequence[:class:`str`]]
             suggestion, problem, mapper_note, praise, hype, review. Blank defaults to all types.
 
-        only_unresolved: :class:`bool`
+        only_unresolved: Optional[:class:`bool`]
             true to show only unresolved issues; false, otherwise. Defaults to false.
 
-        page: :class:`int`
+        page: Optional[:class:`int`]
             Search result page.
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             id_desc for newest first; id_asc for oldest first. Defaults to id_desc.
 
-        user: :class:`int`
+        user: Optional[:class:`int`]
             The id of the User.
 
-        with_deleted
+        with_deleted: Optional[:class:`str`]
             This param has no effect as api calls do not currently receive group permissions.
 
         **Returns**
@@ -357,21 +369,21 @@ class AsynchronousClient:
         :class:`dict`
             {
 
-            beatmaps: [ :class:`Beatmap`, ...],
+            beatmaps: Sequence[:class:`Beatmap`],
                 List of beatmaps associated with the discussions returned.
 
             cursor: :class:`dict`,
 
-            discussions: [ :class:`BeatmapsetDiscussion`, ...],
+            discussions: Sequence[:class:`BeatmapsetDiscussion`],
                 List of discussions according to sort order.
 
-            included_discussions: [ :class:`BeatmapsetDiscussion`, ...],
+            included_discussions: Sequence[:class:`BeatmapsetDiscussion`],
                 Additional discussions related to discussions.
 
-            reviews_config.max_blocks: :class:`int`
+            reviews_config.max_blocks: :class:`int`,
                 Maximum number of blocks allowed in a review.
 
-            users: [ :class:`UserCompact`, ...]
+            users: Sequence[:class:`UserCompact`]
                 List of users associated with the discussions returned.
 
             }
@@ -381,15 +393,15 @@ class AsynchronousClient:
                              beatmapset_status=beatmapset_status, limit=limit, message_type=message_type,
                              only_unresolved=only_unresolved, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
-            'beatmaps': [Beatmap(beatmap) for beatmap in resp['beatmaps']],
+            'beatmaps': map(Beatmap, resp['beatmaps']),
             'cursor': resp['cursor'],
-            'discussions': [BeatmapsetDiscussion(disc) for disc in resp['discussions']],
-            'included_discussions': [BeatmapsetDiscussion(disc) for disc in resp['included_discussions']],
+            'discussions': map(BeatmapsetDiscussion, resp['discussions']),
+            'included_discussions': map(BeatmapsetDiscussion, resp['included_discussions']),
             'reviews_config.max_blocks': resp['reviews_config'],
-            'users': [UserCompact(user) for user in resp['users']]
+            'users': map(UserCompact, resp['users'])
         }
 
-    async def get_changelog_build(self, stream, build):
+    async def get_changelog_build(self, stream: str, build: str) -> Build:
         """
         Returns details of the specified build.
 
@@ -407,32 +419,34 @@ class AsynchronousClient:
         """
         return Build(await self.http.get(Path.get_changelog_build(stream, build)))
 
-    async def get_changelog_listing(self, from_version=None, max_id=None, stream=None, to=None, message_formats=None):
+    async def get_changelog_listing(self, from_version: Optional[str] = None, max_id: Optional[int] = None,
+                              stream: Optional[str] = None, to: Optional[str] = None,
+                              message_formats: Optional[Sequence[str]] = None) -> dict:
         """
         Returns a listing of update streams, builds, and changelog entries.
 
         **Parameters**
 
-        from_version: :class:`str`
+        from_version: Optional[:class:`str`]
             Minimum build version.
 
-        max_id: :class:`int`
+        max_id: Optional[:class:`int`]
             Maximum build ID.
 
-        stream: :class:`str`
+        stream: Optional[:class:`str`]
             Stream name to return builds from.
 
-        to: :class:`str`
+        to: Optional[:class:`str`]
             Maximum build version.
 
-        message_formats: :class:`str`[]
+        message_formats: Optional[Sequence[:class:`str`]]
             html, markdown. Default to both.
 
         **Returns**
 
         {
 
-        "build": :class:`Build`[]
+        "build": Sequence[:class:`Build`]
 
         "search": {
 
@@ -451,20 +465,20 @@ class AsynchronousClient:
             "to": :class:`str`
                 to input.
 
-        "streams": :class:`UpdateStream`[]
-
         }
+
+        "streams": Sequence[:class:`UpdateStream`]
 
         }
         """
         response = await self.http.get(Path.get_changelog_listing(), max_id=max_id, stream=stream, to=to, message_formats=message_formats, **{"from": from_version})
         return {
-            "build": [Build(build) for build in response['builds']],
+            "build": map(Build, response['builds']),
             "search": response['search'],
-            "stream": [UpdateStream(ustream for ustream in response['streams'])],
+            "streams": map(UpdateStream, response['streams']),
         }
 
-    async def lookup_changelog_build(self, changelog, key=None, message_formats=None):
+    async def lookup_changelog_build(self, changelog: str, key: Optional[str] = None, message_formats: Optional[Sequence[str]] = None) -> Build:
         """
         Returns details of the specified build.
 
@@ -473,10 +487,10 @@ class AsynchronousClient:
         changelog: :class:`str`
             Build version, update stream name, or build ID.
 
-        key: :class:`str`
+        key: Optional[:class:`str`]
             Unset to query by build version or stream name, or id to query by build ID.
 
-        message_formats: :class:`str`[]
+        message_formats: Optional[Sequence[:class:`str`]]
             html, markdown. Default to both.
 
         **Returns**
@@ -485,7 +499,7 @@ class AsynchronousClient:
         """
         return Build(await self.http.get(Path.lookup_changelog_build(changelog), key=key, message_formats=message_formats))
 
-    async def create_new_pm(self, target_id, message, is_action):
+    async def create_new_pm(self, target_id: int, message: str, is_action: bool) -> dict:
         """
         This endpoint allows you to create a new PM channel.
 
@@ -510,7 +524,7 @@ class AsynchronousClient:
             new_channel_id: :class:`int`
                 channel_id of newly created ChatChannel
 
-            presence: [ :class:`ChatChannel`, ...]
+            presence: Sequence[:class:`ChatChannel`]
                 array of ChatChannel
 
             message: :class:`ChatMessage`
@@ -522,11 +536,11 @@ class AsynchronousClient:
         resp = await self.http.post(Path.create_new_pm(), data=data)
         return {
             'new_channel_id': resp['new_channel_id'],
-            'presence': [ChatChannel(channel) for channel in resp['presence']],
+            'presence': map(ChatChannel, resp['presence']),
             'message': ChatMessage(resp['message'])
         }
 
-    async def get_updates(self, since, channel_id=None, limit=None):
+    async def get_updates(self, since: int, channel_id: Optional[int] = None, limit: Optional[int] = None) -> dict:
         """
         This endpoint returns new messages since the given message_id along with updated channel 'presence' data.
 
@@ -537,30 +551,30 @@ class AsynchronousClient:
         since: :class:`int`
             The message_id of the last message to retrieve messages since
 
-        channel_id: :class:`int`
+        channel_id: Optional[:class:`int`]
             If provided, will only return messages for the given channel
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             number of messages to return (max of 50)
 
         **Returns**
 
         :class:`dict`
             {
-            presence: [ :class:`ChatChannel`, ...],
+            presence: List[:class:`ChatChannel`],
 
-            messages: [ :class:`ChatMessage`, ...]
+            messages: List[:class:`ChatMessage`]
 
             }
         """
         resp = await self.http.post(Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
         return {
-            'presence': [ChatChannel(channel) for channel in resp['presence']],
-            'messages': [ChatMessage(msg) for msg in resp['messages']],
-            'silences': [UserSilence(silence) for silence in resp['silences']]
+            'presence': map(ChatChannel, resp['presence']),
+            'messages': map(ChatMessage, resp['messages']),
+            'silences': map(UserSilence, resp['silences'])
         }
 
-    async def get_channel_messages(self, channel_id, limit=None, since=None, until=None):
+    async def get_channel_messages(self, channel_id: int, limit: Optional[int] = None, since: Optional[int] = None, until: Optional[int] = None) -> Sequence[ChatMessage]:
         """
         This endpoint returns the chat messages for a specific channel.
 
@@ -571,38 +585,38 @@ class AsynchronousClient:
         channel_id: :class:`int`
             The ID of the channel to retrieve messages for
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             number of messages to return (max of 50)
 
-        since: :class:`int`
+        since: Optional[:class:`int`]
             messages after the specified message id will be returned
 
-        until: :class:`int`
+        until: Optional[:class:`int`]
             messages up to but not including the specified message id will be returned
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type :class:`ChatMessage`
+        Sequence[:class:`ChatMessage`]
+            list containing :class:`ChatMessage` objects
         """
-        return [ChatMessage(msg) for msg in await self.http.post(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)]
+        return map(ChatMessage, await self.http.post(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until))
 
-    async def send_message_to_channel(self, channel_id, message, is_action):
+    async def send_message_to_channel(self, channel_id: int, message: str, is_action: bool) -> ChatMessage:
         """
-        This endpoint returns the chat messages for a specific channel.
+        This endpoint sends a message to the specified channel.
 
         Requires OAuth and scope lazer
 
         **Parameters**
+
+        channel_id: :class:`int`
+            The channel_id of the channel to send message to
 
         message: :class:`str`
             message to send
 
         is_action: :class:`bool`
             whether the message is an action
-
-        channel_id: :class:`int`
-            The channel_id of the channel to send message to
 
         **Returns**
 
@@ -611,7 +625,7 @@ class AsynchronousClient:
         data = {'message': message, 'is_action': is_action}
         return ChatMessage(await self.http.post(Path.send_message_to_channel(channel_id), data=data))
 
-    async def join_channel(self, channel, user):
+    async def join_channel(self, channel: int, user: int) -> ChatChannel:
         """
         This endpoint allows you to join a public channel.
 
@@ -629,7 +643,7 @@ class AsynchronousClient:
         """
         return ChatChannel(await self.http.put(Path.join_channel(channel, user)))
 
-    async def leave_channel(self, channel, user):
+    async def leave_channel(self, channel: int, user: int):
         """
         This endpoint allows you to leave a public channel.
 
@@ -643,13 +657,17 @@ class AsynchronousClient:
         """
         await self.http.delete(Path.leave_channel(channel, user))
 
-    async def mark_channel_as_read(self, channel, message, channel_id, message_id):
+    async def mark_channel_as_read(self, channel: str, message: str, channel_id: int, message_id: int):
         """
         This endpoint marks the channel as having being read up to the given message_id.
 
         Requires OAuth and scope lazer
 
         **Parameters**
+
+        channel: :class:`str`
+
+        message: :class:`str`
 
         channel_id: :class:`int`
             The channel_id of the channel to mark as read
@@ -659,7 +677,7 @@ class AsynchronousClient:
         """
         await self.http.put(Path.mark_channel_as_read(channel, message), channel_id=channel_id, message_id=message_id)
 
-    async def get_channel_list(self):
+    async def get_channel_list(self) -> Sequence[ChatChannel]:
         """
         This endpoint returns a list of all joinable public channels.
 
@@ -667,12 +685,11 @@ class AsynchronousClient:
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type :class:`ChatChannel`
+        Sequence[:class:`ChatChannel`]
         """
-        return [ChatChannel(channel) for channel in await self.http.get(Path.get_channel_list())]
+        return map(ChatChannel, await self.http.get(Path.get_channel_list()))
 
-    async def create_channel(self, type, target_id=None):
+    async def create_channel(self, type: str, target_id: Optional[int] = None) -> ChatChannel:
         """
         This endpoint creates a new channel if doesn't exist and joins it. Currently only for rejoining existing PM channels which the user has left.
 
@@ -683,7 +700,7 @@ class AsynchronousClient:
         type: :class:`str`
             channel type (currently only supports "PM")
 
-        target_id: :class:`int`
+        target_id: Optional[:class:`int`]
             target user id for type PM
 
         **Returns**
@@ -695,7 +712,7 @@ class AsynchronousClient:
         data = {'type': type, 'target_id': target_id}
         return ChatChannel(await self.http.post(Path.create_channel(), data=data))
 
-    async def get_channel(self, channel):
+    async def get_channel(self, channel: int) -> dict:
         """
         Gets details of a chat channel.
 
@@ -721,7 +738,8 @@ class AsynchronousClient:
             'users': UserCompact(resp['users']),
         }
 
-    async def get_comments(self, commentable_type=None, commentable_id=None, cursor=None, parent_id=None, sort=None):
+    async def get_comments(self, commentable_type: Optional[str] = None, commentable_id: Optional[int] = None,
+                     cursor: Optional[dict] = None, parent_id: Optional[int] = None, sort: Optional[str] = None) -> CommentBundle:
         """
         Returns a list comments and their replies up to 2 levels deep.
 
@@ -729,20 +747,20 @@ class AsynchronousClient:
 
         **Parameter**
 
-        commentable_type: :class:`str`
+        commentable_type: Optional[:class:`str`]
             The type of resource to get comments for.
 
-        commentable_id: :class:`int`
+        commentable_id: Optional[:class:`int`]
             The id of the resource to get comments for.
 
-        cursor: :class:`dict`
-            Pagination option. See CommentSort for detail. The format follows Cursor except it's not currently included in the response.
+        cursor: Optional[:class:`dict`]
+            Pagination option. See :ref:`CommentSort` for detail. The format follows Cursor except it's not currently included in the response.
 
-        parent_id: :class:`int`
+        parent_id: Optional[:class:`int`]
             Limit to comments which are reply to the specified id. Specify 0 to get top level comments.
 
-        sort: :class:`str`
-            Sort option as defined in CommentSort. Defaults to new for guests and user-specified default when authenticated.
+        sort: Optional[:class:`str`]
+            Sort option as defined in :ref:`CommentSort`. Defaults to new for guests and user-specified default when authenticated.
 
         **Returns**
 
@@ -752,7 +770,8 @@ class AsynchronousClient:
         return CommentBundle(await self.http.get(Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
                                            **cursor if cursor else {}, parent_id=parent_id, sort=sort))
 
-    async def post_comment(self, commentable_id=None, commentable_type=None, message=None, parent_id=None):
+    async def post_comment(self, commentable_id: Optional[int] = None, commentable_type: Optional[str] = None,
+                     message: Optional[str] = None, parent_id: Optional[int] = None) -> CommentBundle:
         """
         Posts a new comment to a comment thread.
 
@@ -760,16 +779,16 @@ class AsynchronousClient:
 
         **Parameter**
 
-        commentable_id: :class:`int`
+        commentable_id: Optional[:class:`int`]
             Resource ID the comment thread is attached to
 
-        commentable_type: :class:`str`
+        commentable_type: Optional[:class:`str`]
             Resource type the comment thread is attached to
 
-        message: :class:`str`
+        message: Optional[:class:`str`]
             Text of the comment
 
-        parent_id: :class:`int`
+        parent_id: Optional[:class:`int`]
             The id of the comment to reply to, null if not a reply
 
         **Returns**
@@ -784,7 +803,7 @@ class AsynchronousClient:
         }
         return CommentBundle(await self.http.post(Path.post_new_comment(), params=params))
 
-    async def get_comment(self, comment):
+    async def get_comment(self, comment: int) -> CommentBundle:
         """
         Gets a comment and its replies up to 2 levels deep.
 
@@ -801,7 +820,7 @@ class AsynchronousClient:
         """
         return CommentBundle(await self.http.get(Path.get_comment(comment)))
 
-    async def edit_comment(self, comment, message=None):
+    async def edit_comment(self, comment: int, message: Optional[str] = None) -> CommentBundle:
         """
         Edit an existing comment.
 
@@ -812,7 +831,7 @@ class AsynchronousClient:
         comment: :class:`int`
             Comment id
 
-        message: :class:`str`
+        message: Optional[:class:`str`]
             New text of the comment
 
         **Returns**
@@ -822,7 +841,7 @@ class AsynchronousClient:
         params = {'comment.message': message}
         return CommentBundle(await self.http.patch(Path.edit_comment(comment), params=params))
 
-    async def delete_comment(self, comment):
+    async def delete_comment(self, comment: int) -> CommentBundle:
         """
         Deletes the specified comment.
 
@@ -839,7 +858,7 @@ class AsynchronousClient:
         """
         return CommentBundle(await self.http.delete(Path.delete_comment(comment)))
 
-    async def add_comment_vote(self, comment):
+    async def add_comment_vote(self, comment: int) -> CommentBundle:
         """
         Upvotes a comment.
 
@@ -856,7 +875,7 @@ class AsynchronousClient:
         """
         return CommentBundle(await self.http.post(Path.add_comment_vote(comment)))
 
-    async def remove_comment_vote(self, comment):
+    async def remove_comment_vote(self, comment: int) -> CommentBundle:
         """
         Un-upvotes a comment.
 
@@ -873,7 +892,7 @@ class AsynchronousClient:
         """
         return CommentBundle(await self.http.delete(Path.remove_comment_vote(comment)))
 
-    async def reply_topic(self, topic, body):
+    async def reply_topic(self, topic: int, body: str) -> ForumPost:
         """
         Create a post replying to the specified topic.
 
@@ -895,7 +914,10 @@ class AsynchronousClient:
         data = {'body': body}
         return ForumPost(await self.http.post(Path.reply_topic(topic), data=data))
 
-    async def create_topic(self, body, forum_id, title, with_poll=None, hide_results=None, length_days=None, max_options=None, poll_options=None, poll_title=None, vote_change=None):
+    async def create_topic(self, body: str, forum_id: int, title: str, with_poll: Optional[bool] = None,
+                     hide_results: Optional[bool] = None, length_days: Optional[int] = None,
+                     max_options: Optional[int] = None, poll_options: Optional[str] = None,
+                     poll_title: Optional[str] = None, vote_change: Optional[bool] = None) -> dict:
         """
         Create a new topic.
 
@@ -912,25 +934,25 @@ class AsynchronousClient:
         title: :class:`str`
             Title of the topic.
 
-        with_poll: :class:`bool`
+        with_poll: Optional[:class:`bool`]
             Enable this to also create poll in the topic (default: false).
 
-        hide_results: :class:`bool`
+        hide_results: Optional[:class:`bool`]
             Enable this to hide result until voting period ends (default: false).
 
-        length_days: :class:`int`
+        length_days: Optional[:class:`int`]
             Number of days for voting period. 0 means the voting will never ends (default: 0). This parameter is required if hide_results option is enabled.
 
-        max_options: :class:`int`
+        max_options: Optional[:class:`int`]
             Maximum number of votes each user can cast (default: 1).
 
-        poll_options: :class:`str`
+        poll_options: Optional[:class:`str`]
             Newline-separated list of voting options. BBCode is supported.
 
-        poll_title: :class:`str`
+        poll_title: Optional[:class:`str`]
             Title of the poll.
 
-        vote_change: :class:`bool`
+        vote_change: Optional[:class:`bool`]
             Enable this to allow user to change their votes (default: false).
 
         **Returns**
@@ -959,7 +981,8 @@ class AsynchronousClient:
             'post': ForumPost(resp['post'])
         }
 
-    async def get_topic_and_posts(self, topic, cursor=None, sort=None, limit=None, start=None, end=None):
+    async def get_topic_and_posts(self, topic: int, cursor: Optional[dict] = None, sort: Optional[str] = None,
+                            limit: Optional[int] = None, start: Optional[int] = None, end: Optional[int] = None) -> dict:
         """
         Get topic and its posts.
 
@@ -970,19 +993,19 @@ class AsynchronousClient:
         topic: :class:`int`
             Id of the topic.
 
-        cursor: :class:`Cursor`
+        cursor: Optional[:class:`dict`]
             To be used to fetch the next page of results
 
-        sort: :class:`str`
+        sort: Optional[:class:`str`]
             Post sorting option. Valid values are id_asc (default) and id_desc.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of posts to be returned (20 default, 50 at most).
 
-        start: :class:`int`
+        start: Optional[:class:`int`]
             First post id to be returned with sort set to id_asc. This parameter is ignored if cursor is specified.
 
-        end: :class:`int`
+        end: Optional[:class:`int`]
             First post id to be returned with sort set to id_desc. This parameter is ignored if cursor is specified.
 
         **Returns**
@@ -993,7 +1016,7 @@ class AsynchronousClient:
 
             search: :class:`dict`,
 
-            posts: [ :class:`ForumPost`, ...],
+            posts: Sequence[:class:`ForumPost`],
 
             topic: :class:`ForumTopic`
 
@@ -1003,11 +1026,11 @@ class AsynchronousClient:
         return {
             'cursor': resp['cursor'],
             'search': resp['search'],
-            'posts': [ForumPost(post) for post in resp['posts']],
+            'posts': map(ForumPost, resp['posts']),
             'topic': ForumTopic(resp['topic'])
         }
 
-    async def edit_topic(self, topic, topic_title):
+    async def edit_topic(self, topic: int, topic_title: str) -> ForumTopic:
         """
         Edit topic. Only title can be edited through this endpoint.
 
@@ -1028,7 +1051,7 @@ class AsynchronousClient:
         data = {'forum_topic': {'topic_title': topic_title}}
         return ForumTopic(await self.http.patch(Path.edit_topic(topic), data=data))
 
-    async def edit_post(self, post, body):
+    async def edit_post(self, post: int, body: str) -> ForumPost:
         """
         Edit specified forum post.
 
@@ -1047,7 +1070,7 @@ class AsynchronousClient:
         data = {'body': body}
         return ForumPost(await self.http.patch(Path.edit_post(post), data=data))
 
-    async def search(self, mode=None, query=None, page=None):
+    async def search(self, mode: Optional[str] = None, query: Optional[str] = None, page: Optional[int] = None) -> dict:
         """
         Searches users and wiki pages.
 
@@ -1055,13 +1078,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: :class:`str`
+        mode: Optional[:class:`str`]
             Either all, user, or wiki_page. Default is all.
 
-        query: :class:`str`
+        query: Optional[:class:`str`]
             Search keyword.
 
-        page: :class:`int`
+        page: Optional[:class:`int`]
             Search result page. Ignored for mode all.
 
         **Returns**
@@ -1072,7 +1095,7 @@ class AsynchronousClient:
             user: :class:`dict`
                 For all or user mode. Only first 100 results are accessible
                 {
-                results: :class:`list`
+                results: Sequence
 
                 total: :class:`int`
                 }
@@ -1080,7 +1103,7 @@ class AsynchronousClient:
             wiki_page: :class:`dict`
                 For all or wiki_page mode
                 {
-                results: :class:`list`
+                results: Sequence
 
                 total: :class:`int`
                 }
@@ -1093,7 +1116,7 @@ class AsynchronousClient:
             'wiki_page': {'results': resp['wiki_page']['data'], 'total': resp['wiki_page']['total']} if mode is None or mode == 'all' or mode == 'wiki_page' else None
         }
 
-    async def get_user_highscore(self, room, playlist, user):
+    async def get_user_highscore(self, room: int, playlist: int, user: int) -> MultiplayerScores:
         """
         Requires OAuth and scope lazer
 
@@ -1110,12 +1133,13 @@ class AsynchronousClient:
 
         **Returns**
 
-        Return type is undocumented
+        :class:`MultiplayerScores`
         """
         # Doesn't say response type
-        return await self.http.get(Path.get_user_high_score(room, playlist, user))
+        return MultiplayerScores(await self.http.get(Path.get_user_high_score(room, playlist, user)))
 
-    async def get_scores(self, room, playlist, limit=None, sort=None, cursor=None):
+    async def get_scores(self, room: int, playlist: int, limit: Optional[int] = None,
+                   sort: Optional[str] = None, cursor: Optional[dict] = None) -> MultiplayerScores:
         """
         Requires OAuth and scope public
 
@@ -1127,22 +1151,22 @@ class AsynchronousClient:
         playlist: :class:`int`
             Id of the playlist item.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Number of scores to be returned.
 
-        sort: :class:`str`
-            MultiplayerScoresSort parameter.
+        sort: Optional[:class:`str`]
+            :ref:`MultiplayerScoresSort` parameter.
 
-        cursor: :class:`dict`
+        cursor: Optional[:class:`dict`]
 
         **Returns**
 
-        Return type is undocumented
+        :class:`MultiplayerScores`
         """
         # Doesn't say response type
-        return await self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {})
+        return MultiplayerScores(await self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {}))
 
-    async def get_score(self, room, playlist, score):
+    async def get_score(self, room: int, playlist: int, score: int) -> MultiplayerScore:
         """
         Requires OAuth and scope lazer
 
@@ -1159,24 +1183,24 @@ class AsynchronousClient:
 
         **Returns**
 
-        Return type is undocumented
+        :class:`MultiplayerScore`
         """
         # Doesn't say response type
-        return await self.http.get(Path.get_score(room, playlist, score))
+        return MultiplayerScore(await self.http.get(Path.get_score(room, playlist, score)))
 
-    async def get_news_listing(self, limit=None, year=None, cursor=None):
+    async def get_news_listing(self, limit: Optional[int] = None, year: Optional[int] = None, cursor: Optional[dict] = None) -> dict:
         """
         Returns a list of news posts and related metadata.
 
         **Parameters**
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of posts (12 default, 1 minimum, 21 maximum).
 
-        year: :class:`int`
+        year: Optional[:class:`int`]
             Year to return posts from.
 
-        cursor: :class:`dict`
+        cursor: Optional[:class:`dict`]
             Cursor for pagination.
 
         **Returns**
@@ -1185,7 +1209,7 @@ class AsynchronousClient:
 
         cursor: :class:`dict`
 
-        news_posts: :class:`NewsPost`[]
+        news_posts: Sequence[:class:`NewsPost`]
             Includes preview.
 
         news_sidebar: {
@@ -1196,36 +1220,36 @@ class AsynchronousClient:
             years: :class:`int`
                 All years during which posts have been published.
 
-            news_posts: :class:`NewsPost`[]
+            news_posts: Sequence[:class:`NewsPost`]
                 All posts published during current_year.
 
         }
 
         search: {
 
-        limit: :class:`int`
-            Clamped limit input.
+            limit: :class:`int`
+                Clamped limit input.
 
-        sort: :class:`str`
-        	Always published_desc.
+            sort: :class:`str`
+                Always published_desc.
 
-        }
+            }
 
         }
         """
         response = await self.http.get(Path.get_news_listing(), limit=limit, year=year, cursor=cursor)
         return {
             "cursor": response['cursor'],
-            "news_posts": [NewsPost(post) for post in response["news_posts"]],
+            "news_posts": map(NewsPost, response["news_posts"]),
             "news_sidebar": {
                 "current_year": response['news_sidebar']['current_year'],
                 "years": response['news_sidebar']['years'],
-                "news_posts": [NewsPost(post) for post in response['news_sidebar']['news_posts']],
+                "news_posts": map(NewsPost, response['news_sidebar']['news_posts']),
             },
             "search": response['search']
         }
 
-    async def get_news_post(self, news, key=None):
+    async def get_news_post(self, news: str, key: Optional[str] = None) -> NewsPost:
         """
         Returns details of the specified news post.
 
@@ -1234,7 +1258,7 @@ class AsynchronousClient:
         news: class:`str`
             News post slug or ID.
 
-        key: :class:`str`
+        key: Optional[:class:`str`]
             Unset to query by slug, or id to query by ID.
 
         **Returns**
@@ -1243,7 +1267,7 @@ class AsynchronousClient:
         """
         return NewsPost(await self.http.get(Path.get_news_post(news), key=key))
 
-    async def get_notifications(self, max_id=None):
+    async def get_notifications(self, max_id: Optional[int] = None) -> dict:
         """
         This endpoint returns a list of the user's unread notifications. Sorted descending by id with limit of 50.
 
@@ -1251,7 +1275,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        max_id: :class:`int`
+        max_id: Optional[:class:`int`]
             Maximum id fetched. Can be used to load earlier notifications. Defaults to no limit (fetch latest notifications)
 
         **Returns**
@@ -1262,7 +1286,7 @@ class AsynchronousClient:
             has_more: :class:`bool`,
                 whether or not there are more notifications
 
-            notifications: [ :class:`Notification`, ...],
+            notifications: Sequence[:class:`Notification`],
 
             unread_count: :class:`bool`
                 total unread notifications
@@ -1275,12 +1299,12 @@ class AsynchronousClient:
         resp = await self.http.get(Path.get_notifications(), max_id=max_id)
         return {
             'has_more': resp['has_more'],
-            'notifications': [Notification(notif) for notif in resp['notifications']],
+            'notifications': map(Notification, resp['notifications']),
             'unread_count': resp['unread_count'],
             'notification_endpoint': resp['notification_endpoint'],
         }
 
-    async def mark_notifications_read(self, ids):
+    async def mark_notifications_read(self, ids: Sequence[int]):
         """
         This endpoint allows you to mark notifications read.
 
@@ -1288,10 +1312,10 @@ class AsynchronousClient:
 
         **Parameters**
 
-        ids: :class:`list`
-            list containing object of type :class:`int`. id of notifications to be marked as read.
+        ids: Sequence[:class:`int`]
+            ids of notifications to be marked as read.
         """
-        data = {'ids': ids}
+        data = {'ids[]': ids}
         await self.http.post(Path.mark_notifications_as_read(), data=data)
 
     async def revoke_current_token(self):
@@ -1300,7 +1324,8 @@ class AsynchronousClient:
         """
         await self.http.delete(self, Path.revoke_current_token())
 
-    async def get_ranking(self, mode, type, country=None, cursor=None, filter=None, spotlight=None, variant=None):
+    async def get_ranking(self, mode: str, type: str, country: Optional[str] = None, cursor: Optional[dict] = None,
+                    filter: Optional[str] = None, spotlight: Optional[int] = None, variant: Optional[str] = None) -> Rankings:
         """
         Gets the current ranking for the specified type and game mode.
 
@@ -1312,18 +1337,18 @@ class AsynchronousClient:
         type: :class:`str`
             :ref:`RankingType`
 
-        country: :class:`str`
+        country: Optional[:class:`str`]
             Filter ranking by country code. Only available for type of performance.
 
-        cursor: :class:`dict`
+        cursor: Optional[:class:`dict`]
 
-        filter: :class:`str`
+        filter: Optional[:class:`str`]
             Either all (default) or friends.
 
-        spotlight: :class:`int`
+        spotlight: Optional[:class:`int`]
             The id of the spotlight if type is charts. Ranking for latest spotlight will be returned if not specified.
 
-        variant: :class:`str`
+        variant: Optional[:class:`str`]
             Filter ranking to specified mode variant. For mode of mania, it's either 4k or 7k. Only available for type of performance.
 
         **Returns**
@@ -1333,7 +1358,7 @@ class AsynchronousClient:
         return Rankings(await self.http.get(Path.get_ranking(mode, type), country=country, **cursor if cursor else {}, filter=filter,
                                       spotlight=spotlight, variant=variant))
 
-    async def get_spotlights(self):
+    async def get_spotlights(self) -> Spotlights:
         """
         Gets the list of spotlights.
 
@@ -1345,7 +1370,7 @@ class AsynchronousClient:
         """
         return Spotlights(await self.http.get(Path.get_spotlights()))
 
-    async def get_own_data(self, mode=""):
+    async def get_own_data(self, mode="") -> User:
         """
         Similar to get_user but with authenticated user (token owner) as user id.
 
@@ -1353,7 +1378,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: :class:`str`
+        mode: Optional[:class:`str`]
             GameMode. User default mode will be used if not specified.
 
         **Returns**
@@ -1362,7 +1387,7 @@ class AsynchronousClient:
         """
         return User(await self.http.get(Path.get_own_data(mode)))
 
-    async def get_user_kudosu(self, user, limit=None, offset=None):
+    async def get_user_kudosu(self, user: int, limit: Optional[int] = None, offset: Optional[int] = None):
         """
         Returns kudosu history.
 
@@ -1373,20 +1398,20 @@ class AsynchronousClient:
         user: :class:`int`
             Id of the user.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        offset: :class:`int`
+        offset: Optional[:class:`int`]
             Result offset for pagination.
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type :class:`KudosuHistory`
+        Sequence[:class:`KudosuHistory`]
         """
-        return [KudosuHistory(kud) for kud in await self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset)]
+        return map(KudosuHistory, await self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset))
 
-    async def get_user_scores(self, user, type, include_fails=None, mode=None, limit=None, offset=None):
+    async def get_user_scores(self, user: int, type: str, include_fails: Optional[int] = None, mode: Optional[str] = None,
+                        limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Score]:
         """
         This endpoint returns the scores of specified user.
 
@@ -1400,28 +1425,26 @@ class AsynchronousClient:
         type: :class:`str`
             Score type. Must be one of these: best, firsts, recent
 
-        include_fails: :class:`int`
+        include_fails: Optional[:class:`int`]
             Only for recent scores, include scores of failed plays. Set to 1 to include them. Defaults to 0.
 
-        mode: :class:`str`
+        mode: Optional[:class:`str`]
             GameMode of the scores to be returned. Defaults to the specified user's mode.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        offset: :class:`int`
+        offset: Optional[:class:`int`]
             Result offset for pagination.
 
         **Returns**
 
-        :class:`list`
-            list obtaining objects of type :class:`Score`. Includes attributes
-
-            beatmap, beatmapset, weight: Only for type best, user
+        Sequence[:class:`Score`]
+            Includes attributes beatmap, beatmapset, weight: Only for type best, user
         """
         return [Score(score) for score in await self.http.get(Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
 
-    async def get_user_beatmaps(self, user, type, limit=None, offset=None):
+    async def get_user_beatmaps(self, user: int, type: str, limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Union[BeatmapPlaycount, Beatmapset]]:
         """
         Returns the beatmaps of specified user.
 
@@ -1435,23 +1458,23 @@ class AsynchronousClient:
         type: :class:`str`
             Beatmap type. Can be one of the following - favourite, graveyard, loved, most_played, pending, ranked.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        offset: :class:`int`
+        offset: Optional[:class:`int`]
             Result offset for pagination.
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type BeatmapPlaycount (for type most_played) or Beatmapset (any other type).
+        Sequence[Union[:class:`BeatmapPlaycount`, :class:`Beatmapset`]]
+            :class:`BeatmapPlaycount` for type most_played or :class:`Beatmapset` for any other type.
         """
         object_type = Beatmapset
         if type == 'most_played':
             object_type = BeatmapPlaycount
-        return [object_type(bm) for bm in await self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset)]
+        return map(object_type, await self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset))
 
-    async def get_user_recent_activity(self, user, limit=None, offset=None):
+    async def get_user_recent_activity(self, user: int, limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Event]:
         """
         Returns recent activity.
 
@@ -1462,20 +1485,20 @@ class AsynchronousClient:
         user: :class:`int`
             Id of the user.
 
-        limit: :class:`int`
+        limit: Optional[:class:`int`]
             Maximum number of results.
 
-        offset: :class:`int`
+        offset: Optional[:class:`int`]
             Result offset for pagination.
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type :class:`Event`
+        Sequence[:class:`Event`]
+            list of :class:`Event` objects
         """
-        return [Event(event) for event in await self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset)]
+        return map(Event, await self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset))
 
-    async def get_user(self, user, mode='', key=None):
+    async def get_user(self, user: int, mode: Optional[str] = '', key: Optional[str] = None) -> User:
         """
         This endpoint returns the detail of specified user.
 
@@ -1487,10 +1510,10 @@ class AsynchronousClient:
             Id or username of the user. Id lookup is prioritised unless key parameter is specified.
             Previous usernames are also checked in some cases.
 
-        mode: :class:`str`
+        mode: Optional[:class:`str`]
             GameMode. User default mode will be used if not specified.
 
-        key: :class:`str`
+        key: Optional[:class:`str`]
             Type of user passed in url parameter. Can be either id or username
             to limit lookup by their respective type. Passing empty or invalid
             value will result in id lookup followed by username lookup if not found.
@@ -1498,20 +1521,18 @@ class AsynchronousClient:
         **Returns**
 
         :class:`User`
-            Includes attributes account_history, active_tournament_banner,
-            badges, beatmap_playcounts_count, favourite_beatmapset_count,
-            follower_count, graveyard_beatmapset_count, groups,
-            loved_beatmapset_count, monthly_playcounts, page,
-            previous_usernames, rank_history: For specified mode,
-            ranked_and_approved_beatmapset_count, replays_watched_counts,
-            scores_best_count: For specified mode., scores_first_count: For specified mode.,
-            scores_recent_count: For specified mode.,
-            statistics: For specified mode. Inludes rank and variants attributes.,
-            support_level, unranked_beatmapset_count, user_achievements
+            Includes following attributes: account_history, active_tournament_banner,
+            badges, beatmap_playcounts_count, favourite_beatmapset_count, follower_count,
+            graveyard_beatmapset_count, groups, loved_beatmapset_count,
+            mapping_follower_count, monthly_playcounts, page, pending_beatmapset_count,
+            previous_usernames, rank_history, ranked_beatmapset_count, replays_watched_counts,
+            scores_best_count, scores_first_count, scores_recent_count, statistics,
+            statistics.country_rank, statistics.rank, statistics.variants, support_level,
+            user_achievements.
         """
         return User(await self.http.get(Path.get_user(user, mode), key=key))
 
-    async def get_users(self, ids):
+    async def get_users(self, ids: Sequence[int]) -> Sequence[UserCompact]:
         """
         Returns list of users.
 
@@ -1519,19 +1540,19 @@ class AsynchronousClient:
 
         **Parameters**
 
-        ids: :class:`list`
+        ids: Sequence[:class:`int`]
             User id to be returned. Specify once for each user id requested. Up to 50 users can be requested at once.
 
         **Returns**
 
-        :class:`list`
-            list containing objects of type :class:`UserCompact`.
+        Sequence[:class:`UserCompact`]
+            list of :class:`UserCompact` objects.
             Includes attributes: country, cover, groups, statistics_fruits,
             statistics_mania, statistics_osu, statistics_taiko.
         """
-        return [UserCompact(user) for user in await self.http.get(Path.get_users(), ids=ids)]
+        return map(UserCompact, await self.http.get(Path.get_users(), ids=ids))
 
-    async def get_wiki_page(self, locale, path, page=None):
+    async def get_wiki_page(self, locale: str, path: str) -> WikiPage:
         """
         The wiki article or image data.
 
@@ -1539,20 +1560,19 @@ class AsynchronousClient:
 
         **Parameters**
 
-        locale
+        locale: :class:`str`
+            Two-letter language code of the wiki page.
 
-        path
-
-        page: :class:`str`
+        path: :class:`str`
             The path name of the wiki page.
 
         **Returns**
 
         :class:`WikiPage`
         """
-        return WikiPage(await self.http.get(Path.get_wiki_page(locale, path), page=page))
+        return WikiPage(await self.http.get(Path.get_wiki_page(locale, path)))
 
-    async def make_request(self, method, path, scope, **kwargs):
+    async def make_request(self, method: str, path: str, scope: Union[Scope, str], **kwargs):
         """
         Gives you freedom to format the contents of the request.
 
@@ -1564,11 +1584,11 @@ class AsynchronousClient:
         path: :class:`str`
             Url path to send request to (excluding the base api url) Ex. "beatmapsets/search"
 
-        scope: :class:`str`
+        scope: Union[:class:`Scope`, :class:`str`]
             Used for the purpose of creating the Path object but will also be checked against the scopes you are valid for.
             For valid scopes check :class:`Scope.valid_scopes`
         """
-        return await getattr(self.http, method)(Path(path, scope), **kwargs)
+        return getattr(self.http, method)(Path(path, scope), **kwargs)
 
     # Undocumented
 
