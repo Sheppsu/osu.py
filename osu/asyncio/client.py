@@ -208,7 +208,7 @@ class AsynchronousClient:
 
         :class:`BeatmapDifficultyAttributes`
         """
-        return BeatmapDifficultyAttributes(await self.http.get(Path.get_beatmap_attributes(beatmap), mods=mods, ruleset=ruleset, ruleset_id=ruleset_id))
+        return BeatmapDifficultyAttributes(await self.http.post(Path.get_beatmap_attributes(beatmap), mods=mods, ruleset=ruleset, ruleset_id=ruleset_id))
 
     async def get_beatmapset_discussion_posts(self, beatmapset_discussion_id=None, limit=None, page=None, sort=None, user=None, with_deleted=None):
         """
