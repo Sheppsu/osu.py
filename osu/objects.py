@@ -347,7 +347,7 @@ class BeatmapPlaycount:
 
 class BeatmapScores:
     """
-    Contains a list of scores as well as, possibly, a BeatmapUserScore object.
+    Contains a list of scores as well as, possibly, a :class:`BeatmapUserScore` object.
 
     **Attributes**
 
