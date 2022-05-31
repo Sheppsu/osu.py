@@ -14,6 +14,8 @@ class HTTPHandler:
     def get_headers(self, **kwargs):
         headers = {
             'Authorization': f'Bearer {self.auth.token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json',
             **{str(key): str(value) for key, value in kwargs.items() if value is not None}
         }
         return headers
