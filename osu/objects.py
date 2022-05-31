@@ -157,6 +157,7 @@ class BeatmapDifficultyAttributes:
     )
 
     def __init__(self, data):
+        data = data['attributes']
         self.max_combo = data['max_combo']
         self.star_rating = data['star_rating']
         if "aim_difficulty" in data:

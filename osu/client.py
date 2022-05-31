@@ -219,7 +219,7 @@ class Client:
 
         :class:`BeatmapDifficultyAttributes`
         """
-        return BeatmapDifficultyAttributes(self.http.get(Path.get_beatmap_attributes(beatmap), mods=mods, ruleset=ruleset, ruleset_id=ruleset_id))
+        return BeatmapDifficultyAttributes(self.http.post(Path.get_beatmap_attributes(beatmap), mods=mods, ruleset=ruleset, ruleset_id=ruleset_id))
 
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id=None, limit=None, page=None, sort=None, user=None, with_deleted=None):
         """
