@@ -1,4 +1,4 @@
-from enum import IntFlag
+from enum import IntFlag, IntEnum
 from typing import Sequence
 from .constants import mod_abbreviations
 
@@ -60,3 +60,13 @@ class Mods(IntFlag):
                 except KeyError:
                     ret.append(Mods.get_from_abbreviation(mod))
         return ret
+
+
+class RankStatus(IntEnum):
+    GRAVEYARD = -2
+    WIP = -1
+    PENDING = 0
+    RANKED = 1
+    APPROVED = 2
+    QUALIFIED = 3
+    LOVED = 4
