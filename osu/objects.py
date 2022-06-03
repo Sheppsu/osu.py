@@ -1,5 +1,5 @@
-from .constants import int_to_status
 from .util import get_item_else
+from .enums import RankStatus
 import math
 
 
@@ -299,7 +299,7 @@ class Beatmap(BeatmapCompact):
 
     def __init__(self, data):
         super().__init__(data)
-        self.ranked = int_to_status[int(data['ranked'])]
+        self.ranked = RankStatus(int(data['ranked']))
         self.url = data['url']
         self.playcount = data['playcount']
         self.passcount = data['passcount']
@@ -709,7 +709,7 @@ class Beatmapset(BeatmapsetCompact):
         self.storyboard = data['storyboard']
         self.tags = data['tags']
         # self.has_favourited = data['has_favourited']  # should be included but it's not ?
-        self.ranked = int_to_status[int(data['ranked'])]
+        self.ranked = RankStatus(int(data['ranked']))
         for attr in ("has_favourited", "nominations"):
             setattr(self, attr, data[attr] if attr in data else None)
 
