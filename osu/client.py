@@ -1,5 +1,6 @@
 from .http import HTTPHandler
 from .objects import *
+from .enums import *
 from .auth import AuthHandler
 from collections.abc import Sequence
 from typing import Union, Optional
@@ -90,7 +91,7 @@ class Client:
 
     def get_user_beatmap_score(self, beatmap: int, user: int, mode: Optional[str] = None, mods: Optional[Sequence[str]] = None) -> BeatmapUserScore:
         """
-        Returns a :class:`User`'s score on a Beatmap
+        Returns a user's score on a Beatmap
 
         Requires OAuth and scope public
 
@@ -106,7 +107,7 @@ class Client:
             The :ref:`GameMode` to get scores for
 
         mods: Optional[Sequence[:class:`str`]]
-            An array of matching Mods, or none
+            An array of matching Mods, or none. Currently doesn't do anything.
 
         **Returns**
 
@@ -116,7 +117,7 @@ class Client:
 
     def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[str] = None) -> BeatmapUserScore:
         """
-        Returns a :class:`User`'s scores on a Beatmap
+        Returns a user's scores on a Beatmap
 
         Requires OAuth and scope public
 
@@ -152,10 +153,10 @@ class Client:
             The GameMode to get scores for
 
         mods: Optional[Sequence[:class:`str`]]
-            An array of matching Mods, or none
+            An array of matching Mods, or none. Currently doesn't do anything.
 
         type: Optional[Sequence[:class:`str`]]
-            Beatmap score ranking type
+            Beatmap score ranking type. Currently doesn't do anything.
 
         **Returns**
 
@@ -200,7 +201,7 @@ class Client:
         results = self.http.get(Path.beatmaps(), **{"ids[]": ids})
         return map(Beatmap, results['beatmaps']) if results else []
 
-    def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Sequence[str]]]=None, ruleset: Optional[str] = None, ruleset_id: Optional[int] = None) -> BeatmapDifficultyAttributes:
+    def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Mods, Sequence[str]]]=None, ruleset: Optional[str] = None, ruleset_id: Optional[int] = None) -> BeatmapDifficultyAttributes:
         """
         Returns difficulty attributes of beatmap with specific mode and mods combination.
 
@@ -224,6 +225,10 @@ class Client:
 
         :class:`BeatmapDifficultyAttributes`
         """
+        if isinstance(mods, Mods):
+            mods = mods.value
+        if isinstance(mods, Sequence):
+            mods = Mods.get_from_list(Mods.parse_and_return_any_list(mods)).value
         return BeatmapDifficultyAttributes(self.http.post(Path.get_beatmap_attributes(beatmap), mods=mods, ruleset=ruleset, ruleset_id=ruleset_id))
 
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
