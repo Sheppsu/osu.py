@@ -39,6 +39,7 @@ classifiers = [
 packages = [
     'osu',
     'osu.asyncio',
+    'osu.objects',
 ]
 
 setuptools.setup(
