@@ -276,10 +276,10 @@ class Client:
         resp = self.http.get(Path.beatmapset_discussion_posts(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
-            'beatmapsets': BeatmapsetCompact(resp['beatmapsets']),
+            'beatmapsets': list(map(BeatmapsetCompact, resp['beatmapsets'])),
             'cursor': resp['cursor'],
             'posts': list(map(BeatmapsetDiscussionPost, resp['posts'])),
-            'users': UserCompact(resp['users'])
+            'users': list(map(UserCompact, resp['users']))
         }
 
     def get_beatmapset_discussion_votes(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
@@ -322,11 +322,11 @@ class Client:
             {
             cursor: :class:`dict`,
 
-            discussions: :class:`BeatmapsetDiscussions`,
+            discussions: Sequence[:class:`BeatmapsetDiscussion`],
 
-            users: :class:`UserCompact`,
+            users: Sequence[:class:`UserCompact`],
 
-            votes: List[:class:`BeatmapsetDiscussionVote`]
+            votes: Sequence[:class:`BeatmapsetDiscussionVote`]
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
@@ -334,14 +334,14 @@ class Client:
                              limit=limit, receiver=receiver, score=score, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'cursor': resp['cursor'],
-            'discussions': BeatmapsetDiscussion(resp['discussions']),
-            'users': UserCompact(resp['users']),
-            'votes': [BeatmapsetDiscussionVote(vote) for vote in resp['votes']]
+            'discussions': list(map(BeatmapsetDiscussion, resp['discussions'])),
+            'users': list(map(UserCompact, resp['users'])),
+            'votes': list(map(BeatmapsetDiscussionVote, resp['votes']))
         }
 
     def get_beatmapset_discussions(self, beatmap_id: Optional[int] = None, beatmapset_id: Optional[int] = None,
                                    beatmapset_status: Optional[str] = None, limit: Optional[int] = None,
-                                   message_type: Optional[Sequence[str]] = None, only_unresolved: Optional[bool] = None,
+                                   message_types: Optional[Sequence[str]] = None, only_unresolved: Optional[bool] = None,
                                    page: Optional[int] = None, sort: Optional[str] = None, user: Optional[int] = None,
                                    with_deleted: Optional[str] = None) -> dict:
         """
@@ -406,9 +406,10 @@ class Client:
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
+        message_types = {"message_types[]": message_types}
         resp = self.http.get(Path.beatmapset_discussions(), beatmap_id=beatmap_id, beatmapset_id=beatmapset_id,
-                             beatmapset_status=beatmapset_status, limit=limit, message_type=message_type,
-                             only_unresolved=only_unresolved, page=page, sort=sort, user=user, with_deleted=with_deleted)
+                             beatmapset_status=beatmapset_status, limit=limit, only_unresolved=only_unresolved,
+                             page=page, sort=sort, user=user, with_deleted=with_deleted, **message_types)
         return {
             'beatmaps': list(map(Beatmap, resp['beatmaps'])),
             'cursor': resp['cursor'],

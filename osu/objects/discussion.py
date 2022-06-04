@@ -51,9 +51,6 @@ class BeatmapsetDiscussion:
     updated_at: :ref:`Timestamp`
 
     user_id: :class:`int`
-
-    votes: :class:`list`
-        list containing objects of type :class:`BeatmapsetDiscussionVote`
     """
     __slots__ = (
         "beatmap", "beatmap_id", "beatmapset", "beatmapset_id", "can_be_resolved", "can_grant_kudosu",
@@ -70,7 +67,7 @@ class BeatmapsetDiscussion:
         self.can_be_resolved = data['can_be_resolved']
         self.can_grant_kudosu = data['can_grant_kudosu']
         self.created_at = data['created_at']
-        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], 'BeatmapsetDiscussionPermissions')
+        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], 'BeatmapsetDiscussionPermissions') if 'current_user_attributes' in data else None
         self.deleted_at = data['deleted_at'] if 'deleted_at' in data else None
         self.deleted_by_id = data['deleted_by_id'] if 'deleted_by_id' in data else None
         self.id = data['id']
@@ -159,4 +156,4 @@ class BeatmapsetDiscussionVote:
         self.id = data['id']
         self.score = data['score']
         self.updated_at = data['updated_at']
-        self.user_id = data['user']
+        self.user_id = data['user_id']
