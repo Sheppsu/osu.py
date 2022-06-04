@@ -35,7 +35,6 @@ class BeatmapsetDiscussion:
     last_post_at: :ref:`Timestamp`
 
     message_type: :class:`MessageType`
-        :class:`MessageType` can be one of the following, all of which being :class:`str`, hype, mapper_note, praise, review, suggestion
 
     parent_id: :class:`int`
 
