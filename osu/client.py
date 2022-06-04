@@ -199,7 +199,7 @@ class Client:
             Includes: beatmapset (with ratings), failtimes, max_combo.
         """
         results = self.http.get(Path.beatmaps(), **{"ids[]": ids})
-        return map(Beatmap, results['beatmaps']) if results else []
+        return list(map(Beatmap, results['beatmaps'])) if results else []
 
     def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Mods, Sequence[str]]]=None, ruleset: Optional[str] = None, ruleset_id: Optional[int] = None) -> BeatmapDifficultyAttributes:
         """
@@ -278,7 +278,7 @@ class Client:
         return {
             'beatmapsets': BeatmapsetCompact(resp['beatmapsets']),
             'cursor': resp['cursor'],
-            'posts': map(BeatmapsetDiscussionPost, resp['posts']),
+            'posts': list(map(BeatmapsetDiscussionPost, resp['posts'])),
             'users': UserCompact(resp['users'])
         }
 
@@ -410,12 +410,12 @@ class Client:
                              beatmapset_status=beatmapset_status, limit=limit, message_type=message_type,
                              only_unresolved=only_unresolved, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
-            'beatmaps': map(Beatmap, resp['beatmaps']),
+            'beatmaps': list(map(Beatmap, resp['beatmaps'])),
             'cursor': resp['cursor'],
-            'discussions': map(BeatmapsetDiscussion, resp['discussions']),
-            'included_discussions': map(BeatmapsetDiscussion, resp['included_discussions']),
+            'discussions': list(map(BeatmapsetDiscussion, resp['discussions'])),
+            'included_discussions': list(map(BeatmapsetDiscussion, resp['included_discussions'])),
             'reviews_config.max_blocks': resp['reviews_config'],
-            'users': map(UserCompact, resp['users'])
+            'users': list(map(UserCompact, resp['users']))
         }
 
     def get_changelog_build(self, stream: str, build: str) -> Build:
@@ -490,9 +490,9 @@ class Client:
         """
         response = self.http.get(Path.get_changelog_listing(), max_id=max_id, stream=stream, to=to, message_formats=message_formats, **{"from": from_version})
         return {
-            "build": map(Build, response['builds']),
+            "build": list(map(Build, response['builds'])),
             "search": response['search'],
-            "streams": map(UpdateStream, response['streams']),
+            "streams": list(map(UpdateStream, response['streams'])),
         }
 
     def lookup_changelog_build(self, changelog: str, key: Optional[str] = None, message_formats: Optional[Sequence[str]] = None) -> Build:
@@ -553,7 +553,7 @@ class Client:
         resp = self.http.post(Path.create_new_pm(), data=data)
         return {
             'new_channel_id': resp['new_channel_id'],
-            'presence': map(ChatChannel, resp['presence']),
+            'presence': list(map(ChatChannel, resp['presence'])),
             'message': ChatMessage(resp['message'])
         }
 
@@ -586,9 +586,9 @@ class Client:
         """
         resp = self.http.post(Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
         return {
-            'presence': map(ChatChannel, resp['presence']),
-            'messages': map(ChatMessage, resp['messages']),
-            'silences': map(UserSilence, resp['silences'])
+            'presence': list(map(ChatChannel, resp['presence'])),
+            'messages': list(map(ChatMessage, resp['messages'])),
+            'silences': list(map(UserSilence, resp['silences']))
         }
 
     def get_channel_messages(self, channel_id: int, limit: Optional[int] = None, since: Optional[int] = None, until: Optional[int] = None) -> Sequence[ChatMessage]:
@@ -616,7 +616,7 @@ class Client:
         Sequence[:class:`ChatMessage`]
             list containing :class:`ChatMessage` objects
         """
-        return map(ChatMessage, self.http.post(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until))
+        return list(map(ChatMessage, self.http.post(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)))
 
     def send_message_to_channel(self, channel_id: int, message: str, is_action: bool) -> ChatMessage:
         """
@@ -704,7 +704,7 @@ class Client:
 
         Sequence[:class:`ChatChannel`]
         """
-        return map(ChatChannel, self.http.get(Path.get_channel_list()))
+        return list(map(ChatChannel, self.http.get(Path.get_channel_list())))
 
     def create_channel(self, type: str, target_id: Optional[int] = None) -> ChatChannel:
         """
@@ -1043,7 +1043,7 @@ class Client:
         return {
             'cursor': resp['cursor'],
             'search': resp['search'],
-            'posts': map(ForumPost, resp['posts']),
+            'posts': list(map(ForumPost, resp['posts'])),
             'topic': ForumTopic(resp['topic'])
         }
 
@@ -1257,11 +1257,11 @@ class Client:
         response = self.http.get(Path.get_news_listing(), limit=limit, year=year, cursor=cursor)
         return {
             "cursor": response['cursor'],
-            "news_posts": map(NewsPost, response["news_posts"]),
+            "news_posts": list(map(NewsPost, response["news_posts"])),
             "news_sidebar": {
                 "current_year": response['news_sidebar']['current_year'],
                 "years": response['news_sidebar']['years'],
-                "news_posts": map(NewsPost, response['news_sidebar']['news_posts']),
+                "news_posts": list(map(NewsPost, response['news_sidebar']['news_posts'])),
             },
             "search": response['search']
         }
@@ -1316,7 +1316,7 @@ class Client:
         resp = self.http.get(Path.get_notifications(), max_id=max_id)
         return {
             'has_more': resp['has_more'],
-            'notifications': map(Notification, resp['notifications']),
+            'notifications': list(map(Notification, resp['notifications'])),
             'unread_count': resp['unread_count'],
             'notification_endpoint': resp['notification_endpoint'],
         }
@@ -1425,7 +1425,7 @@ class Client:
 
         Sequence[:class:`KudosuHistory`]
         """
-        return map(KudosuHistory, self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset))
+        return list(map(KudosuHistory, self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset)))
 
     def get_user_scores(self, user: int, type: str, include_fails: Optional[int] = None, mode: Optional[str] = None,
                         limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Score]:
@@ -1489,7 +1489,7 @@ class Client:
         object_type = Beatmapset
         if type == 'most_played':
             object_type = BeatmapPlaycount
-        return map(object_type, self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset))
+        return list(map(object_type, self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset)))
 
     def get_user_recent_activity(self, user: int, limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Event]:
         """
@@ -1513,7 +1513,7 @@ class Client:
         Sequence[:class:`Event`]
             list of :class:`Event` objects
         """
-        return map(Event, self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset))
+        return list(map(Event, self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset)))
 
     def get_user(self, user: int, mode: Optional[str] = '', key: Optional[str] = None) -> User:
         """
@@ -1567,7 +1567,7 @@ class Client:
             Includes attributes: country, cover, groups, statistics_fruits,
             statistics_mania, statistics_osu, statistics_taiko.
         """
-        return map(UserCompact, self.http.get(Path.get_users(), ids=ids))
+        return list(map(UserCompact, self.http.get(Path.get_users(), ids=ids)))
 
     def get_wiki_page(self, locale: str, path: str) -> WikiPage:
         """
