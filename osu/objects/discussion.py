@@ -34,7 +34,8 @@ class BeatmapsetDiscussion:
 
     last_post_at: :ref:`Timestamp`
 
-    message_type: :class:`MessageType`
+    message_type: :class:`str`
+        can be any of the following: hype, mapper_note, praise, problem, review, suggestion
 
     parent_id: :class:`int`
 
@@ -62,28 +63,27 @@ class BeatmapsetDiscussion:
     )
 
     def __init__(self, data):
-        self.beatmap = BeatmapCompact(data['beatmap'])
-        self.beatmap_id = data['beatmap_id']
-        self.beatmapset = BeatmapsetCompact(data['beatmapset'])
+        self.beatmap = BeatmapCompact(data['beatmap']) if 'beatmap' in data else None
+        self.beatmap_id = data['beatmap_id'] if 'beatmap_id' in data else None
+        self.beatmapset = BeatmapsetCompact(data['beatmapset']) if 'beatmapset' in data else None
         self.beatmapset_id = data['beatmapset_id']
         self.can_be_resolved = data['can_be_resolved']
         self.can_grant_kudosu = data['can_grant_kudosu']
         self.created_at = data['created_at']
         self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], 'BeatmapsetDiscussionPermissions')
-        self.deleted_at = data['deleted_at']
-        self.deleted_by_id = data['deleted_by_id']
+        self.deleted_at = data['deleted_at'] if 'deleted_at' in data else None
+        self.deleted_by_id = data['deleted_by_id'] if 'deleted_by_id' in data else None
         self.id = data['id']
         self.kudosu_denied = data['kudosu_denied']
         self.last_post_at = data['last_post_at']
-        self.message_type = MessageType(data['message_type'])
-        self.parent_id = data['parent_id']
-        self.posts = [BeatmapsetDiscussionPost(post) for post in data['posts']]
+        self.message_type = data['message_type']
+        self.parent_id = data['parent_id'] if 'parent_id' in data else None
+        self.posts = list(map(BeatmapsetDiscussionPost, data['posts'])) if 'posts' in data else None
         self.resolved = data['resolved']
-        self.starting_post = BeatmapsetDiscussionPost(data['starting_post'])
-        self.timestamp = data['timestamp']
+        self.starting_post = BeatmapsetDiscussionPost(data['starting_post']) if 'starting_post' in data else None
+        self.timestamp = data['timestamp'] if 'timestamp' in data else None
         self.updated_at = data['updated_at']
         self.user_id = data['user_id']
-        self.votes = [BeatmapsetDiscussionVote(vote) for vote in data['votes']]
 
 
 class BeatmapsetDiscussionPost:
@@ -120,10 +120,10 @@ class BeatmapsetDiscussionPost:
     def __init__(self, data):
         self.beatmapset_discussion_id = data['beatmapset_discussion_id']
         self.created_at = data['created_at']
-        self.deleted_at = data['deleted_at']
-        self.deleted_by_id = data['deleted_by_id']
+        self.deleted_at = data['deleted_at'] if 'deleted_at' in data else None
+        self.deleted_by_id = data['deleted_by_id'] if 'deleted_by_id' in data else None
         self.id = data['id']
-        self.last_editor_id = data['last_editor_id']
+        self.last_editor_id = data['last_editor_id'] if 'last_editor' in data else None
         self.message = data['message']
         self.system = data['system']
         self.updated_at = data['updated_at']
@@ -160,32 +160,3 @@ class BeatmapsetDiscussionVote:
         self.score = data['score']
         self.updated_at = data['updated_at']
         self.user_id = data['user']
-
-
-class MessageType:
-    """
-    **Attributes**
-
-    hype
-
-    mapper_note
-
-    praise
-
-    problem
-
-    review
-
-    suggestion
-    """
-    __slots__ = (
-        "hype", "mapper_note", "praise", "problem", "review", "suggestion"
-    )
-
-    def __init__(self, data):
-        self.hype = data['hype']
-        self.mapper_note = data['mapper_note']
-        self.praise = data['praise']
-        self.problem = data['problem']
-        self.review = data['review']
-        self.suggestion = data['suggestion']
