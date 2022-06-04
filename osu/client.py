@@ -3,8 +3,7 @@ from .objects import *
 from .path import Path
 from .enums import *
 from .auth import AuthHandler
-from collections.abc import Sequence
-from typing import Union, Optional
+from typing import Union, Optional, Sequence
 
 
 class Client:
