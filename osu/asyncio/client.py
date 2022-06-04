@@ -7,8 +7,7 @@ from .http import AsynchronousHTTPHandler
 from ..objects import *
 from ..auth import AuthHandler
 from ..enums import *
-from collections.abc import Sequence
-from typing import Union, Optional
+from typing import Union, Optional, Sequence
 
 
 class AsynchronousClient:
