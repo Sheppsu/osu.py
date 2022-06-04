@@ -167,8 +167,7 @@ class Beatmapset(BeatmapsetCompact):
 
     legacy_thread_url: :class:`str`
 
-    ranked: :class:`str`
-        Possible values consist of graveyard, wip, pending, ranked, approved, qualified, loved
+    ranked: :class:`RankStatus`
 
     ranked_date: :ref:`Timestamp`
 
@@ -201,7 +200,6 @@ class Beatmapset(BeatmapsetCompact):
         self.last_updated = data['last_updated']
         self.legacy_thread_url = data['legacy_thread_url']
         # self.nominations = data['nominations']  # docs says this should be there but it's not ?
-        self.ranked = data['ranked']
         self.ranked_date = data['ranked_date']
         self.source = data['source']
         self.storyboard = data['storyboard']
@@ -443,8 +441,7 @@ class Beatmap(BeatmapCompact):
 
     playcount: :class:`int`
 
-    ranked: :class:`str`
-        Possible values consist of graveyard, wip, pending, ranked, approved, qualified, loved
+    ranked: :class:`RankStatus`
 
     url: :class:`str`
     """
