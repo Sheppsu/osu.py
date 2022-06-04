@@ -327,6 +327,20 @@ WikiPage
    :members:
 
 
+Enums
+-----
+
+Mods
+^^^^
+.. autoclass:: osu.Mods
+   :members:
+
+RankStatus
+^^^^^^^^^^
+.. autoclass:: osu.RankStatus
+   :members:
+
+
 Other Information
 -----------------
 
