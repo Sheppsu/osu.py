@@ -6,6 +6,7 @@ over docstring edits in the osu/client.py file.
 from .http import AsynchronousHTTPHandler
 from ..objects import *
 from ..auth import AuthHandler
+from ..enums import *
 from collections.abc import Sequence
 from typing import Union, Optional
 
@@ -188,7 +189,7 @@ class AsynchronousClient:
         results = await self.http.get(Path.beatmaps(), **{"ids[]": ids})
         return map(Beatmap, results['beatmaps']) if results else []
 
-    async def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Sequence[str]]]=None, ruleset: Optional[str] = None, ruleset_id: Optional[int] = None) -> BeatmapDifficultyAttributes:
+    async     def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Mods, Sequence[str]]]=None, ruleset: Optional[str] = None, ruleset_id: Optional[int] = None) -> BeatmapDifficultyAttributes:
         """
         Returns difficulty attributes of beatmap with specific mode and mods combination.
 
@@ -212,6 +213,10 @@ class AsynchronousClient:
 
         :class:`BeatmapDifficultyAttributes`
         """
+        if isinstance(mods, Mods):
+            mods = mods.value
+        if isinstance(mods, Sequence):
+            mods = Mods.get_from_list(Mods.parse_and_return_any_list(mods)).value
         return BeatmapDifficultyAttributes(await self.http.post(Path.get_beatmap_attributes(beatmap), mods=mods, ruleset=ruleset, ruleset_id=ruleset_id))
 
     async def get_beatmapset_discussion_posts(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
