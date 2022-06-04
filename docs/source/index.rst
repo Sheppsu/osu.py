@@ -15,6 +15,7 @@ Looking for something specific
 
 There are some examples on the github `here <https://github.com/Sheepposu/osu.py/tree/main/examples>`_ that might help you find what you're looking for. Otherwise here are some common uses for the api that you might be looking for.
 
+* `Get a list of the top player's by score, spotlight, or ranking <https://osupy.readthedocs.io/en/latest/api.html#enums>`_
 * `Get a beatmap by its id <api.html#osu.Client.get_beatmap>`_ or `Get multiple with one request <api.html#osu.Client.get_beatmaps>`_
 * `Get scores on a beatmap <https://osupy.readthedocs.io/en/latest/api.html#osu.Client.get_beatmap_scores>`_
 * `Get a user by their id or username <api.html#osu.Client.get_user>`_, `Get multiple with one request (ids only) <api.html#osu.Client.get_users>`_, or `Get the user of the authorization code grant being used <api.html#osu.Client.get_own_data>`_
