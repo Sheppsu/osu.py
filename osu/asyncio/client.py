@@ -1612,20 +1612,17 @@ class AsynchronousClient:
         """
         return getattr(self.http, method)(Path(path, scope), **kwargs)
 
-    # Undocumented
+    # Undocumented endpoints
 
     async def search_beatmapsets(self, filters=None, page=None):
         resp = await self.http.get(Path(f'beatmapsets/search', 'public'), page=page, **filters)
         return {
-            'content': {
-                'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['content']['beatmapsets']],
-                'cursor': resp['content']['cursor'],
-                'search': resp['content']['search'],
-                'recommended_difficulty': resp['content']['recommended_difficulty'],
-                'error': resp['content']['error'],
-                'total': resp['content']['total']
-            },
-            'status': resp['status']
+            'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
+            'cursor': resp['cursor'],
+            'search': resp['search'],
+            'recommended_difficulty': resp['recommended_difficulty'],
+            'error': resp['error'],
+            'total': resp['total'],
         }
 
     async def get_score_by_id(self, mode, score):
