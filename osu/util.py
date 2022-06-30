@@ -26,3 +26,17 @@ def create_autoclass_for_sphinx():
                     f2.close()
             info = f.readline()
         f.close()
+
+
+class Util:
+    @staticmethod
+    def int(value):
+        if value is None:
+            return
+        return int(value)
+
+    @staticmethod
+    def float(value):
+        if value is None:
+            return
+        return float(value)
