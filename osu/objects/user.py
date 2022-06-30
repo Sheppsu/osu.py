@@ -471,6 +471,23 @@ class UserStatistics:
 
 
 class UserStatisticsRulesets:
+    """
+    Object that contains statistics for each gamemode.
+
+    **Attributes**
+
+    osu: :class:`UserStatistics`
+        statistics for osu!standard.
+
+    taiko: :class:`UserStatistics`
+        statistics for osu!taiko.
+
+    fruits: :class:`UserStatistics`
+        statistics for osu!catch.
+
+    mania: :class:`UserStatistics`
+        statistics for osu!mania.
+    """
     __slots__ = ('osu', 'taiko', 'fruits', 'mania')
 
     def __init__(self, data):
