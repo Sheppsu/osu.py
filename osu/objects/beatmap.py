@@ -193,7 +193,7 @@ class Beatmapset(BeatmapsetCompact):
         self.bpm = data['bpm']
         self.can_be_hyped = data['can_be_hyped']
         self.creator = data['creator']
-        self.discussion_enabled = data['discussion_enabled']
+        self.discussion_enabled = True  # Deprecated, all beatmapset discussions are enabled
         self.discussion_locked = data['discussion_locked']
         self.hype = data['hype']
         self.is_scoreable = data['is_scoreable']
