@@ -320,6 +320,11 @@ UserStatistics
 ^^^^^^^^^^^^^^
 .. autoclass:: osu.UserStatistics
    :members:
+   
+UserStatisticsRulesets
+^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.UserStatisticsRulesets
+   :members:
 
 WikiPage
 ^^^^^^^^
