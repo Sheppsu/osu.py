@@ -1,4 +1,5 @@
 from .group import UserGroup
+from ..util import Util
 import math
 
 
@@ -112,6 +113,17 @@ class UserCompact:
 
     rank_history
     """
+    __slots__ = (
+        'avatar_url', 'country_code', 'default_group', 'id', 'is_active', 'is_bot', 'is_deleted', 'is_online',
+        'is_supporter', 'last_visit', 'pm_friends_only', 'profile_colour', 'username', 'account_history',
+        'active_tournament_banner', 'badges', 'beatmap_playcounts_count', 'blocks', 'country', 'cover',
+        'favourite_beatmapset_count', 'follower_count', 'friends', 'graveyard_beatmapset_count', 'groups',
+        'is_restricted', 'loved_beatmapset_count', 'monthly_playcounts', 'page', 'previous_usernames',
+        'ranked_beatmapset_count', 'replays_watched_counts', 'scores_best_count', 'scores_first_count',
+        'scores_recent_count', 'statistics', 'statistics_rulesets', 'support_level', 'pending_beatmapset_count',
+        'unread_pm_count', 'user_achievements', 'user_preferences', 'rank_history', 'ranked_beatmapset_counts'
+    )
+
     def __init__(self, data):
         self.avatar_url = data['avatar_url']
         self.country_code = data['country_code']
@@ -128,21 +140,36 @@ class UserCompact:
         self.username = data['username']
 
         # Optional attributes
-        if 'active_tournament_banner' in data:
-            self.active_tournament_banner = ProfileBanner(data['active_tournament_banner']) if data['active_tournament_banner'] is not None else None
-        else:
-            self.active_tournament_banner = None
-        self.account_history = [UserAccountHistory(acc_his) for acc_his in data['account_history']] if 'account_history' in data else None
-        self.badges = list(map(UserBadge, data['badges'])) if 'badges' in data else None
-        self.groups = list(map(UserGroup, data['groups'])) if 'groups' in data else None
-        self.monthly_playcounts = list(map(UserMonthlyPlaycount, data['monthly_playcounts'])) if 'monthly_playcounts' in data else None
+        self.active_tournament_banner = ProfileBanner(data['active_tournament_banner']) if data.get('active_tournament_banner') is not None else None
+        self.account_history = list(map(UserAccountHistory, data.get('account_history', [])))
+        self.badges = list(map(UserBadge, data.get('badges', [])))
+        self.groups = list(map(UserGroup, data.get('groups', [])))
+        self.monthly_playcounts = list(map(UserMonthlyPlaycount, data.get('monthly_playcounts', [])))
         self.statistics = UserStatistics(data['statistics']) if 'statistics' in data else None
-        for attr in ('page', 'pending_beatmapset_count', 'previous_usernames', 'rank_history', 'ranked_beatmapset_counts',
-                     'replays_watched_counts', 'scores_best_count', 'scores_first_count', 'scores_recent_count',
-                     'statistics_rulesets', 'support_level', 'unread_pm_count', 'user_achievement', 'user_preferences',
-                     'beatmap_playcounts_count', 'blocks', 'country', 'cover', 'favourite_beatmapset_count', 'follower_count',
-                     'friends', 'graveyard_beatmapset_count', 'is_restricted', 'loved_beatmapset_count'):
-            setattr(self, attr, data.get(attr, None))
+        self.page = data.get('page')
+        self.pending_beatmapset_count = Util.int(data.get('pending_beatmapset_count'))
+        self.previous_usernames = data.get('previous_usernames')
+        self.rank_history = data.get('rank_history')
+        self.ranked_beatmapset_counts = data.get('ranked_beatmapset_counts')
+        self.replays_watched_counts = data.get('replays_watched_counts')
+        self.scores_best_count = Util.int(data.get('scores_best_count'))
+        self.scores_first_count = Util.int(data.get('scores_first_count'))
+        self.scores_recent_count = Util.int(data.get('scores_recent_count'))
+        self.statistics_rulesets = UserStatisticsRulesets(data['statistics_rulesets']) if 'statistics_rulesets' in data else None  # TODO
+        self.support_level = data.get('support_level')
+        self.unread_pm_count = Util.int(data.get('unread_pm_count'))
+        self.user_achievements = data.get('user_achievements')
+        self.user_preferences = data.get('user_preferences')
+        self.beatmap_playcounts_count = Util.int(data.get('beatmap_playcounts_count'))
+        self.blocks = data.get('blocks')
+        self.country = data.get('country')
+        self.cover = data.get('cover')
+        self.favourite_beatmapset_count = Util.int(data.get('favourite_beatmapset_count'))
+        self.follower_count = Util.int(data.get('follower_count'))
+        self.friends = data.get('friends')
+        self.graveyard_beatmapset_count = Util.int(data.get('graveyard_beatmapset_count'))
+        self.is_restricted = data.get('is_restricted')
+        self.loved_beatmapset_count = Util.int(data.get('loved_beatmapset_count'))
 
 
 class User(UserCompact):
@@ -441,6 +468,16 @@ class UserStatistics:
     @property
     def recommended_difficulty(self):
         return math.pow(self.pp, 0.4) * 0.195
+
+
+class UserStatisticsRulesets:
+    __slots__ = ('osu', 'taiko', 'fruits', 'mania')
+
+    def __init__(self, data):
+        self.osu = UserStatistics(data['osu'])
+        self.taiko = UserStatistics(data['taiko'])
+        self.fruits = UserStatistics(data['fruits'])
+        self.mania = UserStatistics(data['mania'])
 
 
 class CurrentUserAttributes:
