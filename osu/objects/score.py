@@ -54,6 +54,8 @@ class Score:
 
     statistics: :class:`ScoreStatistics`
 
+    passed :class:`bool`
+
     pp: :class:`float`
 
     rank: :class:`int`
@@ -85,7 +87,7 @@ class Score:
     __slots__ = (
         "id", "best_id", "user_id", "accuracy", "mods", "score", "max_combo", "perfect", "statistics",
         "pp", "rank", "created_at", "mode", "mode_int", "replay", "beatmap", "beatmapset", "rank_country",
-        "rank_global", "weight", "user", "match"
+        "rank_global", "weight", "user", "match", "passed"
     )
 
     def __init__(self, data):
@@ -98,6 +100,7 @@ class Score:
         self.max_combo = data['max_combo']
         self.perfect = data['perfect']
         self.statistics = ScoreStatistics(data['statistics'])
+        self.passed = data['passed']
         self.pp = data['pp']
         self.rank = data['rank']
         self.created_at = data['created_at']
@@ -110,7 +113,7 @@ class Score:
         self.beatmapset = BeatmapsetCompact(data['beatmapset']) if 'beatmapset' in data else None
         self.user = UserCompact(data['user']) if 'user' in data else None  # Doesn't say exactly what type it should be under so I assume UserCompact
         for attribute in ('rank_country', 'rank_global', 'weight', 'match'):
-            setattr(self, attribute, data.get(attribute, None))
+            setattr(self, attribute, data.get(attribute))
 
 
 class ScoreStatistics:
