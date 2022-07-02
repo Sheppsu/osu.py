@@ -1524,7 +1524,7 @@ class Client:
 
         **Parameters**
 
-        user: :class:`int`
+        user: Union[:class:`int`, :class:`str`]
             Id or username of the user. Id lookup is prioritised unless key parameter is specified.
             Previous usernames are also checked in some cases.
 
