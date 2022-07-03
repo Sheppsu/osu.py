@@ -65,7 +65,7 @@ class RateLimiter:
         self.last_request = time.perf_counter()
 
     async def wait(self):
-        await asyncio.sleep(1-(time.perf_counter()-self.last_request))
+        await asyncio.sleep(self.limit-(time.perf_counter()-self.last_request))
 
     @property
     def can_request(self):
