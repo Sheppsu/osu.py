@@ -5,20 +5,10 @@ import asyncio
 from time import perf_counter
 
 
-def cooldown(command, user_cd=10, cmd_cd=5):
-    def _cooldown(func):
-        async def check(self, user, channel, args, *eargs, **kwargs):
-            if self.is_on_cooldown(command, user, user_cd, cmd_cd):
-                return
-            return await func(self, user, channel, args, *eargs, **kwargs)
-        return check
-    return _cooldown
-
-
 #  Simple Twitch Bot class
 class Bot:
     username = "sheepposubot"
-    oauth = "****************"
+    oauth = "oauth:3f9nmtbuearzrprrvdtnn02pyr563r"
     uri = "ws://irc-ws.chat.twitch.tv:80"
 
     def __init__(self):
@@ -26,8 +16,6 @@ class Bot:
         self.running = False
         self.loop = asyncio.get_event_loop()
 
-        self.cooldown = {}
-        self.overall_cooldown = {}
         self.commands = {
             'top': self.top_play
         }
@@ -36,24 +24,6 @@ class Bot:
         client_secret = os.getenv('osu_client_secret')
         redirect_url = "http://127.0.0.1:8080"
         self.client = AsynchronousClient.from_client_credentials(client_id, client_secret, redirect_url)
-
-    # Util
-
-    def is_on_cooldown(self, command, user, user_cd=10, cmd_cd=5):
-        if command not in self.overall_cooldown:
-            self.overall_cooldown.update({command: perf_counter()})
-            return False
-        if perf_counter() - self.overall_cooldown[command] < cmd_cd:
-            return True
-        if command not in self.cooldown or user not in self.cooldown[command]:
-            self.cooldown.update({command: {user: perf_counter()}})
-            self.overall_cooldown[command] = perf_counter()
-            return False
-        if perf_counter() - self.cooldown[command][user] < user_cd:
-            return True
-        self.cooldown[command][user] = perf_counter()
-        self.overall_cooldown[command] = perf_counter()
-        return False
 
     # Fundamental
 
@@ -121,6 +91,7 @@ class Bot:
         print(f"< PRIVMSG #{channel} :{message}")
 
     # Events
+
     async def on_message(self, user, channel, message):
         if message.startswith("!"):
             command = message.split()[0].lower().replace("!", "")
@@ -128,7 +99,8 @@ class Bot:
             if command in self.commands:
                 await self.commands[command](user, channel, args)
 
-    @cooldown('top_play')
+    # Commands
+
     async def top_play(self, user, channel, args):
         user_id = 14895608
         mode = 'osu'
