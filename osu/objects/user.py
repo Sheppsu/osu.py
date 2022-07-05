@@ -459,7 +459,7 @@ class UserStatistics:
         self.play_time = data['play_time']
         self.pp = data['pp']
         self.global_rank = data['global_rank']
-        self.country_rank = data['country_rank']
+        self.country_rank = data.get('country_rank')
         self.ranked_score = data['ranked_score']
         self.replays_watched_by_others = data['replays_watched_by_others']
         self.total_hits = data['total_hits']
