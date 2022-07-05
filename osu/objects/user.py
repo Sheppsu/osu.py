@@ -445,7 +445,8 @@ class UserStatistics:
     __slots__ = (
         "grade_counts", "level", "hit_accuracy", "is_ranked", "maximum_combo",
         "play_count", "play_time", "pp", "global_rank", "ranked_score",
-        "replays_watched_by_others", "total_hits", "total_score", "user"
+        "replays_watched_by_others", "total_hits", "total_score", "user",
+        "country_rank"
     )
 
     def __init__(self, data):
@@ -458,6 +459,7 @@ class UserStatistics:
         self.play_time = data['play_time']
         self.pp = data['pp']
         self.global_rank = data['global_rank']
+        self.country_rank = data['country_rank']
         self.ranked_score = data['ranked_score']
         self.replays_watched_by_others = data['replays_watched_by_others']
         self.total_hits = data['total_hits']
