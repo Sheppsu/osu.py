@@ -69,6 +69,8 @@ class UserCompact:
 
     follower_count: :class:`int`
 
+    mapping_follower_count: :class:`int`
+
     friends
 
     graveyard_beatmapset_count: :class:`int`
@@ -117,7 +119,7 @@ class UserCompact:
         'avatar_url', 'country_code', 'default_group', 'id', 'is_active', 'is_bot', 'is_deleted', 'is_online',
         'is_supporter', 'last_visit', 'pm_friends_only', 'profile_colour', 'username', 'account_history',
         'active_tournament_banner', 'badges', 'beatmap_playcounts_count', 'blocks', 'country', 'cover',
-        'favourite_beatmapset_count', 'follower_count', 'friends', 'graveyard_beatmapset_count', 'groups',
+        'favourite_beatmapset_count', 'follower_count', 'mapping_follower_count', 'friends', 'graveyard_beatmapset_count', 'groups',
         'is_restricted', 'loved_beatmapset_count', 'monthly_playcounts', 'page', 'previous_usernames',
         'ranked_beatmapset_count', 'replays_watched_counts', 'scores_best_count', 'scores_first_count',
         'scores_recent_count', 'statistics', 'statistics_rulesets', 'support_level', 'pending_beatmapset_count',
@@ -166,6 +168,7 @@ class UserCompact:
         self.cover = data.get('cover')
         self.favourite_beatmapset_count = Util.int(data.get('favourite_beatmapset_count'))
         self.follower_count = Util.int(data.get('follower_count'))
+        self.mapping_follower_count = Util.int(data.get('mapping_follower_count'))
         self.friends = data.get('friends')
         self.graveyard_beatmapset_count = Util.int(data.get('graveyard_beatmapset_count'))
         self.is_restricted = data.get('is_restricted')
