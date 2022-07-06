@@ -7,4 +7,4 @@ from .enums import *
 from .objects import *
 
 
-__version__ = '0.2.9-alpha.2'
+__version__ = '0.2.9-alpha.3'
