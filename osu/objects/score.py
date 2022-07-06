@@ -160,5 +160,5 @@ class BeatmapUserScore:
     )
 
     def __init__(self, data):
-        self.position = data['position']
+        self.position = data.get('position')
         self.score = Score(data['score'])
