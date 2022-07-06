@@ -3,7 +3,8 @@ import re
 
 requirements = [
     "requests>=2.25.0",
-    "websockets>=9.1"
+    "websockets>=9.1",
+    "python-dateutil>=2.8.2"
 ]  # Fallback
 
 try:
