@@ -137,7 +137,7 @@ class Client:
 
         :class:`BeatmapUserScore`
         """
-        return BeatmapUserScore(self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode))
+        return BeatmapUserScore(self.http.get(Path.user_beatmap_scores(beatmap, user), mode=mode))
 
     def get_beatmap_scores(self, beatmap: int, mode: Optional[str] = None, mods: Optional[Sequence[str]] = None, type: Optional[Sequence[str]] = None) -> BeatmapScores:
         """

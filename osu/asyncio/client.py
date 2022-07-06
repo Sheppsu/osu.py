@@ -141,7 +141,7 @@ class AsynchronousClient:
 
         :class:`BeatmapUserScore`
         """
-        return BeatmapUserScore(await self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode))
+        return BeatmapUserScore(await self.http.get(Path.user_beatmap_scores(beatmap, user), mode=mode))
 
     async def get_beatmap_scores(self, beatmap: int, mode: Optional[str] = None, mods: Optional[Sequence[str]] = None, type: Optional[Sequence[str]] = None) -> BeatmapScores:
         """
