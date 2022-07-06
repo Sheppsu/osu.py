@@ -1,4 +1,5 @@
 from .user import UserCompact
+from dateutil import parser
 
 
 class Comment:
@@ -13,31 +14,31 @@ class Comment:
     commentable_type: :class:`str`
         type of object the comment is attached to
 
-    created_at: :ref:`Timestamp`
+    created_at: :class:`datetime.datetime`
         ISO 8601 date
 
-    deleted_at: :ref:`Timestamp`
+    deleted_at: :class:`datetime.datetime` or :class:`NoneType`
         ISO 8601 date if the comment was deleted; null, otherwise
 
-    edited_at: :ref:`Timestamp`
+    edited_at: :class:`datetime.datetime` or :class:`NoneType`
         ISO 8601 date if the comment was edited; null, otherwise
 
-    edited_by_id: :class:`int`
+    edited_by_id: :class:`int` or :class:`NoneType`
         user id of the user that edited the post; null, otherwise
 
     id: :class:`int`
         the ID of the comment
 
-    legacy_name: :class:`str`
+    legacy_name: :class:`str` or :class:`NoneType`
         username displayed on legacy comments
 
-    message: :class:`str`
+    message: :class:`str` or :class:`NoneType`
         markdown of the comment's content
 
-    message_html: :class:`str`
+    message_html: :class:`str` or :class:`NoneType`
         html version of the comment's content
 
-    parent_id: :class:`int`
+    parent_id: :class:`int` or :class:`NoneType`
         ID of the comment's parent
 
     pinned: :class:`bool`
@@ -46,7 +47,7 @@ class Comment:
     replies_count: :class:`int`
         number of replies to the comment
 
-    updated_at: :ref:`Timestamp`
+    updated_at: :class:`datetime.datetime`
         ISO 8601 date
 
     user_id: :class:`int`
@@ -64,8 +65,8 @@ class Comment:
     def __init__(self, data):
         self.commentable_id = data['commentable_id']
         self.commentable_type = data['commentable_type']
-        self.created_at = data['created_at']
-        self.deleted_at = data['deleted_at']
+        self.created_at = parser.parse(data['created_at'])
+        self.deleted_at = parser.parse(data['deleted_at']) if data['deleted_at'] is not None else None
         self.edited_at = data['edited_at']
         self.edited_by_id = data['edited_by_id']
         self.id = data['id']
@@ -86,25 +87,25 @@ class CommentBundle:
 
     **Attributes**
 
-    commentable_meta: :class:`list`
-        list containing objects of type :class:`CommentableMeta`. ID of the object the comment is attached to
+    commentable_meta: Sequence[:class:`CommentableMeta`]
+        ID of the object the comment is attached to
 
-    comments: :class:`list`
-        list containing objects of type :class:`Comment`. List of comments ordered according to sort
+    comments: Sequence[:class:`Comment`]
+        List of comments ordered according to sort
 
-    cursor:	:class:`dict`
+    cursor:	:class:`Cursor`
         To be used to query the next page
 
     has_more: :class:`bool`
         If there are more comments or replies available
 
-    has_more_id: :class:`id`
+    has_more_id: :class:`id` or :class:`NoneType`
 
-    included_comments: :class:`list`
-        list containing objects of type :class:`Comment`. Related comments; e.g. parent comments and nested replies
+    included_comments: Sequence[:class:`Comment`]
+        Related comments; e.g. parent comments and nested replies
 
-    pinned_comments: :class:`list`
-        list containing objects of type :class:`Comment`. Pinned comments
+    pinned_comments: Sequence[:class:`Comment`] or :class:`NoneType`
+        Pinned comments
 
     sort: :class:`str`
         one of the following:
@@ -112,19 +113,19 @@ class CommentBundle:
             old (created_at (ascending), id (ascending))
             top (votes_count (descending), created_at (descending), id (descending))
 
-    top_level_count: :class:`int`
+    top_level_count: :class:`int` or :class:`NoneType`
         Number of comments at the top level. Not returned for replies.
 
-    total: :class:`int`
+    total: :class:`int` or :class:`NoneType`
         Total number of comments. Not retuned for replies.
 
     user_follow: :class:`bool`
         is the current user watching the comment thread?
 
-    user_votes: :class:`list`
-        list containing objects of type :class:`int`.IDs of the comments in the bundle the current user has upvoted
+    user_votes: Sequence[:class:`int`]
+        IDs of the comments in the bundle the current user has upvoted
 
-    users: :class:`list`
+    users: Sequence[:class:`UserCompact`]
         list containing objects of type :class:`UserCompact`. list of users related to the comments
     """
     __slots__ = (
@@ -139,7 +140,7 @@ class CommentBundle:
         self.has_more = data['has_more']
         self.has_more_id = data['has_more_id']
         self.included_comments = list(map(Comment, data['included_comments']))
-        self.pinned_comments = list(map(Comment, data['pinned_comments']))
+        self.pinned_comments = list(map(Comment, data['pinned_comments'])) if data['pinned_comments'] is not None else None
         self.sort = data['sort']
         self.top_level_count = data['top_level_count']
         self.total = data['total']

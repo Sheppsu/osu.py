@@ -4,6 +4,9 @@ class WikiPage:
 
     **Attributes**
 
+    available_locales: Sequence[:class:`str`]
+        All available locales for the article.
+
     layout: :class:`str`
         The layout type for the page.
 
@@ -16,21 +19,22 @@ class WikiPage:
     path: :class:`str`
         Path of the article.
 
-    subtitle: :class:`str`
+    subtitle: :class:`str` or :class:`NoneType`
         The article's subtitle.
 
-    tags: :class:`list`
-        list containing objects of type :class:`str`. Associated tags for the article.
+    tags: Sequence[:class:`str`]
+        Associated tags for the article.
 
     title: :class:`str`
         The article's title.
     """
     __slots__ = (
-        "layout", "locale", "markdown", "path", "subtitle",
-        "tags", "title"
+        'available_locales', 'layout', 'locale', 'markdown', 'path', 'subtitle',
+        'tags', 'title'
     )
 
     def __init__(self, data):
+        self.available_locales = data['available_locales']
         self.layout = data['layout']
         self.locale = data['locale']
         self.markdown = data['markdown']

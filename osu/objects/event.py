@@ -1,10 +1,13 @@
+from dateutil import parser
+
+
 class Event:
     """
     The object has different attributes depending on its type. Following are attributes available to all types.
 
     **Attributes**
 
-    created_at: :ref:`Timestamp`
+    created_at: :class:`datetime.datetime`
 
     id: :class:`int`
 
@@ -66,7 +69,7 @@ class Event:
         user: :class:`EventUser`
     """
     def __init__(self, data):
-        self.created_at = data['created_at']
+        self.created_at = parser.parse(data['created_at'])
         self.id = data['id']
         self.type = data['type']
 
@@ -107,7 +110,7 @@ class EventUser:
 
     url: :class:`str`
 
-    previous_username: :class:`str`
+    previous_username: :class:`str` or :class:`NoneType`
     """
     __slots__ = (
         "username", "url", "previous_username"
@@ -116,7 +119,7 @@ class EventUser:
     def __init__(self, data):
         self.username = data['username']
         self.url = data['url']
-        self.previous_username = data['previous_username']
+        self.previous_username = data['previousUsername']
 
 
 class EventBeatmap:

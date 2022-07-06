@@ -1,4 +1,4 @@
-from .user import CurrentUserAttributes
+from .user import CurrentUserAttributes, UserCompact
 
 
 class ChatChannel:
@@ -7,6 +7,8 @@ class ChatChannel:
 
     **Attributes**
 
+    Some attributes will be :class:`NoneType`
+
     channel_id: :class:`int`
 
     current_user_attributes: :class:`CurrentUserAttributes`
@@ -14,7 +16,7 @@ class ChatChannel:
 
     name: :class:`str`
 
-    description: :class:`str`
+    description: :class:`str` or :class:`NoneType`
 
     icon: :class:`str`
         display icon for the channel
@@ -54,22 +56,23 @@ class ChatChannel:
     """
     __slots__ = (
         "channel_id", "current_user_attributes", "name", "description", "icon",
-        "type", "first_message_id", "last_message_id", "recent_messages",
+        "type", "last_read_id", "last_message_id", "recent_messages",
         "moderated", "users"
     )
 
     def __init__(self, data):
-        self.channel_id = data['channel_id']
-        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], "ChatChannelUserAttributes")
-        self.name = data['name']
-        self.description = data['description']
-        self.icon = data['icon']
-        self.type = data['type']
-        self.first_message_id = data['first_message_id']
-        self.last_message_id = data['last_message_id']
-        self.recent_messages = [ChatMessage(message) for message in data['recent_messages']]
-        self.moderated = data['moderated']
-        self.users = data['users']
+        self.channel_id = data.get('channel_id')
+        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], "ChatChannelUserAttributes") \
+            if data.get("current_user_attributes") is not None else None
+        self.name = data.get("name")
+        self.description = data.get("description")
+        self.icon = data.get("icon")
+        self.type = data.get("type")
+        self.last_read_id = data.get("last_read_id")
+        self.last_message_id = data.get("last_message_id")
+        self.recent_messages = list(map(ChatMessage, data.get('recent_messages', [])))
+        self.moderated = data.get("moderated")
+        self.users = data.get("users")
 
 
 class ChatMessage:

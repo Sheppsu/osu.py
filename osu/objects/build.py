@@ -1,20 +1,23 @@
+from dateutil import parser
+
+
 class Build:
     """
     **Attributes**
 
-    created_at: :ref:`Timestamp`
+    created_at: :class:`datetime.datetime`
 
     display_version: :class:`str`
 
     id: :class:`int`
 
-    update_stream: :class:`UpdateStream`
+    update_stream: :class:`UpdateStream` or :class:`NoneType`
 
     users: :class:`int`
 
-    version :class:`str`
+    version :class:`str` or :class:`NoneType`
 
-    **Optional Parameters**
+    **Optional Attributes**
 
     changelog_entries: :class:`list`
         list of :class:`ChangelogEntry` objects. If the build has no changelog entries, a placeholder is generated.
@@ -27,38 +30,38 @@ class Build:
     )
 
     def __init__(self, data):
-        self.created_at = data['created_at']
+        self.created_at = parser.parse(data["created_at"])
         self.display_version = data['display_version']
         self.id = data['id']
-        self.update_stream = UpdateStream(data['update_stream']) if data['update_stream'] else None
+        self.update_stream = UpdateStream(data['update_stream']) if data['update_stream'] is not None else None
         self.users = data['users']
         self.version = data['version']
         self.changelog_entries = list(map(ChangelogEntry, data['changelog_entries'])) if "changelog_entries" in data else []
-        self.version = Versions(data) if "versions" in data else None
+        self.versions = Versions(data) if "versions" in data else None
 
 
 class Versions:
     """
     **Optional Attributes**
 
-    next: :class:`Build`
+    next: :class:`Build` or :class:`NoneType`
         May be null if there is not a next build.
 
-    previous: :class:`Build`
+    previous: :class:`Build` or :class:`NoneType`
         May be null if there is not a previous build.
     """
     __slots__ = ("next", "previous")
 
     def __init__(self, data):
-        self.next = Build(data['next']) if 'next' in data else None
-        self.previous = Build(data['previous']) if 'previous' in data else None
+        self.next = Build(data['next']) if data['next'] is not None else None
+        self.previous = Build(data['previous']) if data['previous'] is not None else None
 
 
 class UpdateStream:
     """
     **Attributes**
 
-    display_name: :class:`str`
+    display_name: :class:`str` or :class:`NoneType`
 
     id: :class:`int`
 
@@ -70,7 +73,7 @@ class UpdateStream:
 
     latest_build: :class:`Build`
 
-    user_count: :class:`number`
+    user_count: :class:`int`
     """
     __slots__ = (
         "display_name", "id", "is_featured", "name",
@@ -92,23 +95,23 @@ class ChangelogEntry:
 
     category: :class:`str`
 
-    created_at: :ref:`Timestamp`
+    created_at: :class:`datetime.datetime` or :class:`NoneType`
 
-    github_pull_request_id: :class:`int`
+    github_pull_request_id: :class:`int` or :class:`NoneType`
 
-    github_url: :class:`str`
+    github_url: :class:`str` or :class:`NoneType`
 
-    id: :class:`int`
+    id: :class:`int` or :class:`NoneType`
 
     major: :class:`bool`
 
-    repository: :class:`str`
+    repository: :class:`str` or :class:`NoneType`
 
-    title: :class:`str`
+    title: :class:`str` or :class:`NoneType`
 
     type: :class:`str`
 
-    url: :class:`str`
+    url: :class:`str` or :class:`NoneType`
 
     **Optional Attributes**
 
@@ -129,7 +132,7 @@ class ChangelogEntry:
 
     def __init__(self, data):
         self.category = data['category']
-        self.created_at = data['created_at']
+        self.created_at = parser.parse(data['created_at']) if data['created_at'] is not None else None
         self.github_pull_request_id = data['github_pull_request_id']
         self.github_url = data['github_url']
         self.id = data['id']
@@ -149,15 +152,15 @@ class GithubUser:
 
     display_name: :class:`str`
 
-    github_url: :class:`str`
+    github_url: :class:`str` or :class:`NoneType`
 
-    id: :class:`int`
+    id: :class:`int` or :class:`NoneType`
 
-    osu_username: :class:`str`
+    osu_username: :class:`str` or :class:`NoneType`
 
-    user_id: :class:`int`
+    user_id: :class:`int` or :class:`NoneType`
 
-    user_url: :class:`str`
+    user_url: :class:`str` or :class:`NoneType`
     """
     __slots__ = (
         "display_name", "github_url", "id", "osu_username",

@@ -1,5 +1,6 @@
 from .group import UserGroup
 from ..util import Util
+from dateutil import parser
 import math
 
 
@@ -35,7 +36,7 @@ class UserCompact:
     is_supporter: :class:`bool`
         does this user have supporter?
 
-    last_visit: :ref:`Timestamp`
+    last_visit: :class:`datetime.datetime`
         null if the user hides online presence
 
     pm_friends_only: :class:`bool`
@@ -49,13 +50,11 @@ class UserCompact:
 
     **Possible Attributes**
 
-    account_history: :class:`list`
-        list containing objects of type :class:`UserAccountHistory`
+    account_history: Sequence[:class:`UserAccountHistory`]
 
     active_tournament_banner: :class:`ProfileBanner`
 
-    badges: :class:`list`
-        list containing objects of type :class:`UserBadge`
+    badges: Sequence[:class:`UserBadge`]
 
     beatmap_playcounts_count: :class:`int`
 
@@ -75,15 +74,13 @@ class UserCompact:
 
     graveyard_beatmapset_count: :class:`int`
 
-    groups: :class:`list`
-        list containing objects of type :class:`UserGroup`
+    groups: Sequencep[:class:`UserGroup`]
 
     is_restricted: :class:`bool`
 
     loved_beatmapset_count: :class:`int`
 
-    monthly_playcounts: :class:`list`
-        list containing objects of type :class:`UserMonthlyPlaycount`
+    monthly_playcounts: Sequence[:class:`UserMonthlyPlaycount`]
 
     page
 
@@ -136,7 +133,7 @@ class UserCompact:
         self.is_deleted = data['is_deleted']
         self.is_online = data['is_online']
         self.is_supporter = data['is_supporter']
-        self.last_visit = data['last_visit']
+        self.last_visit = parser.parse(data['last_visit']) if data['last_visit'] is not None else None
         self.pm_friends_only = data['pm_friends_only']
         self.profile_colour = data['profile_colour']
         self.username = data['username']
@@ -146,7 +143,7 @@ class UserCompact:
         self.account_history = list(map(UserAccountHistory, data.get('account_history', [])))
         self.badges = list(map(UserBadge, data.get('badges', [])))
         self.groups = list(map(UserGroup, data.get('groups', [])))
-        self.monthly_playcounts = list(map(UserMonthlyPlaycount, data.get('monthly_playcounts', [])))
+        self.monthly_playcounts = list(map(UserMonthlyPlaycount, data.get('monthly_playcounts', []))) if data.get("monthly_playcounts") is not None else None
         self.statistics = UserStatistics(data['statistics']) if 'statistics' in data else None
         self.page = data.get('page')
         self.pending_beatmapset_count = Util.int(data.get('pending_beatmapset_count'))
@@ -181,19 +178,22 @@ class User(UserCompact):
 
     **Attributes**
 
-    discord: :class:`str`
+    cover_url: :class:`str`
+        url of profile cover. Deprecated, use cover['url'] instead.
+
+    discord: :class:`str` or :class:`NoneType`
 
     has_supported: :class:`bool`
         whether or not ever being a supporter in the past
 
-    interests: :class:`str`
+    interests: :class:`str` or :class:`NoneType`
 
-    join_date: :ref:`Timestamp`
+    join_date: :class:`datetime.datetime`
 
     kudosu: :class:`dict`
-        a map containing keys total and available
+        Contains items available: :class:`int` and total: :class:`int`
 
-    location: :class:`str`
+    location: :class:`str` or :class:`NoneType`
 
     max_blocks: :class:`int`
         maximum number of users allowed to be blocked
@@ -201,39 +201,34 @@ class User(UserCompact):
     max_friends: :class:`int`
         maximum number of friends allowed to be added
 
-    occupation: :class:`str`
+    occupation: :class:`str` or :class:`NoneType`
 
     playmode: :ref:`GameMode`
 
-    playstyle: :class:`list`
-        list containing objects of type :class:`str`. Device choices of the user.
+    playstyle: Sequence[:class:`str`]
+        Device choices of the user.
 
     post_count: :class:`int`
         number of forum posts
 
-    profile_order: :class:`list`
-        list containing objects of type :class:`ProfilePage`. ordered list of sections in user profile page
+    profile_order: Sequence[:class:`str`]
+        Ordered list of sections in user profile page. Sections consist of:
+        me, recent_activity, beatmaps, historical, kudosu, top_ranks, medals
 
-    title: :class:`str`
+    title: :class:`str` or :class:`NoneType`
         user-specific title
 
-    title_url: :class:`str`
+    title_url: :class:`str` or :class:`NoneType`
 
-    twitter: :class:`str`
+    twitter: :class:`str` or :class:`NoneType`
 
-    website: :class:`str`
+    website: :class:`str` or :class:`NoneType`
 
     country: :class:`dict`
-        Contains keys 'code' and 'name', each representing the country.
-
-    cover_url: :class:`str`
-        url of profile cover. Deprecated, use cover['url'] instead.
+        Contains items code: :class:`str` and name: :class:`str`
 
     cover: :class:`dict`
-        map containing keys custom_url, url, and id.
-
-    country: :class:`dict`
-        map containing keys code and name.
+        Contains items custom_url: :class:`str`, url: :class:`str`, and id: :class:`int`.
 
     is_restricted: :class:`bool`
         present only if this is the currently authenticated user
@@ -243,27 +238,27 @@ class User(UserCompact):
     All possible attributes come from :class:`UserCompact`
     """
     __slots__ = (
-        "has_supported", "join_date", "kudosu", "location", "max_blocks", "max_friends", "playmode",
-        "playstyle", "post_count", "profile_order", "discord", "interests", "location", "occupation", "title",
-        "title_url", "twitter", "website"
+        'cover_url', 'discord', 'has_supported', 'interests', 'join_date', 'kudosu', 'location', 'max_blocks',
+        'max_friends', 'occupation', 'playmode', 'playstyle', 'post_count', 'profile_order', 'title', 'title_url',
+        'twitter', 'website'
     )
 
     def __init__(self, data):
         super().__init__(data)
+        self.cover_url = data['cover']
+        self.discord = data['discord']
         self.has_supported = data['has_supported']
-        self.join_date = data['join_date']
+        self.interests = data['interests']
+        self.join_date = parser.parse(data['join_date'])
         self.kudosu = data['kudosu']
         self.location = data['location']
         self.max_blocks = data['max_blocks']
         self.max_friends = data['max_friends']
+        self.occupation = data['occupation']
         self.playmode = data['playmode']
         self.playstyle = data['playstyle']
         self.post_count = data['post_count']
         self.profile_order = data['profile_order']
-        self.discord = data['discord']
-        self.interests = data['interests']
-        self.location = data['location']
-        self.occupation = data['occupation']
         self.title = data['title']
         self.title_url = data['title_url']
         self.twitter = data['twitter']
@@ -318,7 +313,7 @@ class UserAccountHistory:
     type: :class:`str`
         Can be one of the following: note, restriction, or silence.
 
-    timestamp: :ref:`Timestamp`
+    timestamp: :class:`datetime.datetime`
 
     length: :class:`int`
         In seconds.
@@ -330,7 +325,7 @@ class UserAccountHistory:
     def __init__(self, data):
         self.id = data['id']
         self.type = data['type']
-        self.timestamp = data['timestamp']
+        self.timestamp = parser.parse(data['timestamp'])
         self.length = data['length']
 
 
@@ -338,7 +333,7 @@ class UserBadge:
     """
     **Attributes**
 
-    awarded_at: :ref:`Timestamp`
+    awarded_at: :class:`datetime.datetime`
 
     description: :class:`str`
 
@@ -351,7 +346,7 @@ class UserBadge:
     )
 
     def __init__(self, data):
-        self.awarded_at = data['awarded_at']
+        self.awarded_at = parser.parse(data['awarded_at'])
         self.description = data['description']
         self.image_url = data['image_url']
         self.url = data['url']
@@ -424,10 +419,10 @@ class UserStatistics:
     recommended_difficulty: :class:`float`
         Recommended difficulty for a player. This value is not received from the api, but locally calculated.
 
-    global_rank: :class:`int`
+    global_rank: :class:`int` or :class:`NoneType`
         Current rank according to pp.
 
-    country_rank: :class:`int`
+    country_rank: :class:`int` or :class:`NoneType`
         Current country rank according to pp.
 
     ranked_score: :class:`int`
@@ -467,8 +462,7 @@ class UserStatistics:
         self.replays_watched_by_others = data['replays_watched_by_others']
         self.total_hits = data['total_hits']
         self.total_score = data['total_score']
-
-        self.user = UserCompact(data['user']) if 'user' in data else None
+        self.user = UserCompact(data['user']) if data.get("user") is not None else None
 
     @property
     def recommended_difficulty(self):
@@ -505,8 +499,8 @@ class UserStatisticsRulesets:
 class CurrentUserAttributes:
     # TODO: Name for BeatmapsetDiscussionPermissions will be changing eventually
     """
-    Represents user permissions related to an object, which decides what type it is.
-    Valid types consist of BeatmapsetDiscussionPermissions
+    An object listing various related permissions and states for the current user,
+    related to the object it is attached to.
 
     **BeatmapDiscussionPermissions Attributes**
 
@@ -549,6 +543,6 @@ class CurrentUserAttributes:
             self.can_message_error = data['can_message_erorr']
             self.last_read_id = data['last_read_id']
         else:
-            print(f"WARNING: Unrecognized attr_type for CurrentUserAttributes \"{attr_type}\"")
+            print(f"WARNING: Unrecognized attr_type for CurrentUserAttributes: \"{attr_type}\"")
             for k, v in data.items():
                 setattr(self, k, v)

@@ -1,3 +1,6 @@
+from dateutil import parser
+
+
 class KudosuHistory:
     """
     **Attributes**
@@ -5,16 +8,16 @@ class KudosuHistory:
     id: :class:`int`
 
     action: :class:`str`
-        Either give, reset, or revoke.
+        One of give, vote.give, reset, vote.reset, revoke, or vote.revoke.
 
     amount: :class:`int`
 
     model: :class:`str`
         Object type which the exchange happened on (forum_post, etc).
 
-    created_at: :ref:`Timestamp`
+    created_at: :class:`datetime.datetime`
 
-    giver: :class:`Giver`
+    giver: :class:`Giver` or :class:`NoneType`
         Simple detail of the user who started the exchange.
 
     post: :class:`Post`
@@ -29,7 +32,7 @@ class KudosuHistory:
         self.action = data['action']
         self.amount = data['amount']
         self.model = data['model']
-        self.created_at = data['created_at']
+        self.created_at = parser.parse(data['created_at'])
         self.giver = Giver(data['giver'])
         self.post = Post(data['post'])
 
@@ -38,7 +41,7 @@ class Post:
     """
     **Attributes**
 
-    url: :class:`str`
+    url: :class:`str` or :class:`NoneType`
         Url of the object.
 
     title: :class:`str`

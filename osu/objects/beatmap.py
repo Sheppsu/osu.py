@@ -1,5 +1,6 @@
 from ..enums import RankStatus
 from .user import UserCompact, CurrentUserAttributes
+from dateutil import parser
 
 
 class BeatmapsetCompact:
@@ -40,12 +41,14 @@ class BeatmapsetCompact:
 
     **Possible Attributes**
 
+    (Information about these attributes is lacking on the documentation)
+
     beatmaps: :class:`list`
         list containing objects of type :class:`Beatmap`
 
     converts
 
-    current_user_attributes
+    current_user_attributes: :class:`CurrentUserAttributes`
 
     description
 
@@ -60,7 +63,7 @@ class BeatmapsetCompact:
     language
 
     nominations: :class:`dict`
-        Contains keys current and required.
+        Contains items current: :class:`int` and required: :class:`int`
 
     ratings
 
@@ -68,7 +71,7 @@ class BeatmapsetCompact:
 
     related_users
 
-    user
+    user: :class:`UserCompact`
     """
     __slots__ = (
         "artist", "artist_unicode", "covers", "creator", "favourite_count", "id", "nsfw",
@@ -99,8 +102,17 @@ class BeatmapsetCompact:
         self.beatmaps = list(map(Beatmap, data['beatmaps'])) if 'beatmaps' in data else None
         self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], 'BeatmapsetDiscussionPermissions') if 'current_user_attributes' in data else None
         self.user = UserCompact(data['user']) if 'user' in data else None
-        for attr in ("converts", "description", "discussions", "events", "genre", "has_favourited", "language", "nominations", 'ratings', 'recent_favourites', 'related_users'):
-            setattr(self, attr, data[attr] if attr in data else None)
+        self.converts = data.get('converts')
+        self.description = data.get('description')
+        self.discussions = data.get('discussions')
+        self.events = data.get('events')
+        self.genre = data.get('genre')
+        self.has_favourited = data.get('has_favourited')
+        self.language = data.get('language')
+        self.nominations = data.get('nominations')
+        self.ratings = data.get('ratings')
+        self.recent_favourites = data.get('recent_favourites')
+        self.related_users = data.get('related_users')
 
 
 class Covers:
@@ -155,38 +167,40 @@ class Beatmapset(BeatmapsetCompact):
         Username of the mapper at the time of beatmapset creation.
 
     discussion_enabled: :class:`bool`
+        Deprecated. Is always true.
 
     discussion_locked: :class:`bool`
 
     hype: :class:`dict`
-        Contains two items, current: :class:`int` and required: :class:`int`
+        Contains items current: :class:`int` and required: :class:`int`
 
     is_scoreable: :class:`bool`
 
-    last_updated: :ref:`Timestamp`
+    last_updated: :class:`datetime.datetime`
 
     legacy_thread_url: :class:`str`
 
-    ranked: :class:`RankStatus`
+    nominations: :class:`dict`
+        Contains items current: :class:`int` and required: :class:`int`
 
-    ranked_date: :ref:`Timestamp`
+    ranked: :ref:`RankStatus`
+
+    ranked_date: :class:`datetime.datetime`
 
     source: :class:`str`
 
     storyboard: :class:`bool`
 
-    submitted_date: :ref:`Timestamp`
+    submitted_date: :class:`datetime.datetime`
 
     tags: :class:`str`
     """
     __slots__ = (
         "availability", "bpm", "can_be_hyped", "creator", "discussion_enabled", "discussion_locked",
         "hype", "is_scoreable", "last_updated", "legacy_thread_url", "ranked", "ranked_date", "storyboard",
-        "tags", "has_favourited", "nominations"
+        "submitted_date", "tags", "has_favourited", "nominations"
     )
 
-    # nominations: :class:`dict`
-    #         Contains two items, current: :class:`int` and required: :class:`int`
     def __init__(self, data):
         super().__init__(data)
         self.availability = data['availability']
@@ -197,17 +211,16 @@ class Beatmapset(BeatmapsetCompact):
         self.discussion_locked = data['discussion_locked']
         self.hype = data['hype']
         self.is_scoreable = data['is_scoreable']
-        self.last_updated = data['last_updated']
+        self.last_updated = parser.parse(data['last_updated']) if 'last_updated' in data else None
         self.legacy_thread_url = data['legacy_thread_url']
-        # self.nominations = data['nominations']  # docs says this should be there but it's not ?
-        self.ranked_date = data['ranked_date']
+        self.ranked_date = parser.parse(data['ranked_date']) if 'ranked_date' in data else None
         self.source = data['source']
         self.storyboard = data['storyboard']
         self.tags = data['tags']
-        # self.has_favourited = data['has_favourited']  # should be included but it's not ?
+        self.submitted_date = parser.parse(data['submitted_date']) if 'submitted_date' in data else None
+        self.has_favourited = data['has_favourited'] if 'has_favourited' in data else None
         self.ranked = RankStatus(int(data['ranked']))
-        for attr in ("has_favourited", "nominations"):
-            setattr(self, attr, data[attr] if attr in data else None)
+        self.nominations = data['nominations'] if 'nominations' in data else None
 
 
 class BeatmapCompact:
@@ -215,6 +228,8 @@ class BeatmapCompact:
     Represents a beatmap.
 
     **Attributes**
+
+    beatmapset_id: :class:`int`
 
     difficulty_rating: :class:`float`
 
@@ -227,6 +242,8 @@ class BeatmapCompact:
 
     total_length: :class:`int`
 
+    user_id: :class:`int`
+
     version: :class:`str`
 
     **Possible Attributes**
@@ -234,7 +251,7 @@ class BeatmapCompact:
     beatmapset: :class:`Beatmapset` | :class:`BeatmapsetCompact` | :class:`NoneType`
         Beatmapset for Beatmap object, BeatmapsetCompact for BeatmapCompact object. null if the beatmap doesn't have associated beatmapset (e.g. deleted).
 
-    checksum: :class:`str`
+    checksum: :class:`str` or :class:`NoneType`
 
     failtimes: :class:`Failtimes`
 
@@ -276,6 +293,8 @@ class BeatmapDifficultyAttributes:
     max_combo: :class:`int`
 
     star_rating: :class:`float`
+
+    mode_attributes: :class:`OsuBeatmapDifficultyAttributes` | :class:`TaikoBeatmapDifficultyAttributes` | :class:`FruitsBeatmapDifficultyAttributes` | :class:`ManiaBeatmapDifficultyAttributes`
 
     osu
         aim_difficulty: :class:`float`
@@ -335,6 +354,24 @@ class BeatmapDifficultyAttributes:
 
 
 class OsuBeatmapDifficultyAttributes:
+    """
+    osu!standard beatmap difficulty attributes.
+    See :class:`BeatmapDifficultyAttributes` for more information.
+
+    **Attributes**
+
+    aim_difficulty: :class:`float`
+
+    approach_rate: :class:`float`
+
+    flashlight_difficulty: :class:`float`
+
+    overall_difficulty: :class:`float`
+
+    slider_factor: :class:`float`
+
+    speed_difficulty: :class:`float`
+    """
     __slots__ = (
         "aim_difficulty", "approach_rate", "flashlight_difficulty",
         "overall_difficulty", "slider_factor", "speed_difficulty"
@@ -350,6 +387,23 @@ class OsuBeatmapDifficultyAttributes:
 
 
 class TaikoBeatmapDifficultyAttributes:
+    """
+    osu!taiko beatmap difficulty attributes.
+    See :class:`BeatmapDifficultyAttributes` for more information.
+
+    **Attributes**
+
+    stamina_difficulty: :class:`float`
+
+    rhythm_difficulty: :class:`float`
+
+    colour_difficulty: :class:`float`
+
+    approach_rate: :class:`float`
+
+    great_hit_window: :class:`float`
+    """
+
     __slots__ = (
         "stamina_difficulty", "approach_rate", "rhythm_difficulty",
         "colour_difficulty", "great_hit_window"
@@ -364,6 +418,15 @@ class TaikoBeatmapDifficultyAttributes:
 
 
 class FruitsBeatmapDifficultyAttributes:
+    """
+    osu!catch beatmap difficulty attributes.
+    See :class:`BeatmapDifficultyAttributes` for more information.
+
+    **Attributes**
+
+    approach_rate: :class:`float`
+    """
+
     __slots__ = (
         "approach_rate"
     )
@@ -373,6 +436,17 @@ class FruitsBeatmapDifficultyAttributes:
 
 
 class ManiaBeatmapDifficultyAttributes:
+    """
+    osu!mania beatmap difficulty attributes.
+    See :class:`BeatmapDifficultyAttributes` for more information.
+
+    **Attributes**
+
+    great_hit_window: :class:`float`
+
+    score_multiplier: :class:`float`
+    """
+
     __slots__ = (
         "score_multiplier", "great_hit_window"
     )
@@ -384,15 +458,15 @@ class ManiaBeatmapDifficultyAttributes:
 
 class Failtimes:
     """
-    All attributes are optional but there's always at least one attribute returned.
+    All attributes are optional but there's always at least one attribute present.
 
     **Attributes**
 
-    exit: :class:`list`
-        Contains objects of type :class:`int`. List of length 100.
+    exit: Sequence[:class:`int`]
+        Sequence of integers. List is length 100.
 
-    fail: :class:`list`
-        Contains objects of type :class:`int`. List of length 100.
+    fail: Sequence[:class:`int`]
+        Sequence of integers. List is length 100.
     """
     def __init__(self, data):
         if 'exit' in data:
@@ -413,7 +487,7 @@ class Beatmap(BeatmapCompact):
 
     beatmapset_id: :class:`int`
 
-    bpm: :class:`float`
+    bpm: :class:`float` or :class:`NoneType`
 
     convert: :class:`bool`
 
@@ -425,7 +499,7 @@ class Beatmap(BeatmapCompact):
 
     cs: :class:`float`
 
-    deleted_at: :ref:`Timestamp`
+    deleted_at: :ref:`Timestamp` or :class:`NoneType`
 
     drain: :class:`float`
 
@@ -459,11 +533,11 @@ class Beatmap(BeatmapCompact):
         self.playcount = data['playcount']
         self.passcount = data['passcount']
         self.mode_int = data['mode_int']
-        self.last_updated = data['last_updated']
+        self.last_updated = parser.parse(data['last_updated'])
         self.is_scoreable = data['is_scoreable']
         self.hit_length = data['hit_length']
         self.drain = data['drain']
-        self.deleted_at = data['deleted_at']
+        self.deleted_at = parser.parse(data['deleted_at']) if data['deleted_at'] is not None else None
         self.cs = data['cs']
         self.count_spinners = data['count_spinners']
         self.count_sliders = data['count_sliders']
@@ -483,9 +557,9 @@ class BeatmapPlaycount:
 
     beatmap_id: :class:`int`
 
-    beatmap: :class:`BeatmapCompact`
+    beatmap: :class:`BeatmapCompact` or :class:`NoneType`
 
-    beatmapset: :class:`BeatmapsetCompact`
+    beatmapset: :class:`BeatmapsetCompact` or :class:`NoneType`
 
     count: :class:`int`
     """
@@ -495,6 +569,6 @@ class BeatmapPlaycount:
 
     def __init__(self, data):
         self.beatmap_id = data['beatmap_id']
-        self.beatmap = BeatmapCompact(data['beatmap'])
-        self.beatmapset = BeatmapsetCompact(data['beatmapset'])
+        self.beatmap = BeatmapCompact(data['beatmap']) if data['beatmap'] is not None else None
+        self.beatmapset = BeatmapsetCompact(data['beatmapset']) if data['beatmapset'] is not None else None
         self.count = data['count']

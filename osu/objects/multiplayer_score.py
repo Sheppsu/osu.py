@@ -1,4 +1,5 @@
 from .score import ScoreStatistics
+from ..enums import Mods
 
 
 class MultiplayerScore:
@@ -26,16 +27,15 @@ class MultiplayerScore:
 
     max_combo: :class:`int`
 
-    mods: :class:`list`
-        list containing objects of type :class:`str`
+    mods: Sequence[:class:`Mods`]
 
     statistics: :class:`ScoreStatistics`
 
     passed: :class:`bool`
 
-    position: :class:`int`
+    position: :class:`int` or :class:`NoneType`
 
-    scores_around: :class:`MultiplayerScoresAround`
+    scores_around: :class:`MultiplayerScoresAround` or :class:`NoneType`
         Scores around the specified score.
 
     user: :class:`User`
@@ -43,7 +43,7 @@ class MultiplayerScore:
     __slots__ = (
         "id", "user_id", "room_id", "playlist_item_id", "beatmap_id", "rank",
         "total_score", "accuracy", "max_combo", "mods", "statistics", "passed",
-        "position", "scores_around"
+        "position", "scores_around", "user"
     )
 
     def __init__(self, data):
@@ -56,11 +56,12 @@ class MultiplayerScore:
         self.total_score = data['total_score']
         self.accuracy = data['accuracy']
         self.max_combo = data['max_combo']
-        self.mods = data['mods']
+        self.mods = list(map(Mods.get_from_abbreviation, data['mods']))
         self.statistics = ScoreStatistics(data['statistics'])
         self.passed = data['passed']
         self.position = data['position']
-        self.scores_around = MultiplayerScoresAround(data['scores_around'])
+        self.scores_around = MultiplayerScoresAround(data['scores_around']) if data['scores_around'] is not None else None
+        self.user = data['user']
 
 
 class MultiplayerScores:
@@ -77,13 +78,12 @@ class MultiplayerScores:
     params: :class:`dict`
         To be used to fetch the next page.
 
-    scores: :class:`list`
-        list containing objects of type :class:`MultiplayerScore`
+    scores: Sequence[:class:`MultiplayerScore`]
 
-    total: :class:`int`
+    total: :class:`int` or :class:`NoneType`
         Index only. Total scores of the specified playlist item.
 
-    user_score: :class:`MultiplayerScore`
+    user_score: :class:`MultiplayerScore` or :class:`NoneType`
         Index only. Score of the accessing user if exists.
     """
     __slots__ = (
@@ -93,10 +93,9 @@ class MultiplayerScores:
     def __init__(self, data):
         self.cursor = data['cursor']
         self.params = data['params']
-        self.scores = [MultiplayerScore(score) for score in data['scores']]
-
-        self.total = data['total'] if 'total' in data else None
-        self.user_score = MultiplayerScore(data['user_score']) if 'user_score' in data else None
+        self.scores = list(map(MultiplayerScore, data['scores'])) if data['scores'] is not None else None
+        self.total = data['total']
+        self.user_score = MultiplayerScore(data['user_score']) if data['user_score'] is not None else None
 
 
 class MultiplayerScoresAround:

@@ -1,5 +1,6 @@
 from .beatmap import BeatmapCompact, BeatmapsetCompact
 from .user import UserCompact
+from dateutil import parser
 
 
 class BeatmapScores:
@@ -11,9 +12,7 @@ class BeatmapScores:
     scores: :class:`list`
         Contains objects of type :class:`Score`. The list of top scores for the beatmap in descending order.
 
-    **Possible Attributes**
-
-    user_score: :class:`BeatmapUserScore`
+    user_score: :class:`BeatmapUserScore` or :class:`NoneType`
         The score of the current user. This is not returned if the current user does not have a score.
     """
     __slots__ = (
@@ -22,12 +21,8 @@ class BeatmapScores:
 
     def __init__(self, data):
         self.scores = [Score(score) for score in data['scores']]
-        if 'userScore' in data:
-            self.user_score = BeatmapUserScore(data['userScore'])
-        elif 'user_score' in data:  # Is being renamed to this in the future
-            self.user_score = BeatmapUserScore(data['user_score'])
-        else:
-            self.user_score = None
+        var_name = 'userScore' if 'userScore' in data else 'user_score'
+        self.user_score = BeatmapUserScore(data[var_name]) if data.get(var_name) is not None else None
 
 
 class Score:
@@ -60,13 +55,14 @@ class Score:
 
     rank: :class:`int`
 
-    created_at: :ref:`Timestamp`
+    created_at: :class:`datetime.datetime`
 
     mode: :class:`str`
 
-    mode_int: :class:`int`
+    mode_int: :ref:`GameMode`
 
-    replay
+    replay: :class:`bool`
+        whether or not the replay is available
 
     **Optional Attributes**
 
@@ -85,9 +81,9 @@ class Score:
     match
     """
     __slots__ = (
-        "id", "best_id", "user_id", "accuracy", "mods", "score", "max_combo", "perfect", "statistics",
+        "id", "best_id", "user_id", "accuracy", "mods", "score", "max_combo", "perfect", "statistics", "passed",
         "pp", "rank", "created_at", "mode", "mode_int", "replay", "beatmap", "beatmapset", "rank_country",
-        "rank_global", "weight", "user", "match", "passed"
+        "rank_global", "weight", "user", "match"
     )
 
     def __init__(self, data):
@@ -103,17 +99,20 @@ class Score:
         self.passed = data['passed']
         self.pp = data['pp']
         self.rank = data['rank']
-        self.created_at = data['created_at']
+        self.created_at = parser.parse(data['created_at'])
         self.mode = data['mode']
         self.mode_int = data['mode_int']
         self.replay = data['replay']
 
         # Optional Attributes
+        # Doesn't specify types, so I'll assume Compact
         self.beatmap = BeatmapCompact(data['beatmap']) if 'beatmap' in data else None
         self.beatmapset = BeatmapsetCompact(data['beatmapset']) if 'beatmapset' in data else None
-        self.user = UserCompact(data['user']) if 'user' in data else None  # Doesn't say exactly what type it should be under so I assume UserCompact
-        for attribute in ('rank_country', 'rank_global', 'weight', 'match'):
-            setattr(self, attribute, data.get(attribute))
+        self.user = UserCompact(data['user']) if 'user' in data else None
+        self.match = data['match'] if 'match' in data else None
+        self.rank_country = data['rank_country'] if 'rank_country' in data else None
+        self.rank_global = data['rank_global'] if 'rank_global' in data else None
+        self.weight = data['weight'] if 'weight' in data else None
 
 
 class ScoreStatistics:
@@ -152,6 +151,7 @@ class BeatmapUserScore:
 
     position: :class:`int`
         The position of the score within the requested beatmap ranking.
+
     score: :class:`Score`
         The details of the score.
     """

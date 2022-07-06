@@ -1,5 +1,6 @@
 from .user import CurrentUserAttributes
 from .beatmap import BeatmapCompact, BeatmapsetCompact
+from dateutil import parser
 
 
 class BeatmapsetDiscussion:
@@ -8,11 +9,11 @@ class BeatmapsetDiscussion:
 
     **Attributes**
 
-    beatmap: :class:`BeatmapCompact`
+    beatmap: :class:`BeatmapCompact` or :class:`NoneType`
 
-    beatmap_id: :class:`int`
+    beatmap_id: :class:`int` or :class:`NoneType`
 
-    beatmapset: :class:`BeatmapsetCompact`
+    beatmapset: :class:`BeatmapsetCompact` or :class:`NoneType`
 
     beatmapset_id: :class:`int`
 
@@ -20,11 +21,11 @@ class BeatmapsetDiscussion:
 
     can_grant_kudosu: :class:`bool`
 
-    created_at: :ref:`Timestamp`
+    created_at: :class:`datetime.datetime`
 
     current_user_attributes: :class:`CurrentUserAttributes`
 
-    deleted_at: :ref:`Timestamp`
+    deleted_at: :class:`datetime.datetime` or :class:`NoneType`
 
     deleted_by_id: :class:`int`
 
@@ -32,12 +33,12 @@ class BeatmapsetDiscussion:
 
     kudosu_denied: :class:`bool`
 
-    last_post_at: :ref:`Timestamp`
+    last_post_at: :class:`datetime.datetime`
 
     message_type: :class:`str`
         can be any of the following: hype, mapper_note, praise, problem, review, suggestion
 
-    parent_id: :class:`int`
+    parent_id: :class:`int` or :class:`NoneType`
 
     posts: :class:`list`
         list contains objects of type :class:`BeatmapsetDiscussionPost`
@@ -46,9 +47,9 @@ class BeatmapsetDiscussion:
 
     starting_post: :class:`BeatmapsetDiscussionPost`
 
-    timestamp: :class:`int`
+    timestamp: :class:`int` or :class:`NoneType`
 
-    updated_at: :ref:`Timestamp`
+    updated_at: :class:`datetime.datetime`
 
     user_id: :class:`int`
     """
@@ -60,26 +61,26 @@ class BeatmapsetDiscussion:
     )
 
     def __init__(self, data):
-        self.beatmap = BeatmapCompact(data['beatmap']) if 'beatmap' in data else None
-        self.beatmap_id = data['beatmap_id'] if 'beatmap_id' in data else None
-        self.beatmapset = BeatmapsetCompact(data['beatmapset']) if 'beatmapset' in data else None
+        self.beatmap = BeatmapCompact(data['beatmap']) if data.get('beatmap') is not None else None
+        self.beatmap_id = data['beatmap_id']
+        self.beatmapset = BeatmapsetCompact(data['beatmapset']) if data.get('beatmapset') is not None else None
         self.beatmapset_id = data['beatmapset_id']
         self.can_be_resolved = data['can_be_resolved']
         self.can_grant_kudosu = data['can_grant_kudosu']
-        self.created_at = data['created_at']
+        self.created_at = parser.parse(data['created_at'])
         self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], 'BeatmapsetDiscussionPermissions') if 'current_user_attributes' in data else None
-        self.deleted_at = data['deleted_at'] if 'deleted_at' in data else None
+        self.deleted_at = parser.parse(data['deleted_at']) if data['deleted_at'] is not None else None
         self.deleted_by_id = data['deleted_by_id'] if 'deleted_by_id' in data else None
         self.id = data['id']
         self.kudosu_denied = data['kudosu_denied']
-        self.last_post_at = data['last_post_at']
+        self.last_post_at = parser.parse(data['last_post_at'])
         self.message_type = data['message_type']
         self.parent_id = data['parent_id'] if 'parent_id' in data else None
         self.posts = list(map(BeatmapsetDiscussionPost, data['posts'])) if 'posts' in data else None
         self.resolved = data['resolved']
         self.starting_post = BeatmapsetDiscussionPost(data['starting_post']) if 'starting_post' in data else None
         self.timestamp = data['timestamp'] if 'timestamp' in data else None
-        self.updated_at = data['updated_at']
+        self.updated_at = parser.parse(data['updated_at'])
         self.user_id = data['user_id']
 
 
@@ -91,21 +92,21 @@ class BeatmapsetDiscussionPost:
 
     beatmapset_discussion_id: :class:`int`
 
-    created_at: :ref:`Timestamp`
+    created_at: :class:`datetime.datetime`
 
-    deleted_at: :ref:`Timestamp`
+    deleted_at: :class:`datetime.datetime` or :class:`NoneType`
 
-    deleted_by_id: :class:`int`
+    deleted_by_id: :class:`int` or :class:`NoneType`
 
     id: :class:`int`
 
-    last_editor_id: :class:`int`
+    last_editor_id: :class:`int` or :class:`NoneType`
 
     message: :class:`str`
 
     system: :class:`bool`
 
-    updated_at: :ref:`Timestamp`
+    updated_at: :class:`datetime.datetime`
 
     user_id: :class:`int`
     """
@@ -116,14 +117,14 @@ class BeatmapsetDiscussionPost:
 
     def __init__(self, data):
         self.beatmapset_discussion_id = data['beatmapset_discussion_id']
-        self.created_at = data['created_at']
-        self.deleted_at = data['deleted_at'] if 'deleted_at' in data else None
-        self.deleted_by_id = data['deleted_by_id'] if 'deleted_by_id' in data else None
+        self.created_at = parser.parse(data['created_at'])
+        self.deleted_at = parser.parse(data['deleted_at']) if data['deleted_at'] is not None else None
+        self.deleted_by_id = data['deleted_by_id']
         self.id = data['id']
-        self.last_editor_id = data['last_editor_id'] if 'last_editor' in data else None
+        self.last_editor_id = data['last_editor_id']
         self.message = data['message']
         self.system = data['system']
-        self.updated_at = data['updated_at']
+        self.updated_at = parser.parse(data['updated_at'])
         self.user_id = data['user_id']
 
 
@@ -135,13 +136,13 @@ class BeatmapsetDiscussionVote:
 
     beatmapset_discussion_id: :class:`int`
 
-    created_at: :ref:`Timestamp`
+    created_at: :class:`datetime.datetime`
 
     id: :class:`int`
 
     score: :class:`int`
 
-    updated_at: :ref:`Timestamp`
+    updated_at: :class:`datetime.datetime`
 
     user_id: :class:`int`
     """
@@ -152,8 +153,8 @@ class BeatmapsetDiscussionVote:
 
     def __init__(self, data):
         self.beatmapset_discussion_id = data['beatmapset_discussion_id']
-        self.created_at = data['created_at']
+        self.created_at = parser.parse(data['created_at'])
         self.id = data['id']
         self.score = data['score']
-        self.updated_at = data['updated_at']
+        self.updated_at = parser.parse(data['updated_at'])
         self.user_id = data['user_id']
