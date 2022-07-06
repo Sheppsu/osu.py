@@ -3,6 +3,7 @@ from .objects import *
 from .path import Path
 from .enums import *
 from .auth import AuthHandler
+from .util import parse_mods_arg
 from typing import Union, Optional, Sequence
 
 
@@ -107,7 +108,7 @@ class Client:
             The :ref:`GameMode` to get scores for
 
         mods: Optional[Sequence[:class:`str`]]
-            An array of matching Mods, or none. Currently doesn't do anything.
+            An array of matching mods, or none. Currently doesn't do anything.
 
         **Returns**
 
@@ -153,7 +154,7 @@ class Client:
             The GameMode to get scores for
 
         mods: Optional[Sequence[:class:`str`]]
-            An array of matching Mods, or none. Currently doesn't do anything.
+            An array of matching mods, or none. Currently doesn't do anything.
 
         type: Optional[Sequence[:class:`str`]]
             Beatmap score ranking type. Currently doesn't do anything.
@@ -212,7 +213,7 @@ class Client:
         beatmap: :class:`int`
             Beatmap id.
 
-        mods: Optional[Union[:class:`int`, Sequence[:class:`str`]]]
+        mods: Optional[Union[:class:`int`, Sequence[:class:`str`], :class:`Mods`]]
             Mod combination. Can be either a bitset of mods, array of mod acronyms, or array of mods. Defaults to no mods.
 
         ruleset: Optional[:ref:`GameMode`]
@@ -225,11 +226,7 @@ class Client:
 
         :class:`BeatmapDifficultyAttributes`
         """
-        if isinstance(mods, Mods):
-            mods = mods.value
-        if isinstance(mods, Sequence):
-            mods = Mods.get_from_list(Mods.parse_and_return_any_list(mods)).value
-        return BeatmapDifficultyAttributes(self.http.post(Path.get_beatmap_attributes(beatmap), mods=mods, ruleset=ruleset, ruleset_id=ruleset_id))
+        return BeatmapDifficultyAttributes(self.http.post(Path.get_beatmap_attributes(beatmap), mods=parse_mods_arg(mods), ruleset=ruleset, ruleset_id=ruleset_id))
 
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
                                         page: Optional[int] = None, sort: Optional[str] = None, user: Optional[int] = None,

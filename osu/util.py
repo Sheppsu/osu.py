@@ -1,3 +1,7 @@
+from .enums import Mods
+from typing import Sequence
+
+
 def check_scope(func):
     def check(self, other):
         if not isinstance(other, self.__class__) and type(other) != str:
@@ -26,6 +30,18 @@ def create_autoclass_for_sphinx():
                     f2.close()
             info = f.readline()
         f.close()
+
+
+def parse_mods_arg(mods):
+    if mods is None:
+        return
+    if isinstance(mods, Mods):
+        return mods.value
+    if isinstance(mods, Sequence):
+        if len(mods) == 0:
+            return
+        return Mods.get_from_list(Mods.parse_and_return_any_list(mods)).value
+    raise TypeError(f"mods argument must be of type Mods or Sequence, not {type(mods)}")
 
 
 class Util:
