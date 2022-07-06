@@ -490,10 +490,10 @@ class UserStatisticsRulesets:
     __slots__ = ('osu', 'taiko', 'fruits', 'mania')
 
     def __init__(self, data):
-        self.osu = UserStatistics(data['osu'])
-        self.taiko = UserStatistics(data['taiko'])
-        self.fruits = UserStatistics(data['fruits'])
-        self.mania = UserStatistics(data['mania'])
+        self.osu = UserStatistics(data['osu']) if data.get('osu') else None
+        self.taiko = UserStatistics(data['taiko']) if data.get('taiko') else None
+        self.fruits = UserStatistics(data['fruits']) if data.get('fruits') else None
+        self.mania = UserStatistics(data['mania']) if data.get('mania') else None
 
 
 class CurrentUserAttributes:
