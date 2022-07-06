@@ -120,7 +120,7 @@ class AsynchronousClient:
         """
         return BeatmapUserScore(await self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
-    async def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[str] = None) -> Sequence[BeatmapUserScore]:
+    async def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[str] = None) -> Sequence[Score]:
         """
         Returns a user's scores on a Beatmap
 
@@ -141,7 +141,7 @@ class AsynchronousClient:
 
         Sequence[:class:`BeatmapUserScore`]
         """
-        return list(map(BeatmapUserScore, await self.http.get(Path.user_beatmap_scores(beatmap, user), mode=mode)))
+        return list(map(Score, await self.http.get(Path.user_beatmap_scores(beatmap, user), mode=mode)["scores"]))
 
     async def get_beatmap_scores(self, beatmap: int, mode: Optional[str] = None, mods: Optional[Sequence[str]] = None, type: Optional[Sequence[str]] = None) -> BeatmapScores:
         """
