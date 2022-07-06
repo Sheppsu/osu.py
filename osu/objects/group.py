@@ -15,21 +15,24 @@ class Group:
     has_playmodes: :class:`bool`
         If this group associates GameModes with a user's membership, e.g. BN/NAT members
 
+    has_listing: :class:`bool`
+        Whether this group displays a listing at /groups/{id}
+
     name: :class:`str`
 
     short_name: :class:`str`
         Short name of the group for display.
 
-    colour: :class:`str`
+    colour: :class:`str` or :class:`NoneType`
 
     **Optional Attributes**
 
-    description: :class:`Description`
+    description: :class:`Description` or :class:`NoneType`
         A dictionary with keys html and markdown.
     """
     __slots__ = (
-        "id", "identifier", "is_probationary", "has_playmodes", "name", "short_name",
-        "colour", "description"
+        "id", "identifier", "is_probationary", "has_playmodes", "has_listing",
+        "name", "short_name", "colour", "description"
     )
 
     def __init__(self, data):
@@ -40,7 +43,21 @@ class Group:
         self.name = data['name']
         self.short_name = data['short_name']
         self.colour = data['colour']
-        self.description = data.get('description', None)
+        self.description = Description(data['description']) if data.get('description') is not None else None
+
+
+class Description:
+    """
+    **Attributes**
+
+    html: :class:`str`
+
+    markdown: :class:`str`
+    """
+
+    def __init__(self, data):
+        self.html = data['html']
+        self.markdown = data['markdown']
 
 
 class UserGroup(Group):
@@ -49,8 +66,8 @@ class UserGroup(Group):
 
     **Attributes**
 
-    playmodes: :class:`list`
-        list containing objects of type :class:`str`. GameModes associated with this membership (null if has_playmodes is unset).
+    playmodes: Sequence[:class:`str`]
+        GameModes associated with this membership (null if has_playmodes is unset).
     """
     __slots__ = (
         "playmodes",
