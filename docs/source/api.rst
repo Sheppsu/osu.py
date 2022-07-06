@@ -394,12 +394,6 @@ Each GameMode has its own api name which is to be used instead of it's actual na
 .. csv-table:: GameMode
    :file: _static/GameMode.csv
 
-.. _Timestamp:
-
-Timestamp
-^^^^^^^^^
-Timestamp string in ISO 8601 format.
-
 .. _CommentSort:
 
 CommentSort
