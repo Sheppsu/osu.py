@@ -499,7 +499,7 @@ class Beatmap(BeatmapCompact):
 
     cs: :class:`float`
 
-    deleted_at: :ref:`Timestamp` or :class:`NoneType`
+    deleted_at: :class:`datetime.datetime` or :class:`NoneType`
 
     drain: :class:`float`
 
@@ -507,7 +507,7 @@ class Beatmap(BeatmapCompact):
 
     is_scoreable: :class:`bool`
 
-    last_updated: :ref:`Timestamp`
+    last_updated: :class:`datetime.datetime`
 
     mode_int: :class:`int`
 

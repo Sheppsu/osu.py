@@ -1,4 +1,5 @@
 from .user import CurrentUserAttributes, UserCompact
+from dateutil import parser
 
 
 class ChatChannel:
@@ -90,8 +91,8 @@ class ChatMessage:
     channel_id: :class:`int`
         channel_id of where the message was sent
 
-    timestamp: :class:`str`
-        when the message was sent, ISO-8601
+    timestamp: :class:`datetime.datetime`
+        when the message was sent
 
     content: :class:`str`
         message content
@@ -111,7 +112,7 @@ class ChatMessage:
         self.message_id = data['message_id']
         self.sender_id = data['sender_id']
         self.channel_id = data['channel_id']
-        self.timestamp = data['timestamp']
+        self.timestamp = parser.parse(data['timestamp'])
         self.content = data['content']
         self.is_action = data['is_action']
         self.sender = UserCompact(data['sender'])
