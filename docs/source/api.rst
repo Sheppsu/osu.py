@@ -56,6 +56,26 @@ BeatmapDifficultyAttributes
 .. autoclass:: osu.BeatmapDifficultyAttributes
    :members:
 
+OsuBeatmapDifficultyAttributes
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.OsuBeatmapDifficultyAttributes
+   :members:
+
+TaikoBeatmapDifficultyAttributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.TaikoBeatmapDifficultyAttributes
+   :members:
+
+FruitsBeatmapDifficultyAttributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.FruitsBeatmapDifficultyAttributes
+   :members:
+
+ManiaBeatmapDifficultyAttributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.ManiaBeatmapDifficultyAttributes
+   :members:
+
 Failtimes
 ^^^^^^^^^
 .. autoclass:: osu.Failtimes
@@ -211,9 +231,24 @@ ForumTopic
 .. autoclass:: osu.ForumTopic
    :members:
 
+Poll
+^^^^
+.. autoclass:: osu.Poll
+   :members:
+
+PollOption
+^^^^^^^^^^
+.. autoclass:: osu.PollOption
+   :members:
+
 Group
 ^^^^^
 .. autoclass:: osu.Group
+   :members:
+
+Description
+^^^^^^^^^^^
+.. autoclass:: osu.Description
    :members:
 
 KudosuHistory
