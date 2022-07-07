@@ -33,10 +33,10 @@ class Build:
         self.created_at = parser.parse(data["created_at"])
         self.display_version = data['display_version']
         self.id = data['id']
-        self.update_stream = UpdateStream(data['update_stream']) if data['update_stream'] is not None else None
+        self.update_stream = UpdateStream(data['update_stream']) if data.get('update_stream') is not None else None
         self.users = data['users']
         self.version = data['version']
-        self.changelog_entries = list(map(ChangelogEntry, data['changelog_entries'])) if "changelog_entries" in data else []
+        self.changelog_entries = list(map(ChangelogEntry, data['changelog_entries'])) if data.get("changelog_entries") is not None else []
         self.versions = Versions(data) if "versions" in data else None
 
 
@@ -53,8 +53,8 @@ class Versions:
     __slots__ = ("next", "previous")
 
     def __init__(self, data):
-        self.next = Build(data['next']) if data['next'] is not None else None
-        self.previous = Build(data['previous']) if data['previous'] is not None else None
+        self.next = Build(data['next']) if data.get('next') is not None else None
+        self.previous = Build(data['previous']) if data.get('previous') is not None else None
 
 
 class UpdateStream:
