@@ -32,7 +32,7 @@ class AsynchronousClient:
         If you require more, you probably fall into the above category of abuse. If you are doing more than 60 requests a minute,
         you should probably give peppy a yell.
     """
-    def __init__(self, auth, seconds_per_request=1):
+    def __init__(self, auth, seconds_per_request: Optional[float] = 1):
         self.auth = auth
         self.http = HTTPHandler(auth, self, seconds_per_request)
 
@@ -94,7 +94,7 @@ class AsynchronousClient:
         """
         return Beatmap(await self.http.get(Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
 
-    async def get_user_beatmap_score(self, beatmap: int, user: int, mode: Optional[str] = None, mods: Optional[Sequence[str]] = None) -> BeatmapUserScore:
+    async def get_user_beatmap_score(self, beatmap: int, user: int, mode: Optional[Union[str, GameModeStr]] = None, mods: Optional[Sequence[str]] = None) -> BeatmapUserScore:
         """
         Returns a user's score on a Beatmap
 
@@ -108,8 +108,8 @@ class AsynchronousClient:
         user: :class:`int`
             Id of the user
 
-        mode: Optional[:class:`str`]
-            The :ref:`GameMode` to get scores for
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+            The game mode to get scores for
 
         mods: Optional[Sequence[:class:`str`]]
             An array of matching mods, or none. Currently doesn't do anything.
@@ -118,9 +118,11 @@ class AsynchronousClient:
 
         :class:`BeatmapUserScore`
         """
+        if isinstance(mode, GameModeStr):
+            mode = mode.value
         return BeatmapUserScore(await self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
-    async def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[str] = None) -> Sequence[Score]:
+    async def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[Union[str, GameModeStr]] = None) -> Sequence[Score]:
         """
         Returns a user's scores on a Beatmap
 
@@ -134,16 +136,18 @@ class AsynchronousClient:
         user: :class:`int`
             Id of the user
 
-        mode: Optional[:class:`str`]
-            The :ref:`GameMode` to get scores for
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+            The game mode to get scores for
 
         **Returns**
 
-        Sequence[:class:`BeatmapUserScore`]
+        Sequence[:class:`Score`]
         """
-        return list(map(Score, (await self.http.get(Path.user_beatmap_scores(beatmap, user), mode=mode))["scores"]))
+        if isinstance(mode, GameModeStr):
+            mode = mode.value
+        return list(map(Score, await self.http.get(Path.user_beatmap_scores(beatmap, user), mode=mode)["scores"]))
 
-    async def get_beatmap_scores(self, beatmap: int, mode: Optional[str] = None, mods: Optional[Sequence[str]] = None, type: Optional[Sequence[str]] = None) -> BeatmapScores:
+    async def get_beatmap_scores(self, beatmap: int, mode: Optional[Union[str, GameModeStr]] = None, mods: Optional[Sequence[str]] = None, type: Optional[Sequence[str]] = None) -> BeatmapScores:
         """
         Returns the top scores for a beatmap
 
@@ -154,8 +158,8 @@ class AsynchronousClient:
         beatmap: :class:`int`
             Id of the beatmap
 
-        mode: Optional[:class:`str`]
-            The GameMode to get scores for
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+            The game mode to get scores for
 
         mods: Optional[Sequence[:class:`str`]]
             An array of matching mods, or none. Currently doesn't do anything.
@@ -167,6 +171,8 @@ class AsynchronousClient:
 
         :class:`BeatmapScores`
         """
+        if isinstance(mode, GameModeStr):
+            mode = mode.value
         return BeatmapScores(await self.http.get(Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
     async def get_beatmap(self, beatmap: int) -> Beatmap:
@@ -206,7 +212,7 @@ class AsynchronousClient:
         results = await self.http.get(Path.beatmaps(), **{"ids[]": ids})
         return list(map(Beatmap, results['beatmaps'])) if results else []
 
-    async def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Mods, Sequence[str]]]=None, ruleset: Optional[str] = None, ruleset_id: Optional[int] = None) -> BeatmapDifficultyAttributes:
+    async def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Mods, Sequence[Union[str, Mods, int]]]]=None, ruleset: Optional[Union[str, GameModeStr]] = None, ruleset_id: Optional[Union[int, GameModeInt]] = None) -> BeatmapDifficultyAttributes:
         """
         Returns difficulty attributes of beatmap with specific mode and mods combination.
 
@@ -217,19 +223,24 @@ class AsynchronousClient:
         beatmap: :class:`int`
             Beatmap id.
 
-        mods: Optional[Union[:class:`int`, Sequence[:class:`str`], :class:`Mods`]]
-            Mod combination. Can be either a bitset of mods, array of mod acronyms, or array of mods. Defaults to no mods.
+        mods: Optional[Union[:class:`int`, Sequence[Union[:class:`str`, :class:`Mods`, :class:`int`]], :class:`Mods`]]
+            Mod combination. Can be either a bitset of mods, a Mods enum, or array of any. Defaults to no mods.
+            Some mods may cause the api to throw an HTTP 422 error depending on the map's gamemode.
 
-        ruleset: Optional[:ref:`GameMode`]
+        ruleset: Optional[Union[:class:`GameModeStr`, :class:`int`]]
             Ruleset of the difficulty attributes. Only valid if it's the beatmap ruleset or the beatmap can be converted to the specified ruleset. Defaults to ruleset of the specified beatmap.
 
-        ruleset_id: Optional[:class:`int`]
+        ruleset_id: Optional[Union[:class:`GameModeInt`, :class:`int`]]
             The same as ruleset but in integer form.
 
         **Returns**
 
         :class:`BeatmapDifficultyAttributes`
         """
+        if isinstance(ruleset, GameModeStr):
+            ruleset = ruleset.value
+        if isinstance(ruleset_id, GameModeInt):
+            ruleset_id = ruleset_id.value
         return BeatmapDifficultyAttributes(await self.http.post(Path.get_beatmap_attributes(beatmap), mods=parse_mods_arg(mods), ruleset=ruleset, ruleset_id=ruleset_id))
 
     async def get_beatmapset_discussion_posts(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
@@ -1089,7 +1100,7 @@ class AsynchronousClient:
         data = {'body': body}
         return ForumPost(await self.http.patch(Path.edit_post(post), data=data))
 
-    async def search(self, mode: Optional[str] = None, query: Optional[str] = None, page: Optional[int] = None) -> dict:
+    async def search(self, mode: Optional[Union[str, WikiSearchMode]] = None, query: Optional[str] = None, page: Optional[int] = None) -> dict:
         """
         Searches users and wiki pages.
 
@@ -1097,7 +1108,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: Optional[:class:`str`]
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
             Either all, user, or wiki_page. Default is all.
 
         query: Optional[:class:`str`]
@@ -1129,6 +1140,8 @@ class AsynchronousClient:
 
             }
         """
+        if isinstance(mode, WikiSearchMode):
+            mode = mode.value
         resp = await self.http.get(Path.search(), mode=mode, query=query, page=page)
         return {
             'user': {'results': resp['user']['data'], 'total': resp['user']['total']} if mode is None or mode == 'all' or mode == 'user' else None,
@@ -1343,15 +1356,14 @@ class AsynchronousClient:
         """
         await self.http.delete(self, Path.revoke_current_token())
 
-    async def get_ranking(self, mode: str, type: str, country: Optional[str] = None, cursor: Optional[dict] = None,
+    async def get_ranking(self, mode: Union[str, GameModeStr], type: str, country: Optional[str] = None, cursor: Optional[dict] = None,
                     filter: Optional[str] = None, spotlight: Optional[int] = None, variant: Optional[str] = None) -> Rankings:
         """
         Gets the current ranking for the specified type and game mode.
 
         Requires OAuth and scope public
 
-        mode: :class:`str`
-            GameMode
+        mode: Union[:class:`str`, :class:`GameModeStr`]
 
         type: :class:`str`
             :ref:`RankingType`
@@ -1374,6 +1386,8 @@ class AsynchronousClient:
 
         :class:`Rankings`
         """
+        if isinstance(mode, GameModeStr):
+            mode = mode.value
         return Rankings(await self.http.get(Path.get_ranking(mode, type), country=country, **cursor if cursor else {}, filter=filter,
                                       spotlight=spotlight, variant=variant))
 
@@ -1389,7 +1403,7 @@ class AsynchronousClient:
         """
         return Spotlights(await self.http.get(Path.get_spotlights()))
 
-    async def get_own_data(self, mode="") -> User:
+    async def get_own_data(self, mode: Union[str, GameModeStr]="") -> User:
         """
         Similar to get_user but with authenticated user (token owner) as user id.
 
@@ -1397,13 +1411,15 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: Optional[:class:`str`]
+        mode: Optional[:class:`str`, :class:`GameModeStr`]
             GameMode. User default mode will be used if not specified.
 
         **Returns**
 
         See return for get_user
         """
+        if isinstance(mode, GameModeStr):
+            mode = mode.value
         return User(await self.http.get(Path.get_own_data(mode)))
 
     async def get_user_kudosu(self, user: int, limit: Optional[int] = None, offset: Optional[int] = None):
@@ -1429,7 +1445,7 @@ class AsynchronousClient:
         """
         return list(map(KudosuHistory, await self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset)))
 
-    async def get_user_scores(self, user: int, type: str, include_fails: Optional[int] = None, mode: Optional[str] = None,
+    async def get_user_scores(self, user: int, type: str, include_fails: Optional[int] = None, mode: Optional[Union[str, GameModeStr]] = None,
                         limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Score]:
         """
         This endpoint returns the scores of specified user.
@@ -1447,8 +1463,8 @@ class AsynchronousClient:
         include_fails: Optional[:class:`int`]
             Only for recent scores, include scores of failed plays. Set to 1 to include them. Defaults to 0.
 
-        mode: Optional[:class:`str`]
-            GameMode of the scores to be returned. Defaults to the specified user's mode.
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+            game mode of the scores to be returned. Defaults to the specified user's mode.
 
         limit: Optional[:class:`int`]
             Maximum number of results.
@@ -1461,9 +1477,11 @@ class AsynchronousClient:
         Sequence[:class:`Score`]
             Includes attributes beatmap, beatmapset, weight: Only for type best, user
         """
+        if isinstance(mode, GameModeStr):
+            mode = mode.value
         return [Score(score) for score in await self.http.get(Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
 
-    async def get_user_beatmaps(self, user: int, type: str, limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Union[BeatmapPlaycount, Beatmapset]]:
+    async def get_user_beatmaps(self, user: int, type: Union[str, UserBeatmapType], limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Union[BeatmapPlaycount, Beatmapset]]:
         """
         Returns the beatmaps of specified user.
 
@@ -1474,7 +1492,7 @@ class AsynchronousClient:
         user: :class:`int`
             Id of the user.
 
-        type: :class:`str`
+        type: Union[:class:`str`, :class:`UserBeatmapType`]
             Beatmap type. Can be one of the following - favourite, graveyard, loved, most_played, pending, ranked.
 
         limit: Optional[:class:`int`]
@@ -1489,6 +1507,8 @@ class AsynchronousClient:
             :class:`BeatmapPlaycount` for type most_played or :class:`Beatmapset` for any other type.
         """
         object_type = Beatmapset
+        if isinstance(type, UserBeatmapType):
+            type = type.value
         if type == 'most_played':
             object_type = BeatmapPlaycount
         return list(map(object_type, await self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset)))
@@ -1517,7 +1537,7 @@ class AsynchronousClient:
         """
         return list(map(Event, await self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset)))
 
-    async def get_user(self, user: int, mode: Optional[str] = '', key: Optional[str] = None) -> User:
+    async def get_user(self, user: int, mode: Optional[Union[str, GameModeStr]] = '', key: Optional[str] = None) -> User:
         """
         This endpoint returns the detail of specified user.
 
@@ -1525,12 +1545,12 @@ class AsynchronousClient:
 
         **Parameters**
 
-        user: :class:`int`
+        user: Union[:class:`int`, :class:`str`]
             Id or username of the user. Id lookup is prioritised unless key parameter is specified.
             Previous usernames are also checked in some cases.
 
-        mode: Optional[:class:`str`]
-            GameMode. User default mode will be used if not specified.
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]
+            User default mode will be used if not specified.
 
         key: Optional[:class:`str`]
             Type of user passed in url parameter. Can be either id or username
@@ -1549,6 +1569,8 @@ class AsynchronousClient:
             statistics.country_rank, statistics.rank, statistics.variants, support_level,
             user_achievements.
         """
+        if isinstance(mode, GameModeStr):
+            mode = mode.value
         return User(await self.http.get(Path.get_user(user, mode), key=key))
 
     async def get_users(self, ids: Sequence[int]) -> Sequence[UserCompact]:
@@ -1609,9 +1631,11 @@ class AsynchronousClient:
         """
         return getattr(self.http, method)(Path(path, scope), **kwargs)
 
-    # Undocumented endpoints
+    # Undocumented
 
     async def search_beatmapsets(self, filters=None, page=None):
+        if filters is None:
+            filters = {}
         resp = await self.http.get(Path(f'beatmapsets/search', 'public'), page=page, **filters)
         return {
             'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
