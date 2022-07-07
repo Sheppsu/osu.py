@@ -2,13 +2,15 @@ from osu import AsynchronousClient
 import os
 import websockets
 import asyncio
-from time import perf_counter
+from dotenv import load_dotenv
+
+load_dotenv()
 
 
 #  Simple Twitch Bot class
 class Bot:
     username = "sheepposubot"
-    oauth = "oauth:3f9nmtbuearzrprrvdtnn02pyr563r"
+    oauth = os.getenv("TWITCH_OAUTH")
     uri = "ws://irc-ws.chat.twitch.tv:80"
 
     def __init__(self):
