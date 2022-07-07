@@ -379,6 +379,26 @@ RankStatus
 ^^^^^^^^^^
 .. autoclass:: osu.RankStatus
    :members:
+   
+GameModeStr
+^^^^^^^^^^^
+.. autoclass:: osu.GameModeStr
+   :members:
+   
+GameModeInt
+^^^^^^^^^^^
+.. autoclass:: osu.GameModeInt
+   :members:
+   
+WikiSearchMode
+^^^^^^^^^^^^^^
+.. autoclass:: osu.WikiSearchMode
+   :members:
+
+UserBeatmapType
+^^^^^^^^^^^^^^^
+.. autoclass:: osu.UserBeatmapType
+   :members:
 
 
 Other Information
