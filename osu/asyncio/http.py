@@ -7,18 +7,19 @@ from ..constants import base_url
 
 
 class AsynchronousHTTPHandler:
-    def __init__(self, auth, client, limit_per_second=1):
+    def __init__(self, auth, client, seconds_per_request=1):
         self.auth = auth
         self.client = client
-        self.rate_limit = RateLimiter(limit_per_second)
+        self.rate_limit = RateLimiter(seconds_per_request)
 
-    def get_headers(self, **kwargs):
+    def get_headers(self, requires_auth=True, **kwargs):
         headers = {
-            'Authorization': f'Bearer {self.auth.token}',
             'Content-Type': 'application/json',
             'Accept': 'application/json',
             **{str(key): str(value) for key, value in kwargs.items() if value is not None}
         }
+        if requires_auth:
+            headers['Authorization'] = f"Bearer {self.auth.token}"
         return headers
 
     async def _make_request(self, method, path, data=None, headers=None, stream=False, **kwargs):
@@ -27,14 +28,17 @@ class AsynchronousHTTPHandler:
         if data is None:
             data = {}
 
+        if path.requires_auth and self.client.auth is None:
+            raise ScopeException("You need to be authenticated to do this action.")
+
         if not self.rate_limit.can_request:
             await self.rate_limit.wait()
 
         scope_required = path.scope
-        if scope_required.scopes not in self.client.auth.scope:
+        if path.requires_auth and scope_required.scopes not in self.client.auth.scope:
             raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
 
-        headers = self.get_headers(**headers)
+        headers = self.get_headers(path.requires_auth, **headers)
         response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, stream=stream, params=kwargs)
         self.rate_limit.request_used()
         response.raise_for_status()
@@ -57,8 +61,8 @@ class AsynchronousHTTPHandler:
 
 
 class RateLimiter:
-    def __init__(self, limit_per_second=1):
-        self.limit = limit_per_second
+    def __init__(self, seconds_per_request=1):
+        self.limit = seconds_per_request
         self.last_request = time.perf_counter() - self.limit
 
     def request_used(self):
