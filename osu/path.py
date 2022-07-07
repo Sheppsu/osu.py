@@ -206,7 +206,7 @@ class Path:
 
     @classmethod
     def get_user_beatmaps(cls, user, type):
-        return cls(f'users/{user}/beatmapset/{type}', 'public')
+        return cls(f'users/{user}/beatmapsets/{type}', 'public')
 
     @classmethod
     def get_user_recent_activity(cls, user):
