@@ -1,5 +1,6 @@
 from .beatmap import BeatmapCompact, BeatmapsetCompact
 from .user import UserCompact
+from ..enums import GameModeStr, GameModeInt
 from dateutil import parser
 
 
@@ -57,9 +58,9 @@ class Score:
 
     created_at: :class:`datetime.datetime`
 
-    mode: :class:`str`
+    mode: :class:`GameModeStr`
 
-    mode_int: :ref:`GameMode`
+    mode_int: :ref:`GameModeInt`
 
     replay: :class:`bool`
         whether or not the replay is available
@@ -100,8 +101,8 @@ class Score:
         self.pp = data['pp']
         self.rank = data['rank']
         self.created_at = parser.parse(data['created_at'])
-        self.mode = data['mode']
-        self.mode_int = data['mode_int']
+        self.mode = GameModeStr(data['mode'])
+        self.mode_int = GameModeInt(data['mode_int'])
         self.replay = data['replay']
 
         # Optional Attributes

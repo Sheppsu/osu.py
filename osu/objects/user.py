@@ -1,5 +1,6 @@
 from .group import UserGroup
 from ..util import Util
+from ..enums import GameModeStr
 from dateutil import parser
 import math
 
@@ -203,7 +204,7 @@ class User(UserCompact):
 
     occupation: :class:`str` or :class:`NoneType`
 
-    playmode: :ref:`GameMode`
+    playmode: :class:`GameModeStr`
 
     playstyle: Sequence[:class:`str`]
         Device choices of the user.
@@ -255,7 +256,7 @@ class User(UserCompact):
         self.max_blocks = data['max_blocks']
         self.max_friends = data['max_friends']
         self.occupation = data['occupation']
-        self.playmode = data['playmode']
+        self.playmode = GameModeStr(data['playmode'])
         self.playstyle = data['playstyle']
         self.post_count = data['post_count']
         self.profile_order = data['profile_order']
@@ -373,7 +374,7 @@ class UserMonthlyPlaycount:
 
 class UserStatistics:
     """
-    A summary of various gameplay statistics for a User. Specific to a :ref:`GameMode`
+    A summary of various gameplay statistics for a User. Specific to a :class:`GameMode`
 
     **Attributes**
 
