@@ -41,6 +41,12 @@ class Scope:
     def identify(cls):
         return cls('public', 'identify')
 
+    def __iter__(self):
+        return iter(self.scopes_list)
+
+    def __len__(self):
+        return len(self.scopes_list)
+
     def __str__(self):
         return ", ".join(self.scopes)
 
