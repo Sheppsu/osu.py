@@ -1,4 +1,5 @@
 from dateutil import parser
+from ..enums import GameModeStr
 
 
 class Event:
@@ -47,12 +48,12 @@ class Event:
     :class:`rank`
         score_rank: :class:`str`
         rank: :class:`int`
-        mode: :class:`GameMode`
+        mode: :class:`GameModeStr`
         beatmap: :class:`EventBeatmap`
         user: :class:`EventUser`
 
     :class:`rankLost`
-        mode: :class:`GameMode`
+        mode: :class:`GameModeStr`
         beatmap: :class:`EventBeatmap`
         user: :class:`EventUser`
 
@@ -91,11 +92,11 @@ class Event:
         elif self.type == 'rank':
             self.score_rank = data['scoreRank']
             self.rank = data['rank']
-            self.mode = data['mode']
+            self.mode = GameModeStr(data['mode'])
             self.beatmap = EventBeatmap(data['beatmap'])
             self.user = EventUser(data['user'])
         elif self.type == 'rankLost':
-            self.mode = data['mode']
+            self.mode = GameModeStr(data['mode'])
             self.beatmap = EventBeatmap(data['beatmap'])
             self.user = EventUser(data['user'])
         elif self.type in ("userSupportAgain", "userSupportFirst", "userSupportGift", "usernameChange"):
