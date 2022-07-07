@@ -8,6 +8,10 @@ class Path:
             scope = Scope(scope)
         self.scope = scope
 
+    @property
+    def requires_auth(self):
+        return len(self.scope) == 0
+
     @classmethod
     def beatmap_lookup(cls):
         return cls("beatmaps/lookup", 'public')
