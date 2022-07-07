@@ -28,7 +28,7 @@ class Client:
         If you require more, you probably fall into the above category of abuse. If you are doing more than 60 requests a minute,
         you should probably give peppy a yell.
     """
-    def __init__(self, auth, seconds_per_request: Optional[float] = 1):
+    def __init__(self, auth=None, seconds_per_request: Optional[float] = 1):
         self.auth = auth
         self.http = HTTPHandler(auth, self, seconds_per_request)
 
@@ -447,7 +447,8 @@ class Client:
 
     def get_changelog_listing(self, from_version: Optional[str] = None, max_id: Optional[int] = None,
                               stream: Optional[str] = None, to: Optional[str] = None,
-                              message_formats: Optional[Sequence[str]] = None) -> dict:
+                              message_formats: Optional[Sequence[str]] = None) -> \
+            dict[str, Union[Sequence[Build], Sequence[UpdateStream], dict[str, Union[str, int, None]]]]:
         """
         Returns a listing of update streams, builds, and changelog entries.
 
