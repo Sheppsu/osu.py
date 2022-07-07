@@ -10,7 +10,7 @@ class Path:
 
     @property
     def requires_auth(self):
-        return len(self.scope) == 0
+        return len(self.scope) != 0
 
     @classmethod
     def beatmap_lookup(cls):
