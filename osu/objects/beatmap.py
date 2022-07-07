@@ -1,4 +1,4 @@
-from ..enums import RankStatus
+from ..enums import RankStatus, GameModeStr, GameModeInt
 from .user import UserCompact, CurrentUserAttributes
 from dateutil import parser
 
@@ -211,13 +211,13 @@ class Beatmapset(BeatmapsetCompact):
         self.discussion_locked = data['discussion_locked']
         self.hype = data['hype']
         self.is_scoreable = data['is_scoreable']
-        self.last_updated = parser.parse(data['last_updated']) if 'last_updated' in data else None
+        self.last_updated = parser.parse(data['last_updated']) if data.get('last_updated') is not None else None
         self.legacy_thread_url = data['legacy_thread_url']
-        self.ranked_date = parser.parse(data['ranked_date']) if 'ranked_date' in data else None
+        self.ranked_date = parser.parse(data['ranked_date']) if data.get('ranked_date') is not None else None
         self.source = data['source']
         self.storyboard = data['storyboard']
         self.tags = data['tags']
-        self.submitted_date = parser.parse(data['submitted_date']) if 'submitted_date' in data else None
+        self.submitted_date = parser.parse(data['submitted_date']) if data.get('submitted_date') is not None else None
         self.has_favourited = data['has_favourited'] if 'has_favourited' in data else None
         self.ranked = RankStatus(int(data['ranked']))
         self.nominations = data['nominations'] if 'nominations' in data else None
@@ -235,7 +235,7 @@ class BeatmapCompact:
 
     id: :class:`int`
 
-    mode: :class:`GameMode`
+    mode: :class:`GameModeStr`
 
     status: :class:`str`
         Possible values consist of graveyard, wip, pending, ranked, approved, qualified, loved
@@ -258,16 +258,17 @@ class BeatmapCompact:
     max_combo: :class:`int`
     """
     __slots__ = (
-        "difficulty_rating", "id", "mode", "status", "total_length", "version",
+        "difficulty_rating", "id", "mode", "status", "total_length", "user_id", "version",
         "checksum", "max_combo", "failtimes", "beatmapset"
     )
 
     def __init__(self, data):
         self.difficulty_rating = data['difficulty_rating']
         self.id = data['id']
-        self.mode = data['mode']
+        self.mode = GameModeStr(data['mode'])
         self.status = data['status']
         self.total_length = data['total_length']
+        self.user_id = data['user_id']
         self.version = data['version']
         self.checksum = data.get("checksum", None)
         self.max_combo = data.get("max_combo", None)
@@ -509,7 +510,7 @@ class Beatmap(BeatmapCompact):
 
     last_updated: :class:`datetime.datetime`
 
-    mode_int: :class:`int`
+    mode_int: :class:`GameModeInt`
 
     passcount: :class:`int`
 
@@ -532,7 +533,7 @@ class Beatmap(BeatmapCompact):
         self.url = data['url']
         self.playcount = data['playcount']
         self.passcount = data['passcount']
-        self.mode_int = data['mode_int']
+        self.mode_int = GameModeInt(data['mode_int'])
         self.last_updated = parser.parse(data['last_updated'])
         self.is_scoreable = data['is_scoreable']
         self.hit_length = data['hit_length']
