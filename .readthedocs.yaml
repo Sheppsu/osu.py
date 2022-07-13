@@ -6,7 +6,7 @@ sphinx:
    builder: html
 
 python:
-  version: 3.9
+  version: 3.8
   install:
     - requirements: requirements.txt
     - method: pip
