@@ -4,7 +4,7 @@ from .path import Path
 from .enums import *
 from .auth import AuthHandler
 from .util import parse_mods_arg
-from typing import Union, Optional, Sequence
+from typing import Union, Optional, Sequence, Dict
 
 
 class Client:
@@ -448,7 +448,7 @@ class Client:
     def get_changelog_listing(self, from_version: Optional[str] = None, max_id: Optional[int] = None,
                               stream: Optional[str] = None, to: Optional[str] = None,
                               message_formats: Optional[Sequence[str]] = None) -> \
-            dict[str, Union[Sequence[Build], Sequence[UpdateStream], dict[str, Union[str, int, None]]]]:
+            Dict[str, Union[Sequence[Build], Sequence[UpdateStream], Dict[str, Union[str, int, None]]]]:
         """
         Returns a listing of update streams, builds, and changelog entries.
 
