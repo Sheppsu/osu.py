@@ -57,7 +57,7 @@ BeatmapDifficultyAttributes
    :members:
 
 OsuBeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.OsuBeatmapDifficultyAttributes
    :members:
 
@@ -154,11 +154,6 @@ ChangelogEntry
 GithubUser
 ^^^^^^^^^^
 .. autoclass:: osu.GithubUser
-   :members:
-
-MessageType
-^^^^^^^^^^^
-.. autoclass:: osu.MessageType
    :members:
 
 CurrentUserAttributes
