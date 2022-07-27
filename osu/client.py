@@ -16,11 +16,17 @@ class Client:
     auth: :class:`AuthHandler`
         The AuthHandler object passed in when initiating the Client object
 
-    limit_per_second: Optional[:class:`float`]
-        This defines the amount of time that should pass before you can make another request. Peppy has requested that
-        only 60 requests per minute maximum be made to the api. If you lower the limit, please be
-        knowledgeable of the Terms of Use and be careful about making too many requests. The Terms of Use are
-        stated in the osu!api v2 documentation as follows:
+    request_wait_time: Optional[:class:`float`]
+        Default is 1.
+
+        This defines the amount of time that the client should wait before making another request.
+        It can make it easier to stay within the rate limits without using all your requests up quickly
+        and then waiting forever to make another. It's most applicable in bot-type apps.
+
+    limit_per_minute: Optional[:class:`float`]
+        Default is 60 because that's the limit peppy requests that we stay under.
+
+        This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
 
         Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :). this section may expand as necessary.
 
@@ -28,14 +34,16 @@ class Client:
         If you require more, you probably fall into the above category of abuse. If you are doing more than 60 requests a minute,
         you should probably give peppy a yell.
     """
-    def __init__(self, auth=None, seconds_per_request: Optional[float] = 1):
+    def __init__(self, auth=None, request_wait_time: Optional[float] = 1.0,
+                 limit_per_minute: Optional[float] = 60.0):
         self.auth = auth
-        self.http = HTTPHandler(auth, self, seconds_per_request)
+        self.http = HTTPHandler(auth, self, request_wait_time, limit_per_minute)
 
     @classmethod
     def from_client_credentials(cls, client_id: int, client_secret: str, redirect_url: str,
                                 scope: Optional[Scope] = Scope.default(), code: Optional[str] = None,
-                                seconds_per_request: Optional[float] = 1.0):
+                                request_wait_time: Optional[float] = 1.0,
+                                limit_per_minute: Optional[float] = 60.0):
         """
         Returns a :class:`Client` object from client id, client secret, redirect uri, and scope.
 
@@ -56,7 +64,10 @@ class Client:
         code: Optional[:class:`str`]
             If provided, is used to authorize. Read more about this under :class:`AuthHandler.get_auth_token`
 
-        limit_per_second: Optional[:class:`float`]
+        request_wait_time: Optional[:class:`float`]
+            Read under Client init parameters.
+
+        limit_per_minute: Optional[:class:`float`]
             Read under Client init parameters.
 
         **Returns**
@@ -65,7 +76,7 @@ class Client:
         """
         auth = AuthHandler(client_id, client_secret, redirect_url, scope)
         auth.get_auth_token(code)
-        return cls(auth, seconds_per_request)
+        return cls(auth, request_wait_time, limit_per_minute)
 
     def lookup_beatmap(self, checksum: Optional[str] = None, filename: Optional[str] = None, id: Optional[int] = None) -> Beatmap:
         """
