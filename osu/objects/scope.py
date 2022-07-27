@@ -48,7 +48,7 @@ class Scope:
         return len(self.scopes_list)
 
     def __str__(self):
-        return ", ".join(self.scopes)
+        return ", ".join(self.scopes.split())
 
     def __contains__(self, item):
         return item in self.scopes_list
