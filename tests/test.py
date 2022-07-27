@@ -7,19 +7,23 @@ import sys
 
 class BaseTest:
     test_name: str
+    SUCCESS = '\033[92m'
+    STARTING = '\033[94m'
+    ERROR = '\033[91m'
+    END = '\033[0m'
 
     def __init__(self, client: Client):
         self.client = client
         self.passed = True
 
     def test(self, func, *args, **kwargs):
-        print(f"Testing {self.test_name}.{func.__name__}...")
+        print(f"{self.STARTING}Testing {self.test_name}.{func.__name__}...{self.END}")
         try:
             result = func(*args, **kwargs)
-            print(f"Testing for {self.test_name}.{func.__name__} passed.")
+            print(f"{self.SUCCESS}Testing for {self.test_name}.{func.__name__} passed.{self.END}")
             return result
         except:
-            print(f"Testing for {self.test_name}.{func.__name__} failed.")
+            print(f"{self.ERROR}Testing for {self.test_name}.{func.__name__} failed.{self.ERROR}")
             self.passed = False
             traceback.print_exc()
 
@@ -31,11 +35,11 @@ class Test:
     def __init__(self):
         self.client = Client.from_client_credentials(
             int(os.getenv('osu_client_id')), os.getenv('osu_client_secret'),
-            'http://127.0.0.1:8080'
+            'http://127.0.0.1:8080', request_wait_time=0
         )
 
     def run_test(self, test):
-        test = importlib.import_module(f'test_{test}').Test(self.client)
+        test = importlib.import_module(test).Test(self.client)
         print(f"Running {test.test_name} test...")
         test.run_all_tests()
         print(f"{test.test_name} test finished.")
@@ -56,5 +60,5 @@ if __name__ == '__main__':
     if len(sys.argv) == 1:
         passed = Test().run_all_tests()
     else:
-        passed = Test().run_test(sys.argv[1])
+        passed = Test().run_test("test_"+sys.argv[1])
     print("Testing failed." if not passed else "Testing passed!")
