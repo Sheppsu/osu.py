@@ -85,7 +85,7 @@ class Mods(IntFlag):
     HalfTime = 1 << 8
     Nightcore = (1 << 9)
     Flashlight = 1 << 10
-    Autoplay = 1 << 11  # Auto
+    # Autoplay = 1 << 11  # Auto
     SpunOut = 1 << 12
     Relax2 = 1 << 13  # AutoPilot
     Perfect = 1 << 14
@@ -94,18 +94,18 @@ class Mods(IntFlag):
     Key6 = 1 << 17
     Key7 = 1 << 18
     Key8 = 1 << 19
-    keyMod = (1 << 15) + (1 << 16) + (1 << 17) + (1 << 18) + (1 << 19)  # k4+k5+k6+k7+k8
-    FadeIn = 1 << 21
-    Random = 1 << 22
-    LastMod = 1 << 23  # Cinema
-    TargetPractice = 1 << 24
-    Key9 = 1 << 25
-    Coop = 1 << 26
-    Key1 = 1 << 27
-    Key3 = 1 << 28
-    Key2 = 1 << 29
-    ScoreV2 = 1 << 30
-    Mirror = 1 << 31
+    # keyMod = (1 << 15) + (1 << 16) + (1 << 17) + (1 << 18) + (1 << 19)  # k4+k5+k6+k7+k8
+    # FadeIn = 1 << 21
+    # Random = 1 << 22
+    # LastMod = 1 << 23  # Cinema
+    # TargetPractice = 1 << 24
+    # Key9 = 1 << 25
+    # Coop = 1 << 26
+    # Key1 = 1 << 27
+    # Key3 = 1 << 28
+    # Key2 = 1 << 29
+    # ScoreV2 = 1 << 30
+    # Mirror = 1 << 31
 
     @classmethod
     def get_from_abbreviation(cls, abbreviation: str) -> IntFlag:
