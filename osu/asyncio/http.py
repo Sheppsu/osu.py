@@ -7,10 +7,10 @@ from ..constants import base_url
 
 
 class AsynchronousHTTPHandler:
-    def __init__(self, auth, client, seconds_per_request=1):
+    def __init__(self, auth, client, request_wait_time, limit_per_minute):
         self.auth = auth
         self.client = client
-        self.rate_limit = RateLimiter(seconds_per_request)
+        self.rate_limit = RateLimitHandler(request_wait_time, limit_per_minute)
 
     def get_headers(self, requires_auth=True, **kwargs):
         headers = {
@@ -60,17 +60,33 @@ class AsynchronousHTTPHandler:
         return await self._make_request('put', path, data=data, headers=headers, stream=stream, **kwargs)
 
 
-class RateLimiter:
-    def __init__(self, seconds_per_request=1):
-        self.limit = seconds_per_request
-        self.last_request = time.perf_counter() - self.limit
+class RateLimitHandler:
+    def __init__(self, request_wait_limit, limit_per_minute):
+        self.wait_limit = request_wait_limit
+        self.limit = limit_per_minute
+        self.last_request = time.perf_counter() - self.wait_limit
+        self.requests = []
 
     def request_used(self):
+        self.requests.append(time.perf_counter())
         self.last_request = time.perf_counter()
 
     async def wait(self):
-        await asyncio.sleep(self.limit-(time.perf_counter()-self.last_request))
+        next_available_request = self.wait_limit-(time.perf_counter()-self.last_request)
+        if len(self.requests) >= self.limit:
+            next_available_request = max(next_available_request, self.requests[0]+60-time.perf_counter())
+        await asyncio.sleep(next_available_request)
+
+    def reset(self):
+        if len(self.requests) == 0:
+            return
+        while True:
+            if self.requests[0] + 60 < time.perf_counter():
+                self.requests.pop(0)
+            else:
+                break
 
     @property
     def can_request(self):
-        return time.perf_counter()-self.last_request >= self.limit
+        self.reset()
+        return time.perf_counter()-self.last_request >= self.wait_limit and len(self.requests) < self.limit
