@@ -10,10 +10,12 @@ client = Client.from_client_credentials(client_id, client_secret, redirect_url)
 
 user_id = 14895608
 mode = 'osu'
-rankings = client.get_ranking('osu', 'performance')
-for ranking in rankings.ranking:
-    print(f"{ranking.user.username} - #{ranking.global_rank} ({ranking.pp})")
 
-rankings2 = client.get_ranking('osu', 'performance', cursor=rankings.cursor)
-for ranking in rankings2.ranking:
-    print(f"{ranking.user.username} - #{ranking.global_rank} ({ranking.pp})")
+# Print the top 100 players
+cursor = None
+for _ in range(2):
+    ranking = client.get_ranking('osu', 'performance', cursor=cursor)
+    cursor = ranking.cursor
+    for r in ranking.ranking:
+        print(f"{r.user.username} - #{r.global_rank} ({r.pp})")
+
