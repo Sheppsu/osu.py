@@ -1,5 +1,6 @@
 from .score import ScoreStatistics
 from ..enums import Mods
+from ..util import prettify
 
 
 class MultiplayerScore:
@@ -63,6 +64,9 @@ class MultiplayerScore:
         self.scores_around = MultiplayerScoresAround(data['scores_around']) if data['scores_around'] is not None else None
         self.user = data['user']
 
+    def __repr__(self):
+        return prettify(self, 'user', 'position')
+
 
 class MultiplayerScores:
     """
@@ -97,6 +101,9 @@ class MultiplayerScores:
         self.total = data['total']
         self.user_score = MultiplayerScore(data['user_score']) if data['user_score'] is not None else None
 
+    def __repr__(self):
+        return prettify(self, 'total', 'scores')
+
 
 class MultiplayerScoresAround:
     """
@@ -113,3 +120,6 @@ class MultiplayerScoresAround:
     def __init__(self, data):
         self.higher = MultiplayerScores(data['higher'])
         self.lower = MultiplayerScores(data['lower'])
+
+    def __repr__(self):
+        return prettify(self, 'higher', 'lower')

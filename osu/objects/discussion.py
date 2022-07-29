@@ -2,6 +2,8 @@ from .user import CurrentUserAttributes
 from .beatmap import BeatmapCompact, BeatmapsetCompact
 from dateutil import parser
 
+from ..util import prettify
+
 
 class BeatmapsetDiscussion:
     """
@@ -83,6 +85,9 @@ class BeatmapsetDiscussion:
         self.updated_at = parser.parse(data['updated_at'])
         self.user_id = data['user_id']
 
+    def __repr__(self):
+        return prettify(self, 'beatmapset', 'created_at')
+
 
 class BeatmapsetDiscussionPost:
     """
@@ -127,6 +132,9 @@ class BeatmapsetDiscussionPost:
         self.updated_at = parser.parse(data['updated_at'])
         self.user_id = data['user_id']
 
+    def __repr__(self):
+        return prettify(self, 'user_id', 'message', 'beatmapset_discussion_id')
+
 
 class BeatmapsetDiscussionVote:
     """
@@ -158,3 +166,6 @@ class BeatmapsetDiscussionVote:
         self.score = data['score']
         self.updated_at = parser.parse(data['updated_at'])
         self.user_id = data['user_id']
+
+    def __repr__(self):
+        return prettify(self, 'beatmapset_discussion_id', 'score', 'user_id')
