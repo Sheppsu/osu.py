@@ -1,6 +1,6 @@
 from enum import IntFlag, IntEnum, Enum
 from typing import Sequence, Union
-from .constants import mod_abbreviations
+from .constants import mod_abbreviations, incompatible_mods
 
 
 class Mods(IntFlag):
@@ -67,7 +67,7 @@ class Mods(IntFlag):
     Nightcore = (1 << 9)
     Flashlight = 1 << 10
     SpunOut = 1 << 12
-    Relax2 = 1 << 13
+    AutoPilot = 1 << 13
     Perfect = 1 << 14
     FadeIn = 1 << 20
     Mirror = 1 << 30
@@ -145,6 +145,54 @@ class Mods(IntFlag):
             elif isinstance(mod, int):
                 ret.append(Mods(mod))
         return Mods.get_from_list(ret)
+
+    def get_incompatible_mods(self):
+        """
+        Get a list of mods that are incompatible with this mod.
+
+        **Returns**
+
+        Sequence[:class:`Mods`]
+        """
+        if self.name is None:
+            raise ValueError("Cannot get incompatible mods of a multi-mods enum object.")
+        return list(map(lambda x: Mods[x], incompatible_mods[self.name]))
+
+    def is_compatible_with(self, other: 'Mods'):
+        """
+        Check if this mod is compatible with another mod.
+
+        **Parameters**
+
+        other: :class:`Mods`
+            Mod to check compatibility with.
+
+        **Returns**
+
+        :class:`bool`
+        """
+        if self.name is None or other.name is None:
+            raise ValueError("Cannot check compatibility of a multi-mods enum object.")
+        return other not in self.get_incompatible_mods()
+
+    def is_compatible_combination(self):
+        """
+        Check if all the mods in this Mods object are compatible with each other.
+
+        **Returns**
+
+        :class:`bool`
+        """
+
+        mods = str(self).split('|')
+        mods[0] = mods[0].replace("Mods.", "")
+        mods = list(map(lambda x: Mods[x], mods))
+
+        for i in range(len(mods)):
+            for j in range(i+1, len(mods)):
+                if not mods[i].is_compatible_with(mods[j]):
+                    return False
+        return True
 
 
 class RankStatus(IntEnum):
