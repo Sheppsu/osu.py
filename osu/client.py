@@ -28,11 +28,13 @@ class Client:
 
         This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
 
-        Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :). this section may expand as necessary.
+    Make sure if you are changing the ratelimit handling that you are still following peppy's TOS for using the API:
 
-        Current rate limit is set at an insanely high 1200 requests per minute, with burst capability of up to 200 beyond that.
-        If you require more, you probably fall into the above category of abuse. If you are doing more than 60 requests a minute,
-        you should probably give peppy a yell.
+    Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :). this section may expand as necessary.
+
+    Current rate limit is set at an insanely high 1200 requests per minute, with burst capability of up to 200 beyond that.
+    If you require more, you probably fall into the above category of abuse. If you are doing more than 60 requests a minute,
+    you should probably give peppy a yell.
     """
     def __init__(self, auth=None, request_wait_time: Optional[float] = 1.0,
                  limit_per_minute: Optional[float] = 60.0):
