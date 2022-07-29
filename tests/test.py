@@ -36,7 +36,7 @@ class Test:
     def __init__(self):
         self.client = Client.from_client_credentials(
             int(os.getenv('osu_client_id')), os.getenv('osu_client_secret'),
-            'http://127.0.0.1:8080', request_wait_time=0
+            'http://127.0.0.1:8080', request_wait_time=0  # set to 0 because the tests currently don't use 60 requests
         )
 
     def run_test(self, test):
