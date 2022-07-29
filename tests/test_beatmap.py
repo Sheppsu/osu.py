@@ -76,11 +76,13 @@ class Test(BaseTest):
         print("Testing lookup_beatmap...")
         # TODO: figure out how to do checksum ig?
 
+        def format_filename(filename):
+            return "".join([c for c in filename if c not in "\"\\/?*:|<>"]).rstrip()
+
         for beatmap in beatmaps[4:6]:
-            beatmap_result = self.client.lookup_beatmap(
-                filename=f"{beatmap.beatmapset.artist} - {beatmap.beatmapset.title} "
-                         f"({beatmap.beatmapset.creator}) [{beatmap.version}].osu"
-            )
+            filename = format_filename(f"{beatmap.beatmapset.artist} - {beatmap.beatmapset.title} "
+                                       f"({beatmap.beatmapset.creator}) [{beatmap.version}].osu")
+            beatmap_result = self.client.lookup_beatmap(filename=filename)
             assert beatmap_result.id == beatmap.id
 
         for beatmap in beatmaps[:2]:
