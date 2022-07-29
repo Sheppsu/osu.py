@@ -5,78 +5,59 @@ from .constants import mod_abbreviations
 
 class Mods(IntFlag):
     """
-    IntFlag enum for all mods. Taken from https://osu.ppy.sh/wiki/en/Client/File_formats/Osr_%28file_format%29
+    IntFlag enum for all mods. Info gathered from https://github.com/ppy/osu-web/blob/973315aded8a5762fc00a9f245337802c27bd213/app/Libraries/Mods.php
+    and https://github.com/ppy/osu-web/blob/973315aded8a5762fc00a9f245337802c27bd213/database/mods.json
 
-    **List of mods**
+    **List of mods, their acronyms, and their bitwise representation**
 
-    NoFail = 1 << 0
+    NoFail (NF) = 1 << 0
 
-    Easy = 1 << 1
+    Easy (EZ) = 1 << 1
 
-    TouchDevice = 1 << 2  # Replaces unused NoVideo mod
+    TouchDevice (TD) = 1 << 2  # Replaces unused NoVideo mod
 
-    Hidden = 1 << 3
+    Hidden (HD) = 1 << 3
 
-    HardRock = 1 << 4
+    HardRock (HR) = 1 << 4
 
-    SuddenDeath = 1 << 5
+    SuddenDeath (SD) = 1 << 5
 
-    DoubleTime = 1 << 6
+    DoubleTime (DT) = 1 << 6
 
-    Relax = 1 << 7
+    Relax (RX) = 1 << 7
 
-    HalfTime = 1 << 8
+    HalfTime (HT) = 1 << 8
 
-    Nightcore = (1 << 9) + (1 << 6)  # Always used with DT
+    Nightcore (NC) = (1 << 9)
 
-    Flashlight = 1 << 10
+    Flashlight (FL) = 1 << 10
 
-    Autoplay = 1 << 11  # Auto
+    SpunOut (SO) = 1 << 12
 
-    SpunOut = 1 << 12
+    AutoPilot (AP) = 1 << 13
 
-    Relax2 = 1 << 13  # AutoPilot
+    Perfect (PF) = 1 << 14
 
-    Perfect = 1 << 14
+    FadeIn (FI) = 1 << 20
 
-    Key4 = 1 << 15
+    Mirror (MR) = 1 << 30
 
-    Key5 = 1 << 16
+    Key4 (4K) = 1 << 15
 
-    Key6 = 1 << 17
+    Key5 (5K) = 1 << 16
 
-    Key7 = 1 << 18
+    Key6 (6K) = 1 << 17
 
-    Key8 = 1 << 19
+    Key7 (7K) = 1 << 18
 
-    keyMod = (1 << 15) + (1 << 16) + (1 << 17) + (1 << 18) + (1 << 19)  # k4+k5+k6+k7+k8
+    Key8 (8K) = 1 << 19
 
-    FadeIn = 1 << 21
-
-    Random = 1 << 22
-
-    LastMod = 1 << 23  # Cinema
-
-    TargetPractice = 1 << 24
-
-    Key9 = 1 << 25
-
-    Coop = 1 << 26
-
-    Key1 = 1 << 27
-
-    Key3 = 1 << 28
-
-    Key2 = 1 << 29
-
-    ScoreV2 = 1 << 30
-
-    Mirror = 1 << 31
+    Key9 (9K) = 1 << 24
     """
 
     NoFail = 1 << 0
     Easy = 1 << 1
-    TouchDevice = 1 << 2  # Replaces unused NoVideo mod
+    TouchDevice = 1 << 2
     Hidden = 1 << 3
     HardRock = 1 << 4
     SuddenDeath = 1 << 5
@@ -85,30 +66,21 @@ class Mods(IntFlag):
     HalfTime = 1 << 8
     Nightcore = (1 << 9)
     Flashlight = 1 << 10
-    # Autoplay = 1 << 11  # Auto
     SpunOut = 1 << 12
-    Relax2 = 1 << 13  # AutoPilot
+    Relax2 = 1 << 13
     Perfect = 1 << 14
+    FadeIn = 1 << 20
+    Mirror = 1 << 30
+
     Key4 = 1 << 15
     Key5 = 1 << 16
     Key6 = 1 << 17
     Key7 = 1 << 18
     Key8 = 1 << 19
-    # keyMod = (1 << 15) + (1 << 16) + (1 << 17) + (1 << 18) + (1 << 19)  # k4+k5+k6+k7+k8
-    # FadeIn = 1 << 21
-    # Random = 1 << 22
-    # LastMod = 1 << 23  # Cinema
-    # TargetPractice = 1 << 24
-    # Key9 = 1 << 25
-    # Coop = 1 << 26
-    # Key1 = 1 << 27
-    # Key3 = 1 << 28
-    # Key2 = 1 << 29
-    # ScoreV2 = 1 << 30
-    # Mirror = 1 << 31
+    Key9 = 1 << 24
 
     @classmethod
-    def get_from_abbreviation(cls, abbreviation: str) -> IntFlag:
+    def get_from_abbreviation(cls, abbreviation: str) -> 'Mods':
         """
         Get mod from its abbreviation. Abbreviations are taken from https://osu.ppy.sh/wiki/en/Game_modifier/Summary
 
@@ -121,10 +93,10 @@ class Mods(IntFlag):
 
         :class:`Mods`
         """
-        return cls[mod_abbreviations[abbreviation]]
+        return cls[mod_abbreviations[abbreviation.upper()]]
 
     @staticmethod
-    def get_from_list(mods: Sequence[IntFlag]) -> IntFlag:
+    def get_from_list(mods: Sequence['Mods']) -> 'Mods':
         """
         Get a :class:`Mods` object from a list of :class:`Mods`.
 
@@ -143,7 +115,7 @@ class Mods(IntFlag):
         return a
 
     @staticmethod
-    def parse_and_return_any_list(mods: Sequence[Union[str, int, IntFlag]]) -> IntFlag:
+    def parse_and_return_any_list(mods: Sequence[Union[str, int, 'Mods']]) -> 'Mods':
         """
         Take a list and return a parsed list. Parsing the list involves
         converting strings to :class:`Mods`. Strings can be the full mod name

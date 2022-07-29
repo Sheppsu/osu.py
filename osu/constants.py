@@ -14,17 +14,10 @@ mod_abbreviations = {
     "HT": "HalfTime",
     "NC": "Nightcore",
     "FL": "Flashlight",
-    "AT": "Autoplay",
     "SO": "SpunOut",
-    "AP": "Relax2",
+    "AP": "AutoPilot",
     "PF": "Perfect",
     "FI": "FadeIn",
-    "RD": "Random",
-    "CM": "LastMod",
-    "TP": "TargetPractice",
-    "CP": "Coop",
-    "SV2": "ScoreV2",
     "MR": "Mirror",
-    "KM": "keyMod",  # Actually not sure about this one
-    **{f"{k}K": f"Key{k}" for k in range(1, 10)}
+    **{f"{k}K": f"Key{k}" for k in range(4, 10)}
 }
