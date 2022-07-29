@@ -23,9 +23,10 @@ class BaseTest:
             print(f"{self.SUCCESS}Testing for {self.test_name}.{func.__name__} passed.{self.END}")
             return result
         except:
-            print(f"{self.ERROR}Testing for {self.test_name}.{func.__name__} failed.{self.ERROR}")
+            print(f"{self.ERROR}Testing for {self.test_name}.{func.__name__} failed:")
             self.passed = False
             traceback.print_exc()
+            print(self.END)
 
     def run_all_tests(self):
         raise NotImplementedError()
