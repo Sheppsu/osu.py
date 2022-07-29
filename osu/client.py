@@ -28,7 +28,7 @@ class Client:
 
         This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
 
-    Make sure if you are changing the ratelimit handling that you are still following peppy's TOS for using the API:
+    Make sure if you are changing the ratelimit handling that you are still following peppy's TOU for using the API:
 
     Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :). this section may expand as necessary.
 
