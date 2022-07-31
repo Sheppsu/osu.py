@@ -1,7 +1,7 @@
 from pytest import fixture
 
 from constants import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
-from osu import AsynchronousClient, AuthHandler, Client
+from osu import AsynchronousClient, AuthHandler, Client, Score
 
 
 @fixture(scope="session")
@@ -26,4 +26,52 @@ def sample_beatmap():
         "title": "Wizard's Tower",
         "type": "osu",
         "max_combo": 866,
+    }
+
+
+@fixture
+def sample_beatmaps():
+    yield [
+        {
+            "id": 2063622,
+            "max_combo": 866,
+            "beatmapset_id": 985788,
+            "ar": 9,
+        },
+        {
+            "id": 1031991,
+            "max_combo": 4353,
+            "beatmapset_id": 461744,
+            "ar": 10,
+        },
+        {
+            "id": 252238,
+            "max_combo": 2646,
+            "beatmapset_id": 93523,
+            "ar": 10,
+        }
+    ]
+
+
+@fixture
+def sample_scores():
+    yield {
+        "beatmap_id": 741477,
+        "scores": [
+            {
+                "id": 2046025260,
+                "user_id": 214187,
+                "max_combo": 197,
+            },
+            {
+                "id": 2157887005,
+                "user_id": 6143840,
+                "max_combo": 197,
+            },
+            {
+                "id": 2427781720,
+                "user_id": 7162035,
+                "max_combo": 197,
+            },
+        ]
     }
