@@ -1,3 +1,6 @@
+from ..util import prettify
+
+
 class WikiPage:
     """
     Represents a wiki article
@@ -42,3 +45,6 @@ class WikiPage:
         self.subtitle = data['subtitle']
         self.tags = data['tags']
         self.title = data['title']
+
+    def __repr__(self):
+        return prettify(self, 'title')

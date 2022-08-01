@@ -1,4 +1,6 @@
 from dateutil import parser
+
+from ..util import prettify
 from ..enums import GameModeStr
 
 
@@ -102,6 +104,11 @@ class Event:
         elif self.type in ("userSupportAgain", "userSupportFirst", "userSupportGift", "usernameChange"):
             self.user = EventUser(data['user'])
 
+    def __repr__(self):
+        slots = ['type', 'achievement', 'user', 'beatmap', 'score_rank', 'beatmapset']
+        fields = [getattr(self, slot) for slot in slots if getattr(self, slot, None)]
+        return prettify(self, *fields)
+
 
 class EventUser:
     """
@@ -122,6 +129,9 @@ class EventUser:
         self.url = data['url']
         self.previous_username = data['previousUsername']
 
+    def __repr__(self):
+        return prettify(self, 'username', 'url')
+
 
 class EventBeatmap:
     """
@@ -139,6 +149,9 @@ class EventBeatmap:
         self.title = data['title']
         self.url = data['url']
 
+    def __repr__(self):
+        return prettify(self, 'title', 'url')
+
 
 class EventBeatmapset:
     """
@@ -155,3 +168,6 @@ class EventBeatmapset:
     def __init__(self, data):
         self.title = data['title']
         self.url = data['url']
+
+    def __repr__(self):
+        return prettify(self, 'title', 'url')

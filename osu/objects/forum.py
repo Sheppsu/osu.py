@@ -1,5 +1,7 @@
 from dateutil import parser
 
+from ..util import prettify
+
 
 class ForumPost:
     """
@@ -41,6 +43,9 @@ class ForumPost:
         self.topic_id = data['topic_id']
         self.user_id = data['user_id']
         self.body = data.get('body', None)
+
+    def __repr__(self):
+        return prettify(self, 'user_id', 'topic_id')
 
 
 class ForumTopic:
@@ -92,6 +97,9 @@ class ForumTopic:
         self.type = data['type']
         self.updated_at = parser.parse(data["updated_at"])
         self.user_id = data['user_id']
+
+    def __repr__(self):
+        return prettify(self, 'user_id', 'title')
         
         
 class Poll:
@@ -134,6 +142,9 @@ class Poll:
         self.title = data['title']
         self.total_vote_count = data['total_vote_count']
 
+    def __repr__(self):
+        return prettify(self, 'title', 'options')
+
 
 class PollOption:
     """
@@ -153,3 +164,6 @@ class PollOption:
         self.id = data['id']
         self.text = data['text']
         self.vote_count = data['vote_count']
+
+    def __repr__(self):
+        return prettify(self, 'text', 'vote_count')

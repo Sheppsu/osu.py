@@ -1,5 +1,5 @@
 from .enums import Mods
-from typing import Sequence
+from typing import Sequence, List
 
 
 def check_scope(func):
@@ -42,6 +42,11 @@ def parse_mods_arg(mods):
             return
         return Mods.parse_and_return_any_list(mods).value
     raise TypeError(f"mods argument must be of type Mods or Sequence, not {type(mods)}")
+
+
+def prettify(cls: object, *fields: str) -> str:
+    d = {s: getattr(cls, s) for s in fields}
+    return cls.__class__.__qualname__ + '(' + ', '.join([f"{k}={d[k]!r}" for k in d]) + ')'
 
 
 class Util:

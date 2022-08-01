@@ -1,5 +1,6 @@
 from .beatmap import Beatmapset
 from .user import UserStatistics
+from ..util import prettify
 
 
 class Rankings:
@@ -32,6 +33,9 @@ class Rankings:
         self.total = data['total']
         self.spotlight = Spotlight(data['spotlight']) if data.get('spotlight') is not None else None
         self.beatmapsets = list(map(Beatmapset, data['beatmapsets'])) if data.get('beatmapsets') is not None else None
+
+    def __repr__(self):
+        return prettify(self, 'ranking')
 
 
 class Spotlight:
@@ -74,6 +78,9 @@ class Spotlight:
         self.start_date = data['start_date']
         self.type = data['type']
 
+    def __repr__(self):
+        return prettify(self, 'name')
+
 
 class Spotlights:
     """
@@ -87,3 +94,6 @@ class Spotlights:
 
     def __init__(self, data):
         self.spotlights = list(map(Spotlight, data['spotlights']))
+
+    def __repr__(self):
+        return prettify(self, 'spotlights')

@@ -1,5 +1,7 @@
 from dateutil import parser
 
+from ..util import prettify
+
 
 class NewsPost:
     """
@@ -54,6 +56,9 @@ class NewsPost:
         self.navigation = Navigation(data) if "navigation" in data else None
         self.preview = data.get("preview", "")
 
+    def __repr__(self):
+        return prettify(self, 'title')
+
 
 class Navigation:
     """
@@ -70,3 +75,6 @@ class Navigation:
     def __init__(self, data):
         self.newer = NewsPost(data['newer']) if data["newer"] is not None else None
         self.older = NewsPost(data['older']) if data["older"] is not None else None
+
+    def __repr__(self):
+        return prettify(self)
