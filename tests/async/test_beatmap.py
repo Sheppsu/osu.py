@@ -32,12 +32,25 @@ class TestBeatmap:
             assert received_score.max_combo == sample_score["max_combo"]
 
     @pytest.mark.asyncio
-    async def test_async_get_user_beatmap_score(self, async_client):
-        ...
+    async def test_async_get_user_beatmap_score(self, async_client, sample_user_beatmap_score):
+        score = (await async_client.get_user_beatmap_score(
+            beatmap=sample_user_beatmap_score["beatmap_id"],
+            user=sample_user_beatmap_score["user_id"],
+        )).score
+        assert score
+        assert score.user_id == sample_user_beatmap_score["user_id"]
+        assert score.accuracy == sample_user_beatmap_score["accuracy"]
 
     @pytest.mark.asyncio
-    async def test_async_get_user_beatmap_scores(self, async_client):
-        ...
+    async def test_async_get_user_beatmap_scores(self, async_client, sample_user_beatmap_scores):
+        scores = await async_client.get_user_beatmap_scores(
+            beatmap=sample_user_beatmap_scores["beatmap_id"],
+            user=sample_user_beatmap_scores["user_id"],
+        )
+        assert scores
+        for score in scores:
+            keys = sample_user_beatmap_scores["scores"][0].keys()
+            assert {key: getattr(score, key) for key in keys} in sample_user_beatmap_scores["scores"]
 
     @pytest.mark.asyncio
     async def test_async_get_user_beatmaps(self, async_client):

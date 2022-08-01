@@ -75,3 +75,34 @@ def sample_scores():
             },
         ]
     }
+
+
+@fixture
+def sample_user_beatmap_score():
+    yield {
+        "user_id": 6943941,
+        "accuracy": 0.9725056689342404,
+        "beatmap_id": 2063622,
+    }
+
+
+@fixture
+def sample_user_beatmap_scores():
+    yield {
+        "user_id": 6943941,
+        "beatmap_id": 2063622,
+        "scores": [
+            {
+            "accuracy": 0.9725056689342404,
+            "mods": ["HD", "DT"],
+            },
+            {
+            "accuracy": 0.9747732426303855,
+            "mods": ["DT"],
+            },
+            {
+            "accuracy": 0.9810090702947846,
+            "mods": [],
+            },
+        ],
+    }
