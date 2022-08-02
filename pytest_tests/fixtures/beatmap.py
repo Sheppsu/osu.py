@@ -1,26 +1,12 @@
-from pytest import fixture
+from pytest_asyncio import fixture
 
-from constants import CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
-from osu import AsynchronousClient, AuthHandler, Client, Score
-
-
-@fixture(scope="session")
-def async_client():
-    auth = AuthHandler(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
-    client = AsynchronousClient(auth)
-    yield client
-
-
-@fixture(scope="session")
-def client():
-    auth = AuthHandler(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
-    client = Client(auth)
-    yield client
+from osu import UserBeatmapType
 
 
 @fixture
 def sample_beatmap():
     yield {
+        "md5_sum": "8d351b3db141b2aa426d992374e80b24",
         "id": 2063622,
         "artist": "Loki",
         "title": "Wizard's Tower",
@@ -93,16 +79,51 @@ def sample_user_beatmap_scores():
         "beatmap_id": 2063622,
         "scores": [
             {
-            "accuracy": 0.9725056689342404,
-            "mods": ["HD", "DT"],
+                "accuracy": 0.9725056689342404,
+                "mods": ["HD", "DT"],
             },
             {
-            "accuracy": 0.9747732426303855,
-            "mods": ["DT"],
+                "accuracy": 0.9747732426303855,
+                "mods": ["DT"],
             },
             {
-            "accuracy": 0.9810090702947846,
-            "mods": [],
+                "accuracy": 0.9810090702947846,
+                "mods": [],
             },
         ],
     }
+
+
+@fixture
+def sample_user_beatmaps():
+    yield dict(
+        user_id=6943941,
+        type=UserBeatmapType.GRAVEYARD,
+        beatmapset=dict(
+            artist="Fractal Dreamers",
+            title="Gardens Under A Spring Sky",
+            creator="nouvelle",
+        ),
+    )
+
+
+@fixture
+def sample_beatmapset_discussion_post():
+    yield dict(
+        id=1457454,
+        beatmapset_id=632972,
+        beatmapset_title="put' l'da",
+        beatmapset_artist="Camellia",
+        target_message="2 > 3.5 > 5 if I'm going to change it, I still want the lower diffs "
+                       "to be more forgiving considering their difficulty isn't well represented with SR",
+        target_user=4116573,
+        discussion_user=6175280,
+        discussion_message="HP settings are quite low for Advanced-Insane. Would go for HP3 - HP4 - HP5",
+    )
+
+
+@fixture
+def sample_beatmapset_discussion():
+    yield dict(
+        beatmap_id=632972,
+    )
