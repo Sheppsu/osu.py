@@ -86,7 +86,7 @@ class BeatmapsetDiscussion:
         self.user_id = data['user_id']
 
     def __repr__(self):
-        return prettify(self, 'beatmapset', 'created_at')
+        return prettify(self, 'beatmapset', 'starting_post')
 
 
 class BeatmapsetDiscussionPost:
