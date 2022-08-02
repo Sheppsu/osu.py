@@ -1,6 +1,6 @@
 from .beatmap import BeatmapCompact, BeatmapsetCompact
 from .user import UserCompact
-from ..enums import GameModeStr, GameModeInt
+from ..enums import GameModeStr, GameModeInt, Mods
 from dateutil import parser
 
 
@@ -40,7 +40,7 @@ class Score:
 
     accuracy: :class:`float`
 
-    mods: :class:`list`
+    mods: :class:`Mods`
 
     score: :class:`int`
 
@@ -93,6 +93,10 @@ class Score:
         self.user_id = data['user_id']
         self.accuracy = data['accuracy']
         self.mods = data['mods']
+        if self.mods:
+            self.mods = Mods.parse_any_list(self.mods)
+        else:
+            self.mods = None
         self.score = data['score']
         self.max_combo = data['max_combo']
         self.perfect = data['perfect']
