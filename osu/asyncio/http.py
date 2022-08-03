@@ -39,7 +39,7 @@ class AsynchronousHTTPHandler:
             raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
 
         headers = self.get_headers(path.requires_auth, **headers)
-        params = {str(key): str(value) for key, value in kwargs.items() if value is not None}
+        params = {str(key): value for key, value in kwargs.items() if value is not None}
 
         async with aiohttp.ClientSession() as session:
             async with session.request(method, base_url + path.path, headers=headers, data=data, params=params) as resp:
