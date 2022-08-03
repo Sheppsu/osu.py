@@ -1,6 +1,6 @@
-import requests
 import time
 import asyncio
+import aiohttp
 
 from ..exceptions import ScopeException
 from ..constants import base_url
@@ -22,7 +22,7 @@ class AsynchronousHTTPHandler:
             headers['Authorization'] = f"Bearer {self.auth.token}"
         return headers
 
-    async def _make_request(self, method, path, data=None, headers=None, stream=False, **kwargs):
+    async def make_request(self, method, path, data=None, headers=None, **kwargs):
         if headers is None:
             headers = {}
         if data is None:
@@ -39,25 +39,13 @@ class AsynchronousHTTPHandler:
             raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
 
         headers = self.get_headers(path.requires_auth, **headers)
-        response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, stream=stream, params=kwargs)
-        self.rate_limit.request_used()
-        response.raise_for_status()
-        return response.json()
+        params = {str(key): str(value) for key, value in kwargs.items() if value is not None}
 
-    async def get(self, path, data=None, headers=None, stream=False, **kwargs):
-        return await self._make_request('get', path, data=data, headers=headers, stream=stream, **kwargs)
-
-    async def post(self, path, data=None, headers=None, stream=False, **kwargs):
-        return await self._make_request('post', path, data=data, headers=headers, stream=stream, **kwargs)
-
-    async def delete(self, path, data=None, headers=None, stream=False, **kwargs):
-        return await self._make_request('delete', path, data=data, headers=headers, stream=stream, **kwargs)
-
-    async def patch(self, path, data=None, headers=None, stream=False, **kwargs):
-        return await self._make_request('patch', path, data=data, headers=headers, stream=stream, **kwargs)
-
-    async def put(self, path, data=None, headers=None, stream=False, **kwargs):
-        return await self._make_request('put', path, data=data, headers=headers, stream=stream, **kwargs)
+        async with aiohttp.ClientSession() as session:
+            async with session.request(method, base_url + path.path, headers=headers, data=data, params=params) as resp:
+                self.rate_limit.request_used()
+                resp.raise_for_status()
+                return await resp.json()
 
 
 class RateLimitHandler:
