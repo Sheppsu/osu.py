@@ -12,7 +12,7 @@ client = AsynchronousClient.from_client_credentials(client_id, client_secret, "h
 async def make_requests(mode, rank_type):
     cursor = None
     ret = []
-    for i in range(5):
+    for i in range(8):
         print(f"{mode} {rank_type} {i}")
         ranking = await client.get_ranking(mode, rank_type, cursor=cursor)
         cursor = ranking.cursor
