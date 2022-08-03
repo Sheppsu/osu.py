@@ -1,0 +1,3 @@
+CLIENT_ID = int()
+CLIENT_SECRET = ""
+REDIRECT_URI = ""

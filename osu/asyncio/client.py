@@ -92,7 +92,7 @@ class AsynchronousClient:
         **Parameters**
 
         checksum: Optional[:class:`str`]
-            A beatmap checksum.
+            An md5 beatmap checksum.
 
         filename: Optional[:class:`str`]
             A filename to lookup
