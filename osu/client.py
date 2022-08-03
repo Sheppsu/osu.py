@@ -101,7 +101,7 @@ class Client:
 
         :class:`Beatmap`
         """
-        return Beatmap(self.http.get(Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
+        return Beatmap(self.http.make_request('get', Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
 
     def get_user_beatmap_score(self, beatmap: int, user: int, mode: Optional[Union[str, GameModeStr]] = None, mods: Optional[Sequence[str]] = None) -> BeatmapUserScore:
         """
@@ -129,7 +129,7 @@ class Client:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return BeatmapUserScore(self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
+        return BeatmapUserScore(self.http.make_request('get', Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
     def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[Union[str, GameModeStr]] = None) -> Sequence[Score]:
         """
@@ -154,7 +154,7 @@ class Client:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return list(map(Score, self.http.get(Path.user_beatmap_scores(beatmap, user), mode=mode)["scores"]))
+        return list(map(Score, self.http.make_request('get', Path.user_beatmap_scores(beatmap, user), mode=mode)["scores"]))
 
     def get_beatmap_scores(self, beatmap: int, mode: Optional[Union[str, GameModeStr]] = None, mods: Optional[Sequence[str]] = None, type: Optional[Sequence[str]] = None) -> BeatmapScores:
         """
@@ -182,7 +182,7 @@ class Client:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return BeatmapScores(self.http.get(Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
+        return BeatmapScores(self.http.make_request('get', Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
     def get_beatmap(self, beatmap: int) -> Beatmap:
         """
@@ -200,7 +200,7 @@ class Client:
         :class:`Beatmap`
             Includes attributes beatmapset, failtimes, and max_combo
         """
-        return Beatmap(self.http.get(Path.beatmap(beatmap)))
+        return Beatmap(self.http.make_request('get', Path.beatmap(beatmap)))
 
     def get_beatmaps(self, ids: Optional[Sequence[int]] = None) -> Sequence[Beatmap]:
         """
@@ -218,7 +218,7 @@ class Client:
         Sequence[:class:`BeatmapCompact`]
             Includes: beatmapset (with ratings), failtimes, max_combo.
         """
-        results = self.http.get(Path.beatmaps(), **{"ids[]": ids})
+        results = self.http.make_request('get', Path.beatmaps(), **{"ids[]": ids})
         return list(map(Beatmap, results['beatmaps'])) if results else []
 
     def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Mods, Sequence[Union[str, Mods, int]]]]=None, ruleset: Optional[Union[str, GameModeStr]] = None, ruleset_id: Optional[Union[int, GameModeInt]] = None) -> BeatmapDifficultyAttributes:
@@ -250,7 +250,7 @@ class Client:
             ruleset = ruleset.value
         if isinstance(ruleset_id, GameModeInt):
             ruleset_id = ruleset_id.value
-        return BeatmapDifficultyAttributes(self.http.post(Path.get_beatmap_attributes(beatmap), mods=parse_mods_arg(mods), ruleset=ruleset, ruleset_id=ruleset_id))
+        return BeatmapDifficultyAttributes(self.http.make_request('post', Path.get_beatmap_attributes(beatmap), mods=parse_mods_arg(mods), ruleset=ruleset, ruleset_id=ruleset_id))
 
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
                                         page: Optional[int] = None, sort: Optional[str] = None, user: Optional[int] = None,
@@ -294,7 +294,7 @@ class Client:
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
-        resp = self.http.get(Path.beatmapset_discussion_posts(), beatmapset_discussion_id=beatmapset_discussion_id,
+        resp = self.http.make_request('get', Path.beatmapset_discussion_posts(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'beatmapsets': list(map(BeatmapsetCompact, resp['beatmapsets'])),
@@ -351,7 +351,7 @@ class Client:
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
-        resp = self.http.get(Path.beatmapset_discussion_votes(), beatmapset_discussion_id=beatmapset_discussion_id,
+        resp = self.http.make_request('get', Path.beatmapset_discussion_votes(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, receiver=receiver, score=score, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'cursor': resp['cursor'],
@@ -428,7 +428,7 @@ class Client:
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
         message_types = {"message_types[]": message_types}
-        resp = self.http.get(Path.beatmapset_discussions(), beatmap_id=beatmap_id, beatmapset_id=beatmapset_id,
+        resp = self.http.make_request('get', Path.beatmapset_discussions(), beatmap_id=beatmap_id, beatmapset_id=beatmapset_id,
                              beatmapset_status=beatmapset_status, limit=limit, only_unresolved=only_unresolved,
                              page=page, sort=sort, user=user, with_deleted=with_deleted, **message_types)
         return {
@@ -456,7 +456,7 @@ class Client:
 
         A :class:`Build` with changelog_entries, changelog_entries.github_user, and versions included.
         """
-        return Build(self.http.get(Path.get_changelog_build(stream, build)))
+        return Build(self.http.make_request('get', Path.get_changelog_build(stream, build)))
 
     def get_changelog_listing(self, from_version: Optional[str] = None, max_id: Optional[int] = None,
                               stream: Optional[str] = None, to: Optional[str] = None,
@@ -511,7 +511,7 @@ class Client:
 
         }
         """
-        response = self.http.get(Path.get_changelog_listing(), max_id=max_id, stream=stream, to=to, message_formats=message_formats, **{"from": from_version})
+        response = self.http.make_request('get', Path.get_changelog_listing(), max_id=max_id, stream=stream, to=to, message_formats=message_formats, **{"from": from_version})
         return {
             "build": list(map(Build, response['builds'])),
             "search": response['search'],
@@ -537,7 +537,7 @@ class Client:
 
         A :class:`Build` with changelog_entries, changelog_entries.github_user, and versions included.
         """
-        return Build(self.http.get(Path.lookup_changelog_build(changelog), key=key, message_formats=message_formats))
+        return Build(self.http.make_request('get', Path.lookup_changelog_build(changelog), key=key, message_formats=message_formats))
 
     def create_new_pm(self, target_id: int, message: str, is_action: bool) -> dict:
         """
@@ -573,7 +573,7 @@ class Client:
             }
         """
         data = {'target_id': target_id, 'message': message, 'is_action': is_action}
-        resp = self.http.post(Path.create_new_pm(), data=data)
+        resp = self.http.make_request('post', Path.create_new_pm(), data=data)
         return {
             'new_channel_id': resp['new_channel_id'],
             'presence': list(map(ChatChannel, resp['presence'])),
@@ -607,7 +607,7 @@ class Client:
 
             }
         """
-        resp = self.http.post(Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
+        resp = self.http.make_request('post', Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
         return {
             'presence': list(map(ChatChannel, resp['presence'])),
             'messages': list(map(ChatMessage, resp['messages'])),
@@ -639,7 +639,7 @@ class Client:
         Sequence[:class:`ChatMessage`]
             list containing :class:`ChatMessage` objects
         """
-        return list(map(ChatMessage, self.http.post(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)))
+        return list(map(ChatMessage, self.http.make_request('post', Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)))
 
     def send_message_to_channel(self, channel_id: int, message: str, is_action: bool) -> ChatMessage:
         """
@@ -663,7 +663,7 @@ class Client:
         :class:`ChatMessage`
         """
         data = {'message': message, 'is_action': is_action}
-        return ChatMessage(self.http.post(Path.send_message_to_channel(channel_id), data=data))
+        return ChatMessage(self.http.make_request('post', Path.send_message_to_channel(channel_id), data=data))
 
     def join_channel(self, channel: int, user: int) -> ChatChannel:
         """
@@ -681,7 +681,7 @@ class Client:
 
         :class:`ChatChannel`
         """
-        return ChatChannel(self.http.put(Path.join_channel(channel, user)))
+        return ChatChannel(self.http.make_request('put', Path.join_channel(channel, user)))
 
     def leave_channel(self, channel: int, user: int):
         """
@@ -695,7 +695,7 @@ class Client:
 
         user: :class:`int`
         """
-        self.http.delete(Path.leave_channel(channel, user))
+        self.http.make_request('delete', Path.leave_channel(channel, user))
 
     def mark_channel_as_read(self, channel: str, message: str, channel_id: int, message_id: int):
         """
@@ -715,7 +715,7 @@ class Client:
         message_id: :class:`int`
             The message_id of the message to mark as read up to
         """
-        self.http.put(Path.mark_channel_as_read(channel, message), channel_id=channel_id, message_id=message_id)
+        self.http.make_request('put', Path.mark_channel_as_read(channel, message), channel_id=channel_id, message_id=message_id)
 
     def get_channel_list(self) -> Sequence[ChatChannel]:
         """
@@ -727,7 +727,7 @@ class Client:
 
         Sequence[:class:`ChatChannel`]
         """
-        return list(map(ChatChannel, self.http.get(Path.get_channel_list())))
+        return list(map(ChatChannel, self.http.make_request('get', Path.get_channel_list())))
 
     def create_channel(self, type: str, target_id: Optional[int] = None) -> ChatChannel:
         """
@@ -750,7 +750,7 @@ class Client:
              most of the fields will be blank. In that case, send a message (create_new_pm) instead to create the channel.
         """
         data = {'type': type, 'target_id': target_id}
-        return ChatChannel(self.http.post(Path.create_channel(), data=data))
+        return ChatChannel(self.http.make_request('post', Path.create_channel(), data=data))
 
     def get_channel(self, channel: int) -> dict:
         """
@@ -772,7 +772,7 @@ class Client:
 
             }
         """
-        resp = self.http.get(Path.get_channel(channel))
+        resp = self.http.make_request('get', Path.get_channel(channel))
         return {
             'channel': ChatChannel(resp['channel']),
             'users': UserCompact(resp['users']),
@@ -807,7 +807,7 @@ class Client:
         :class:`CommentBundle`
             pinned_comments is only included when commentable_type and commentable_id are specified.
         """
-        return CommentBundle(self.http.get(Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
+        return CommentBundle(self.http.make_request('get', Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
                                            **cursor if cursor else {}, parent_id=parent_id, sort=sort))
 
     def post_comment(self, commentable_id: Optional[int] = None, commentable_type: Optional[str] = None,
@@ -841,7 +841,7 @@ class Client:
             'comment.message': message,
             'comment.parent_id': parent_id
         }
-        return CommentBundle(self.http.post(Path.post_new_comment(), params=params))
+        return CommentBundle(self.http.make_request('post', Path.post_new_comment(), params=params))
 
     def get_comment(self, comment: int) -> CommentBundle:
         """
@@ -858,7 +858,7 @@ class Client:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(self.http.get(Path.get_comment(comment)))
+        return CommentBundle(self.http.make_request('get', Path.get_comment(comment)))
 
     def edit_comment(self, comment: int, message: Optional[str] = None) -> CommentBundle:
         """
@@ -879,7 +879,7 @@ class Client:
         :class:`CommentBundle`
         """
         params = {'comment.message': message}
-        return CommentBundle(self.http.patch(Path.edit_comment(comment), params=params))
+        return CommentBundle(self.http.make_request('patch', Path.edit_comment(comment), params=params))
 
     def delete_comment(self, comment: int) -> CommentBundle:
         """
@@ -896,7 +896,7 @@ class Client:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(self.http.delete(Path.delete_comment(comment)))
+        return CommentBundle(self.http.make_request('delete', Path.delete_comment(comment)))
 
     def add_comment_vote(self, comment: int) -> CommentBundle:
         """
@@ -913,7 +913,7 @@ class Client:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(self.http.post(Path.add_comment_vote(comment)))
+        return CommentBundle(self.http.make_request('post', Path.add_comment_vote(comment)))
 
     def remove_comment_vote(self, comment: int) -> CommentBundle:
         """
@@ -930,7 +930,7 @@ class Client:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(self.http.delete(Path.remove_comment_vote(comment)))
+        return CommentBundle(self.http.make_request('delete', Path.remove_comment_vote(comment)))
 
     def reply_topic(self, topic: int, body: str) -> ForumPost:
         """
@@ -952,7 +952,7 @@ class Client:
             body attributes included
         """
         data = {'body': body}
-        return ForumPost(self.http.post(Path.reply_topic(topic), data=data))
+        return ForumPost(self.http.make_request('post', Path.reply_topic(topic), data=data))
 
     def create_topic(self, body: str, forum_id: int, title: str, with_poll: Optional[bool] = None,
                      hide_results: Optional[bool] = None, length_days: Optional[int] = None,
@@ -1015,7 +1015,7 @@ class Client:
                 'max_options': max_options, 'poll_options': poll_options,
                 'poll_title': poll_title, 'vote_change': vote_change
             }})
-        resp = self.http.post(Path.create_topic(), data=data)
+        resp = self.http.make_request('post', Path.create_topic(), data=data)
         return {
             'topic': ForumTopic(resp['topic']),
             'post': ForumPost(resp['post'])
@@ -1062,7 +1062,7 @@ class Client:
 
             }
         """
-        resp = self.http.get(Path.get_topic_and_posts(topic), **cursor if cursor else {}, sort=sort, limit=limit, start=start, end=end)
+        resp = self.http.make_request('get', Path.get_topic_and_posts(topic), **cursor if cursor else {}, sort=sort, limit=limit, start=start, end=end)
         return {
             'cursor': resp['cursor'],
             'search': resp['search'],
@@ -1089,7 +1089,7 @@ class Client:
         :class:`ForumTopic`
         """
         data = {'forum_topic': {'topic_title': topic_title}}
-        return ForumTopic(self.http.patch(Path.edit_topic(topic), data=data))
+        return ForumTopic(self.http.make_request('patch', Path.edit_topic(topic), data=data))
 
     def edit_post(self, post: int, body: str) -> ForumPost:
         """
@@ -1108,7 +1108,7 @@ class Client:
         :class:`ForumPost`
         """
         data = {'body': body}
-        return ForumPost(self.http.patch(Path.edit_post(post), data=data))
+        return ForumPost(self.http.make_request('patch', Path.edit_post(post), data=data))
 
     def search(self, mode: Optional[Union[str, WikiSearchMode]] = None, query: Optional[str] = None, page: Optional[int] = None) -> dict:
         """
@@ -1152,7 +1152,7 @@ class Client:
         """
         if isinstance(mode, WikiSearchMode):
             mode = mode.value
-        resp = self.http.get(Path.search(), mode=mode, query=query, page=page)
+        resp = self.http.make_request('get', Path.search(), mode=mode, query=query, page=page)
         return {
             'user': {'results': resp['user']['data'], 'total': resp['user']['total']} if mode is None or mode == 'all' or mode == 'user' else None,
             'wiki_page': {'results': resp['wiki_page']['data'], 'total': resp['wiki_page']['total']} if mode is None or mode == 'all' or mode == 'wiki_page' else None
@@ -1178,7 +1178,7 @@ class Client:
         :class:`MultiplayerScores`
         """
         # Doesn't say response type
-        return MultiplayerScores(self.http.get(Path.get_user_high_score(room, playlist, user)))
+        return MultiplayerScores(self.http.make_request('get', Path.get_user_high_score(room, playlist, user)))
 
     def get_scores(self, room: int, playlist: int, limit: Optional[int] = None,
                    sort: Optional[str] = None, cursor: Optional[dict] = None) -> MultiplayerScores:
@@ -1206,7 +1206,7 @@ class Client:
         :class:`MultiplayerScores`
         """
         # Doesn't say response type
-        return MultiplayerScores(self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {}))
+        return MultiplayerScores(self.http.make_request('get', Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {}))
 
     def get_score(self, room: int, playlist: int, score: int) -> MultiplayerScore:
         """
@@ -1228,7 +1228,7 @@ class Client:
         :class:`MultiplayerScore`
         """
         # Doesn't say response type
-        return MultiplayerScore(self.http.get(Path.get_score(room, playlist, score)))
+        return MultiplayerScore(self.http.make_request('get', Path.get_score(room, playlist, score)))
 
     def get_news_listing(self, limit: Optional[int] = None, year: Optional[int] = None, cursor: Optional[dict] = None) -> dict:
         """
@@ -1279,7 +1279,7 @@ class Client:
 
         }
         """
-        response = self.http.get(Path.get_news_listing(), limit=limit, year=year, cursor=cursor)
+        response = self.http.make_request('get', Path.get_news_listing(), limit=limit, year=year, cursor=cursor)
         return {
             "cursor": response['cursor'],
             "news_posts": list(map(NewsPost, response["news_posts"])),
@@ -1307,7 +1307,7 @@ class Client:
 
         Returns a :class:`NewsPost` with content and navigation included.
         """
-        return NewsPost(self.http.get(Path.get_news_post(news), key=key))
+        return NewsPost(self.http.make_request('get', Path.get_news_post(news), key=key))
 
     def get_notifications(self, max_id: Optional[int] = None) -> dict:
         """
@@ -1338,7 +1338,7 @@ class Client:
 
             }
         """
-        resp = self.http.get(Path.get_notifications(), max_id=max_id)
+        resp = self.http.make_request('get', Path.get_notifications(), max_id=max_id)
         return {
             'has_more': resp['has_more'],
             'notifications': list(map(Notification, resp['notifications'])),
@@ -1358,13 +1358,13 @@ class Client:
             ids of notifications to be marked as read.
         """
         data = {'ids[]': ids}
-        self.http.post(Path.mark_notifications_as_read(), data=data)
+        self.http.make_request('post', Path.mark_notifications_as_read(), data=data)
 
     def revoke_current_token(self):
         """
         Requires OAuth
         """
-        self.http.delete(self, Path.revoke_current_token())
+        self.http.make_request('delete', self, Path.revoke_current_token())
 
     def get_ranking(self, mode: Union[str, GameModeStr], type: str, country: Optional[str] = None, cursor: Optional[dict] = None,
                     filter: Optional[str] = None, spotlight: Optional[int] = None, variant: Optional[str] = None) -> Rankings:
@@ -1398,7 +1398,7 @@ class Client:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return Rankings(self.http.get(Path.get_ranking(mode, type), country=country, **cursor if cursor else {}, filter=filter,
+        return Rankings(self.http.make_request('get', Path.get_ranking(mode, type), country=country, **cursor if cursor else {}, filter=filter,
                                       spotlight=spotlight, variant=variant))
 
     def get_spotlights(self) -> Spotlights:
@@ -1411,7 +1411,7 @@ class Client:
 
         :class:`Spotlights`
         """
-        return Spotlights(self.http.get(Path.get_spotlights()))
+        return Spotlights(self.http.make_request('get', Path.get_spotlights()))
 
     def get_own_data(self, mode: Union[str, GameModeStr]="") -> User:
         """
@@ -1430,7 +1430,7 @@ class Client:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return User(self.http.get(Path.get_own_data(mode)))
+        return User(self.http.make_request('get', Path.get_own_data(mode)))
 
     def get_user_kudosu(self, user: int, limit: Optional[int] = None, offset: Optional[int] = None):
         """
@@ -1453,7 +1453,7 @@ class Client:
 
         Sequence[:class:`KudosuHistory`]
         """
-        return list(map(KudosuHistory, self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset)))
+        return list(map(KudosuHistory, self.http.make_request('get', Path.get_user_kudosu(user), limit=limit, offset=offset)))
 
     def get_user_scores(self, user: int, type: str, include_fails: Optional[int] = None, mode: Optional[Union[str, GameModeStr]] = None,
                         limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Score]:
@@ -1489,7 +1489,7 @@ class Client:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return [Score(score) for score in self.http.get(Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
+        return [Score(score) for score in self.http.make_request('get', Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
 
     def get_user_beatmaps(self, user: int, type: Union[str, UserBeatmapType], limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Union[BeatmapPlaycount, Beatmapset]]:
         """
@@ -1521,7 +1521,7 @@ class Client:
             type = type.value
         if type == 'most_played':
             object_type = BeatmapPlaycount
-        return list(map(object_type, self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset)))
+        return list(map(object_type, self.http.make_request('get', Path.get_user_beatmaps(user, type), limit=limit, offset=offset)))
 
     def get_user_recent_activity(self, user: int, limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Event]:
         """
@@ -1545,7 +1545,7 @@ class Client:
         Sequence[:class:`Event`]
             list of :class:`Event` objects
         """
-        return list(map(Event, self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset)))
+        return list(map(Event, self.http.make_request('get', Path.get_user_recent_activity(user), limit=limit, offset=offset)))
 
     def get_user(self, user: int, mode: Optional[Union[str, GameModeStr]] = '', key: Optional[str] = None) -> User:
         """
@@ -1581,7 +1581,7 @@ class Client:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return User(self.http.get(Path.get_user(user, mode), key=key))
+        return User(self.http.make_request('get', Path.get_user(user, mode), key=key))
 
     def get_users(self, ids: Sequence[int]) -> Sequence[UserCompact]:
         """
@@ -1601,7 +1601,7 @@ class Client:
             Includes attributes: country, cover, groups, statistics_fruits,
             statistics_mania, statistics_osu, statistics_taiko.
         """
-        return list(map(UserCompact, self.http.get(Path.get_users(), ids=ids)))
+        return list(map(UserCompact, self.http.make_request('get', Path.get_users(), ids=ids)))
 
     def get_wiki_page(self, locale: str, path: str) -> WikiPage:
         """
@@ -1621,7 +1621,7 @@ class Client:
 
         :class:`WikiPage`
         """
-        return WikiPage(self.http.get(Path.get_wiki_page(locale, path)))
+        return WikiPage(self.http.make_request('get', Path.get_wiki_page(locale, path)))
 
     def make_request(self, method: str, path: str, scope: Union[Scope, str], **kwargs):
         """
@@ -1646,7 +1646,7 @@ class Client:
     def search_beatmapsets(self, filters=None, page=None):
         if filters is None:
             filters = {}
-        resp = self.http.get(Path(f'beatmapsets/search', 'public'), page=page, **filters)
+        resp = self.http.make_request('get', Path(f'beatmapsets/search', 'public'), page=page, **filters)
         return {
             'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
             'cursor': resp['cursor'],
@@ -1657,4 +1657,4 @@ class Client:
         }
 
     def get_score_by_id(self, mode, score):
-        return Score(self.http.get(Path.get_score_by_id(mode, score)))
+        return Score(self.http.make_request('get', Path.get_score_by_id(mode, score)))
