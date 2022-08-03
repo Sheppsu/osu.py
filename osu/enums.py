@@ -193,6 +193,14 @@ class Mods(IntFlag):
         return True
 
     def to_readable_string(self):
+        """
+        Get a readable string representation of this mod (sorted by bitset ascending).
+        Example: (Mods.HardRock | Mods.Hidden) -> "HDHR"
+
+        **Returns**
+
+        :class:`str`
+        """
         return "".join(map(lambda mod: mod_abbreviations_reversed[mod.name],
                            sorted(self, key=lambda m: m.value)))
 
