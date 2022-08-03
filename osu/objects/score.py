@@ -26,6 +26,9 @@ class BeatmapScores:
         var_name = 'userScore' if 'userScore' in data else 'user_score'
         self.user_score = BeatmapUserScore(data[var_name]) if data.get(var_name) is not None else None
 
+    def __repr__(self):
+        return prettify(self, 'user_score', 'scores')
+
 
 class Score:
     """
@@ -41,7 +44,7 @@ class Score:
 
     accuracy: :class:`float`
 
-    mods: :class:`list`
+    mods: :class:`Mods`
 
     score: :class:`int`
 
@@ -94,6 +97,10 @@ class Score:
         self.user_id = data['user_id']
         self.accuracy = data['accuracy']
         self.mods = data['mods']
+        if self.mods:
+            self.mods = Mods.parse_any_list(self.mods)
+        else:
+            self.mods = None
         self.score = data['score']
         self.max_combo = data['max_combo']
         self.perfect = data['perfect']
@@ -115,6 +122,9 @@ class Score:
         self.rank_country = data['rank_country'] if 'rank_country' in data else None
         self.rank_global = data['rank_global'] if 'rank_global' in data else None
         self.weight = data['weight'] if 'weight' in data else None
+
+    def __repr__(self):
+        return prettify(self, 'user_id', 'accuracy')
 
 
 class ScoreStatistics:
@@ -146,6 +156,9 @@ class ScoreStatistics:
         self.count_katu = data['count_katu']
         self.count_miss = data['count_miss']
 
+    def __repr__(self):
+        return prettify(self, 'count_300', 'count_miss')
+
 
 class BeatmapUserScore:
     """
@@ -164,3 +177,6 @@ class BeatmapUserScore:
     def __init__(self, data):
         self.position = data.get('position')
         self.score = Score(data['score'])
+
+    def __repr__(self):
+        return prettify(self, 'position')
