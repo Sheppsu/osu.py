@@ -30,12 +30,12 @@ class HTTPHandler:
         if path.requires_auth and self.client.auth is None:
             raise ScopeException("You need to be authenticated to do this action.")
 
-        if not self.rate_limit.can_request:
-            self.rate_limit.wait()
-
         scope_required = path.scope
         if path.requires_auth and scope_required.scopes not in self.client.auth.scope:
             raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
+
+        if not self.rate_limit.can_request:
+            self.rate_limit.wait()
 
         headers = self.get_headers(path.requires_auth, **headers)
         params = {str(key): value for key, value in kwargs.items() if value is not None}
