@@ -29,21 +29,21 @@ class AsynchronousHTTPHandler:
             data = {}
 
         if path.requires_auth and self.client.auth is None:
-            raise ScopeException("You need to be authenticated to do this action.")
-
-        if not self.rate_limit.can_request:
-            await self.rate_limit.wait()
+            raise ScopeException("You need to be authenticated to make this request.")
 
         scope_required = path.scope
         if path.requires_auth and scope_required.scopes not in self.client.auth.scope:
-            raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
+            raise ScopeException(f"You don't have the {scope_required} scope, which is required to make this request.")
 
         headers = self.get_headers(path.requires_auth, **headers)
         params = {str(key): value for key, value in kwargs.items() if value is not None}
 
         async with aiohttp.ClientSession() as session:
+            if not self.rate_limit.can_request:
+                await self.rate_limit.wait()
+
+            self.rate_limit.request_used()
             async with session.request(method, base_url + path.path, headers=headers, data=data, params=params) as resp:
-                self.rate_limit.request_used()
                 resp.raise_for_status()
                 return await resp.json()
 
@@ -52,18 +52,25 @@ class RateLimitHandler:
     def __init__(self, request_wait_limit, limit_per_minute):
         self.wait_limit = request_wait_limit
         self.limit = limit_per_minute
-        self.last_request = time.perf_counter() - self.wait_limit
         self.requests = []
+        self.waiting = False
 
     def request_used(self):
         self.requests.append(time.perf_counter())
-        self.last_request = time.perf_counter()
+        self.reset()
 
     async def wait(self):
+        while self.waiting:
+            await asyncio.sleep(0.1)
+        self.waiting = True
+        if self.can_request:  # Check again due to asynchronous running
+            self.waiting = False
+            return
         next_available_request = self.wait_limit-(time.perf_counter()-self.last_request)
         if len(self.requests) >= self.limit:
             next_available_request = max(next_available_request, self.requests[0]+60-time.perf_counter())
         await asyncio.sleep(next_available_request)
+        self.waiting = False
 
     def reset(self):
         if len(self.requests) == 0:
@@ -78,3 +85,7 @@ class RateLimitHandler:
     def can_request(self):
         self.reset()
         return time.perf_counter()-self.last_request >= self.wait_limit and len(self.requests) < self.limit
+
+    @property
+    def last_request(self):
+        return self.requests[-1] if len(self.requests) > 0 else 0
