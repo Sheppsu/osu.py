@@ -1,6 +1,6 @@
 from .beatmap import BeatmapCompact, BeatmapsetCompact
 from .user import UserCompact
-from ..enums import GameModeStr, GameModeInt
+from ..enums import GameModeStr, GameModeInt, Mods
 from ..util import prettify
 from dateutil import parser
 
@@ -25,9 +25,6 @@ class BeatmapScores:
         self.scores = [Score(score) for score in data['scores']]
         var_name = 'userScore' if 'userScore' in data else 'user_score'
         self.user_score = BeatmapUserScore(data[var_name]) if data.get(var_name) is not None else None
-
-    def __repr__(self):
-        return prettify(self, 'user_score', 'scores')
 
 
 class Score:
@@ -119,9 +116,6 @@ class Score:
         self.rank_global = data['rank_global'] if 'rank_global' in data else None
         self.weight = data['weight'] if 'weight' in data else None
 
-    def __repr__(self):
-        return prettify(self, 'user_id', 'accuracy')
-
 
 class ScoreStatistics:
     """
@@ -152,9 +146,6 @@ class ScoreStatistics:
         self.count_katu = data['count_katu']
         self.count_miss = data['count_miss']
 
-    def __repr__(self):
-        return prettify(self, 'count_300', 'count_miss')
-
 
 class BeatmapUserScore:
     """
@@ -173,6 +164,3 @@ class BeatmapUserScore:
     def __init__(self, data):
         self.position = data.get('position')
         self.score = Score(data['score'])
-
-    def __repr__(self):
-        return prettify(self, 'position')

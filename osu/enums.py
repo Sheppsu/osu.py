@@ -1,6 +1,6 @@
 from enum import IntFlag, IntEnum, Enum
 from typing import Sequence, Union
-from .constants import mod_abbreviations, incompatible_mods
+from .constants import mod_abbreviations, incompatible_mods, mod_abbreviations_reversed
 
 
 class Mods(IntFlag):
@@ -115,11 +115,11 @@ class Mods(IntFlag):
         return a
 
     @staticmethod
-    def parse_and_return_any_list(mods: Sequence[Union[str, int, 'Mods']]) -> 'Mods':
+    def parse_any_list(mods: Sequence[Union[str, int, 'Mods']]) -> 'Mods':
         """
         Take a list and return a parsed list. Parsing the list involves
-        converting strings to :class:`Mods`. Strings can be the full mod name
-        or the mod abbreviation.
+        converting any object recognizable as a mod to a :class:`Mods` object.
+        This includes mod names/abbreviations as strings and also their bitset values.
 
         **Parameters**
 
@@ -135,15 +135,16 @@ class Mods(IntFlag):
             if isinstance(mod, Mods):
                 ret.append(mod)
             elif isinstance(mod, str):
-                try:
+                if mod.upper() in mod_abbreviations:
+                    ret.append(Mods.get_from_abbreviation(mod.upper()))
+                elif mod in Mods.__members__:
                     ret.append(Mods[mod])
-                except KeyError:
-                    try:
-                        ret.append(Mods.get_from_abbreviation(mod))
-                    except KeyError:
-                        raise ValueError(f"Mods represented as strings must be either the full name or abbreviation. '{mod}' does not fall under either of those.")
+                else:
+                    raise ValueError(f"Mods represented as strings must be either the full name or abbreviation. '{mod}' does not fall under either of those.")
             elif isinstance(mod, int):
                 ret.append(Mods(mod))
+            else:
+                raise TypeError("Mods can only be parsed to Mods objects if they're of type str, int, or Mods")
         return Mods.get_from_list(ret)
 
     def get_incompatible_mods(self):
@@ -183,16 +184,31 @@ class Mods(IntFlag):
 
         :class:`bool`
         """
-
-        mods = str(self).split('|')
-        mods[0] = mods[0].replace("Mods.", "")
-        mods = list(map(lambda x: Mods[x], mods))
+        mods = list(self)
 
         for i in range(len(mods)):
             for j in range(i+1, len(mods)):
                 if not mods[i].is_compatible_with(mods[j]):
                     return False
         return True
+
+    def to_readable_string(self):
+        """
+        Get a readable string representation of this mod (sorted by bitset ascending).
+        Example: (Mods.HardRock | Mods.Hidden) -> "HDHR"
+
+        **Returns**
+
+        :class:`str`
+        """
+        return "".join(map(lambda mod: mod_abbreviations_reversed[mod.name],
+                           sorted(self, key=lambda m: m.value)))
+
+    def __iter__(self):
+        mods = str(self).split('|')
+        mods[0] = mods[0].replace("Mods.", "")
+        mods = list(map(lambda x: Mods[x], mods))
+        return iter(mods)
 
 
 class RankStatus(IntEnum):

@@ -21,7 +21,7 @@ class HTTPHandler:
             headers['Authorization'] = f"Bearer {self.auth.token}"
         return headers
 
-    def _make_request(self, method, path, data=None, headers=None, stream=False, **kwargs):
+    def make_request(self, method, path, data=None, headers=None, **kwargs):
         if headers is None:
             headers = {}
         if data is None:
@@ -38,25 +38,11 @@ class HTTPHandler:
             raise ScopeException(f"You don't have the {scope_required} scope, which is required to do this action.")
 
         headers = self.get_headers(path.requires_auth, **headers)
-        response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, stream=stream, params=kwargs)
+        params = {str(key): str(value) for key, value in kwargs.items() if value is not None}
+        response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, params=params)
         self.rate_limit.request_used()
         response.raise_for_status()
         return response.json()
-
-    def get(self, path, data=None, headers=None, stream=False, **kwargs):
-        return self._make_request('get', path, data=data, headers=headers, stream=stream, **kwargs)
-
-    def post(self, path, data=None, headers=None, stream=False, **kwargs):
-        return self._make_request('post', path, data=data, headers=headers, stream=stream, **kwargs)
-
-    def delete(self, path, data=None, headers=None, stream=False, **kwargs):
-        return self._make_request('delete', path, data=data, headers=headers, stream=stream, **kwargs)
-
-    def patch(self, path, data=None, headers=None, stream=False, **kwargs):
-        return self._make_request('patch', path, data=data, headers=headers, stream=stream, **kwargs)
-
-    def put(self, path, data=None, headers=None, stream=False, **kwargs):
-        return self._make_request('put', path, data=data, headers=headers, stream=stream, **kwargs)
 
 
 class RateLimitHandler:

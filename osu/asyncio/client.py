@@ -104,7 +104,7 @@ class AsynchronousClient:
 
         :class:`Beatmap`
         """
-        return Beatmap(await self.http.get(Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
+        return Beatmap(await self.http.make_request('get', Path.beatmap_lookup(), checksum=checksum, filename=filename, id=id))
 
     async def get_user_beatmap_score(self, beatmap: int, user: int, mode: Optional[Union[str, GameModeStr]] = None, mods: Optional[Sequence[str]] = None) -> BeatmapUserScore:
         """
@@ -132,7 +132,7 @@ class AsynchronousClient:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return BeatmapUserScore(await self.http.get(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
+        return BeatmapUserScore(await self.http.make_request('get', Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
     async def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[Union[str, GameModeStr]] = None) -> Sequence[Score]:
         """
@@ -157,7 +157,7 @@ class AsynchronousClient:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return list(map(Score, (await self.http.get(Path.user_beatmap_scores(beatmap, user), mode=mode))["scores"]))
+        return list(map(Score, (await self.http.make_request('get', Path.user_beatmap_scores(beatmap, user), mode=mode))["scores"]))
 
     async def get_beatmap_scores(self, beatmap: int, mode: Optional[Union[str, GameModeStr]] = None, mods: Optional[Sequence[str]] = None, type: Optional[Sequence[str]] = None) -> BeatmapScores:
         """
@@ -185,7 +185,7 @@ class AsynchronousClient:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return BeatmapScores(await self.http.get(Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
+        return BeatmapScores(await self.http.make_request('get', Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
     async def get_beatmap(self, beatmap: int) -> Beatmap:
         """
@@ -203,7 +203,7 @@ class AsynchronousClient:
         :class:`Beatmap`
             Includes attributes beatmapset, failtimes, and max_combo
         """
-        return Beatmap(await self.http.get(Path.beatmap(beatmap)))
+        return Beatmap(await self.http.make_request('get', Path.beatmap(beatmap)))
 
     async def get_beatmaps(self, ids: Optional[Sequence[int]] = None) -> Sequence[Beatmap]:
         """
@@ -221,7 +221,7 @@ class AsynchronousClient:
         Sequence[:class:`BeatmapCompact`]
             Includes: beatmapset (with ratings), failtimes, max_combo.
         """
-        results = await self.http.get(Path.beatmaps(), **{"ids[]": ids})
+        results = await self.http.make_request('get', Path.beatmaps(), **{"ids[]": ids})
         return list(map(Beatmap, results['beatmaps'])) if results else []
 
     async def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Mods, Sequence[Union[str, Mods, int]]]]=None, ruleset: Optional[Union[str, GameModeStr]] = None, ruleset_id: Optional[Union[int, GameModeInt]] = None) -> BeatmapDifficultyAttributes:
@@ -253,7 +253,7 @@ class AsynchronousClient:
             ruleset = ruleset.value
         if isinstance(ruleset_id, GameModeInt):
             ruleset_id = ruleset_id.value
-        return BeatmapDifficultyAttributes(await self.http.post(Path.get_beatmap_attributes(beatmap), mods=parse_mods_arg(mods), ruleset=ruleset, ruleset_id=ruleset_id))
+        return BeatmapDifficultyAttributes(await self.http.make_request('post', Path.get_beatmap_attributes(beatmap), mods=parse_mods_arg(mods), ruleset=ruleset, ruleset_id=ruleset_id))
 
     async def get_beatmapset_discussion_posts(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
                                         page: Optional[int] = None, sort: Optional[str] = None, user: Optional[int] = None,
@@ -297,7 +297,7 @@ class AsynchronousClient:
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
-        resp = await self.http.get(Path.beatmapset_discussion_posts(), beatmapset_discussion_id=beatmapset_discussion_id,
+        resp = await self.http.make_request('get', Path.beatmapset_discussion_posts(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'beatmapsets': list(map(BeatmapsetCompact, resp['beatmapsets'])),
@@ -354,7 +354,7 @@ class AsynchronousClient:
             }
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
-        resp = await self.http.get(Path.beatmapset_discussion_votes(), beatmapset_discussion_id=beatmapset_discussion_id,
+        resp = await self.http.make_request('get', Path.beatmapset_discussion_votes(), beatmapset_discussion_id=beatmapset_discussion_id,
                              limit=limit, receiver=receiver, score=score, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'cursor': resp['cursor'],
@@ -431,7 +431,7 @@ class AsynchronousClient:
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
         message_types = {"message_types[]": message_types}
-        resp = await self.http.get(Path.beatmapset_discussions(), beatmap_id=beatmap_id, beatmapset_id=beatmapset_id,
+        resp = await self.http.make_request('get', Path.beatmapset_discussions(), beatmap_id=beatmap_id, beatmapset_id=beatmapset_id,
                              beatmapset_status=beatmapset_status, limit=limit, only_unresolved=only_unresolved,
                              page=page, sort=sort, user=user, with_deleted=with_deleted, **message_types)
         return {
@@ -459,7 +459,7 @@ class AsynchronousClient:
 
         A :class:`Build` with changelog_entries, changelog_entries.github_user, and versions included.
         """
-        return Build(await self.http.get(Path.get_changelog_build(stream, build)))
+        return Build(await self.http.make_request('get', Path.get_changelog_build(stream, build)))
 
     async def get_changelog_listing(self, from_version: Optional[str] = None, max_id: Optional[int] = None,
                               stream: Optional[str] = None, to: Optional[str] = None,
@@ -513,7 +513,7 @@ class AsynchronousClient:
 
         }
         """
-        response = await self.http.get(Path.get_changelog_listing(), max_id=max_id, stream=stream, to=to, message_formats=message_formats, **{"from": from_version})
+        response = await self.http.make_request('get', Path.get_changelog_listing(), max_id=max_id, stream=stream, to=to, message_formats=message_formats, **{"from": from_version})
         return {
             "build": list(map(Build, response['builds'])),
             "search": response['search'],
@@ -539,7 +539,7 @@ class AsynchronousClient:
 
         A :class:`Build` with changelog_entries, changelog_entries.github_user, and versions included.
         """
-        return Build(await self.http.get(Path.lookup_changelog_build(changelog), key=key, message_formats=message_formats))
+        return Build(await self.http.make_request('get', Path.lookup_changelog_build(changelog), key=key, message_formats=message_formats))
 
     async def create_new_pm(self, target_id: int, message: str, is_action: bool) -> dict:
         """
@@ -575,7 +575,7 @@ class AsynchronousClient:
             }
         """
         data = {'target_id': target_id, 'message': message, 'is_action': is_action}
-        resp = await self.http.post(Path.create_new_pm(), data=data)
+        resp = await self.http.make_request('post', Path.create_new_pm(), data=data)
         return {
             'new_channel_id': resp['new_channel_id'],
             'presence': list(map(ChatChannel, resp['presence'])),
@@ -609,7 +609,7 @@ class AsynchronousClient:
 
             }
         """
-        resp = await self.http.post(Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
+        resp = await self.http.make_request('post', Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
         return {
             'presence': list(map(ChatChannel, resp['presence'])),
             'messages': list(map(ChatMessage, resp['messages'])),
@@ -641,7 +641,7 @@ class AsynchronousClient:
         Sequence[:class:`ChatMessage`]
             list containing :class:`ChatMessage` objects
         """
-        return list(map(ChatMessage, await self.http.post(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)))
+        return list(map(ChatMessage, await self.http.make_request('post', Path.get_channel_messages(channel_id), limit=limit, since=since, until=until)))
 
     async def send_message_to_channel(self, channel_id: int, message: str, is_action: bool) -> ChatMessage:
         """
@@ -665,7 +665,7 @@ class AsynchronousClient:
         :class:`ChatMessage`
         """
         data = {'message': message, 'is_action': is_action}
-        return ChatMessage(await self.http.post(Path.send_message_to_channel(channel_id), data=data))
+        return ChatMessage(await self.http.make_request('post', Path.send_message_to_channel(channel_id), data=data))
 
     async def join_channel(self, channel: int, user: int) -> ChatChannel:
         """
@@ -683,7 +683,7 @@ class AsynchronousClient:
 
         :class:`ChatChannel`
         """
-        return ChatChannel(await self.http.put(Path.join_channel(channel, user)))
+        return ChatChannel(await self.http.make_request('put', Path.join_channel(channel, user)))
 
     async def leave_channel(self, channel: int, user: int):
         """
@@ -697,7 +697,7 @@ class AsynchronousClient:
 
         user: :class:`int`
         """
-        await self.http.delete(Path.leave_channel(channel, user))
+        await self.http.make_request('delete', Path.leave_channel(channel, user))
 
     async def mark_channel_as_read(self, channel: str, message: str, channel_id: int, message_id: int):
         """
@@ -717,7 +717,7 @@ class AsynchronousClient:
         message_id: :class:`int`
             The message_id of the message to mark as read up to
         """
-        await self.http.put(Path.mark_channel_as_read(channel, message), channel_id=channel_id, message_id=message_id)
+        await self.http.make_request('put', Path.mark_channel_as_read(channel, message), channel_id=channel_id, message_id=message_id)
 
     async def get_channel_list(self) -> Sequence[ChatChannel]:
         """
@@ -729,7 +729,7 @@ class AsynchronousClient:
 
         Sequence[:class:`ChatChannel`]
         """
-        return list(map(ChatChannel, await self.http.get(Path.get_channel_list())))
+        return list(map(ChatChannel, await self.http.make_request('get', Path.get_channel_list())))
 
     async def create_channel(self, type: str, target_id: Optional[int] = None) -> ChatChannel:
         """
@@ -752,7 +752,7 @@ class AsynchronousClient:
              most of the fields will be blank. In that case, send a message (create_new_pm) instead to create the channel.
         """
         data = {'type': type, 'target_id': target_id}
-        return ChatChannel(await self.http.post(Path.create_channel(), data=data))
+        return ChatChannel(await self.http.make_request('post', Path.create_channel(), data=data))
 
     async def get_channel(self, channel: int) -> dict:
         """
@@ -774,7 +774,7 @@ class AsynchronousClient:
 
             }
         """
-        resp = await self.http.get(Path.get_channel(channel))
+        resp = await self.http.make_request('get', Path.get_channel(channel))
         return {
             'channel': ChatChannel(resp['channel']),
             'users': UserCompact(resp['users']),
@@ -809,7 +809,7 @@ class AsynchronousClient:
         :class:`CommentBundle`
             pinned_comments is only included when commentable_type and commentable_id are specified.
         """
-        return CommentBundle(await self.http.get(Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
+        return CommentBundle(await self.http.make_request('get', Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
                                            **cursor if cursor else {}, parent_id=parent_id, sort=sort))
 
     async def post_comment(self, commentable_id: Optional[int] = None, commentable_type: Optional[str] = None,
@@ -843,7 +843,7 @@ class AsynchronousClient:
             'comment.message': message,
             'comment.parent_id': parent_id
         }
-        return CommentBundle(await self.http.post(Path.post_new_comment(), params=params))
+        return CommentBundle(await self.http.make_request('post', Path.post_new_comment(), params=params))
 
     async def get_comment(self, comment: int) -> CommentBundle:
         """
@@ -860,7 +860,7 @@ class AsynchronousClient:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(await self.http.get(Path.get_comment(comment)))
+        return CommentBundle(await self.http.make_request('get', Path.get_comment(comment)))
 
     async def edit_comment(self, comment: int, message: Optional[str] = None) -> CommentBundle:
         """
@@ -881,7 +881,7 @@ class AsynchronousClient:
         :class:`CommentBundle`
         """
         params = {'comment.message': message}
-        return CommentBundle(await self.http.patch(Path.edit_comment(comment), params=params))
+        return CommentBundle(await self.http.make_request('patch', Path.edit_comment(comment), params=params))
 
     async def delete_comment(self, comment: int) -> CommentBundle:
         """
@@ -898,7 +898,7 @@ class AsynchronousClient:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(await self.http.delete(Path.delete_comment(comment)))
+        return CommentBundle(await self.http.make_request('delete', Path.delete_comment(comment)))
 
     async def add_comment_vote(self, comment: int) -> CommentBundle:
         """
@@ -915,7 +915,7 @@ class AsynchronousClient:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(await self.http.post(Path.add_comment_vote(comment)))
+        return CommentBundle(await self.http.make_request('post', Path.add_comment_vote(comment)))
 
     async def remove_comment_vote(self, comment: int) -> CommentBundle:
         """
@@ -932,7 +932,7 @@ class AsynchronousClient:
 
         :class:`CommentBundle`
         """
-        return CommentBundle(await self.http.delete(Path.remove_comment_vote(comment)))
+        return CommentBundle(await self.http.make_request('delete', Path.remove_comment_vote(comment)))
 
     async def reply_topic(self, topic: int, body: str) -> ForumPost:
         """
@@ -954,7 +954,7 @@ class AsynchronousClient:
             body attributes included
         """
         data = {'body': body}
-        return ForumPost(await self.http.post(Path.reply_topic(topic), data=data))
+        return ForumPost(await self.http.make_request('post', Path.reply_topic(topic), data=data))
 
     async def create_topic(self, body: str, forum_id: int, title: str, with_poll: Optional[bool] = None,
                      hide_results: Optional[bool] = None, length_days: Optional[int] = None,
@@ -1017,7 +1017,7 @@ class AsynchronousClient:
                 'max_options': max_options, 'poll_options': poll_options,
                 'poll_title': poll_title, 'vote_change': vote_change
             }})
-        resp = await self.http.post(Path.create_topic(), data=data)
+        resp = await self.http.make_request('post', Path.create_topic(), data=data)
         return {
             'topic': ForumTopic(resp['topic']),
             'post': ForumPost(resp['post'])
@@ -1064,7 +1064,7 @@ class AsynchronousClient:
 
             }
         """
-        resp = await self.http.get(Path.get_topic_and_posts(topic), **cursor if cursor else {}, sort=sort, limit=limit, start=start, end=end)
+        resp = await self.http.make_request('get', Path.get_topic_and_posts(topic), **cursor if cursor else {}, sort=sort, limit=limit, start=start, end=end)
         return {
             'cursor': resp['cursor'],
             'search': resp['search'],
@@ -1091,7 +1091,7 @@ class AsynchronousClient:
         :class:`ForumTopic`
         """
         data = {'forum_topic': {'topic_title': topic_title}}
-        return ForumTopic(await self.http.patch(Path.edit_topic(topic), data=data))
+        return ForumTopic(await self.http.make_request('patch', Path.edit_topic(topic), data=data))
 
     async def edit_post(self, post: int, body: str) -> ForumPost:
         """
@@ -1110,7 +1110,7 @@ class AsynchronousClient:
         :class:`ForumPost`
         """
         data = {'body': body}
-        return ForumPost(await self.http.patch(Path.edit_post(post), data=data))
+        return ForumPost(await self.http.make_request('patch', Path.edit_post(post), data=data))
 
     async def search(self, mode: Optional[Union[str, WikiSearchMode]] = None, query: Optional[str] = None, page: Optional[int] = None) -> dict:
         """
@@ -1154,7 +1154,7 @@ class AsynchronousClient:
         """
         if isinstance(mode, WikiSearchMode):
             mode = mode.value
-        resp = await self.http.get(Path.search(), mode=mode, query=query, page=page)
+        resp = await self.http.make_request('get', Path.search(), mode=mode, query=query, page=page)
         return {
             'user': {'results': resp['user']['data'], 'total': resp['user']['total']} if mode is None or mode == 'all' or mode == 'user' else None,
             'wiki_page': {'results': resp['wiki_page']['data'], 'total': resp['wiki_page']['total']} if mode is None or mode == 'all' or mode == 'wiki_page' else None
@@ -1180,7 +1180,7 @@ class AsynchronousClient:
         :class:`MultiplayerScores`
         """
         # Doesn't say response type
-        return MultiplayerScores(await self.http.get(Path.get_user_high_score(room, playlist, user)))
+        return MultiplayerScores(await self.http.make_request('get', Path.get_user_high_score(room, playlist, user)))
 
     async def get_scores(self, room: int, playlist: int, limit: Optional[int] = None,
                    sort: Optional[str] = None, cursor: Optional[dict] = None) -> MultiplayerScores:
@@ -1208,7 +1208,7 @@ class AsynchronousClient:
         :class:`MultiplayerScores`
         """
         # Doesn't say response type
-        return MultiplayerScores(await self.http.get(Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {}))
+        return MultiplayerScores(await self.http.make_request('get', Path.get_scores(room, playlist), limit=limit, sort=sort, **cursor if cursor else {}))
 
     async def get_score(self, room: int, playlist: int, score: int) -> MultiplayerScore:
         """
@@ -1230,7 +1230,7 @@ class AsynchronousClient:
         :class:`MultiplayerScore`
         """
         # Doesn't say response type
-        return MultiplayerScore(await self.http.get(Path.get_score(room, playlist, score)))
+        return MultiplayerScore(await self.http.make_request('get', Path.get_score(room, playlist, score)))
 
     async def get_news_listing(self, limit: Optional[int] = None, year: Optional[int] = None, cursor: Optional[dict] = None) -> dict:
         """
@@ -1281,7 +1281,7 @@ class AsynchronousClient:
 
         }
         """
-        response = await self.http.get(Path.get_news_listing(), limit=limit, year=year, cursor=cursor)
+        response = await self.http.make_request('get', Path.get_news_listing(), limit=limit, year=year, cursor=cursor)
         return {
             "cursor": response['cursor'],
             "news_posts": list(map(NewsPost, response["news_posts"])),
@@ -1309,7 +1309,7 @@ class AsynchronousClient:
 
         Returns a :class:`NewsPost` with content and navigation included.
         """
-        return NewsPost(await self.http.get(Path.get_news_post(news), key=key))
+        return NewsPost(await self.http.make_request('get', Path.get_news_post(news), key=key))
 
     async def get_notifications(self, max_id: Optional[int] = None) -> dict:
         """
@@ -1340,7 +1340,7 @@ class AsynchronousClient:
 
             }
         """
-        resp = await self.http.get(Path.get_notifications(), max_id=max_id)
+        resp = await self.http.make_request('get', Path.get_notifications(), max_id=max_id)
         return {
             'has_more': resp['has_more'],
             'notifications': list(map(Notification, resp['notifications'])),
@@ -1360,13 +1360,13 @@ class AsynchronousClient:
             ids of notifications to be marked as read.
         """
         data = {'ids[]': ids}
-        await self.http.post(Path.mark_notifications_as_read(), data=data)
+        await self.http.make_request('post', Path.mark_notifications_as_read(), data=data)
 
     async def revoke_current_token(self):
         """
         Requires OAuth
         """
-        await self.http.delete(self, Path.revoke_current_token())
+        await self.http.make_request('delete', self, Path.revoke_current_token())
 
     async def get_ranking(self, mode: Union[str, GameModeStr], type: str, country: Optional[str] = None, cursor: Optional[dict] = None,
                     filter: Optional[str] = None, spotlight: Optional[int] = None, variant: Optional[str] = None) -> Rankings:
@@ -1400,7 +1400,7 @@ class AsynchronousClient:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return Rankings(await self.http.get(Path.get_ranking(mode, type), country=country, **cursor if cursor else {}, filter=filter,
+        return Rankings(await self.http.make_request('get', Path.get_ranking(mode, type), country=country, **cursor if cursor else {}, filter=filter,
                                       spotlight=spotlight, variant=variant))
 
     async def get_spotlights(self) -> Spotlights:
@@ -1413,7 +1413,7 @@ class AsynchronousClient:
 
         :class:`Spotlights`
         """
-        return Spotlights(await self.http.get(Path.get_spotlights()))
+        return Spotlights(await self.http.make_request('get', Path.get_spotlights()))
 
     async def get_own_data(self, mode: Union[str, GameModeStr]="") -> User:
         """
@@ -1432,7 +1432,7 @@ class AsynchronousClient:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return User(await self.http.get(Path.get_own_data(mode)))
+        return User(await self.http.make_request('get', Path.get_own_data(mode)))
 
     async def get_user_kudosu(self, user: int, limit: Optional[int] = None, offset: Optional[int] = None):
         """
@@ -1455,7 +1455,7 @@ class AsynchronousClient:
 
         Sequence[:class:`KudosuHistory`]
         """
-        return list(map(KudosuHistory, await self.http.get(Path.get_user_kudosu(user), limit=limit, offset=offset)))
+        return list(map(KudosuHistory, await self.http.make_request('get', Path.get_user_kudosu(user), limit=limit, offset=offset)))
 
     async def get_user_scores(self, user: int, type: str, include_fails: Optional[int] = None, mode: Optional[Union[str, GameModeStr]] = None,
                         limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Score]:
@@ -1491,7 +1491,7 @@ class AsynchronousClient:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return [Score(score) for score in await self.http.get(Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
+        return [Score(score) for score in await self.http.make_request('get', Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
 
     async def get_user_beatmaps(self, user: int, type: Union[str, UserBeatmapType], limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Union[BeatmapPlaycount, Beatmapset]]:
         """
@@ -1523,7 +1523,7 @@ class AsynchronousClient:
             type = type.value
         if type == 'most_played':
             object_type = BeatmapPlaycount
-        return list(map(object_type, await self.http.get(Path.get_user_beatmaps(user, type), limit=limit, offset=offset)))
+        return list(map(object_type, await self.http.make_request('get', Path.get_user_beatmaps(user, type), limit=limit, offset=offset)))
 
     async def get_user_recent_activity(self, user: int, limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Event]:
         """
@@ -1547,7 +1547,7 @@ class AsynchronousClient:
         Sequence[:class:`Event`]
             list of :class:`Event` objects
         """
-        return list(map(Event, await self.http.get(Path.get_user_recent_activity(user), limit=limit, offset=offset)))
+        return list(map(Event, await self.http.make_request('get', Path.get_user_recent_activity(user), limit=limit, offset=offset)))
 
     async def get_user(self, user: int, mode: Optional[Union[str, GameModeStr]] = '', key: Optional[str] = None) -> User:
         """
@@ -1583,7 +1583,7 @@ class AsynchronousClient:
         """
         if isinstance(mode, GameModeStr):
             mode = mode.value
-        return User(await self.http.get(Path.get_user(user, mode), key=key))
+        return User(await self.http.make_request('get', Path.get_user(user, mode), key=key))
 
     async def get_users(self, ids: Sequence[int]) -> Sequence[UserCompact]:
         """
@@ -1603,7 +1603,7 @@ class AsynchronousClient:
             Includes attributes: country, cover, groups, statistics_fruits,
             statistics_mania, statistics_osu, statistics_taiko.
         """
-        return list(map(UserCompact, await self.http.get(Path.get_users(), ids=ids)))
+        return list(map(UserCompact, await self.http.make_request('get', Path.get_users(), ids=ids)))
 
     async def get_wiki_page(self, locale: str, path: str) -> WikiPage:
         """
@@ -1623,7 +1623,7 @@ class AsynchronousClient:
 
         :class:`WikiPage`
         """
-        return WikiPage(await self.http.get(Path.get_wiki_page(locale, path)))
+        return WikiPage(await self.http.make_request('get', Path.get_wiki_page(locale, path)))
 
     async def make_request(self, method: str, path: str, scope: Union[Scope, str], **kwargs):
         """
@@ -1648,7 +1648,7 @@ class AsynchronousClient:
     async def search_beatmapsets(self, filters=None, page=None):
         if filters is None:
             filters = {}
-        resp = await self.http.get(Path(f'beatmapsets/search', 'public'), page=page, **filters)
+        resp = await self.http.make_request('get', Path(f'beatmapsets/search', 'public'), page=page, **filters)
         return {
             'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
             'cursor': resp['cursor'],
@@ -1659,4 +1659,4 @@ class AsynchronousClient:
         }
 
     async def get_score_by_id(self, mode, score):
-        return Score(await self.http.get(Path.get_score_by_id(mode, score)))
+        return Score(await self.http.make_request('get', Path.get_score_by_id(mode, score)))
