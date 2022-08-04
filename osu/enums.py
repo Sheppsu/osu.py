@@ -322,3 +322,23 @@ class UserBeatmapType(Enum):
     MOST_PLAYED = 'most_played'
     PENDING = 'pending'
     RANKED = 'ranked'
+
+
+class RankingType(Enum):
+    """
+    Ranking types to sort by for the get_ranking endpoint.
+
+    **Ranking types**
+
+    SPOTLIGHT = 'charts'
+
+    COUNTRY = 'country'
+
+    PERFORMANCE = 'performance'
+
+    SCORE = 'score'
+    """
+    SPOTLIGHT = 'charts'
+    COUNTRY = 'country'
+    PERFORMANCE = 'performance'
+    SCORE = 'score'
