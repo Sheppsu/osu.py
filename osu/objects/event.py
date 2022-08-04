@@ -127,7 +127,7 @@ class EventUser:
     def __init__(self, data):
         self.username = data['username']
         self.url = data['url']
-        self.previous_username = data.get('previous_username', None)
+        self.previous_username = data.get('previousUsername', None)
 
     def __repr__(self):
         return prettify(self, 'username', 'url')
