@@ -1,4 +1,4 @@
-from .enums import Mods
+from .enums import Mods, Enum
 from typing import Sequence
 
 
@@ -42,6 +42,11 @@ def parse_mods_arg(mods):
             return
         return Mods.parse_any_list(mods).value
     raise TypeError(f"mods argument must be of type Mods or Sequence, not {type(mods)}")
+
+
+def parse_enum_args(*args):
+    args = [arg.value for arg in args if isinstance(arg, Enum)]
+    return args if len(args) != 1 else args[0]
 
 
 class Util:
