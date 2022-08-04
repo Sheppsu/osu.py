@@ -105,8 +105,8 @@ class Event:
             self.user = EventUser(data['user'])
 
     def __repr__(self):
-        slots = ['type', 'achievement', 'user', 'beatmap', 'score_rank', 'beatmapset']
-        fields = [getattr(self, slot) for slot in slots if getattr(self, slot, None)]
+        slots = ['type', 'user', 'beatmapset']
+        fields = [slot for slot in slots if getattr(self, slot, None)]
         return prettify(self, *fields)
 
 
