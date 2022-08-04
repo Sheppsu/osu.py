@@ -3,7 +3,7 @@ from .objects import *
 from .path import Path
 from .enums import *
 from .auth import AuthHandler
-from .util import parse_mods_arg
+from .util import parse_mods_arg, parse_enum_args
 from typing import Union, Optional, Sequence, Dict
 
 
@@ -127,8 +127,7 @@ class Client:
 
         :class:`BeatmapUserScore`
         """
-        if isinstance(mode, GameModeStr):
-            mode = mode.value
+        mode = parse_enum_args(mode)
         return BeatmapUserScore(self.http.make_request('get', Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
     def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[Union[str, GameModeStr]] = None) -> Sequence[Score]:
@@ -152,8 +151,7 @@ class Client:
 
         Sequence[:class:`Score`]
         """
-        if isinstance(mode, GameModeStr):
-            mode = mode.value
+        mode = parse_enum_args(mode)
         return list(map(Score, self.http.make_request('get', Path.user_beatmap_scores(beatmap, user), mode=mode)["scores"]))
 
     def get_beatmap_scores(self, beatmap: int, mode: Optional[Union[str, GameModeStr]] = None, mods: Optional[Sequence[str]] = None, type: Optional[Sequence[str]] = None) -> BeatmapScores:
@@ -180,8 +178,7 @@ class Client:
 
         :class:`BeatmapScores`
         """
-        if isinstance(mode, GameModeStr):
-            mode = mode.value
+        mode = parse_enum_args(mode)
         return BeatmapScores(self.http.make_request('get', Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
 
     def get_beatmap(self, beatmap: int) -> Beatmap:
@@ -221,7 +218,7 @@ class Client:
         results = self.http.make_request('get', Path.beatmaps(), **{"ids[]": ids})
         return list(map(Beatmap, results['beatmaps'])) if results else []
 
-    def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Mods, Sequence[Union[str, Mods, int]]]]=None, ruleset: Optional[Union[str, GameModeStr]] = None, ruleset_id: Optional[Union[int, GameModeInt]] = None) -> BeatmapDifficultyAttributes:
+    def get_beatmap_attributes(self, beatmap: int, mods: Optional[Union[int, Mods, Sequence[Union[str, Mods, int]]]] = None, ruleset: Optional[Union[str, GameModeStr]] = None, ruleset_id: Optional[Union[int, GameModeInt]] = None) -> BeatmapDifficultyAttributes:
         """
         Returns difficulty attributes of beatmap with specific mode and mods combination.
 
@@ -246,10 +243,7 @@ class Client:
 
         :class:`BeatmapDifficultyAttributes`
         """
-        if isinstance(ruleset, GameModeStr):
-            ruleset = ruleset.value
-        if isinstance(ruleset_id, GameModeInt):
-            ruleset_id = ruleset_id.value
+        ruleset, ruleset_id = parse_enum_args(ruleset, ruleset_id)
         return BeatmapDifficultyAttributes(self.http.make_request('post', Path.get_beatmap_attributes(beatmap), mods=parse_mods_arg(mods), ruleset=ruleset, ruleset_id=ruleset_id))
 
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id: Optional[int] = None, limit: Optional[int] = None,
@@ -295,7 +289,7 @@ class Client:
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
         resp = self.http.make_request('get', Path.beatmapset_discussion_posts(), beatmapset_discussion_id=beatmapset_discussion_id,
-                             limit=limit, page=page, sort=sort, user=user, with_deleted=with_deleted)
+                                      limit=limit, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'beatmapsets': list(map(BeatmapsetCompact, resp['beatmapsets'])),
             'cursor': resp['cursor'],
@@ -352,7 +346,7 @@ class Client:
         """
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
         resp = self.http.make_request('get', Path.beatmapset_discussion_votes(), beatmapset_discussion_id=beatmapset_discussion_id,
-                             limit=limit, receiver=receiver, score=score, page=page, sort=sort, user=user, with_deleted=with_deleted)
+                                      limit=limit, receiver=receiver, score=score, page=page, sort=sort, user=user, with_deleted=with_deleted)
         return {
             'cursor': resp['cursor'],
             'discussions': list(map(BeatmapsetDiscussion, resp['discussions'])),
@@ -429,8 +423,8 @@ class Client:
         # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
         message_types = {"message_types[]": message_types}
         resp = self.http.make_request('get', Path.beatmapset_discussions(), beatmap_id=beatmap_id, beatmapset_id=beatmapset_id,
-                             beatmapset_status=beatmapset_status, limit=limit, only_unresolved=only_unresolved,
-                             page=page, sort=sort, user=user, with_deleted=with_deleted, **message_types)
+                                      beatmapset_status=beatmapset_status, limit=limit, only_unresolved=only_unresolved,
+                                      page=page, sort=sort, user=user, with_deleted=with_deleted, **message_types)
         return {
             'beatmaps': list(map(Beatmap, resp['beatmaps'])),
             'cursor': resp['cursor'],
@@ -808,7 +802,7 @@ class Client:
             pinned_comments is only included when commentable_type and commentable_id are specified.
         """
         return CommentBundle(self.http.make_request('get', Path.get_comments(), commentable_type=commentable_type, commentable_id=commentable_id,
-                                           **cursor if cursor else {}, parent_id=parent_id, sort=sort))
+                                                    **cursor if cursor else {}, parent_id=parent_id, sort=sort))
 
     def post_comment(self, commentable_id: Optional[int] = None, commentable_type: Optional[str] = None,
                      message: Optional[str] = None, parent_id: Optional[int] = None) -> CommentBundle:
@@ -1011,7 +1005,7 @@ class Client:
             if poll_options is None or poll_title is None:
                 raise TypeError("poll_options and poll_title are required since the topic has a poll.")
             data.update({'forum_topic_poll': {
-                'hide_results': hide_results,'length_days': length_days,
+                'hide_results': hide_results, 'length_days': length_days,
                 'max_options': max_options, 'poll_options': poll_options,
                 'poll_title': poll_title, 'vote_change': vote_change
             }})
@@ -1150,8 +1144,7 @@ class Client:
 
             }
         """
-        if isinstance(mode, WikiSearchMode):
-            mode = mode.value
+        mode = parse_enum_args(mode)
         resp = self.http.make_request('get', Path.search(), mode=mode, query=query, page=page)
         return {
             'user': {'results': resp['user']['data'], 'total': resp['user']['total']} if mode is None or mode == 'all' or mode == 'user' else None,
@@ -1366,7 +1359,7 @@ class Client:
         """
         self.http.make_request('delete', self, Path.revoke_current_token())
 
-    def get_ranking(self, mode: Union[str, GameModeStr], type: str, country: Optional[str] = None, cursor: Optional[dict] = None,
+    def get_ranking(self, mode: Union[str, GameModeStr], type: Union[str, RankingType], country: Optional[str] = None, cursor: Optional[dict] = None,
                     filter: Optional[str] = None, spotlight: Optional[int] = None, variant: Optional[str] = None) -> Rankings:
         """
         Gets the current ranking for the specified type and game mode.
@@ -1375,7 +1368,7 @@ class Client:
 
         mode: Union[:class:`str`, :class:`GameModeStr`]
 
-        type: :class:`str`
+        type: Union[:class:`str`, :class:`RankingType`]
             :ref:`RankingType`
 
         country: Optional[:class:`str`]
@@ -1396,10 +1389,9 @@ class Client:
 
         :class:`Rankings`
         """
-        if isinstance(mode, GameModeStr):
-            mode = mode.value
+        mode, type = parse_enum_args(mode, type)
         return Rankings(self.http.make_request('get', Path.get_ranking(mode, type), country=country, **cursor if cursor else {}, filter=filter,
-                                      spotlight=spotlight, variant=variant))
+                                               spotlight=spotlight, variant=variant))
 
     def get_spotlights(self) -> Spotlights:
         """
@@ -1413,7 +1405,7 @@ class Client:
         """
         return Spotlights(self.http.make_request('get', Path.get_spotlights()))
 
-    def get_own_data(self, mode: Union[str, GameModeStr]="") -> User:
+    def get_own_data(self, mode: Union[str, GameModeStr] = "") -> User:
         """
         Similar to get_user but with authenticated user (token owner) as user id.
 
@@ -1428,8 +1420,7 @@ class Client:
 
         See return for get_user
         """
-        if isinstance(mode, GameModeStr):
-            mode = mode.value
+        mode = parse_enum_args(mode)
         return User(self.http.make_request('get', Path.get_own_data(mode)))
 
     def get_user_kudosu(self, user: int, limit: Optional[int] = None, offset: Optional[int] = None):
@@ -1487,8 +1478,7 @@ class Client:
         Sequence[:class:`Score`]
             Includes attributes beatmap, beatmapset, weight: Only for type best, user
         """
-        if isinstance(mode, GameModeStr):
-            mode = mode.value
+        mode = parse_enum_args(mode)
         return [Score(score) for score in self.http.make_request('get', Path.get_user_scores(user, type), include_fails=include_fails, mode=mode, limit=limit, offset=offset)]
 
     def get_user_beatmaps(self, user: int, type: Union[str, UserBeatmapType], limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Union[BeatmapPlaycount, Beatmapset]]:
@@ -1517,8 +1507,7 @@ class Client:
             :class:`BeatmapPlaycount` for type most_played or :class:`Beatmapset` for any other type.
         """
         object_type = Beatmapset
-        if isinstance(type, UserBeatmapType):
-            type = type.value
+        type = parse_enum_args(type)
         if type == 'most_played':
             object_type = BeatmapPlaycount
         return list(map(object_type, self.http.make_request('get', Path.get_user_beatmaps(user, type), limit=limit, offset=offset)))
@@ -1579,8 +1568,7 @@ class Client:
             statistics.country_rank, statistics.rank, statistics.variants, support_level,
             user_achievements.
         """
-        if isinstance(mode, GameModeStr):
-            mode = mode.value
+        mode = parse_enum_args(mode)
         return User(self.http.make_request('get', Path.get_user(user, mode), key=key))
 
     def get_users(self, ids: Sequence[int]) -> Sequence[UserCompact]:
@@ -1622,24 +1610,6 @@ class Client:
         :class:`WikiPage`
         """
         return WikiPage(self.http.make_request('get', Path.get_wiki_page(locale, path)))
-
-    def make_request(self, method: str, path: str, scope: Union[Scope, str], **kwargs):
-        """
-        Gives you freedom to format the contents of the request.
-
-        **Parameters**
-
-        method: :class:`str`
-            The request method (get, post, delete, patch, or put)
-
-        path: :class:`str`
-            Url path to send request to (excluding the base api url) Ex. "beatmapsets/search"
-
-        scope: Union[:class:`Scope`, :class:`str`]
-            Used for the purpose of creating the Path object but will also be checked against the scopes you are valid for.
-            For valid scopes check :class:`Scope.valid_scopes`
-        """
-        return getattr(self.http, method)(Path(path, scope), **kwargs)
 
     # Undocumented
 
