@@ -399,16 +399,6 @@ UserBeatmapType
 Other Information
 -----------------
 
-.. _GameMode:
-
-GameMode
-^^^^^^^^
-
-Each GameMode has its own api name which is to be used instead of it's actual name
-
-.. csv-table:: GameMode
-   :file: _static/GameMode.csv
-
 .. _CommentSort:
 
 CommentSort
@@ -428,13 +418,3 @@ Sort option for multiplayer scores index.
 
 .. csv-table:: MultiplayerScoresSort
    :file: _static/MultiplayerScoresSort.csv
-
-.. _RankingType:
-
-RankingType
-^^^^^^^^^^^^^^^^^^^^^
-
-Available ranking types:
-
-.. csv-table:: RankingType
-   :file: _static/RankingType.csv
