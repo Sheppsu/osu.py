@@ -117,11 +117,12 @@ class UserCompact:
         'avatar_url', 'country_code', 'default_group', 'id', 'is_active', 'is_bot', 'is_deleted', 'is_online',
         'is_supporter', 'last_visit', 'pm_friends_only', 'profile_colour', 'username', 'account_history',
         'active_tournament_banner', 'badges', 'beatmap_playcounts_count', 'blocks', 'country', 'cover',
-        'favourite_beatmapset_count', 'follower_count', 'mapping_follower_count', 'friends', 'graveyard_beatmapset_count', 'groups',
-        'is_restricted', 'loved_beatmapset_count', 'monthly_playcounts', 'page', 'previous_usernames',
-        'ranked_beatmapset_count', 'replays_watched_counts', 'scores_best_count', 'scores_first_count',
-        'scores_recent_count', 'statistics', 'statistics_rulesets', 'support_level', 'pending_beatmapset_count',
-        'unread_pm_count', 'user_achievements', 'user_preferences', 'rank_history', 'ranked_beatmapset_counts'
+        'favourite_beatmapset_count', 'follower_count', 'mapping_follower_count', 'friends',
+        'graveyard_beatmapset_count', 'groups', 'is_restricted', 'loved_beatmapset_count', 'monthly_playcounts',
+        'page', 'previous_usernames', 'ranked_beatmapset_count', 'replays_watched_counts', 'scores_best_count',
+        'scores_first_count', 'scores_recent_count', 'statistics', 'statistics_rulesets', 'support_level',
+        'pending_beatmapset_count', 'unread_pm_count', 'user_achievements', 'user_preferences', 'rank_history',
+        'ranked_beatmapset_counts'
     )
 
     def __init__(self, data):
@@ -140,11 +141,13 @@ class UserCompact:
         self.username = data['username']
 
         # Optional attributes
-        self.active_tournament_banner = ProfileBanner(data['active_tournament_banner']) if data.get('active_tournament_banner') is not None else None
+        self.active_tournament_banner = ProfileBanner(data['active_tournament_banner']) \
+            if data.get('active_tournament_banner') is not None else None
         self.account_history = list(map(UserAccountHistory, data.get('account_history', [])))
         self.badges = list(map(UserBadge, data.get('badges', [])))
         self.groups = list(map(UserGroup, data.get('groups', [])))
-        self.monthly_playcounts = list(map(UserMonthlyPlaycount, data.get('monthly_playcounts', []))) if data.get("monthly_playcounts") is not None else None
+        self.monthly_playcounts = list(map(UserMonthlyPlaycount, data.get('monthly_playcounts', []))) \
+            if data.get("monthly_playcounts") is not None else None
         self.statistics = UserStatistics(data['statistics']) if 'statistics' in data else None
         self.page = data.get('page')
         self.pending_beatmapset_count = Util.int(data.get('pending_beatmapset_count'))
@@ -155,7 +158,8 @@ class UserCompact:
         self.scores_best_count = Util.int(data.get('scores_best_count'))
         self.scores_first_count = Util.int(data.get('scores_first_count'))
         self.scores_recent_count = Util.int(data.get('scores_recent_count'))
-        self.statistics_rulesets = UserStatisticsRulesets(data['statistics_rulesets']) if 'statistics_rulesets' in data else None  # TODO
+        self.statistics_rulesets = UserStatisticsRulesets(data['statistics_rulesets']) \
+            if 'statistics_rulesets' in data else None  # TODO
         self.support_level = data.get('support_level')
         self.unread_pm_count = Util.int(data.get('unread_pm_count'))
         self.user_achievements = data.get('user_achievements')

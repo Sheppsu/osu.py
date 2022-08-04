@@ -62,7 +62,8 @@ class Description:
 
 class UserGroup(Group):
     """
-    Describes the :class:`Group` membership of a :class:`User`. It contains all of the attributes of the :class:`Group`, in addition to what is listed here.
+    Describes the :class:`Group` membership of a :class:`User`.
+    It contains all of the attributes of the :class:`Group`, in addition to what is listed here.
 
     **Attributes**
 

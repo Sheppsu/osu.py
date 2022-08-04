@@ -32,11 +32,17 @@ class AsynchronousClient:
 
         This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
 
-        Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :). this section may expand as necessary.
+    Make sure if you are changing the ratelimit handling that you are still following peppy's
+    TOU for using the API:
 
-        Current rate limit is set at an insanely high 1200 requests per minute, with burst capability of up to 200 beyond that.
-        If you require more, you probably fall into the above category of abuse. If you are doing more than 60 requests a minute,
-        you should probably give peppy a yell.
+    Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :).
+    this section may expand as necessary.
+
+    Current rate limit is set at an insanely high 1200 requests per minute,
+    with burst capability of up to 200 beyond that.
+    If you require more, you probably fall into the above category of abuse.
+    If you are doing more than 60 requests a minute,
+    you should probably give peppy a yell.
     """
 
     def __init__(self, auth=None, request_wait_time: Optional[float] = 1.0,
@@ -137,8 +143,8 @@ class AsynchronousClient:
         return BeatmapUserScore(
             await self.http.make_request('get', Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
-    async def get_user_beatmap_scores(self, beatmap: int, user: int, mode: Optional[Union[str, GameModeStr]] = None) -> \
-            Sequence[Score]:
+    async def get_user_beatmap_scores(self, beatmap: int, user: int,
+                                      mode: Optional[Union[str, GameModeStr]] = None) -> Sequence[Score]:
         """
         Returns a user's scores on a Beatmap
 
@@ -160,8 +166,8 @@ class AsynchronousClient:
         Sequence[:class:`Score`]
         """
         mode = parse_enum_args(mode)
-        return list(
-            map(Score, (await self.http.make_request('get', Path.user_beatmap_scores(beatmap, user), mode=mode))["scores"]))
+        return list(map(Score, (await self.http.make_request('get', Path.user_beatmap_scores(beatmap, user),
+                                                             mode=mode))["scores"]))
 
     async def get_beatmap_scores(self, beatmap: int, mode: Optional[Union[str, GameModeStr]] = None,
                                  mods: Optional[Sequence[str]] = None,
@@ -220,7 +226,8 @@ class AsynchronousClient:
         **Parameters**
 
         ids: Optional[List[:class:`int`]]
-            Beatmap id to be returned. Specify once for each beatmap id requested. Up to 50 beatmaps can be requested at once.
+            Beatmap id to be returned. Specify once for each beatmap id requested.
+            Up to 50 beatmaps can be requested at once.
 
         **Returns**
 
@@ -250,7 +257,9 @@ class AsynchronousClient:
             Some mods may cause the api to throw an HTTP 422 error depending on the map's gamemode.
 
         ruleset: Optional[Union[:class:`GameModeStr`, :class:`int`]]
-            Ruleset of the difficulty attributes. Only valid if it's the beatmap ruleset or the beatmap can be converted to the specified ruleset. Defaults to ruleset of the specified beatmap.
+            Ruleset of the difficulty attributes.
+            Only valid if it's the beatmap ruleset or the beatmap can be converted to the specified ruleset.
+            Defaults to ruleset of the specified beatmap.
 
         ruleset_id: Optional[Union[:class:`GameModeInt`, :class:`int`]]
             The same as ruleset but in integer form.
@@ -307,7 +316,8 @@ class AsynchronousClient:
             users: :class:`UserCompact`
             }
         """
-        # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
+        # TODO: Change is supposed to occur on the response given back from the server,
+        #  make sure to change it when that happens.
         resp = await self.http.make_request('get', Path.beatmapset_discussion_posts(),
                                             beatmapset_discussion_id=beatmapset_discussion_id,
                                             limit=limit, page=page, sort=sort, user=user, with_deleted=with_deleted)
@@ -368,7 +378,8 @@ class AsynchronousClient:
             votes: Sequence[:class:`BeatmapsetDiscussionVote`]
             }
         """
-        # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
+        # TODO: Change is supposed to occur on the response given back from the server,
+        #  make sure to change it when that happens.
         resp = await self.http.make_request('get', Path.beatmapset_discussion_votes(),
                                             beatmapset_discussion_id=beatmapset_discussion_id,
                                             limit=limit, receiver=receiver, score=score, page=page, sort=sort,
@@ -449,13 +460,15 @@ class AsynchronousClient:
 
             }
         """
-        # TODO: Change is supposed to occur on the response given back from the server, make sure to change it when that happens.
+        # TODO: Change is supposed to occur on the response given back from the server,
+        #  make sure to change it when that happens.
         message_types = {"message_types[]": message_types}
         resp = await self.http.make_request('get', Path.beatmapset_discussions(), beatmap_id=beatmap_id,
                                             beatmapset_id=beatmapset_id,
                                             beatmapset_status=beatmapset_status, limit=limit,
                                             only_unresolved=only_unresolved,
-                                            page=page, sort=sort, user=user, with_deleted=with_deleted, **message_types)
+                                            page=page, sort=sort, user=user, with_deleted=with_deleted,
+                                            **message_types)
         return {
             'beatmaps': list(map(Beatmap, resp['beatmaps'])),
             'cursor': resp['cursor'],
@@ -537,8 +550,7 @@ class AsynchronousClient:
         }
         """
         response = await self.http.make_request('get', Path.get_changelog_listing(), max_id=max_id, stream=stream,
-                                                to=to,
-                                                message_formats=message_formats, **{"from": from_version})
+                                                to=to, message_formats=message_formats, **{"from": from_version})
         return {
             "build": list(map(Build, response['builds'])),
             "search": response['search'],
@@ -636,7 +648,8 @@ class AsynchronousClient:
 
             }
         """
-        resp = await self.http.make_request('post', Path.get_updates(), since=since, channel_id=channel_id, limit=limit)
+        resp = await self.http.make_request('post', Path.get_updates(), since=since,
+                                            channel_id=channel_id, limit=limit)
         return {
             'presence': list(map(ChatChannel, resp['presence'])),
             'messages': list(map(ChatMessage, resp['messages'])),
@@ -765,7 +778,8 @@ class AsynchronousClient:
 
     async def create_channel(self, type: str, target_id: Optional[int] = None) -> ChatChannel:
         """
-        This endpoint creates a new channel if doesn't exist and joins it. Currently only for rejoining existing PM channels which the user has left.
+        This endpoint creates a new channel if doesn't exist and joins it.
+        Currently only for rejoining existing PM channels which the user has left.
 
         Requires OAuth and scope lazer
 
@@ -781,7 +795,8 @@ class AsynchronousClient:
 
         :class:`ChatChannel`
              contains recent_messages attribute. Note that if there's no existing PM channel,
-             most of the fields will be blank. In that case, send a message (create_new_pm) instead to create the channel.
+             most of the fields will be blank. In that case, send a message (create_new_pm)
+             instead to create the channel.
         """
         data = {'type': type, 'target_id': target_id}
         return ChatChannel(await self.http.make_request('post', Path.create_channel(), data=data))
@@ -829,22 +844,25 @@ class AsynchronousClient:
             The id of the resource to get comments for.
 
         cursor: Optional[:class:`dict`]
-            Pagination option. See :ref:`CommentSort` for detail. The format follows Cursor except it's not currently included in the response.
+            Pagination option. See :ref:`CommentSort` for detail.
+            The format follows Cursor except it's not currently included in the response.
 
         parent_id: Optional[:class:`int`]
             Limit to comments which are reply to the specified id. Specify 0 to get top level comments.
 
         sort: Optional[:class:`str`]
-            Sort option as defined in :ref:`CommentSort`. Defaults to new for guests and user-specified default when authenticated.
+            Sort option as defined in :ref:`CommentSort`.
+            Defaults to new for guests and user-specified default when authenticated.
 
         **Returns**
 
         :class:`CommentBundle`
             pinned_comments is only included when commentable_type and commentable_id are specified.
         """
-        return CommentBundle(await self.http.make_request('get', Path.get_comments(), commentable_type=commentable_type,
-                                                          commentable_id=commentable_id,
-                                                          **cursor if cursor else {}, parent_id=parent_id, sort=sort))
+        return CommentBundle(await self.http.make_request('get', Path.get_comments(),
+                                                          commentable_type=commentable_type,
+                                                          commentable_id=commentable_id, **cursor if cursor else {},
+                                                          parent_id=parent_id, sort=sort))
 
     async def post_comment(self, commentable_id: Optional[int] = None, commentable_type: Optional[str] = None,
                            message: Optional[str] = None, parent_id: Optional[int] = None) -> CommentBundle:
@@ -1017,7 +1035,8 @@ class AsynchronousClient:
             Enable this to hide result until voting period ends (default: false).
 
         length_days: Optional[:class:`int`]
-            Number of days for voting period. 0 means the voting will never ends (default: 0). This parameter is required if hide_results option is enabled.
+            Number of days for voting period. 0 means the voting will never ends (default: 0).
+            This parameter is required if hide_results option is enabled.
 
         max_options: Optional[:class:`int`]
             Maximum number of votes each user can cast (default: 1).
@@ -1355,14 +1374,16 @@ class AsynchronousClient:
 
     async def get_notifications(self, max_id: Optional[int] = None) -> dict:
         """
-        This endpoint returns a list of the user's unread notifications. Sorted descending by id with limit of 50.
+        This endpoint returns a list of the user's unread notifications.
+        Sorted descending by id with limit of 50.
 
         Requires OAuth and scope lazer
 
         **Parameters**
 
         max_id: Optional[:class:`int`]
-            Maximum id fetched. Can be used to load earlier notifications. Defaults to no limit (fetch latest notifications)
+            Maximum id fetched. Can be used to load earlier notifications.
+            Defaults to no limit (fetch latest notifications)
 
         **Returns**
 
@@ -1434,10 +1455,12 @@ class AsynchronousClient:
             Either all (default) or friends.
 
         spotlight: Optional[:class:`int`]
-            The id of the spotlight if type is charts. Ranking for latest spotlight will be returned if not specified.
+            The id of the spotlight if type is charts.
+            Ranking for latest spotlight will be returned if not specified.
 
         variant: Optional[:class:`str`]
-            Filter ranking to specified mode variant. For mode of mania, it's either 4k or 7k. Only available for type of performance.
+            Filter ranking to specified mode variant. For mode of mania, it's either 4k or 7k.
+            Only available for type of performance.
 
         **Returns**
 
@@ -1686,7 +1709,7 @@ class AsynchronousClient:
     async def search_beatmapsets(self, filters=None, page=None):
         if filters is None:
             filters = {}
-        resp = await self.http.make_request('get', Path(f'beatmapsets/search', 'public'), page=page, **filters)
+        resp = await self.http.make_request('get', Path('beatmapsets/search', 'public'), page=page, **filters)
         return {
             'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
             'cursor': resp['cursor'],

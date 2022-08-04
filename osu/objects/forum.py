@@ -92,14 +92,14 @@ class ForumTopic:
         self.type = data['type']
         self.updated_at = parser.parse(data["updated_at"])
         self.user_id = data['user_id']
-        
-        
+
+
 class Poll:
     """
     **Attributes**
-    
+
     allow_vote_change: :class:`bool`
-    
+
     ended_at: :class:`datetime.datetime` or :class:`NoneType`
 
     hide_incomplete_results: :class:`bool`
@@ -117,7 +117,7 @@ class Poll:
 
     total_vote_count: :class:`int`
     """
-    
+
     __slots__ = (
         "allow_vote_change", "ended_at", "hide_incomplete_results", "last_vote_at",
         "max_votes", "options", "started_at", "title", "total_vote_count"
