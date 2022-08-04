@@ -77,4 +77,4 @@ class Navigation:
         self.older = NewsPost(data['older']) if data["older"] is not None else None
 
     def __repr__(self):
-        return prettify(self)
+        return prettify(self, 'newer', 'older')
