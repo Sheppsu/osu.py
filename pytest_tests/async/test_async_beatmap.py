@@ -55,19 +55,6 @@ class TestAsyncBeatmap:
             assert {key: getattr(score, key) for key in keys} in sample_user_beatmap_scores["scores"]
 
     @pytest.mark.asyncio
-    async def test_async_get_user_beatmaps(self, async_client, sample_user_beatmaps):
-        beatmaps = await async_client.get_user_beatmaps(
-            user=sample_user_beatmaps["user_id"],
-            type=UserBeatmapType.GRAVEYARD,
-        )
-        assert beatmaps
-        target_beatmap = beatmaps[0]
-        expected_beatmap = sample_user_beatmaps["beatmapset"]
-        assert target_beatmap.artist == expected_beatmap["artist"]
-        assert target_beatmap.title == expected_beatmap["title"]
-        assert target_beatmap.creator == expected_beatmap["creator"]
-
-    @pytest.mark.asyncio
     async def test_async_search_beatmapsets(self, async_client):
         # Is undocumented
         ...
