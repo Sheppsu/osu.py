@@ -1,5 +1,5 @@
 from .group import UserGroup
-from ..util import Util
+from ..util import Util, prettify
 from ..enums import GameModeStr
 from dateutil import parser
 import math
@@ -176,6 +176,9 @@ class UserCompact:
         self.is_restricted = data.get('is_restricted')
         self.loved_beatmapset_count = Util.int(data.get('loved_beatmapset_count'))
 
+    def __repr__(self):
+        return prettify(self, 'username', 'id')
+
 
 class User(UserCompact):
     """
@@ -269,6 +272,9 @@ class User(UserCompact):
         self.twitter = data['twitter']
         self.website = data['website']
 
+    def __str__(self):
+        return super().__repr__()
+
 
 class ProfileBanner:
     """
@@ -289,6 +295,9 @@ class ProfileBanner:
         self.tournament_id = data['tournament_id']
         self.image = data['image']
 
+    def __repr__(self):
+        return prettify(self, 'tournament_id')
+
 
 class UserSilence:
     """
@@ -307,6 +316,9 @@ class UserSilence:
     def __init__(self, data):
         self.id = data['id']
         self.user_id = data['user_id']
+
+    def __repr__(self):
+        return prettify(self, 'user_id')
 
 
 class UserAccountHistory:
@@ -333,6 +345,9 @@ class UserAccountHistory:
         self.timestamp = parser.parse(data['timestamp'])
         self.length = data['length']
 
+    def __repr__(self):
+        return prettify(self, 'type', 'length')
+
 
 class UserBadge:
     """
@@ -356,6 +371,9 @@ class UserBadge:
         self.image_url = data['image_url']
         self.url = data['url']
 
+    def __repr__(self):
+        return prettify(self, 'awarded_at')
+
 
 class UserMonthlyPlaycount:
     """
@@ -374,6 +392,9 @@ class UserMonthlyPlaycount:
     def __init__(self, data):
         self.start_date = data['start_date']
         self.count = data['count']
+
+    def __repr__(self):
+        return prettify(self, 'start_date', 'count')
 
 
 class UserStatistics:
@@ -473,6 +494,9 @@ class UserStatistics:
     def recommended_difficulty(self):
         return math.pow(self.pp, 0.4) * 0.195
 
+    def __repr__(self):
+        return prettify(self, 'pp', 'global_rank', 'user')
+
 
 class UserStatisticsRulesets:
     """
@@ -499,6 +523,10 @@ class UserStatisticsRulesets:
         self.taiko = UserStatistics(data['taiko']) if data.get('taiko') else None
         self.fruits = UserStatistics(data['fruits']) if data.get('fruits') else None
         self.mania = UserStatistics(data['mania']) if data.get('mania') else None
+
+    def __repr__(self):
+        fields = [getattr(self, slot) for slot in self.__slots__ if getattr(self, slot, None)]
+        return prettify(self, *fields)
 
 
 class CurrentUserAttributes:
@@ -551,3 +579,6 @@ class CurrentUserAttributes:
             print(f"WARNING: Unrecognized attr_type for CurrentUserAttributes: \"{attr_type}\"")
             for k, v in data.items():
                 setattr(self, k, v)
+
+    def __repr__(self):
+        return prettify(self, 'type')

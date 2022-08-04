@@ -44,6 +44,11 @@ def parse_mods_arg(mods):
     raise TypeError(f"mods argument must be of type Mods or Sequence, not {type(mods)}")
 
 
+def prettify(cls: object, *fields: str) -> str:
+    d = {s: getattr(cls, s) for s in fields}
+    return cls.__class__.__qualname__ + '(' + ', '.join([f"{k}={d[k]!r}" for k in d]) + ')'
+
+
 def parse_enum_args(*args):
     args = [arg.value for arg in args if isinstance(arg, Enum)]
     return args if len(args) != 1 else args[0]

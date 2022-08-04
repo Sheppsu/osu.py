@@ -1,3 +1,6 @@
+from ..util import prettify
+
+
 class Group:
     """
     This object isn't returned by any endpoints yet, it is here purely as a reference for :class:`UserGroup`
@@ -45,6 +48,9 @@ class Group:
         self.colour = data['colour']
         self.description = Description(data['description']) if data.get('description') is not None else None
 
+    def __repr__(self):
+        return prettify(self, 'name')
+
 
 class Description:
     """
@@ -58,6 +64,9 @@ class Description:
     def __init__(self, data):
         self.html = data['html']
         self.markdown = data['markdown']
+
+    def __repr__(self):
+        return prettify(self)
 
 
 class UserGroup(Group):
@@ -77,3 +86,6 @@ class UserGroup(Group):
     def __init__(self, data):
         super().__init__(data)
         self.playmodes = data['playmodes']
+
+    def __repr__(self):
+        return super().__repr__()

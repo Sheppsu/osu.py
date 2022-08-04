@@ -1,6 +1,8 @@
 from .user import UserCompact
 from dateutil import parser
 
+from ..util import prettify
+
 
 class Comment:
     """
@@ -80,6 +82,9 @@ class Comment:
         self.user_id = data['user_id']
         self.votes_count = data['votes_count']
 
+    def __repr__(self):
+        return prettify(self, 'message', 'user_id', 'created_at')
+
 
 class CommentBundle:
     """
@@ -149,6 +154,9 @@ class CommentBundle:
         self.user_votes = data['user_votes']
         self.users = list(map(UserCompact, data['users']))
 
+    def __repr__(self):
+        return prettify(self, 'commentable_meta', 'comments', 'users')
+
 
 class CommentableMeta:
     """
@@ -177,3 +185,6 @@ class CommentableMeta:
         self.title = data['title']
         self.type = data['type']
         self.url = data['url']
+
+    def __repr__(self):
+        return prettify(self, 'title', 'url')

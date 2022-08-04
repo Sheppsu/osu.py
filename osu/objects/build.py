@@ -1,5 +1,7 @@
 from dateutil import parser
 
+from ..util import prettify
+
 
 class Build:
     """
@@ -40,6 +42,9 @@ class Build:
             if data.get("changelog_entries") is not None else []
         self.versions = Versions(data) if "versions" in data else None
 
+    def __repr__(self):
+        return prettify(self, 'id', 'version')
+
 
 class Versions:
     """
@@ -56,6 +61,10 @@ class Versions:
     def __init__(self, data):
         self.next = Build(data['next']) if data.get('next') is not None else None
         self.previous = Build(data['previous']) if data.get('previous') is not None else None
+
+    def __repr__(self):
+        fields = [getattr(self, slot) for slot in self.__slots__ if getattr(self, slot, None)]
+        return prettify(self, *fields)
 
 
 class UpdateStream:
@@ -88,6 +97,9 @@ class UpdateStream:
         self.name = data['name']
         self.latest_build = Build(data['latest_build']) if 'latest_build' in data else None
         self.user_count = data.get('user_count', None)
+
+    def __repr__(self):
+        return prettify(self, 'display_name')
 
 
 class ChangelogEntry:
@@ -146,6 +158,9 @@ class ChangelogEntry:
         self.message = data.get('message', '')
         self.message_html = data.get('message_html', '')
 
+    def __repr__(self):
+        return prettify(self, 'title', 'major', 'created_at')
+
 
 class GithubUser:
     """
@@ -175,3 +190,6 @@ class GithubUser:
         self.osu_username = data['osu_username']
         self.user_id = data['user_id']
         self.user_url = data['user_url']
+
+    def __repr__(self):
+        return prettify(self, 'display_name')

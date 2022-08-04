@@ -1,6 +1,8 @@
 from .user import CurrentUserAttributes, UserCompact
 from dateutil import parser
 
+from ..util import prettify
+
 
 class ChatChannel:
     """
@@ -76,6 +78,9 @@ class ChatChannel:
         self.moderated = data.get("moderated")
         self.users = data.get("users")
 
+    def __repr__(self):
+        return prettify(self, 'name')
+
 
 class ChatMessage:
     """
@@ -117,3 +122,6 @@ class ChatMessage:
         self.content = data['content']
         self.is_action = data['is_action']
         self.sender = UserCompact(data['sender'])
+
+    def __repr__(self):
+        return prettify(self, 'content')

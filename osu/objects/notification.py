@@ -1,3 +1,6 @@
+from ..util import prettify
+
+
 class Notification:
     """
     Represents a notification object.
@@ -96,6 +99,9 @@ class Notification:
 
         self.source_user_id = data.get('source_user_id', None)
         self.details = Details(data['details'], self.name) if 'details' in data else None
+
+    def __repr__(self):
+        return prettify(self, 'name', 'details')
 
 
 class Details:
@@ -220,3 +226,6 @@ class Details:
             self.cover_url = data['cover_url']
             self.post_id = data['post_id']
             self.username = data['username']
+
+    def __repr__(self):
+        return prettify(self, 'title')

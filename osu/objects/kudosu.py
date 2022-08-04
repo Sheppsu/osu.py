@@ -1,5 +1,7 @@
 from dateutil import parser
 
+from ..util import prettify
+
 
 class KudosuHistory:
     """
@@ -36,6 +38,9 @@ class KudosuHistory:
         self.giver = Giver(data['giver'])
         self.post = Post(data['post'])
 
+    def __repr__(self):
+        return prettify(self, 'action', 'amount', 'giver')
+
 
 class Post:
     """
@@ -55,6 +60,9 @@ class Post:
         self.url = data['url']
         self.title = data['title']
 
+    def __repr__(self):
+        return prettify(self, 'title')
+
 
 class Giver:
     """
@@ -71,3 +79,6 @@ class Giver:
     def __init__(self, data):
         self.url = data['url']
         self.username = data['username']
+
+    def __repr__(self):
+        return prettify(self, 'username')

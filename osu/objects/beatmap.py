@@ -2,6 +2,8 @@ from ..enums import RankStatus, GameModeStr, GameModeInt
 from .user import UserCompact, CurrentUserAttributes
 from dateutil import parser
 
+from ..util import prettify
+
 
 class BeatmapsetCompact:
     """
@@ -116,6 +118,9 @@ class BeatmapsetCompact:
         self.recent_favourites = data.get('recent_favourites')
         self.related_users = data.get('related_users')
 
+    def __repr__(self):
+        return prettify(self, 'artist', 'title', 'creator')
+
 
 class Covers:
     """
@@ -150,6 +155,9 @@ class Covers:
         self.list_2x = data['list@2x']
         self.slimcover = data['slimcover']
         self.slimcover_2x = data['slimcover@2x']
+
+    def __repr__(self):
+        return prettify(self, 'cover')
 
 
 class Beatmapset(BeatmapsetCompact):
@@ -224,6 +232,9 @@ class Beatmapset(BeatmapsetCompact):
         self.ranked = RankStatus(int(data['ranked']))
         self.nominations = data['nominations'] if 'nominations' in data else None
 
+    def __repr__(self):
+        return super().__repr__()
+
 
 class BeatmapCompact:
     """
@@ -285,6 +296,9 @@ class BeatmapCompact:
         else:
             self.beatmapset = None
 
+    def __repr__(self):
+        return prettify(self, 'version', 'beatmapset')
+
 
 class BeatmapDifficultyAttributes:
     """
@@ -341,7 +355,7 @@ class BeatmapDifficultyAttributes:
     def __init__(self, data):
         data = data['attributes']
         self.max_combo = data['max_combo']
-        self.star_rating = data['star_rating']
+        self.star_rating = data['star_rating']  # TODO maybe round the star rating
         if "aim_difficulty" in data:
             self.type = "osu"
             self.mode_attributes = OsuBeatmapDifficultyAttributes(data)
@@ -357,6 +371,9 @@ class BeatmapDifficultyAttributes:
 
     def __getattr__(self, item):
         return getattr(self.mode_attributes, item)
+
+    def __repr__(self):
+        return prettify(self, 'star_rating', 'type', 'mode_attributes')
 
 
 class OsuBeatmapDifficultyAttributes:
@@ -391,6 +408,9 @@ class OsuBeatmapDifficultyAttributes:
         self.slider_factor = data['slider_factor']
         self.speed_difficulty = data['speed_difficulty']
 
+    def __repr__(self):
+        return prettify(self, 'aim_difficulty', 'approach_rate', 'overall_difficulty')
+
 
 class TaikoBeatmapDifficultyAttributes:
     """
@@ -422,6 +442,9 @@ class TaikoBeatmapDifficultyAttributes:
         self.colour_difficulty = data['colour_difficulty']
         self.great_hit_window = data['great_hit_window']
 
+    def __repr__(self):
+        return prettify(self, 'approach_rate', 'great_hit_window')
+
 
 class FruitsBeatmapDifficultyAttributes:
     """
@@ -439,6 +462,9 @@ class FruitsBeatmapDifficultyAttributes:
 
     def __init__(self, data):
         self.approach_rate = data['approach_rate']
+
+    def __repr__(self):
+        return prettify(self, 'approach_rate')
 
 
 class ManiaBeatmapDifficultyAttributes:
@@ -461,6 +487,9 @@ class ManiaBeatmapDifficultyAttributes:
         self.score_multiplier = data['score_multiplier']
         self.great_hit_window = data['great_hit_window']
 
+    def __repr__(self):
+        return prettify(self, 'score_multiplier', 'great_hit_window')
+
 
 class Failtimes:
     """
@@ -479,6 +508,12 @@ class Failtimes:
             self.exit = data['exit']
         if 'fail' in data:
             self.fail = data['fail']
+
+    def __repr__(self):
+        try:
+            return prettify(self, 'exit')
+        except AttributeError:
+            return prettify(self, 'fail')
 
 
 class Beatmap(BeatmapCompact):
@@ -554,6 +589,9 @@ class Beatmap(BeatmapCompact):
         self.ar = data['ar']
         self.accuracy = data['accuracy']
 
+    def __repr__(self):
+        return super().__repr__()
+
 
 class BeatmapPlaycount:
     """
@@ -578,3 +616,6 @@ class BeatmapPlaycount:
         self.beatmap = BeatmapCompact(data['beatmap']) if data['beatmap'] is not None else None
         self.beatmapset = BeatmapsetCompact(data['beatmapset']) if data['beatmapset'] is not None else None
         self.count = data['count']
+
+    def __repr__(self):
+        return prettify(self, 'beatmap_id', 'count')
