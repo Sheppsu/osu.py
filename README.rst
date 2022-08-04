@@ -17,6 +17,7 @@ Major features/capabilties:
  - Client class which carries out all api requests.
  - AsynchronousClient class which is the same as Client but all api request functions are asynchronous.
  - NotificationWebsocket class for using the notification websocket feature of osu api v2
+ - Builtin rate limit handling
  - Objects used to contain almost all the data returned from osu.py for any given api request.
  - Support for Authorization Code Grant and Client Credentials Grant.
  - Refresh and access token is automatically managed.
