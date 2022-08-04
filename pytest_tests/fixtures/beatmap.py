@@ -80,7 +80,7 @@ def sample_user_beatmap_scores():
         "scores": [
             {
                 "accuracy": 0.9725056689342404,
-                "mods": Mods.DoubleTime | Mods.Hidden,
+                "mods": Mods.Hidden | Mods.DoubleTime,
             },
             {
                 "accuracy": 0.9747732426303855,

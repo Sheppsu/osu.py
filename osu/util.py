@@ -50,7 +50,7 @@ def prettify(cls: object, *fields: str) -> str:
 
 
 def parse_enum_args(*args):
-    args = [arg.value for arg in args if isinstance(arg, Enum)]
+    args = [arg.value if isinstance(arg, Enum) else arg for arg in args]
     return args if len(args) != 1 else args[0]
 
 
