@@ -1,7 +1,5 @@
 import pytest
 
-from osu import UserBeatmapType
-
 
 class TestAsyncBeatmap:
     @pytest.mark.asyncio
