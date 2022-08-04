@@ -1,6 +1,6 @@
 from pytest_asyncio import fixture
 
-from osu import UserBeatmapType
+from osu import UserBeatmapType, Mods
 
 
 @fixture
@@ -80,15 +80,15 @@ def sample_user_beatmap_scores():
         "scores": [
             {
                 "accuracy": 0.9725056689342404,
-                "mods": ["HD", "DT"],
+                "mods": Mods.DoubleTime | Mods.Hidden,
             },
             {
                 "accuracy": 0.9747732426303855,
-                "mods": ["DT"],
+                "mods": Mods.DoubleTime,
             },
             {
                 "accuracy": 0.9810090702947846,
-                "mods": [],
+                "mods": None,
             },
         ],
     }
