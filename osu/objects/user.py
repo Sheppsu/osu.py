@@ -577,4 +577,4 @@ class CurrentUserAttributes:
                 setattr(self, k, v)
 
     def __repr__(self):
-        return prettify(self, 'vote_score')
+        return prettify(self, 'type')
