@@ -38,7 +38,8 @@ class Build:
         self.update_stream = UpdateStream(data['update_stream']) if data.get('update_stream') is not None else None
         self.users = data['users']
         self.version = data['version']
-        self.changelog_entries = list(map(ChangelogEntry, data['changelog_entries'])) if data.get("changelog_entries") is not None else []
+        self.changelog_entries = list(map(ChangelogEntry, data['changelog_entries'])) \
+            if data.get("changelog_entries") is not None else []
         self.versions = Versions(data) if "versions" in data else None
 
     def __repr__(self):

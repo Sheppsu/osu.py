@@ -29,7 +29,8 @@ class Scope:
     def __init__(self, *scopes):
         for scope in scopes:
             if scope not in self.valid_scopes:
-                raise NameError(f"{scope} is not a valid scope. The valid scopes consist of {','.join(self.valid_scopes)}")
+                raise NameError(f"{scope} is not a valid scope. The valid scopes consist of "
+                                f"{','.join(self.valid_scopes)}")
         self.scopes = ' '.join(scopes)
         self.scopes_list = list(scopes)
 

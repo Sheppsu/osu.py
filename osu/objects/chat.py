@@ -65,7 +65,8 @@ class ChatChannel:
 
     def __init__(self, data):
         self.channel_id = data.get('channel_id')
-        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], "ChatChannelUserAttributes") \
+        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'],
+                                                             "ChatChannelUserAttributes") \
             if data.get("current_user_attributes") is not None else None
         self.name = data.get("name")
         self.description = data.get("description")

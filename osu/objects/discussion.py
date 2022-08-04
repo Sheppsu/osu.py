@@ -70,7 +70,9 @@ class BeatmapsetDiscussion:
         self.can_be_resolved = data['can_be_resolved']
         self.can_grant_kudosu = data['can_grant_kudosu']
         self.created_at = parser.parse(data['created_at'])
-        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], 'BeatmapsetDiscussionPermissions') if 'current_user_attributes' in data else None
+        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'],
+                                                             'BeatmapsetDiscussionPermissions') \
+            if 'current_user_attributes' in data else None
         self.deleted_at = parser.parse(data['deleted_at']) if data['deleted_at'] is not None else None
         self.deleted_by_id = data['deleted_by_id'] if 'deleted_by_id' in data else None
         self.id = data['id']

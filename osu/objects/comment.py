@@ -145,7 +145,8 @@ class CommentBundle:
         self.has_more = data['has_more']
         self.has_more_id = data['has_more_id']
         self.included_comments = list(map(Comment, data['included_comments']))
-        self.pinned_comments = list(map(Comment, data['pinned_comments'])) if data['pinned_comments'] is not None else None
+        self.pinned_comments = list(map(Comment, data['pinned_comments'])) \
+            if data['pinned_comments'] is not None else None
         self.sort = data['sort']
         self.top_level_count = data['top_level_count']
         self.total = data['total']

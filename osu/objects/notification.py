@@ -207,7 +207,10 @@ class Details:
             Username of source_user_id
     """
     def __init__(self, data, event_name):
-        if event_name in ('beatmapset_discussion_lock', 'beatmapset_discussion_unlock', 'beatmapset_disqualify', 'beatmapset_love', 'beatmapset_nominate', 'beatmapset_qualify', 'beatmapset_remove_from_loved', 'beatmapset_reset_nominations', 'channel_message'):
+        if event_name in ('beatmapset_discussion_lock', 'beatmapset_discussion_unlock',
+                          'beatmapset_disqualify', 'beatmapset_love', 'beatmapset_nominate',
+                          'beatmapset_qualify', 'beatmapset_remove_from_loved', 'beatmapset_reset_nominations',
+                          'channel_message'):
             self.cover_url = data['cover_url']
             self.title = data['title']
             self.username = data['username']

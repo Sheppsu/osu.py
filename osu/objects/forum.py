@@ -100,14 +100,14 @@ class ForumTopic:
 
     def __repr__(self):
         return prettify(self, 'user_id', 'title')
-        
-        
+
+
 class Poll:
     """
     **Attributes**
-    
+
     allow_vote_change: :class:`bool`
-    
+
     ended_at: :class:`datetime.datetime` or :class:`NoneType`
 
     hide_incomplete_results: :class:`bool`
@@ -125,7 +125,7 @@ class Poll:
 
     total_vote_count: :class:`int`
     """
-    
+
     __slots__ = (
         "allow_vote_change", "ended_at", "hide_incomplete_results", "last_vote_at",
         "max_votes", "options", "started_at", "title", "total_vote_count"

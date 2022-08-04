@@ -102,7 +102,9 @@ class BeatmapsetCompact:
 
         # Documentation lacks information on all the possible attributes :/
         self.beatmaps = list(map(Beatmap, data['beatmaps'])) if 'beatmaps' in data else None
-        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'], 'BeatmapsetDiscussionPermissions') if 'current_user_attributes' in data else None
+        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'],
+                                                             'BeatmapsetDiscussionPermissions') \
+            if 'current_user_attributes' in data else None
         self.user = UserCompact(data['user']) if 'user' in data else None
         self.converts = data.get('converts')
         self.description = data.get('description')
@@ -260,7 +262,8 @@ class BeatmapCompact:
     **Possible Attributes**
 
     beatmapset: :class:`Beatmapset` | :class:`BeatmapsetCompact` | :class:`NoneType`
-        Beatmapset for Beatmap object, BeatmapsetCompact for BeatmapCompact object. null if the beatmap doesn't have associated beatmapset (e.g. deleted).
+        Beatmapset for Beatmap object, BeatmapsetCompact for BeatmapCompact object.
+        null if the beatmap doesn't have associated beatmapset (e.g. deleted).
 
     checksum: :class:`str` or :class:`NoneType`
 
@@ -299,7 +302,8 @@ class BeatmapCompact:
 
 class BeatmapDifficultyAttributes:
     """
-    Represent beatmap difficulty attributes. Following fields are always present and then there are additional fields for different rulesets.
+    Represent beatmap difficulty attributes. Following fields are always present and
+    then there are additional fields for different rulesets.
 
     **Attributes**
 
@@ -309,7 +313,8 @@ class BeatmapDifficultyAttributes:
 
     star_rating: :class:`float`
 
-    mode_attributes: :class:`OsuBeatmapDifficultyAttributes` | :class:`TaikoBeatmapDifficultyAttributes` | :class:`FruitsBeatmapDifficultyAttributes` | :class:`ManiaBeatmapDifficultyAttributes`
+    mode_attributes: :class:`OsuBeatmapDifficultyAttributes` | :class:`TaikoBeatmapDifficultyAttributes` |
+    :class:`FruitsBeatmapDifficultyAttributes` | :class:`ManiaBeatmapDifficultyAttributes`
 
     osu
         aim_difficulty: :class:`float`

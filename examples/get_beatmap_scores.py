@@ -1,4 +1,4 @@
-from osu import Client
+from osu import Client, GameModeStr
 import os
 
 
@@ -10,6 +10,12 @@ client = Client.from_client_credentials(client_id, client_secret, redirect_url)
 
 ID = 509388
 beatmap_scores = client.get_beatmap_scores(ID)
-print("Top 5 scores on this beatmap:")
+print("Top 5 scores on this beatmap (Standard):")
+print("\n".join([f'{i+1}. {score.user.username} {"+"+score.mods.to_readable_string() if score.mods is not None else ""} - '
+                 f'{score.pp}' for i, score in enumerate(beatmap_scores.scores[:5])]))
+
+
+beatmap_scores = client.get_beatmap_scores(ID, GameModeStr.TAIKO)
+print("Top 5 scores on this beatmap (Taiko):")
 print("\n".join([f'{i+1}. {score.user.username} {"+"+score.mods.to_readable_string() if score.mods is not None else ""} - '
                  f'{score.pp}' for i, score in enumerate(beatmap_scores.scores[:5])]))

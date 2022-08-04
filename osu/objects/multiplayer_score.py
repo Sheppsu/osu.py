@@ -61,7 +61,8 @@ class MultiplayerScore:
         self.statistics = ScoreStatistics(data['statistics'])
         self.passed = data['passed']
         self.position = data['position']
-        self.scores_around = MultiplayerScoresAround(data['scores_around']) if data['scores_around'] is not None else None
+        self.scores_around = MultiplayerScoresAround(data['scores_around']) \
+            if data['scores_around'] is not None else None
         self.user = data['user']
 
     def __repr__(self):

@@ -5,7 +5,8 @@ from .constants import mod_abbreviations, incompatible_mods, mod_abbreviations_r
 
 class Mods(IntFlag):
     """
-    IntFlag enum for all mods. Info gathered from https://github.com/ppy/osu-web/blob/973315aded8a5762fc00a9f245337802c27bd213/app/Libraries/Mods.php
+    IntFlag enum for all mods. Info gathered from
+    https://github.com/ppy/osu-web/blob/973315aded8a5762fc00a9f245337802c27bd213/app/Libraries/Mods.php
     and https://github.com/ppy/osu-web/blob/973315aded8a5762fc00a9f245337802c27bd213/database/mods.json
 
     **List of mods, their acronyms, and their bitwise representation**
@@ -124,7 +125,8 @@ class Mods(IntFlag):
         **Parameters**
 
         mods: Sequence[Union[:class:`Mods`, :class:`str`, :class:`int`]]
-            Sequence of :class:`Mods`, :class:`str`, and/or :class:`int` objects to be parsed and returned as a :class:`Mods` object.
+            Sequence of :class:`Mods`, :class:`str`, and/or :class:`int` objects
+            to be parsed and returned as a :class:`Mods` object.
 
         **Returns**
 
@@ -140,7 +142,8 @@ class Mods(IntFlag):
                 elif mod in Mods.__members__:
                     ret.append(Mods[mod])
                 else:
-                    raise ValueError(f"Mods represented as strings must be either the full name or abbreviation. '{mod}' does not fall under either of those.")
+                    raise ValueError("Mods represented as strings must be either the full name or abbreviation. "
+                                     f"'{mod}' does not fall under either of those.")
             elif isinstance(mod, int):
                 ret.append(Mods(mod))
             else:
@@ -322,3 +325,23 @@ class UserBeatmapType(Enum):
     MOST_PLAYED = 'most_played'
     PENDING = 'pending'
     RANKED = 'ranked'
+
+
+class RankingType(Enum):
+    """
+    Ranking types to sort by for the get_ranking endpoint.
+
+    **Ranking types**
+
+    SPOTLIGHT = 'charts'
+
+    COUNTRY = 'country'
+
+    PERFORMANCE = 'performance'
+
+    SCORE = 'score'
+    """
+    SPOTLIGHT = 'charts'
+    COUNTRY = 'country'
+    PERFORMANCE = 'performance'
+    SCORE = 'score'
