@@ -1,3 +1,5 @@
-CLIENT_ID = 15033
-CLIENT_SECRET = "dSbJw0V5RWbl3rBlOksmtNGHFPsz0PJDHlREOPPS"
-REDIRECT_URI = "http://localhost:8080/callback"
+import os
+
+CLIENT_ID = int(os.getenv("CLIENT_ID"))
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+REDIRECT_URI = os.getenv("REDIRECT_URI")

@@ -35,7 +35,7 @@ class KudosuHistory:
         self.amount = data['amount']
         self.model = data['model']
         self.created_at = parser.parse(data['created_at'])
-        self.giver = Giver(data['giver'])
+        self.giver = Giver(data['giver']) if data.get('giver') else None
         self.post = Post(data['post'])
 
     def __repr__(self):

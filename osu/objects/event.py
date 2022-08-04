@@ -105,8 +105,8 @@ class Event:
             self.user = EventUser(data['user'])
 
     def __repr__(self):
-        slots = ['type', 'achievement', 'user', 'beatmap', 'score_rank', 'beatmapset']
-        fields = [getattr(self, slot) for slot in slots if getattr(self, slot, None)]
+        slots = ['type', 'user', 'beatmapset']
+        fields = [slot for slot in slots if getattr(self, slot, None)]
         return prettify(self, *fields)
 
 
@@ -127,7 +127,7 @@ class EventUser:
     def __init__(self, data):
         self.username = data['username']
         self.url = data['url']
-        self.previous_username = data['previousUsername']
+        self.previous_username = data.get('previous_username', None)
 
     def __repr__(self):
         return prettify(self, 'username', 'url')
