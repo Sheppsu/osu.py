@@ -293,6 +293,9 @@ class GameModeInt(IntEnum):
 
 
 class WikiSearchMode(Enum):
+    """
+    Enum for wiki search modes. Relevant to :func:`osu.Client.search`.
+    """
     ALL = 'all'
     USER = 'user'
     WIKI = 'wiki_page'
@@ -300,7 +303,7 @@ class WikiSearchMode(Enum):
 
 class UserBeatmapType(Enum):
     """
-    User beatmap types. This enum is relevant at the get_user_beatmaps endpoint.
+    User beatmap types. Relavent to :func:`osu.Client.get_user_beatmaps`.
 
     **User beatmap types**
 
@@ -329,7 +332,7 @@ class UserBeatmapType(Enum):
 
 class RankingType(Enum):
     """
-    Ranking types to sort by for the get_ranking endpoint.
+    Ranking types to sort by for :func:`osu.Client.get_ranking`.
 
     **Ranking types**
 
@@ -345,3 +348,20 @@ class RankingType(Enum):
     COUNTRY = 'country'
     PERFORMANCE = 'performance'
     SCORE = 'score'
+
+
+class CommentSort(Enum):
+    """
+    Type to sort comments by. Relevant to :func:`osu.Client.get_comments`.
+
+    **Comment sorts**
+
+    NEW = 'new'
+
+    OLD = 'old'
+
+    TOP = 'top'
+    """
+    NEW = 'new'
+    OLD = 'old'
+    TOP = 'top'
