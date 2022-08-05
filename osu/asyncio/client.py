@@ -829,7 +829,7 @@ class AsynchronousClient:
 
     async def get_comments(self, commentable_type: Optional[str] = None, commentable_id: Optional[int] = None,
                            cursor: Optional[dict] = None, parent_id: Optional[int] = None,
-                           sort: Optional[str] = None) -> CommentBundle:
+                           sort: Optional[Union[str, CommentSort]] = None) -> CommentBundle:
         """
         Returns a list comments and their replies up to 2 levels deep.
 
@@ -850,7 +850,7 @@ class AsynchronousClient:
         parent_id: Optional[:class:`int`]
             Limit to comments which are reply to the specified id. Specify 0 to get top level comments.
 
-        sort: Optional[:class:`str`]
+        sort: Optional[Union[:class:`str`, :class:`CommentSort`]]
             Sort option as defined in :ref:`CommentSort`.
             Defaults to new for guests and user-specified default when authenticated.
 
@@ -859,6 +859,7 @@ class AsynchronousClient:
         :class:`CommentBundle`
             pinned_comments is only included when commentable_type and commentable_id are specified.
         """
+        sort = parse_enum_args(sort)
         return CommentBundle(await self.http.make_request('get', Path.get_comments(),
                                                           commentable_type=commentable_type,
                                                           commentable_id=commentable_id, **cursor if cursor else {},
