@@ -379,3 +379,115 @@ class MultiplayerScoresSort(Enum):
     """
     ASC = 'score_asc'
     DESC = 'score_desc'
+
+
+class BeatmapsetEventType(Enum):
+    """
+    Enum for beatmapset event types. Relevant to :func:`osu.Client.get_beatmapset_events`.
+
+    **Beatmapset event types**
+
+    NOMINATE = 'nominate'
+
+    LOVE = 'love'
+
+    REMOVE_FROM_LOVED = 'unlove'
+
+    QUALIFY = 'qualify'
+
+    DISQUALIFY = 'disqualify'
+
+    APPROVE = 'approve'
+
+    RANK = 'rank'
+
+    KUDOSU_ALLOW = 'kudosu_allow'
+
+    KUDOSU_DENY = 'kudosu_deny'
+
+    KUDOSU_GAIN = 'kudosu_gain'
+
+    KUDOSU_LOST = 'kudosu_lost'
+
+    KUDOSU_RECALCULATE = 'kudosu_recalculate'
+
+    ISSUE_RESOLVE = 'issue_resolve'
+
+    ISSUE_REOPEN = 'issue_reopen'
+
+    DISCUSSION_LOCK = 'discussion_lock'
+
+    DISCUSSION_UNLOCK = 'discussion_unlock'
+
+    DISCUSSION_DELETE = 'discussion_delete'
+
+    DISCUSSION_RESTORE = 'discussion_restore'
+
+    DISCUSSION_POST_DELETE = 'discussion_post_delete'
+
+    DISCUSSION_POST_RESTORE = 'discussion_post_restore'
+
+    NOMINATION_RESET = 'nomination_reset'
+
+    NOMINATION_RESET_RECEIVED = 'nomination_reset_received'
+
+    GENRE_EDIT = 'genre_edit'
+
+    LANGUAGE_EDIT = 'language_edit'
+
+    NSFW_TOGGLE = 'nsfw_toggle'
+
+    OFFSET_EDIT = 'offset_edit'
+
+    BEATMAP_OWNER_CHANGE = 'beatmap_owner_change'
+    """
+
+    NOMINATE = 'nominate'
+    LOVE = 'love'
+    REMOVE_FROM_LOVED = 'remove_from_loved'
+    QUALIFY = 'qualify'
+    DISQUALIFY = 'disqualify'
+    APPROVE = 'approve'
+    RANK = 'rank'
+
+    KUDOSU_ALLOW = 'kudosu_allow'
+    KUDOSU_DENY = 'kudosu_deny'
+    KUDOSU_GAIN = 'kudosu_gain'
+    KUDOSU_LOST = 'kudosu_lost'
+    KUDOSU_RECALCULATE = 'kudosu_recalculate'
+
+    ISSUE_RESOLVE = 'issue_resolve'
+    ISSUE_REOPEN = 'issue_reopen'
+
+    DISCUSSION_LOCK = 'discussion_lock'
+    DISCUSSION_UNLOCK = 'discussion_unlock'
+
+    DISCUSSION_DELETE = 'discussion_delete'
+    DISCUSSION_RESTORE = 'discussion_restore'
+
+    DISCUSSION_POST_DELETE = 'discussion_post_delete'
+    DISCUSSION_POST_RESTORE = 'discussion_post_restore'
+
+    NOMINATION_RESET = 'nomination_reset'
+    NOMINATION_RESET_RECEIVED = 'nomination_reset_received'
+
+    GENRE_EDIT = 'genre_edit'
+    LANGUAGE_EDIT = 'language_edit'
+    NSFW_TOGGLE = 'nsfw_toggle'
+    OFFSET_EDIT = 'offset_edit'
+
+    BEATMAP_OWNER_CHANGE = 'beatmap_owner_change'
+
+
+class BeatmapsetEventSort(Enum):
+    """
+    Sort option for beatmapset events. Relevant to :func:`osu.Client.get_beatmapset_events`.
+
+    **Beatmapset event sorts**
+
+    ASC = 'id_asc'
+
+    DESC = 'id_desc'
+    """
+    ASC = 'id_asc'
+    DESC = 'id_desc'
