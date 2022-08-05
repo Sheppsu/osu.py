@@ -862,7 +862,7 @@ class AsynchronousClient:
         sort = parse_enum_args(sort)
         return CommentBundle(await self.http.make_request('get', Path.get_comments(),
                                                           commentable_type=commentable_type,
-                                                          commentable_id=commentable_id, **cursor if cursor else {},
+                                                          commentable_id=commentable_id, **(cursor if cursor else {}),
                                                           parent_id=parent_id, sort=sort))
 
     async def post_comment(self, commentable_id: Optional[int] = None, commentable_type: Optional[str] = None,
@@ -1119,7 +1119,7 @@ class AsynchronousClient:
 
             }
         """
-        resp = await self.http.make_request('get', Path.get_topic_and_posts(topic), **cursor if cursor else {},
+        resp = await self.http.make_request('get', Path.get_topic_and_posts(topic), **(cursor if cursor else {}),
                                             sort=sort,
                                             limit=limit, start=start, end=end)
         return {
@@ -1219,7 +1219,7 @@ class AsynchronousClient:
                 'total']} if mode is None or mode == 'all' or mode == 'wiki_page' else None
         }
 
-    async def get_user_highscore(self, room: int, playlist: int, user: int) -> MultiplayerScores:
+    async def get_user_highscore(self, room: int, playlist: int, user: int) -> MultiplayerScore:
         """
         Requires OAuth and scope lazer
 
@@ -1238,11 +1238,11 @@ class AsynchronousClient:
 
         :class:`MultiplayerScores`
         """
-        # Doesn't say response type
-        return MultiplayerScores(await self.http.make_request('get', Path.get_user_high_score(room, playlist, user)))
+        return MultiplayerScore(await self.http.make_request('get', Path.get_user_high_score(room, playlist, user)))
 
     async def get_scores(self, room: int, playlist: int, limit: Optional[int] = None,
-                         sort: Optional[str] = None, cursor: Optional[dict] = None) -> MultiplayerScores:
+                         sort: Optional[Union[str, MultiplayerScoresSort]] = None,
+                         cursor: Optional[dict] = None) -> MultiplayerScores:
         """
         Requires OAuth and scope public
 
@@ -1257,7 +1257,7 @@ class AsynchronousClient:
         limit: Optional[:class:`int`]
             Number of scores to be returned.
 
-        sort: Optional[:class:`str`]
+        sort: Optional[Union[:class:`str`, :class:`MultiplayerScoresSort`]]
             :ref:`MultiplayerScoresSort` parameter.
 
         cursor: Optional[:class:`dict`]
@@ -1266,10 +1266,10 @@ class AsynchronousClient:
 
         :class:`MultiplayerScores`
         """
-        # Doesn't say response type
+        sort = parse_enum_args(sort)
         return MultiplayerScores(
             await self.http.make_request('get', Path.get_scores(room, playlist), limit=limit, sort=sort,
-                                         **cursor if cursor else {}))
+                                         **(cursor if cursor else {})))
 
     async def get_score(self, room: int, playlist: int, score: int) -> MultiplayerScore:
         """
@@ -1290,7 +1290,6 @@ class AsynchronousClient:
 
         :class:`MultiplayerScore`
         """
-        # Doesn't say response type
         return MultiplayerScore(await self.http.make_request('get', Path.get_score(room, playlist, score)))
 
     async def get_news_listing(self, limit: Optional[int] = None, year: Optional[int] = None,
@@ -1470,7 +1469,7 @@ class AsynchronousClient:
         mode, type = parse_enum_args(mode, type)
         return Rankings(
             await self.http.make_request('get', Path.get_ranking(mode, type), country=country,
-                                         **cursor if cursor else {},
+                                         **(cursor if cursor else {}),
                                          filter=filter,
                                          spotlight=spotlight, variant=variant))
 

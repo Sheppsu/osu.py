@@ -572,7 +572,7 @@ class Client:
         """
         This endpoint allows you to create a new PM channel.
 
-        Requires OAuth and scope chat.write
+        Requires OAuth, scope chat.write, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -613,7 +613,7 @@ class Client:
         """
         This endpoint returns new messages since the given message_id along with updated channel 'presence' data.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -648,7 +648,7 @@ class Client:
         """
         This endpoint returns the chat messages for a specific channel.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameter**
 
@@ -676,7 +676,7 @@ class Client:
         """
         This endpoint sends a message to the specified channel.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -700,7 +700,7 @@ class Client:
         """
         This endpoint allows you to join a public channel.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -718,7 +718,7 @@ class Client:
         """
         This endpoint allows you to leave a public channel.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -732,7 +732,7 @@ class Client:
         """
         This endpoint marks the channel as having being read up to the given message_id.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -753,7 +753,7 @@ class Client:
         """
         This endpoint returns a list of all joinable public channels.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Returns**
 
@@ -766,7 +766,7 @@ class Client:
         This endpoint creates a new channel if doesn't exist and joins it.
         Currently only for rejoining existing PM channels which the user has left.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameter**
 
@@ -790,7 +790,7 @@ class Client:
         """
         Gets details of a chat channel.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameter**
 
@@ -846,7 +846,7 @@ class Client:
         """
         sort = parse_enum_args(sort)
         return CommentBundle(self.http.make_request('get', Path.get_comments(), commentable_type=commentable_type,
-                                                    commentable_id=commentable_id, **cursor if cursor else {},
+                                                    commentable_id=commentable_id, **(cursor if cursor else {}),
                                                     parent_id=parent_id, sort=sort))
 
     def post_comment(self, commentable_id: Optional[int] = None, commentable_type: Optional[str] = None,
@@ -854,7 +854,7 @@ class Client:
         """
         Posts a new comment to a comment thread.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameter**
 
@@ -903,7 +903,7 @@ class Client:
         """
         Edit an existing comment.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -924,7 +924,7 @@ class Client:
         """
         Deletes the specified comment.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -941,7 +941,7 @@ class Client:
         """
         Upvotes a comment.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -958,7 +958,7 @@ class Client:
         """
         Un-upvotes a comment.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -975,7 +975,7 @@ class Client:
         """
         Create a post replying to the specified topic.
 
-        Requires OAuth and scope forum.write
+        Requires OAuth, scope forum.write, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -1000,7 +1000,7 @@ class Client:
         """
         Create a new topic.
 
-        Requires OAuth and scope forum.write
+        Requires OAuth, scope forum.write, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -1105,7 +1105,7 @@ class Client:
 
             }
         """
-        resp = self.http.make_request('get', Path.get_topic_and_posts(topic), **cursor if cursor else {},
+        resp = self.http.make_request('get', Path.get_topic_and_posts(topic), **(cursor if cursor else {}),
                                       sort=sort, limit=limit, start=start, end=end)
         return {
             'cursor': resp['cursor'],
@@ -1204,9 +1204,9 @@ class Client:
             if mode is None or mode == 'all' or mode == 'wiki_page' else None
         }
 
-    def get_user_highscore(self, room: int, playlist: int, user: int) -> MultiplayerScores:
+    def get_user_highscore(self, room: int, playlist: int, user: int) -> MultiplayerScore:
         """
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -1223,13 +1223,12 @@ class Client:
 
         :class:`MultiplayerScores`
         """
-        # Doesn't say response type
-        return MultiplayerScores(self.http.make_request('get', Path.get_user_high_score(room, playlist, user)))
+        return MultiplayerScore(self.http.make_request('get', Path.get_user_high_score(room, playlist, user)))
 
     def get_scores(self, room: int, playlist: int, limit: Optional[int] = None,
                    sort: Optional[str] = None, cursor: Optional[dict] = None) -> MultiplayerScores:
         """
-        Requires OAuth and scope public
+        Requires OAuth, scope public, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -1251,13 +1250,13 @@ class Client:
 
         :class:`MultiplayerScores`
         """
-        # Doesn't say response type
+        sort = parse_enum_args(sort)
         return MultiplayerScores(self.http.make_request('get', Path.get_scores(room, playlist),
-                                                        limit=limit, sort=sort, **cursor if cursor else {}))
+                                                        limit=limit, sort=sort, **(cursor if cursor else {})))
 
     def get_score(self, room: int, playlist: int, score: int) -> MultiplayerScore:
         """
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -1274,7 +1273,6 @@ class Client:
 
         :class:`MultiplayerScore`
         """
-        # Doesn't say response type
         return MultiplayerScore(self.http.make_request('get', Path.get_score(room, playlist, score)))
 
     def get_news_listing(self, limit: Optional[int] = None, year: Optional[int] = None,
@@ -1361,7 +1359,7 @@ class Client:
         """
         This endpoint returns a list of the user's unread notifications. Sorted descending by id with limit of 50.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -1399,7 +1397,7 @@ class Client:
         """
         This endpoint allows you to mark notifications read.
 
-        Requires OAuth and scope lazer
+        Requires OAuth, scope lazer, a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -1451,7 +1449,7 @@ class Client:
         """
         mode, type = parse_enum_args(mode, type)
         return Rankings(self.http.make_request('get', Path.get_ranking(mode, type), country=country,
-                                               **cursor if cursor else {}, filter=filter,
+                                               **(cursor if cursor else {}), filter=filter,
                                                spotlight=spotlight, variant=variant))
 
     def get_spotlights(self) -> Spotlights:
@@ -1470,7 +1468,7 @@ class Client:
         """
         Similar to get_user but with authenticated user (token owner) as user id.
 
-        Requires OAuth and scope identify
+        Requires OAuth, scope identify, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
