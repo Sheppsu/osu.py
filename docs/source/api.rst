@@ -394,27 +394,3 @@ UserBeatmapType
 ^^^^^^^^^^^^^^^
 .. autoclass:: osu.UserBeatmapType
    :members:
-
-
-Other Information
------------------
-
-.. _CommentSort:
-
-CommentSort
-^^^^^^^^^^^
-
-Available sort types are new, old, top.
-
-.. csv-table:: CommentSort
-   :file: _static/CommentSort.csv
-
-.. _MultiplayerScoresSort:
-
-MultiplayerScoresSort
-^^^^^^^^^^^^^^^^^^^^^
-
-Sort option for multiplayer scores index.
-
-.. csv-table:: MultiplayerScoresSort
-   :file: _static/MultiplayerScoresSort.csv

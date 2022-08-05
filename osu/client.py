@@ -829,14 +829,14 @@ class Client:
             The id of the resource to get comments for.
 
         cursor: Optional[:class:`dict`]
-            Pagination option. See :ref:`CommentSort` for detail.
+            Pagination option. See :class:`CommentSort` for detail.
             The format follows Cursor except it's not currently included in the response.
 
         parent_id: Optional[:class:`int`]
             Limit to comments which are reply to the specified id. Specify 0 to get top level comments.
 
         sort: Optional[Union[:class:`str`, :class:`CommentSort`]]
-            Sort option as defined in :ref:`CommentSort`.
+            Sort option as defined in :class:`CommentSort`.
             Defaults to new for guests and user-specified default when authenticated.
 
         **Returns**
@@ -1226,7 +1226,7 @@ class Client:
         return MultiplayerScore(self.http.make_request('get', Path.get_user_high_score(room, playlist, user)))
 
     def get_scores(self, room: int, playlist: int, limit: Optional[int] = None,
-                   sort: Optional[str] = None, cursor: Optional[dict] = None) -> MultiplayerScores:
+                   sort: Optional[Union[str, MultiplayerScoresSort]] = None, cursor: Optional[dict] = None) -> MultiplayerScores:
         """
         Requires OAuth, scope public, and a user (authorization code grant or delegate scope)
 
@@ -1241,8 +1241,8 @@ class Client:
         limit: Optional[:class:`int`]
             Number of scores to be returned.
 
-        sort: Optional[:class:`str`]
-            :ref:`MultiplayerScoresSort` parameter.
+        sort: Optional[Union[:class:`str`, :class:`MultiplayerScoresSort`]]
+
 
         cursor: Optional[:class:`dict`]
 
