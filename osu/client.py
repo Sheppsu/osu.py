@@ -5,6 +5,7 @@ from .enums import *
 from .auth import AuthHandler
 from .util import parse_mods_arg, parse_enum_args
 from typing import Union, Optional, Sequence, Dict
+from datetime import datetime
 
 
 class Client:
@@ -1678,6 +1679,56 @@ class Client:
         :class:`WikiPage`
         """
         return WikiPage(self.http.make_request('get', Path.get_wiki_page(locale, path)))
+
+    def get_beatmapset_events(self, page: Optional[int] = None, limit: Optional[int] = None,
+                              sort: Optional[Union[str, BeatmapsetEventSort]] = None,
+                              type: Optional[Union[str, BeatmapsetEventType]] = None,
+                              min_date: Optional[Union[str, datetime]] = None,
+                              max_date: Optional[Union[str, datetime]] = None) -> \
+            Dict[str, Union[Sequence[BeatmapsetEvent], Dict, Sequence[UserCompact]]]:
+        """
+        Returns a list of beatmapset events.
+
+        Requires OAuth and scope public.
+
+        **Parameters**
+
+        page: Optional[:class:`int`]
+
+        limit: Optional[:class:`int`]
+
+        sort: Optional[Union[:class:`str`, :class:`BeatmapsetEventSort`]]
+            Specified a sort order.
+
+        type: Optional[Union[:class:`str`, :class:`BeatmapsetEventType`]]
+            Specifies for only a certain type of event to be returned.
+
+        **Returns**
+
+        Dict[str, Union[Sequence[BeatmapsetEvent], Dict, Sequence[UserCompact]]]
+
+        {
+
+            'events': Sequence[BeatmapsetEvent],
+
+            'reviews_config': Dict,
+
+            'users': Sequence[UserCompact]
+
+        }
+        """
+        sort, type = parse_enum_args(sort, type)
+        if isinstance(min_date, datetime):
+            min_date = min_date.isoformat()
+        if isinstance(max_date, datetime):
+            max_date = max_date.isoformat()
+        resp = self.http.make_request('get', Path.get_beatmapset_events(), page=page, limit=limit, sort=sort,
+                                      type=type, min_date=min_date, max_date=max_date)
+        return {
+            "events": [BeatmapsetEvent(event) for event in resp['events']],
+            "reviews_config": resp['reviewsConfig'],
+            "users": [UserCompact(user) for user in resp['users']],
+        }
 
     # Undocumented
 
