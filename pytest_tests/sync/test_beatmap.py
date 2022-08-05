@@ -1,4 +1,4 @@
-from osu import UserBeatmapType
+from osu import BeatmapsetEventType
 
 
 class TestBeatmap:
@@ -97,3 +97,11 @@ class TestBeatmap:
         assert beatmap.beatmapset.title == sample_beatmap["title"]
         assert beatmap.beatmapset.artist == sample_beatmap["artist"]
         assert beatmap.id == sample_beatmap["id"]
+
+    def test_get_beatmapset_events(self, client):
+        for event_type in BeatmapsetEventType:
+            data = client.get_beatmapset_events(type=event_type)
+            assert data
+            events = data["events"]
+            if event_type != BeatmapsetEventType.DISCUSSION_LOCK and event_type != BeatmapsetEventType.DISCUSSION_UNLOCK:
+                assert all([event.type == event_type for event in events])

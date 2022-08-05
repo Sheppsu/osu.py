@@ -1,4 +1,5 @@
 import pytest
+from osu import BeatmapsetEventType
 
 
 class TestAsyncBeatmap:
@@ -108,3 +109,12 @@ class TestAsyncBeatmap:
         assert beatmap.beatmapset.title == sample_beatmap["title"]
         assert beatmap.beatmapset.artist == sample_beatmap["artist"]
         assert beatmap.id == sample_beatmap["id"]
+
+    @pytest.mark.asyncio
+    async def test_get_beatmapset_events(self, async_client):
+        for event_type in BeatmapsetEventType:
+            data = await async_client.get_beatmapset_events(type=event_type)
+            assert data
+            events = data["events"]
+            if event_type != BeatmapsetEventType.DISCUSSION_LOCK and event_type != BeatmapsetEventType.DISCUSSION_UNLOCK:
+                assert all([event.type == event_type for event in events])
