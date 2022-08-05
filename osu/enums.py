@@ -365,3 +365,17 @@ class CommentSort(Enum):
     NEW = 'new'
     OLD = 'old'
     TOP = 'top'
+
+
+class MultiplayerScoresSort(Enum):
+    """
+    Sort option for multiplayer scores index. Relevant to :func:`osu.Client.get_scores`.
+
+    **Multiplayer scores sorts**
+
+    ASC = 'score_asc'
+
+    DESC = 'score_desc'
+    """
+    ASC = 'score_asc'
+    DESC = 'score_desc'
