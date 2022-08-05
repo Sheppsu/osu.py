@@ -106,7 +106,7 @@ class Path:
 
     @classmethod
     def get_comments(cls):
-        return cls('comments', None)
+        return cls('comments', Scope())
 
     @classmethod
     def post_new_comment(cls):
@@ -114,7 +114,7 @@ class Path:
 
     @classmethod
     def get_comment(cls, comment):
-        return cls(f'comments/{comment}', None)
+        return cls(f'comments/{comment}', Scope())
 
     @classmethod
     def edit_comment(cls, comment):
@@ -226,7 +226,7 @@ class Path:
 
     @classmethod
     def get_wiki_page(cls, locale, path):
-        return cls(f'wiki/{locale}/{path}', None)
+        return cls(f'wiki/{locale}/{path}', Scope())
 
     @classmethod
     def get_score_by_id(cls, mode, score):
