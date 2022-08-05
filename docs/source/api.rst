@@ -41,9 +41,9 @@ NotificationWebsocket
 
 Objects
 -------
-Scope
-^^^^^
-.. autoclass:: osu.Scope
+Beatmap
+^^^^^^^
+.. autoclass:: osu.Beatmap
    :members:
 
 BeatmapCompact
@@ -55,37 +55,7 @@ BeatmapDifficultyAttributes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapDifficultyAttributes
    :members:
-
-OsuBeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.OsuBeatmapDifficultyAttributes
-   :members:
-
-TaikoBeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.TaikoBeatmapDifficultyAttributes
-   :members:
-
-FruitsBeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.FruitsBeatmapDifficultyAttributes
-   :members:
-
-ManiaBeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.ManiaBeatmapDifficultyAttributes
-   :members:
-
-Failtimes
-^^^^^^^^^
-.. autoclass:: osu.Failtimes
-   :members:
-
-Beatmap
-^^^^^^^
-.. autoclass:: osu.Beatmap
-   :members:
-
+   
 BeatmapPlaycount
 ^^^^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapPlaycount
@@ -95,72 +65,22 @@ BeatmapScores
 ^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapScores
    :members:
-
-Score
-^^^^^
-.. autoclass:: osu.Score
-   :members:
-
-ScoreStatistics
-^^^^^^^^^^^^^^^
-.. autoclass:: osu.ScoreStatistics
-   :members:
-
-BeatmapUserScore
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.BeatmapUserScore
-   :members:
-
-BeatmapsetCompact
-^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.BeatmapsetCompact
-   :members:
-
-Covers
-^^^^^^
-.. autoclass:: osu.Covers
-   :members:
-
+   
 Beatmapset
 ^^^^^^^^^^
 .. autoclass:: osu.Beatmapset
    :members:
-
+   
+BeatmapsetCompact
+^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetCompact
+   :members:
+   
 BeatmapsetDiscussion
 ^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapsetDiscussion
    :members:
    
-Build
-^^^^^
-.. autoclass:: osu.Build
-   :members:
-   
-Versions
-^^^^^^^^
-.. autoclass:: osu.Versions
-   :members:
-   
-UpdateStream
-^^^^^^^^^^^^
-.. autoclass:: osu.UpdateStream
-   :members:
-   
-ChangelogEntry
-^^^^^^^^^^^^^^
-.. autoclass:: osu.ChangelogEntry
-   :members:
-   
-GithubUser
-^^^^^^^^^^
-.. autoclass:: osu.GithubUser
-   :members:
-
-CurrentUserAttributes
-^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.CurrentUserAttributes
-   :members:
-
 BeatmapsetDiscussionPost
 ^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapsetDiscussionPost
@@ -169,6 +89,106 @@ BeatmapsetDiscussionPost
 BeatmapsetDiscussionVote
 ^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapsetDiscussionVote
+   :members:
+
+BeatmapsetEvent
+^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEvent
+   :members:
+   
+BeatmapsetEventComment
+^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventComment
+   :members:
+   
+BeatmapsetEventNominate
+^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventNominate
+   :members:
+   
+BeatmapsetEventRemoveFromLoved
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventRemoveFromLoved
+   :members:
+   
+BeatmapsetEventDisqualify
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventDisqualify
+   :members:
+
+BeatmapsetEventVote
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventVote
+   :members:
+
+BeatmapsetEventKudosuGain
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventKudosuGain
+   :members:
+
+BeatmapsetEventKudosuLost
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventKudosuLost
+   :members:
+   
+BeatmapsetEventKudosuRecalculate
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventKudosuRecalculate
+   :members:
+   
+BeatmapsetEventDiscussionLock
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventDiscussionLock
+   :members:
+   
+BeatmapsetEventNominationReset
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventNominationReset
+   :members:
+   
+BeatmapsetEventNominationResetReceived
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventNominationResetReceived
+   :members:
+   
+BeatmapsetEventGenreEdit
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventGenreEdit
+   :members:
+   
+BeatmapsetEventLanguageEdit
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventLanguageEdit
+   :members:
+   
+BeatmapsetEventNsfwToggle
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventNsfwToggle
+   :members:
+   
+BeatmapsetEventOffsetEdit
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventOffsetEdit
+   :members:
+   
+BeatmapsetEventBeatmapOwnerChange
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventBeatmapOwnerChange
+   :members:
+   
+BeatmapUserScore
+^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapUserScore
+   :members:
+   
+Build
+^^^^^
+.. autoclass:: osu.Build
+   :members:
+   
+ChangelogEntry
+^^^^^^^^^^^^^^
+.. autoclass:: osu.ChangelogEntry
    :members:
 
 ChatChannel
@@ -186,14 +206,34 @@ Comment
 .. autoclass:: osu.Comment
    :members:
 
+CommentableMeta
+^^^^^^^^^^^^^^^
+.. autoclass:: osu.CommentableMeta
+   :members:
+
 CommentBundle
 ^^^^^^^^^^^^^
 .. autoclass:: osu.CommentBundle
    :members:
-
-CommentableMeta
-^^^^^^^^^^^^^^^
-.. autoclass:: osu.CommentableMeta
+   
+Covers
+^^^^^^
+.. autoclass:: osu.Covers
+   :members:
+   
+CurrentUserAttributes
+^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.CurrentUserAttributes
+   :members:
+   
+Description
+^^^^^^^^^^^
+.. autoclass:: osu.Description
+   :members:
+   
+Details
+^^^^^^^
+.. autoclass:: osu.Details
    :members:
 
 Event
@@ -215,6 +255,11 @@ EventBeatmapset
 ^^^^^^^^^^^^^^^
 .. autoclass:: osu.EventBeatmapset
    :members:
+   
+Failtimes
+^^^^^^^^^
+.. autoclass:: osu.Failtimes
+   :members:
 
 ForumPost
 ^^^^^^^^^
@@ -225,40 +270,35 @@ ForumTopic
 ^^^^^^^^^^
 .. autoclass:: osu.ForumTopic
    :members:
-
-Poll
-^^^^
-.. autoclass:: osu.Poll
+   
+FruitsBeatmapDifficultyAttributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.FruitsBeatmapDifficultyAttributes
    :members:
-
-PollOption
+   
+GithubUser
 ^^^^^^^^^^
-.. autoclass:: osu.PollOption
+.. autoclass:: osu.GithubUser
    :members:
-
+   
+Giver
+^^^^^
+.. autoclass:: osu.Giver
+   :members:
+   
 Group
 ^^^^^
 .. autoclass:: osu.Group
    :members:
-
-Description
-^^^^^^^^^^^
-.. autoclass:: osu.Description
-   :members:
-
+   
 KudosuHistory
 ^^^^^^^^^^^^^
 .. autoclass:: osu.KudosuHistory
    :members:
-
-Post
-^^^^
-.. autoclass:: osu.Post
-   :members:
-
-Giver
-^^^^^
-.. autoclass:: osu.Giver
+   
+ManiaBeatmapDifficultyAttributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.ManiaBeatmapDifficultyAttributes
    :members:
 
 MultiplayerScore
@@ -290,15 +330,50 @@ Notification
 ^^^^^^^^^^^^
 .. autoclass:: osu.Notification
    :members:
+   
+OsuBeatmapDifficultyAttributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.OsuBeatmapDifficultyAttributes
+   :members:
+   
+Poll
+^^^^
+.. autoclass:: osu.Poll
+   :members:
 
-Details
-^^^^^^^
-.. autoclass:: osu.Details
+PollOption
+^^^^^^^^^^
+.. autoclass:: osu.PollOption
+   :members:
+
+Post
+^^^^
+.. autoclass:: osu.Post
+   :members:
+   
+ProfileBanner
+^^^^^^^^^^^^^
+.. autoclass:: osu.ProfileBanner
    :members:
 
 Rankings
 ^^^^^^^^
 .. autoclass:: osu.Rankings
+   :members:
+   
+Scope
+^^^^^
+.. autoclass:: osu.Scope
+   :members:
+
+Score
+^^^^^
+.. autoclass:: osu.Score
+   :members:
+
+ScoreStatistics
+^^^^^^^^^^^^^^^
+.. autoclass:: osu.ScoreStatistics
    :members:
 
 Spotlight
@@ -310,20 +385,25 @@ Spotlights
 ^^^^^^^^^^
 .. autoclass:: osu.Spotlights
    :members:
-
-UserCompact
-^^^^^^^^^^^
-.. autoclass:: osu.UserCompact
+   
+TaikoBeatmapDifficultyAttributes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.TaikoBeatmapDifficultyAttributes
+   :members:
+   
+UpdateStream
+^^^^^^^^^^^^
+.. autoclass:: osu.UpdateStream
    :members:
 
 User
 ^^^^
 .. autoclass:: osu.User
    :members:
-
-ProfileBanner
-^^^^^^^^^^^^^
-.. autoclass:: osu.ProfileBanner
+   
+UserCompact
+^^^^^^^^^^^
+.. autoclass:: osu.UserCompact
    :members:
 
 UserAccountHistory
@@ -336,14 +416,14 @@ UserBadge
 .. autoclass:: osu.UserBadge
    :members:
 
-UserMonthlyPlaycount
-^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.UserMonthlyPlaycount
-   :members:
-
 UserGroup
 ^^^^^^^^^
 .. autoclass:: osu.UserGroup
+   :members:
+
+UserMonthlyPlaycount
+^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.UserMonthlyPlaycount
    :members:
 
 UserStatistics
@@ -355,6 +435,11 @@ UserStatisticsRulesets
 ^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.UserStatisticsRulesets
    :members:
+   
+Versions
+^^^^^^^^
+.. autoclass:: osu.Versions
+   :members:
 
 WikiPage
 ^^^^^^^^
@@ -364,15 +449,9 @@ WikiPage
 
 Enums
 -----
-
-Mods
-^^^^
-.. autoclass:: osu.Mods
-   :members:
-
-RankStatus
-^^^^^^^^^^
-.. autoclass:: osu.RankStatus
+GameModeInt
+^^^^^^^^^^^
+.. autoclass:: osu.GameModeInt
    :members:
    
 GameModeStr
@@ -380,17 +459,22 @@ GameModeStr
 .. autoclass:: osu.GameModeStr
    :members:
    
-GameModeInt
-^^^^^^^^^^^
-.. autoclass:: osu.GameModeInt
+Mods
+^^^^
+.. autoclass:: osu.Mods
    :members:
    
-WikiSearchMode
-^^^^^^^^^^^^^^
-.. autoclass:: osu.WikiSearchMode
+RankStatus
+^^^^^^^^^^
+.. autoclass:: osu.RankStatus
    :members:
 
 UserBeatmapType
 ^^^^^^^^^^^^^^^
 .. autoclass:: osu.UserBeatmapType
+   :members:
+   
+WikiSearchMode
+^^^^^^^^^^^^^^
+.. autoclass:: osu.WikiSearchMode
    :members:
