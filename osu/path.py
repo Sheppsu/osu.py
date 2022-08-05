@@ -231,3 +231,7 @@ class Path:
     @classmethod
     def get_score_by_id(cls, mode, score):
         return cls(f'scores/{mode}/{score}', 'public')
+
+    @classmethod
+    def get_beatmapset_events(cls):
+        return cls('beatmapsets/events', 'public')
