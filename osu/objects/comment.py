@@ -57,6 +57,9 @@ class Comment:
 
     votes_count: :class:`int`
         number of votes
+
+    url: :class:`str`
+        URL to the comment
     """
     __slots__ = (
         "commentable_id", "commentable_type", "created_at", "deleted_at", "edited_at", "edited_by_id",
@@ -81,6 +84,10 @@ class Comment:
         self.updated_at = data['updated_at']
         self.user_id = data['user_id']
         self.votes_count = data['votes_count']
+
+    @property
+    def url(self):
+        return f"https://osu.ppy.sh/comments/{self.id}"
 
     def __repr__(self):
         return prettify(self, 'message', 'user_id', 'created_at')
@@ -146,7 +153,7 @@ class CommentBundle:
         self.has_more_id = data['has_more_id']
         self.included_comments = list(map(Comment, data['included_comments']))
         self.pinned_comments = list(map(Comment, data['pinned_comments'])) \
-            if data['pinned_comments'] is not None else None
+            if data.get('pinned_comments') is not None else None
         self.sort = data['sort']
         self.top_level_count = data['top_level_count']
         self.total = data['total']
@@ -161,6 +168,8 @@ class CommentBundle:
 class CommentableMeta:
     """
     Metadata of the object that a comment is attached to.
+    Not all attributes are guaranteed to have a value, for example
+    if the comment is delete.
 
     **Attributes**
 
@@ -175,16 +184,22 @@ class CommentableMeta:
 
     url: :class:`str`
         url of the object
+
+    owner_id: :class:`int`:
+        the ID of the owner of the object
+
+    owner_title: :class:`int`
+        undocumented
     """
     __slots__ = (
-        "id", "title", "type", "url"
+        "id", "title", "type", "url", "owner_id", "owner_title"
     )
 
     def __init__(self, data):
-        self.id = data['id']
-        self.title = data['title']
-        self.type = data['type']
-        self.url = data['url']
+        self.id = data.get('id')
+        self.title = data.get('title')
+        self.type = data.get('type')
+        self.url = data.get('url')
 
     def __repr__(self):
         return prettify(self, 'title', 'url')
