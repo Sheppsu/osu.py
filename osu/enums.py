@@ -1,11 +1,193 @@
 from enum import IntFlag, IntEnum, Enum
 from typing import Sequence, Union
-from .constants import mod_abbreviations, incompatible_mods, mod_abbreviations_reversed
+from .constants import incompatible_mods
+
+
+class Mod(Enum):
+    """
+    Enum of all mods, score submittable or not.
+
+    **Mods**
+
+    Easy = 'EZ'
+
+    NoFail = 'NF'
+
+    HalfTime = 'HT'
+
+    Daycore = 'DC'
+
+    HardRock = 'HR'
+
+    SuddenDeath = 'SD'
+
+    Perfect = 'PF'
+
+    DoubleTime = 'DT'
+
+    Nightcore = 'NC'
+
+    Hidden = 'HD'
+
+    Flashlight = 'FL'
+
+    Blinds = 'BL'
+
+    StrictTracking = 'ST'
+
+    Target = 'TP'
+
+    DifficultyAdjust = 'DA'
+
+    Classic = 'CL'
+
+    Random = 'RD'
+
+    Mirror = 'MR'
+
+    Alternate = 'AL'
+
+    SingleTap = 'SG'
+
+    Autoplay = 'AT'
+
+    Cinema = 'CN'
+
+    Relax = 'RX'
+
+    Autopilot = 'AP'
+
+    SpunOut = 'SO'
+
+    Transform = 'TR'
+
+    Wiggle = 'WG'
+
+    SpinIn = 'SI'
+
+    Grow = 'GR'
+
+    Deflate = 'DF'
+
+    WindUp = 'WU'
+
+    WindDown = 'WD'
+
+    Traceable = 'TC'
+
+    BarrelRoll = 'BR'
+
+    ApproachDifferent = 'AD'
+
+    Muted = 'MU'
+
+    NoScope = 'NS'
+
+    Magnetised = 'MG'
+
+    Repel = 'RP'
+
+    AdaptiveSpeed = 'AS'
+
+    TouchDevice = 'TD'
+
+    Swap = 'SW'
+
+    FloatingFruits = 'FF'
+
+    FadeIn = 'FI'
+
+    FourKeys = '4K'
+
+    FiveKeys = '5K'
+
+    SixKeys = '6K'
+
+    SevenKeys = '7K'
+
+    EightKeys = '8K'
+
+    NineKeys = '9K'
+
+    TenKeys = '10K'
+
+    OneKey = '1K'
+
+    TwoKeys = '2K'
+
+    ThreeKeys = '3K'
+
+    DualStages = 'DS'
+
+    Invert = 'IN'
+
+    ConstantSpeed = 'CS'
+
+    HoldOff = 'HO'
+    """
+    Easy = 'EZ'
+    NoFail = 'NF'
+    HalfTime = 'HT'
+    Daycore = 'DC'
+    HardRock = 'HR'
+    SuddenDeath = 'SD'
+    Perfect = 'PF'
+    DoubleTime = 'DT'
+    Nightcore = 'NC'
+    Hidden = 'HD'
+    Flashlight = 'FL'
+    Blinds = 'BL'
+    StrictTracking = 'ST'
+    Target = 'TP'
+    DifficultyAdjust = 'DA'
+    Classic = 'CL'
+    Random = 'RD'
+    Mirror = 'MR'
+    Alternate = 'AL'
+    SingleTap = 'SG'
+    Autoplay = 'AT'
+    Cinema = 'CN'
+    Relax = 'RX'
+    Autopilot = 'AP'
+    SpunOut = 'SO'
+    Transform = 'TR'
+    Wiggle = 'WG'
+    SpinIn = 'SI'
+    Grow = 'GR'
+    Deflate = 'DF'
+    WindUp = 'WU'
+    WindDown = 'WD'
+    Traceable = 'TC'
+    BarrelRoll = 'BR'
+    ApproachDifferent = 'AD'
+    Muted = 'MU'
+    NoScope = 'NS'
+    Magnetised = 'MG'
+    Repel = 'RP'
+    AdaptiveSpeed = 'AS'
+    TouchDevice = 'TD'
+    Swap = 'SW'
+    FloatingFruits = 'FF'
+    FadeIn = 'FI'
+    FourKeys = '4K'
+    FiveKeys = '5K'
+    SixKeys = '6K'
+    SevenKeys = '7K'
+    EightKeys = '8K'
+    NineKeys = '9K'
+    TenKeys = '10K'
+    OneKey = '1K'
+    TwoKeys = '2K'
+    ThreeKeys = '3K'
+    DualStages = 'DS'
+    Invert = 'IN'
+    ConstantSpeed = 'CS'
+    HoldOff = 'HO'
 
 
 class Mods(IntFlag):
     """
-    IntFlag enum for all mods. Info gathered from
+    IntFlag enum for all score submittable mods. Info gathered from
     https://github.com/ppy/osu-web/blob/973315aded8a5762fc00a9f245337802c27bd213/app/Libraries/Mods.php
     and https://github.com/ppy/osu-web/blob/973315aded8a5762fc00a9f245337802c27bd213/database/mods.json
 
@@ -94,7 +276,7 @@ class Mods(IntFlag):
 
         :class:`Mods`
         """
-        return cls[mod_abbreviations[abbreviation.upper()]]
+        return cls[Mod(abbreviation.upper()).name]
 
     @staticmethod
     def get_from_list(mods: Sequence['Mods']) -> 'Mods':
@@ -137,13 +319,14 @@ class Mods(IntFlag):
             if isinstance(mod, Mods):
                 ret.append(mod)
             elif isinstance(mod, str):
-                if mod.upper() in mod_abbreviations:
-                    ret.append(Mods.get_from_abbreviation(mod.upper()))
-                elif mod in Mods.__members__:
+                if mod in Mods.__members__:
                     ret.append(Mods[mod])
                 else:
-                    raise ValueError("Mods represented as strings must be either the full name or abbreviation. "
-                                     f"'{mod}' does not fall under either of those.")
+                    try:
+                        ret.append(Mods.get_from_abbreviation(mod.upper()))
+                    except ValueError:
+                        raise ValueError("Mods represented as strings must be either the full name or "
+                                         "abbreviation. '{mod}' does not fall under either of those.")
             elif isinstance(mod, int):
                 ret.append(Mods(mod))
             else:
@@ -204,7 +387,7 @@ class Mods(IntFlag):
 
         :class:`str`
         """
-        return "".join(map(lambda mod: mod_abbreviations_reversed[mod.name],
+        return "".join(map(lambda mod: Mod[mod.name].value,
                            sorted(self, key=lambda m: m.value)))
 
     def __iter__(self):
@@ -512,6 +695,25 @@ class MatchSort(Enum):
 
 
 class MatchEventType(Enum):
+    """
+    Enum for match event types.
+
+    **Match event types**
+
+    PLAYER_LEFT = 'player-left'
+
+    PLAYER_JOINED = 'player-joined'
+
+    PLAYER_KICKED = 'player-kicked'
+
+    MATCH_CREATED = 'match-created'
+
+    MATCH_DISBANDED = 'match-disbanded'
+
+    HOST_CHANGED = 'host-changed'
+
+    OTHER = 'other'
+    """
     PLAYER_LEFT = 'player-left'
     PLAYER_JOINED = 'player-joined'
     PLAYER_KICKED = 'player-kicked'
@@ -519,3 +721,90 @@ class MatchEventType(Enum):
     MATCH_DISBANDED = 'match-disbanded'
     HOST_CHANGED = 'host-changed'
     OTHER = 'other'
+
+
+class RoomSort(Enum):
+    """
+    Sort options for rooms. Relevant to :func:`osu.Client.get_rooms`.
+
+    **Room sort options**
+
+    ENDED = 'ended'
+
+    CREATED = 'created'
+    """
+    ENDED = 'ended'
+    CREATED = 'created'
+
+
+class RoomCategory(Enum):
+    """
+    Enum for room categories.
+
+    **Room categories**
+
+    NORMAL = 'normal'
+
+    SPOTLIGHT = 'spotlight'
+
+    FEATURED_ARTIST = 'featured_artist'
+    """
+    NORMAL = 'normal'
+    SPOTLIGHT = 'spotlight'
+    FEATURED_ARTIST = 'featured_artist'
+
+
+class RoomType(Enum):
+    """
+    Enum for room types.
+
+    **Room types**
+
+    PLAYLISTS = 'playlists'
+
+    REALTIME = 'realtime'
+    """
+    PLAYLISTS = 'playlists'
+    REALTIME = 'realtime'
+
+
+class RealTimeType(Enum):
+    """
+    Enum for realtime types.
+
+    **Realtime types**
+
+    HEAD_TO_HEAD = 'head_to_head'
+
+    TEAM_VERSUS = 'team_versus'
+    """
+    HEAD_TO_HEAD = 'head_to_head'
+    TEAM_VERSUS = 'team_versus'
+
+
+class RealTimeQueueMode(Enum):
+    """
+    Enum for realtime queue modes.
+
+    **Realtime queue modes**
+
+    HOST_ONLY = 'host_only'
+
+    ALL_PLAYERS = 'all_players'
+
+    ALL_PLAYERS_ROUND_ROBIN = 'all_players_round_robin'
+    """
+    HOST_ONLY = 'host_only'
+    ALL_PLAYERS = 'all_players'
+    ALL_PLAYERS_ROUND_ROBIN = 'all_players_round_robin'
+
+
+class PlaylistQueueMode(Enum):
+    """
+    Enum for playlist queue modes.
+
+    **Playlist queue modes**
+
+    HOST_ONLY = 'host_only'
+    """
+    HOST_ONLY = 'host_only'
