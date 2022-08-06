@@ -17,3 +17,4 @@ from .kudosu import *
 from .news import *
 from .beatmapset_event import *
 from .match import *
+from.seasonal_background import *
