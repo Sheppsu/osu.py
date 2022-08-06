@@ -1813,6 +1813,18 @@ class AsynchronousClient:
         mode = parse_enum_args(mode)
         return list(map(Room, await self.http.make_request('get', Path.get_rooms(mode), sort=sort)))
 
+    async def get_seasonal_backgrounds(self) -> SeasonalBackgrounds:
+        """
+        Get the season backgrounds.
+
+        Doesn't require OAuth
+
+        **Returns**
+
+        :class:`SeasonalBackgrounds`
+        """
+        return SeasonalBackgrounds(await self.http.make_request('get', Path.get_seasonal_backgrounds()))
+
     # Undocumented
 
     async def search_beatmapsets(self, filters=None, page=None):

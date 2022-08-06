@@ -1788,6 +1788,18 @@ class Client:
         mode = parse_enum_args(mode)
         return list(map(Room, self.http.make_request('get', Path.get_rooms(mode), sort=sort)))
 
+    def get_seasonal_backgrounds(self) -> SeasonalBackgrounds:
+        """
+        Get the season backgrounds.
+
+        Doesn't require OAuth
+
+        **Returns**
+
+        :class:`SeasonalBackgrounds`
+        """
+        return SeasonalBackgrounds(self.http.make_request('get', Path.get_seasonal_backgrounds()))
+
     # Undocumented
 
     def search_beatmapsets(self, filters=None, page=None):
