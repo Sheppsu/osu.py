@@ -491,3 +491,31 @@ class BeatmapsetEventSort(Enum):
     """
     ASC = 'id_asc'
     DESC = 'id_desc'
+
+
+class MatchSort(Enum):
+    """
+    Sort options for matches. Relevant to :func:`osu.Client.get_matches`.
+
+    **Match sort options**
+
+    ID_ASC = 'id_asc'
+
+    ID_DESC = 'id_desc'
+
+    NAME_ASC = 'name_asc'
+
+    NAME_DESC = 'name_desc'
+    """
+    OLDEST = 'id_asc'
+    NEWEST = 'id_desc'
+
+
+class MatchEventType(Enum):
+    PLAYER_LEFT = 'player-left'
+    PLAYER_JOINED = 'player-joined'
+    PLAYER_KICKED = 'player-kicked'
+    MATCH_CREATED = 'match-created'
+    MATCH_DISBANDED = 'match-disbanded'
+    HOST_CHANGED = 'host-changed'
+    OTHER = 'other'
