@@ -73,9 +73,7 @@ class RateLimitHandler:
         self.waiting = False
 
     def reset(self):
-        if len(self.requests) == 0:
-            return
-        while True:
+        while len(self.requests) > 0:
             if self.requests[0] + 60 < time.perf_counter():
                 self.requests.pop(0)
             else:
