@@ -1,5 +1,6 @@
-from .enums import Mods, Enum
-from typing import Sequence
+from .enums import Mods, Enum, BeatmapsetSearchSort, BeatmapsetSearchGeneral, BeatmapsetSearchPlayed, \
+    BeatmapsetSearchStatus, BeatmapsetSearchExtra, ScoreRank, GameModeStr
+from typing import Sequence, Union
 
 
 def check_scope(func):
@@ -66,3 +67,140 @@ class Util:
         if value is None:
             return
         return float(value)
+
+
+def returns_self(func):
+    def wrapper(self, *args, **kwargs):
+        func(self, *args, **kwargs)
+        return self
+    return wrapper
+
+
+class BeatmapsetSearchFilter:
+    """
+    Util class that helps for filtering in :func:`Client.search_beatmapsets`.
+
+    Read about each filter under its corresponding function.
+
+    All set functions return the instance of the class to allow for chaining.
+    """
+    def __init__(self):
+        self._filters = {
+            "query": None,
+            "sort": None,
+            "nsfw": None,
+            "played": None,
+            "r": None,
+            "m": None,
+            "l": None,
+            "g": None,
+            "e": None,
+            "c": None,
+            "s": None,
+        }
+
+    @returns_self
+    def set_query(self, query: str):
+        """
+        Set the query to search for.
+
+        query: :class:`str`
+        """
+        self._filters["query"] = query
+
+    @returns_self
+    def set_sort(self, sort: Union[BeatmapsetSearchSort, str]):
+        """
+        Set the sort order of the search.
+
+        sort: Union[:class:`BeatmapsetSearchSort`, :class:`str`]
+        """
+        self._filters["sort"] = sort.value if isinstance(sort, BeatmapsetSearchSort) else sort
+
+    @returns_self
+    def set_nsfw(self, nsfw: bool):
+        """
+        Set whether to include NSFW in the search.
+
+        nsfw: :class:`bool`
+        """
+        self._filters["nsfw"] = nsfw
+
+    @returns_self
+    def set_played(self, played: Union[BeatmapsetSearchPlayed, str]):
+        """
+        Set whether to include played and unplayed beatmapsets in the search.
+
+        played: Union[:class:`BeatmapsetSearchPlayed`, :class:`str`]
+        """
+        self._filters["played"] = played.value if isinstance(played, BeatmapsetSearchPlayed) else played
+
+    @returns_self
+    def set_ranked(self, rank: Union[ScoreRank, str]):
+        """
+        Filter by rank achieved.
+
+        rank: Union[:class:`ScoreRank`, :class:`str`]
+        """
+        self._filters["r"] = rank.value if isinstance(rank, ScoreRank) else rank
+
+    @returns_self
+    def set_mode(self, mode: Union[GameModeStr, str]):
+        """
+        Set the game mode to filter by.
+
+        mode: Union[:class:`GameModeStr`, :class:`str`]
+        """
+        self._filters["m"] = mode.value if isinstance(mode, GameModeStr) else mode
+
+    @returns_self
+    def set_language(self, language: str):
+        """
+        Set the language to filter by.
+
+        language: :class:`str`
+        """
+        self._filters["l"] = language
+
+    @returns_self
+    def set_genre(self, genre: str):
+        """
+        Set the genre to filter by.
+
+        genre: :class:`str`
+        """
+        self._filters["g"] = genre
+
+    @returns_self
+    def set_extra(self, extras: Sequence[Union[BeatmapsetSearchExtra, str]]):
+        """
+        Set the extras to filter by.
+
+        extras: Sequence[Union[:class:`BeatmapsetSearchExtra`, :class:`str`]]
+        """
+        self._filters["e"] = ".".join(list(map(lambda x: x.value if isinstance(x, BeatmapsetSearchExtra) else x, extras)))
+
+    @returns_self
+    def set_generals(self, generals: Union[BeatmapsetSearchGeneral, str]):
+        """
+        Set the generals to filter by.
+
+        generals: Union[:class:`BeatmapsetSearchGeneral`, :class:`str`]
+        """
+        self._filters["c"] = ".".join(list(map(lambda x: x.value if isinstance(x, BeatmapsetSearchGeneral) else x, generals)))
+
+    @returns_self
+    def set_status(self, status: Union[BeatmapsetSearchStatus, str]):
+        """
+        Set the status to filter by.
+
+        status: Union[:class:`BeatmapsetSearchStatus`, :class:`str`]
+        """
+        self._filters["s"] = status.value if isinstance(status, BeatmapsetSearchStatus) else status
+
+    @property
+    def filters(self):
+        """
+        Dictionary of all filters only including ones that have been set.
+        """
+        return {k: v for k, v in self._filters.items() if v is not None}
