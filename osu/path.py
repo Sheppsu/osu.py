@@ -243,3 +243,7 @@ class Path:
     @classmethod
     def get_match(cls, match):
         return cls(f'matches/{match}', 'public')
+
+    @classmethod
+    def get_rooms(cls, mode=''):
+        return cls(f'rooms/{mode}', 'public')
