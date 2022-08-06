@@ -16,3 +16,4 @@ from .wiki import *
 from .kudosu import *
 from .news import *
 from .beatmapset_event import *
+from .match import *
