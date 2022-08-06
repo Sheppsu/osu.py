@@ -7,7 +7,7 @@ from ..objects import *
 from ..path import Path
 from ..enums import *
 from ..auth import AuthHandler
-from ..util import parse_mods_arg, parse_enum_args
+from ..util import parse_mods_arg, parse_enum_args, BeatmapsetSearchFilter
 from typing import Union, Optional, Sequence, Dict
 from datetime import datetime
 
@@ -1825,11 +1825,58 @@ class AsynchronousClient:
         """
         return SeasonalBackgrounds(await self.http.make_request('get', Path.get_seasonal_backgrounds()))
 
-    # Undocumented
+    async def get_room(self, room_id: int) -> Room:
+        """
+        Returns a room by id.
+
+        Requires OAuth and scope public.
+
+        **Parameters**
+
+        room_id: :class:`int`
+            The room id.
+
+        **Returns**
+
+        :class:`Room`
+        """
+        return Room(await self.http.make_request('get', Path.get_room(room_id)))
+
+    async def get_score_by_id(self, mode, score_id) -> Score:
+        """
+        Returns a score by id.
+
+        Requires OAuth and scope public.
+
+        **Parameters**
+
+        mode: Union[:class:`str`, :class:`GameModeStr`]
+
+        score_id: :class:`int`
+
+        **Returns**
+
+        :class:`Score`
+        """
+        mode = parse_enum_args(mode)
+        return Score(await self.http.make_request('get', Path.get_score_by_id(mode, score_id)))
 
     async def search_beatmapsets(self, filters=None, page=None):
+        """
+        Search for beatmapsets.
+
+        Requires OAuth and scope public.
+
+        **Attributes**
+
+        filters: Optional[:class:`BeatmapsetSearchFilter`]
+
+        page: Optional[:class:`int`]
+        """
         if filters is None:
             filters = {}
+        if isinstance(filters, BeatmapsetSearchFilter):
+            filters = filters.filters
         resp = await self.http.make_request('get', Path('beatmapsets/search', 'public'), page=page, **filters)
         return {
             'beatmapsets': [Beatmapset(beatmapset) for beatmapset in resp['beatmapsets']],
@@ -1839,6 +1886,3 @@ class AsynchronousClient:
             'error': resp['error'],
             'total': resp['total'],
         }
-
-    async def get_score_by_id(self, mode, score):
-        return Score(await self.http.make_request('get', Path.get_score_by_id(mode, score)))
