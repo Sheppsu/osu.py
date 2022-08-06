@@ -808,3 +808,168 @@ class PlaylistQueueMode(Enum):
     HOST_ONLY = 'host_only'
     """
     HOST_ONLY = 'host_only'
+
+
+class BeatmapsetSearchSort(Enum):
+    """
+    Sort options for beatmapset searches. Relevant to :func:`osu.Client.search_beatmapsets`.
+
+    **Beatmapset search sort options**
+
+    ARTIST = 'artist'
+
+    CREATOR = 'creator'
+
+    DIFFICULTY = 'difficulty'
+
+    FAVOURITES = 'favourites'
+
+    NOMINATIONS = 'nominations'
+
+    PLAYS = 'plays'
+
+    RANKED = 'ranked'
+
+    RATING = 'rating'
+
+    RELEVANCE = 'relevance'
+
+    TITLE = 'title'
+
+    UPDATED = 'updated'
+    """
+    ARTIST = 'artist'
+    CREATOR = 'creator'
+    DIFFICULTY = 'difficulty'
+    FAVOURITES = 'favourites'
+    NOMINATIONS = 'nominations'
+    PLAYS = 'plays'
+    RANKED = 'ranked'
+    RATING = 'rating'
+    RELEVANCE = 'relevance'
+    TITLE = 'title'
+    UPDATED = 'updated'
+
+
+class BeatmapsetSearchStatus(Enum):
+    """
+    Status options for beatmapset filtering. Relevant to :func:`osu.Client.search_beatmapsets`.
+
+    **Beatmapset search status options**
+
+    ANY = 'any'
+
+    HAS_LEADERBOARD = 'leaderboard'
+
+    RANKED = 'ranked'
+
+    QUALIFIED = 'qualified'
+
+    LOVED = 'loved'
+
+    FAVOURITES = 'favourites'
+
+    PENDING = 'pending'
+
+    WIP = 'wip'
+
+    GRAVEYARD = 'graveyard'
+
+    MY_MAPS = 'mine'
+    """
+    ANY = 'any'
+    HAS_LEADERBOARD = 'leaderboard'
+    RANKED = 'ranked'
+    QUALIFIED = 'qualified'
+    LOVED = 'loved'
+    FAVOURITES = 'favourites'
+    PENDING = 'pending'
+    WIP = 'wip'
+    GRAVEYARD = 'graveyard'
+    MY_MAPS = 'mine'
+
+
+class BeatmapsetSearchExtra(Enum):
+    """
+    Extra options for beatmapset filtering. Relevant to :func:`osu.Client.search_beatmapsets`.
+
+    **Beatmapset search extra options**
+
+    VIDEO = 'video'
+
+    STORYBOARD = 'storyboard'
+    """
+    VIDEO = 'video'
+    STORYBOARD = 'storyboard'
+
+
+class BeatmapsetSearchGeneral(Enum):
+    """
+    General options for beatmapset filtering. Relevant to :func:`osu.Client.search_beatmapsets`.
+
+    **Beatmapset search general options**
+
+    RECOMMENDED = 'recommended'
+
+    CONVERTS = 'converts'
+
+    FOLLOWS = 'follows'
+
+    SPOTLIGHTS = 'spotlights'
+
+    FEATURED_ARTISTS = 'featured_artists'
+    """
+    RECOMMENDED = 'recommended'
+    CONVERTS = 'converts'
+    FOLLOWS = 'follows'
+    SPOTLIGHTS = 'spotlights'
+    FEATURED_ARTISTS = 'featured_artists'
+
+
+class BeatmapsetSearchPlayed(Enum):
+    """
+    Played options for beatmapset filtering. Relevant to :func:`osu.Client.search_beatmapsets`.
+
+    **Beatmapset search played options**
+
+    ANY = 'any'
+
+    PLAYED = 'played'
+
+    UNPLAYED = 'unplayed'
+    """
+    ANY = 'any'
+    PLAYED = 'played'
+    UNPLAYED = 'unplayed'
+
+
+class ScoreRank(Enum):
+    """
+    Enum for score ranks.
+
+    **Score ranks**
+
+    SILVER_SS = 'XH'
+
+    SS = 'X'
+
+    SILVER_S = 'SH'
+
+    S = 'S'
+
+    A = 'A'
+
+    B = 'B'
+
+    C = 'C'
+
+    D = 'D'
+    """
+    SILVER_SS = 'XH'
+    SS = 'X'
+    SILVER_S = 'SH'
+    S = 'S'
+    A = 'A'
+    B = 'B'
+    C = 'C'
+    D = 'D'
