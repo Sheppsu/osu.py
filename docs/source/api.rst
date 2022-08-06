@@ -300,6 +300,21 @@ ManiaBeatmapDifficultyAttributes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.ManiaBeatmapDifficultyAttributes
    :members:
+   
+Match
+^^^^^
+.. autoclass:: osu.Match
+   :members:
+   
+MatchEvent
+^^^^^^^^^^
+.. autoclass:: osu.MatchEvent
+   :members:
+   
+MatchExtended
+^^^^^^^^^^^^^
+.. autoclass:: osu.MatchExtended
+   :members:
 
 MultiplayerScore
 ^^^^^^^^^^^^^^^^
@@ -467,6 +482,16 @@ GameModeInt
 GameModeStr
 ^^^^^^^^^^^
 .. autoclass:: osu.GameModeStr
+   :members:
+   
+MatchEventType
+^^^^^^^^^^^^^^
+.. autoclass:: osu.MatchEventType
+   :members:
+   
+MatchSort
+^^^^^^^^^
+.. autoclass:: osu.MatchSort
    :members:
    
 Mods
