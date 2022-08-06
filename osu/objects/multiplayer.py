@@ -131,9 +131,10 @@ class MultiplayerScoresAround:
 
 class Room:
     """
-    :func:`osu.Client.get_rooms` endpoint includes host, playlist, and recent_participants attributes.
-    In addition, the :class:`PlaylistItem` objects in playlist include the beatmap attribute and the
-    beatmap attribute has the beatmapset, checksum, and max_combo attributes.
+    :func:`osu.Client.get_rooms` and :func:`osu.Client.get_room` endpoints include host, playlist,
+    and recent_participants attributes. In addition, the :class:`PlaylistItem` objects in playlist
+    include the beatmap attribute and the beatmap attribute has the beatmapset, checksum, and
+    max_combo attributes.
 
     **Attributes**
 
