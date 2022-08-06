@@ -351,6 +351,21 @@ OsuBeatmapDifficultyAttributes
 .. autoclass:: osu.OsuBeatmapDifficultyAttributes
    :members:
    
+PlaylistItem
+^^^^^^^^^^^^
+.. autoclass:: osu.PlaylistItem
+   :members:
+   
+PlaylistItemStats
+^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.PlaylistItemStats
+   :members:
+   
+PlaylistMod
+^^^^^^^^^^^
+.. autoclass:: osu.PlaylistMod
+   :members:
+   
 Poll
 ^^^^
 .. autoclass:: osu.Poll
@@ -374,6 +389,11 @@ ProfileBanner
 Rankings
 ^^^^^^^^
 .. autoclass:: osu.Rankings
+   :members:
+   
+Room
+^^^^
+.. autoclass:: osu.Room
    :members:
    
 Scope
@@ -494,19 +514,59 @@ MatchSort
 .. autoclass:: osu.MatchSort
    :members:
    
+Mod
+^^^
+.. autoclass:: osu.Mod
+   :members:
+   
 Mods
 ^^^^
 .. autoclass:: osu.Mods
+   :members:
+   
+PlaylistQueueMode
+^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.PlaylistQueueMode
    :members:
    
 RankStatus
 ^^^^^^^^^^
 .. autoclass:: osu.RankStatus
    :members:
+   
+RealTimeQueueMode
+^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.RealTimeQueueMode
+   :members:
+   
+RealTimeType
+^^^^^^^^^^^^
+.. autoclass:: osu.RealTimeType
+   :members:
+   
+RoomCategory
+^^^^^^^^^^^^
+.. autoclass:: osu.RoomCategory
+   :members:
+   
+RoomSort
+^^^^^^^^
+.. autoclass:: osu.RoomSort
+   :members:
+   
+RoomType
+^^^^^^^^
+.. autoclass:: osu.RoomType
+   :members:
 
 UserBeatmapType
 ^^^^^^^^^^^^^^^
 .. autoclass:: osu.UserBeatmapType
+   :members:
+   
+UserScoreAggregate
+^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.UserScoreAggregate
    :members:
    
 WikiSearchMode
