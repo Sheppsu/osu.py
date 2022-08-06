@@ -1796,6 +1796,23 @@ class AsynchronousClient:
         """
         return MatchExtended(await self.http.make_request('get', Path.get_match(match_id)))
 
+    async def get_rooms(self, mode: Union[str, GameModeStr] = '', sort: Union[str, RoomSort] = None) -> Sequence[Room]:
+        """
+        Returns a list of rooms.
+
+        Requires OAuth and scope public.
+
+        **Parameters**
+
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+            Game mode to filter rooms by.
+
+        sort: Optional[Union[:class:`str`, :class:`RoomSort`]]
+            Sort rooms by.
+        """
+        mode = parse_enum_args(mode)
+        return list(map(Room, await self.http.make_request('get', Path.get_rooms(mode), sort=sort)))
+
     # Undocumented
 
     async def search_beatmapsets(self, filters=None, page=None):
