@@ -178,7 +178,8 @@ class BeatmapsetSearchFilter:
 
         extras: Sequence[Union[:class:`BeatmapsetSearchExtra`, :class:`str`]]
         """
-        self._filters["e"] = ".".join(list(map(lambda x: x.value if isinstance(x, BeatmapsetSearchExtra) else x, extras)))
+        self._filters["e"] = ".".join(list(map(
+            lambda x: x.value if isinstance(x, BeatmapsetSearchExtra) else x, extras)))
 
     @returns_self
     def set_generals(self, generals: Union[BeatmapsetSearchGeneral, str]):
@@ -187,7 +188,8 @@ class BeatmapsetSearchFilter:
 
         generals: Union[:class:`BeatmapsetSearchGeneral`, :class:`str`]
         """
-        self._filters["c"] = ".".join(list(map(lambda x: x.value if isinstance(x, BeatmapsetSearchGeneral) else x, generals)))
+        self._filters["c"] = ".".join(list(map(
+            lambda x: x.value if isinstance(x, BeatmapsetSearchGeneral) else x, generals)))
 
     @returns_self
     def set_status(self, status: Union[BeatmapsetSearchStatus, str]):

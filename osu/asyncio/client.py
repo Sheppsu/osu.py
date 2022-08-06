@@ -1706,10 +1706,10 @@ class AsynchronousClient:
         return WikiPage(await self.http.make_request('get', Path.get_wiki_page(locale, path)))
 
     async def get_beatmapset_events(self, page: Optional[int] = None, limit: Optional[int] = None,
-                              sort: Optional[Union[str, BeatmapsetEventSort]] = None,
-                              type: Optional[Union[str, BeatmapsetEventType]] = None,
-                              min_date: Optional[Union[str, datetime]] = None,
-                              max_date: Optional[Union[str, datetime]] = None) -> \
+                                    sort: Optional[Union[str, BeatmapsetEventSort]] = None,
+                                    type: Optional[Union[str, BeatmapsetEventType]] = None,
+                                    min_date: Optional[Union[str, datetime]] = None,
+                                    max_date: Optional[Union[str, datetime]] = None) -> \
             Dict[str, Union[Sequence[BeatmapsetEvent], Dict, Sequence[UserCompact]]]:
         """
         Returns a list of beatmapset events.

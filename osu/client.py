@@ -1227,7 +1227,8 @@ class Client:
         return MultiplayerScore(self.http.make_request('get', Path.get_user_high_score(room, playlist, user)))
 
     def get_scores(self, room: int, playlist: int, limit: Optional[int] = None,
-                   sort: Optional[Union[str, MultiplayerScoresSort]] = None, cursor: Optional[dict] = None) -> MultiplayerScores:
+                   sort: Optional[Union[str, MultiplayerScoresSort]] = None,
+                   cursor: Optional[dict] = None) -> MultiplayerScores:
         """
         Requires OAuth, scope public, and a user (authorization code grant or delegate scope)
 
