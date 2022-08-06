@@ -1730,6 +1730,47 @@ class Client:
             "users": [UserCompact(user) for user in resp['users']],
         }
 
+    def get_matches(self, limit=None, sort=None) -> Dict[str, Union[Sequence[Match], Dict]]:
+        """
+        Returns a list of matches.
+
+        Requires OAuth and scope public.
+
+        **Parameters**
+
+        limit: Optional[:class:`int`]
+
+        sort: Optional[Union[:class:`str`, :class:`MatchSort`]]
+
+        **Returns**
+
+        Dict[:class:`str`, Union[Dict, Sequence[:class:`Match`]]]
+        """
+        sort = parse_enum_args(sort)
+        resp = self.http.make_request('get', Path.get_matches(), limit=limit, sort=sort)
+        return {
+            "matches": list(map(Match, resp['matches'])),
+            "cursor": resp['cursor'],
+            "params": resp['params'],
+        }
+
+    def get_match(self, match_id: int) -> Match:
+        """
+        Returns a match by id.
+
+        Requires OAuth and scope public.
+
+        **Parameters**
+
+        match_id: :class:`int`
+            The match id.
+
+        **Returns**
+
+        :class:`Match`
+        """
+        return MatchExtended(self.http.make_request('get', Path.get_match(match_id)))
+
     # Undocumented
 
     def search_beatmapsets(self, filters=None, page=None):
