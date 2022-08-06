@@ -247,3 +247,15 @@ class Path:
     @classmethod
     def get_rooms(cls, mode=''):
         return cls(f'rooms/{mode}', 'public')
+
+    @classmethod
+    def get_room(cls, room):
+        return cls(f'rooms/{room}', 'public')
+
+    @classmethod
+    def get_room_leaderboard(cls, room):
+        return cls(f'rooms/{room}/leaderboard', 'public')
+
+    @classmethod
+    def get_seasonal_backgrounds(cls):
+        return cls('seasonal-backgrounds', Scope())
