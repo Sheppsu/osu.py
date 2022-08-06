@@ -449,6 +449,16 @@ WikiPage
 
 Enums
 -----
+BeatmapsetEventSort
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventSort
+   :members:
+
+BeatmapsetEventType
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetEventType
+   :members:
+
 GameModeInt
 ^^^^^^^^^^^
 .. autoclass:: osu.GameModeInt
