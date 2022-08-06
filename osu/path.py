@@ -235,3 +235,11 @@ class Path:
     @classmethod
     def get_beatmapset_events(cls):
         return cls('beatmapsets/events', 'public')
+
+    @classmethod
+    def get_matches(cls):
+        return cls('matches', 'public')
+
+    @classmethod
+    def get_match(cls, match):
+        return cls(f'matches/{match}', 'public')
