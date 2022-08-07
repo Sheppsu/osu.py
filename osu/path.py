@@ -37,6 +37,10 @@ class Path:
         return cls(f"beatmaps/{beatmap}/attributes", 'public')
 
     @classmethod
+    def get_beatmapset(cls, beatmapset):
+        return cls(f'beatmapsets/{beatmapset}', 'public')
+
+    @classmethod
     def beatmapset_discussion_posts(cls):
         return cls('beatmapsets/discussions/posts', 'public')
 
