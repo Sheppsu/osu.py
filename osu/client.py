@@ -44,7 +44,7 @@ class Client:
     def __init__(self, auth=None, request_wait_time: Optional[float] = 1.0,
                  limit_per_minute: Optional[float] = 60.0):
         self.auth = auth
-        self.http = HTTPHandler(auth, self, request_wait_time, limit_per_minute)
+        self.http = HTTPHandler(self, request_wait_time, limit_per_minute)
 
     @classmethod
     def from_client_credentials(cls, client_id: int, client_secret: str, redirect_url: str,
