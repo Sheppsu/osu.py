@@ -1,5 +1,6 @@
 import requests
-from time import time
+from time import perf_counter
+from typing import Callable, Optional
 
 from .constants import auth_url, token_url
 from .objects import Scope
@@ -30,11 +31,13 @@ class AuthHandler:
     redirect_uri: :class:`str`
         Redirect uri
 
-    scope: :class:`Scope`
+    scope: Optional[:class:`Scope`]
         Scope object helps the program identify what requests you can
         and can't make with your scope. Default is 'public' (Scope.default())
     """
-    def __init__(self, client_id: int, client_secret: str, redirect_url: str, scope: Scope = Scope.default()):
+    SAVE_VERSION = 1
+
+    def __init__(self, client_id: int, client_secret: str, redirect_url: str, scope: Optional[Scope] = Scope.default()):
         if scope == 'lazer':
             raise ScopeException("The lazer scope signifies that an endpoint only meant for use by the lazer client.")
         self.client_id = client_id
@@ -44,16 +47,17 @@ class AuthHandler:
 
         self.refresh_token = None
         self._token = None
-        self.expire_time = time()
+        self.expire_time = perf_counter()
+        self._refresh_callback = None
 
-    def get_auth_url(self, state=''):
+    def get_auth_url(self, state: Optional[str] = ''):
         """
         Returns a url that a user can authorize their account at. They'll then be returned to
         the redirect_uri with a code that can be used under get_auth_token.
 
         **Parameters**
 
-        state: :class:`str`
+        state: Optional[:class:`str`]
             Will be returned to the redirect_uri along with the code.
         """
         params = {
@@ -67,7 +71,7 @@ class AuthHandler:
             del params['state']
         return auth_url + "?" + "&".join([f'{key}={value}' for key, value in params.items()])
 
-    def get_auth_token(self, code=None):
+    def get_auth_token(self, code: Optional[str] = None):
         """
         `code` parameter is not required, but without a code the scopes are restricted to
         public and delegate (more on delegation below). You can obtain a code by having
@@ -84,11 +88,8 @@ class AuthHandler:
 
         **Parameters**
 
-        code: :class:`str`
+        code: Optional[:class:`str`]
             code from user authorizing at a specific url
-
-        delegate: :class:`bool`
-            Whether or not to use delegate scope. This scope is only available for Client Credential Grants.
         """
         data = {
             'client_id': self.client_id,
@@ -113,9 +114,9 @@ class AuthHandler:
         if 'refresh_token' in response:
             self.refresh_token = response['refresh_token']
         self._token = response['access_token']
-        self.expire_time = time() + response['expires_in'] - 5
+        self.expire_time = perf_counter() + response['expires_in'] - 5
 
-    def refresh_access_token(self, refresh_token=None):
+    def refresh_access_token(self, refresh_token: Optional[str] = None):
         """
         This function is usually executed by HTTPHandler, but if you have a
         refresh token saved from the last session, then you can fill in the
@@ -123,12 +124,12 @@ class AuthHandler:
 
         **Parameters**
 
-        refresh_token: :class:`str`
+        refresh_token: Optional[:class:`str`]
             A refresh token used to get a new access token.
         """
         if refresh_token:
             self.refresh_token = refresh_token
-        if time() < self.expire_time:
+        if perf_counter() < self.expire_time:
             return
         data = {
             'client_id': self.client_id,
@@ -150,10 +151,75 @@ class AuthHandler:
         if 'refresh_token' in response:
             self.refresh_token = response['refresh_token']
         self._token = response['access_token']
-        self.expire_time = time() + response['expires_in'] - 5
+        self.expire_time = perf_counter() + response['expires_in'] - 5
+        if self._refresh_callback:
+            self._refresh_callback(self)
 
     @property
     def token(self):
-        if self.expire_time <= time():
+        """
+        Returns the access token. If the token is expired, it will be refreshed before being returned.
+        """
+        if self.expire_time <= perf_counter():
             self.refresh_access_token()
         return self._token
+
+    def set_refresh_callback(self, callback: Callable[['AuthHandler'], None]):
+        """
+        Set a callback to be called everytime the access token is refreshed.
+
+        **Parameters**
+
+        callback: :class:`Callable[['AuthHandler'], None]`
+        """
+        self._refresh_callback = callback
+
+    def get_save_data(self):
+        """
+        Get save data in json format. Can be used to easily initiate a new :class:`AuthHandler` object
+        in a new session.
+
+        **Returns**
+
+        {
+
+        'save_version': :class:`int`,
+
+        'client_id': :class:`int`,
+
+        'client_secret': :class:`str`,
+
+        'redirect_url': :class:`str`,
+
+        'scope': :class:`str`,
+
+        'refresh_token': :class:`str`,
+
+        }
+        """
+        return {
+            'save_version': self.SAVE_VERSION,
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'redirect_url': self.redirect_url,
+            'scope': self.scope.scopes,
+            'refresh_token': self.refresh_token,
+        }
+
+    @classmethod
+    def from_save_data(cls, save_data: dict):
+        """
+        Create a new :class:`AuthHandler` object from save data.
+        """
+        save_version = save_data['save_version']
+        if save_version != cls.SAVE_VERSION:
+            raise ValueError(f"The version of this save data ({save_version}) is not compatible "
+                             f"with the save data version of this AuthHandler object ({cls.SAVE_VERSION}).")
+
+        client_id = save_data['client_id']
+        client_secret = save_data['client_secret']
+        redirect_url = save_data['redirect_url']
+        scope = Scope(*save_data['scope'].split())
+        auth = cls(client_id, client_secret, redirect_url, scope)
+        auth.refresh_access_token(save_data['refresh_token'])
+        return auth
