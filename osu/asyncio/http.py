@@ -7,8 +7,7 @@ from ..constants import base_url
 
 
 class AsynchronousHTTPHandler:
-    def __init__(self, auth, client, request_wait_time, limit_per_minute):
-        self.auth = auth
+    def __init__(self, client, request_wait_time, limit_per_minute):
         self.client = client
         self.rate_limit = RateLimitHandler(request_wait_time, limit_per_minute)
 
@@ -19,7 +18,7 @@ class AsynchronousHTTPHandler:
             **{str(key): str(value) for key, value in kwargs.items() if value is not None}
         }
         if requires_auth:
-            headers['Authorization'] = f"Bearer {self.auth.token}"
+            headers['Authorization'] = f"Bearer {self.client.auth.token}"
         return headers
 
     async def make_request(self, method, path, data=None, headers=None, **kwargs):
@@ -31,9 +30,12 @@ class AsynchronousHTTPHandler:
         if path.requires_auth and self.client.auth is None:
             raise ScopeException("You need to be authenticated to make this request.")
 
-        scope_required = path.scope
-        if path.requires_auth and scope_required.scopes not in self.client.auth.scope:
-            raise ScopeException(f"You don't have the {scope_required} scope, which is required to make this request.")
+        if path.requires_auth and path.scope not in self.client.auth.scope:
+            raise ScopeException(f"You don't have the {path.scope} scope, which is required to make this request.")
+
+        if path.requires_user and not self.client.auth.has_user:
+            raise ScopeException("This request requires a user. You need either a delegate scope or "
+                                 "to register OAuth with Authorization Code Grant.")
 
         headers = self.get_headers(path.requires_auth, **headers)
         params = {str(key): value for key, value in kwargs.items() if value is not None}
