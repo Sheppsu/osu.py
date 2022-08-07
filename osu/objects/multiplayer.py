@@ -1,4 +1,3 @@
-from .score import ScoreStatistics
 from .user import UserCompact
 from .beatmap import BeatmapCompact
 from ..enums import Mod, RoomCategory, RoomType, RealTimeQueueMode, PlaylistQueueMode, GameModeInt
@@ -31,7 +30,7 @@ class MultiplayerScore:
 
     max_combo: :class:`int`
 
-    mods: Sequence[:class:`Mod`]
+    mods: Sequence[:class:`PlaylistMod`]
 
     statistics: :class:`ScoreStatistics`
 
@@ -60,8 +59,8 @@ class MultiplayerScore:
         self.total_score = data['total_score']
         self.accuracy = data['accuracy']
         self.max_combo = data['max_combo']
-        self.mods = list(map(Mod, data['mods']))
-        self.statistics = ScoreStatistics(data['statistics'])
+        self.mods = list(map(PlaylistMod, data['mods']))
+        self.statistics = MultiplayerScoreStatistics(data['statistics'])
         self.passed = data['passed']
         self.position = data.get('position')
         self.scores_around = MultiplayerScoresAround(data['scores_around']) \
@@ -70,6 +69,64 @@ class MultiplayerScore:
 
     def __repr__(self):
         return prettify(self, 'user', 'position')
+
+
+class MultiplayerScoreStatistics:
+    """
+    **Attributes**
+
+    ok: :class:`int`
+
+    meh: :class:`int`
+
+    good: :class:`int`
+
+    miss: :class:`int`
+
+    none: :class:`int`
+
+    great: :class:`int`
+
+    perfect: :class:`int`
+
+    ignore_hit: :class:`int`
+
+    ignore_miss: :class:`int`
+
+    large_bonus: :class:`int`
+
+    small_bonus: :class:`int`
+
+    large_tick_hit: :class:`int`
+
+    small_tick_hit: :class:`int`
+
+    large_tick_miss: :class:`int`
+
+    small_tick_miss: :class:`int`
+    """
+    __slots__ = (
+        'ok', "meh", 'good', 'miss', 'none', 'great', 'perfect', 'ignore_hit',
+        'ignore_miss', 'large_bonus', 'small_bonus', 'large_tick_hit', 'small_tick_hit',
+        'large_tick_miss', 'small_tick_miss'
+    )
+
+    def __init__(self, data):
+        self.ok = data['ok']
+        self.meh = data['meh']
+        self.good = data['good']
+        self.miss = data['miss']
+        self.none = data['none']
+        self.great = data['great']
+        self.perfect = data['perfect']
+        self.ignore_hit = data['ignore_hit']
+        self.ignore_miss = data['ignore_miss']
+        self.large_bonus = data['large_bonus']
+        self.small_bonus = data['small_bonus']
+        self.large_tick_hit = data['large_tick_hit']
+        self.small_tick_hit = data['small_tick_hit']
+        self.large_tick_miss = data['large_tick_miss']
+        self.small_tick_miss = data['small_tick_miss']
 
 
 class MultiplayerScores:
