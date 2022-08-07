@@ -1,16 +1,12 @@
-from .objects import Scope
-
-
 class Path:
-    def __init__(self, path, scope):
+    def __init__(self, path, scope, requires_user=False):
         self.path = path
-        if type(scope) == str:
-            scope = Scope(scope)
         self.scope = scope
+        self.requires_user = requires_user
 
     @property
     def requires_auth(self):
-        return len(self.scope) != 0
+        return self.scope is not None
 
     @classmethod
     def beatmap_lookup(cls):
@@ -54,91 +50,91 @@ class Path:
 
     @classmethod
     def get_changelog_build(cls, stream, build):
-        return cls(f"changelog/{stream}/{build}", Scope())
+        return cls(f"changelog/{stream}/{build}", None)
 
     @classmethod
     def get_changelog_listing(cls):
-        return cls('changelog', Scope())
+        return cls('changelog', None)
 
     @classmethod
     def lookup_changelog_build(cls, changelog):
-        return cls(f'changelog/{changelog}', Scope())
+        return cls(f'changelog/{changelog}', None)
 
     @classmethod
     def create_new_pm(cls):
-        return cls('chat/new', 'chat.write')
+        return cls('chat/new', 'chat.write', True)
 
     @classmethod
     def get_updates(cls):
-        return cls('chat/updates', 'lazer')
+        return cls('chat/updates', 'lazer', True)
 
     @classmethod
     def get_channel_messages(cls, channel):
-        return cls(f'chat/channels/{channel}/messages', 'lazer')
+        return cls(f'chat/channels/{channel}/messages', 'lazer', True)
 
     @classmethod
     def send_message_to_channel(cls, channel):
-        return cls(f'chat/channels/{channel}/messages', 'lazer')
+        return cls(f'chat/channels/{channel}/messages', 'lazer', True)
 
     @classmethod
     def join_channel(cls, channel, user):
-        return cls(f'chat/channels/{channel}/users/{user}', 'lazer')
+        return cls(f'chat/channels/{channel}/users/{user}', 'lazer', True)
 
     @classmethod
     def leave_channel(cls, channel, user):
-        return cls(f'chat/channels/{channel}/users/{user}', 'lazer')
+        return cls(f'chat/channels/{channel}/users/{user}', 'lazer', True)
 
     @classmethod
     def mark_channel_as_read(cls, channel, message):
-        return cls(f'chat/channels/{channel}/mark-as-read/{message}', 'lazer')
+        return cls(f'chat/channels/{channel}/mark-as-read/{message}', 'lazer', True)
 
     @classmethod
     def get_channel_list(cls):
-        return cls('chat/channels', 'lazer')
+        return cls('chat/channels', 'lazer', True)
 
     @classmethod
     def create_channel(cls):
-        return cls('chat/channels', 'lazer')
+        return cls('chat/channels', 'lazer', True)
 
     @classmethod
     def get_channel(cls, channel):
-        return cls(f'chat/channels/{channel}', 'lazer')
+        return cls(f'chat/channels/{channel}', 'lazer', True)
 
     @classmethod
     def get_comments(cls):
-        return cls('comments', Scope())
+        return cls('comments', None)
 
     @classmethod
     def post_new_comment(cls):
-        return cls('comments', 'lazer')
+        return cls('comments', 'lazer', True)
 
     @classmethod
     def get_comment(cls, comment):
-        return cls(f'comments/{comment}', Scope())
+        return cls(f'comments/{comment}', None)
 
     @classmethod
     def edit_comment(cls, comment):
-        return cls(f'comments/{comment}', 'lazer')
+        return cls(f'comments/{comment}', 'lazer', True)
 
     @classmethod
     def delete_comment(cls, comment):
-        return cls(f'comments/{comment}', 'lazer')
+        return cls(f'comments/{comment}', 'lazer', True)
 
     @classmethod
     def add_comment_vote(cls, comment):
-        return cls(f'comments/{comment}/vote', 'lazer')
+        return cls(f'comments/{comment}/vote', 'lazer', True)
 
     @classmethod
     def remove_comment_vote(cls, comment):
-        return cls(f'comments/{comment}/vote', 'lazer')
+        return cls(f'comments/{comment}/vote', 'lazer', True)
 
     @classmethod
     def reply_topic(cls, topic):
-        return cls(f'forums/topics/{topic}/reply', 'forum.write')
+        return cls(f'forums/topics/{topic}/reply', 'forum.write', True)
 
     @classmethod
     def create_topic(cls):
-        return cls('forums/topics', 'forum.write')
+        return cls('forums/topics', 'forum.write', True)
 
     @classmethod
     def get_topic_and_posts(cls, topic):
@@ -158,31 +154,31 @@ class Path:
 
     @classmethod
     def get_user_high_score(cls, room, playlist, user):
-        return cls(f'rooms/{room}/playlist/{playlist}/scores/users/{user}', 'lazer')
+        return cls(f'rooms/{room}/playlist/{playlist}/scores/users/{user}', 'lazer', True)
 
     @classmethod
     def get_scores(cls, room, playlist):
-        return cls(f'rooms/{room}/playlist/{playlist}/scores', 'public')
+        return cls(f'rooms/{room}/playlist/{playlist}/scores', 'public', True)
 
     @classmethod
     def get_score(cls, room, playlist, score):
-        return cls(f'rooms/{room}/playlist/{playlist}/scores/{score}', 'lazer')
+        return cls(f'rooms/{room}/playlist/{playlist}/scores/{score}', 'lazer', True)
 
     @classmethod
     def get_news_listing(cls):
-        return cls('news', Scope())
+        return cls('news', None)
 
     @classmethod
     def get_news_post(cls, news):
-        return cls(f'news/{news}', Scope())
+        return cls(f'news/{news}', None)
 
     @classmethod
     def get_notifications(cls):
-        return cls('notifications', 'lazer')
+        return cls('notifications', 'lazer', True)
 
     @classmethod
     def mark_notifications_as_read(cls):
-        return cls('notifications/mark-read', 'lazer')
+        return cls('notifications/mark-read', 'lazer', True)
 
     @classmethod
     def revoke_current_token(cls):
@@ -226,7 +222,7 @@ class Path:
 
     @classmethod
     def get_wiki_page(cls, locale, path):
-        return cls(f'wiki/{locale}/{path}', Scope())
+        return cls(f'wiki/{locale}/{path}', None)
 
     @classmethod
     def get_score_by_id(cls, mode, score):
@@ -246,7 +242,7 @@ class Path:
 
     @classmethod
     def get_rooms(cls, mode=''):
-        return cls(f'rooms/{mode}', 'public')
+        return cls(f'rooms/{mode}', 'public', True)
 
     @classmethod
     def get_room(cls, room):
@@ -254,8 +250,8 @@ class Path:
 
     @classmethod
     def get_room_leaderboard(cls, room):
-        return cls(f'rooms/{room}/leaderboard', 'public')
+        return cls(f'rooms/{room}/leaderboard', 'public', True)
 
     @classmethod
     def get_seasonal_backgrounds(cls):
-        return cls('seasonal-backgrounds', Scope())
+        return cls('seasonal-backgrounds', None)
