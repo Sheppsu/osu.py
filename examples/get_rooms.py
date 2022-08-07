@@ -1,6 +1,5 @@
 from osu import Client, AuthHandler, Scope
 import os
-import json
 
 
 client_id = int(os.getenv('osu_client_id'))
