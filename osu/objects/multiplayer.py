@@ -128,6 +128,9 @@ class MultiplayerScoreStatistics:
         self.large_tick_miss = data['large_tick_miss']
         self.small_tick_miss = data['small_tick_miss']
 
+    def __repr__(self):
+        return prettify(self, 'perfect', 'miss')
+
 
 class MultiplayerScores:
     """
