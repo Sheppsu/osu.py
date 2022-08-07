@@ -6,6 +6,7 @@ from .auth import AuthHandler
 from .util import parse_mods_arg, parse_enum_args, BeatmapsetSearchFilter
 from typing import Union, Optional, Sequence, Dict
 from datetime import datetime
+from osrparse import Replay
 
 
 class Client:
@@ -1894,3 +1895,22 @@ class Client:
             'leaderboard': list(map(UserScoreAggregate, resp['leaderboard'])),
             'user_score': UserScoreAggregate(resp['user_score']) if resp['user_score'] is not None else None,
         }
+
+    def get_replay_data(self, mode, score_id):
+        """
+        Returns replay data for a score.
+
+        Requires OAuth, scope public, and a user (authorization code grant or delegate scope).
+
+        **Parameters**
+
+        mode: Union[:class:`str`, :class:`GameModeStr`]
+
+        score_id: :class:`int`
+
+        **Returns**
+
+        :class:`osrparse.Replay`
+        """
+        mode = parse_enum_args(mode)
+        return Replay.from_string(self.http.make_request('get', Path.get_replay_data(mode, score_id), is_download=True))
