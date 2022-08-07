@@ -20,7 +20,7 @@ class HTTPHandler:
             headers['Authorization'] = f"Bearer {self.client.auth.token}"
         return headers
 
-    def make_request(self, method, path, data=None, headers=None, **kwargs):
+    def make_request(self, method, path, data=None, headers=None, is_download=False, **kwargs):
         if headers is None:
             headers = {}
         if data is None:
@@ -44,7 +44,7 @@ class HTTPHandler:
         response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, params=params)
         self.rate_limit.request_used()
         response.raise_for_status()
-        return response.json()
+        return response.json() if not is_download else response.content
 
 
 class RateLimitHandler:

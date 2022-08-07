@@ -21,7 +21,7 @@ class AsynchronousHTTPHandler:
             headers['Authorization'] = f"Bearer {self.client.auth.token}"
         return headers
 
-    async def make_request(self, method, path, data=None, headers=None, **kwargs):
+    async def make_request(self, method, path, data=None, headers=None, is_download=False, **kwargs):
         if headers is None:
             headers = {}
         if data is None:
@@ -47,7 +47,7 @@ class AsynchronousHTTPHandler:
             self.rate_limit.request_used()
             async with session.request(method, base_url + path.path, headers=headers, data=data, params=params) as resp:
                 resp.raise_for_status()
-                return await resp.json()
+                return await resp.json() if not is_download else resp.content
 
 
 class RateLimitHandler:
