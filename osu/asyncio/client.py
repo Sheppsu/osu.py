@@ -1886,3 +1886,35 @@ class AsynchronousClient:
             'error': resp['error'],
             'total': resp['total'],
         }
+
+    async def get_room_leaderboard(self, room_id: int) -> \
+            Dict[str, Union[Sequence[UserScoreAggregate], Union[UserScoreAggregate, None]]]:
+        """
+        Return a room's leaderboard. The :class:`UserScoreAggregate` objects returned under the "leaderboard"
+        key contain the "user" attribute. The :class:`UserScoreAggregate` object under the "user_score" key
+        contains the "user" and "position" attributes.
+
+        Requires OAuth, scope public, and a user (authorization code grant or delegate scope).
+
+        **Parameters**
+
+        room_id: :class:`int`
+
+        **Returns**
+
+        Dict[:class:`str`, Union[Sequence[:class:`UserScoreAggregate`],
+        Union[:class:`UserScoreAggregate`, :class:`NoneType`]]]
+
+        {
+
+            'leaderboard': Sequence[:class:`UserScoreAggregate`],
+
+            'user_score': Union[:class:`UserScoreAggregate`, :class:`NoneType`]
+
+        }
+        """
+        resp = await self.http.make_request('get', Path.get_room_leaderboard(room_id))
+        return {
+            'leaderboard': list(map(UserScoreAggregate, resp['leaderboard'])),
+            'user_score': UserScoreAggregate(resp['user_score']) if resp['user_score'] is not None else None,
+        }
