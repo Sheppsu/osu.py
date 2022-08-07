@@ -1930,3 +1930,15 @@ class Client:
         """
         mode = parse_enum_args(mode)
         return Replay.from_string(self.http.make_request('get', Path.get_replay_data(mode, score_id), is_download=True))
+
+    def get_friends(self):
+        """
+        Returns a list of friends.
+
+        Requires OAuth, scope friends.read, and a user (authorization code grant or delegate scope).
+
+        **Returns**
+
+        Sequence[:class:`User`]
+        """
+        return list(map(UserCompact, self.http.make_request('get', Path.get_friends())))

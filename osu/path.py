@@ -263,3 +263,7 @@ class Path:
     @classmethod
     def get_replay_data(cls, mode, score):
         return cls(f'scores/{mode}/{score}/download', 'public', True)
+
+    @classmethod
+    def get_friends(cls):
+        return cls('friends', 'friends.read', True)
