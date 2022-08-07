@@ -1937,4 +1937,5 @@ class AsynchronousClient:
         :class:`osrparse.Replay`
         """
         mode = parse_enum_args(mode)
-        return Replay.from_string(await self.http.make_request('get', Path.get_replay_data(mode, score_id), is_download=True))
+        return Replay.from_string(await self.http.make_request('get', Path.get_replay_data(mode, score_id), 
+                                                               is_download=True))
