@@ -2,9 +2,11 @@ import setuptools
 import re
 
 requirements = [
-    "requests>=2.25.0",
-    "websockets>=9.1",
-    "python-dateutil>=2.8.2"
+    "aiohttp==3.7.4",
+    "python_dateutil==2.8.2",
+    "requests==2.25.1",
+    "websockets==10.2",
+    "osrparse==6.0.1",
 ]  # Fallback
 
 try:
