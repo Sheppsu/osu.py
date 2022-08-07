@@ -1,5 +1,5 @@
 aiohttp==3.7.4
 python_dateutil==2.8.2
-requests==2.25.1
 websockets==10.2
 osrparse==6.0.1
+requests==2.25.1

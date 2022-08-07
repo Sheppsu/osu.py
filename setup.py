@@ -7,17 +7,7 @@ requirements = [
     "requests==2.25.1",
     "websockets==10.2",
     "osrparse==6.0.1",
-]  # Fallback
-
-try:
-    with open("osu.py.egg-info/requires.txt", 'r') as f:
-        requirements = f.readlines()
-except FileNotFoundError:
-    try:
-        with open("requirements.txt", 'r') as f:
-            requirements = f.readlines()
-    except FileNotFoundError:
-        pass
+]
 
 readme = ''
 with open('README.rst') as f:
