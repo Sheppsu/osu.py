@@ -325,6 +325,11 @@ MultiplayerScores
 ^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.MultiplayerScores
    :members:
+   
+MultiplayerScoreStatistics
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.MultiplayerScoreStatistics
+   :members:
 
 MultiplayerScoresAround
 ^^^^^^^^^^^^^^^^^^^^^^^
