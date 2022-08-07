@@ -394,6 +394,22 @@ class AsynchronousClient:
             'votes': list(map(BeatmapsetDiscussionVote, resp['votes']))
         }
 
+    async def get_beatmapset(self, beatmapset_id: int) -> Beatmapset:
+        """
+        Get beatmapset by id.
+
+        Requires OAuth and scope public
+
+        **Parameters**
+
+        beatmapset_id: :class:`int`
+
+        **Returns**
+
+        :class:`Beatmapset`
+        """
+        return Beatmapset(await self.http.make_request('get', Path.get_beatmapset(beatmapset_id)))
+
     async def get_beatmapset_discussions(self, beatmap_id: Optional[int] = None, beatmapset_id: Optional[int] = None,
                                          beatmapset_status: Optional[str] = None, limit: Optional[int] = None,
                                          message_types: Optional[Sequence[str]] = None,
@@ -1937,5 +1953,5 @@ class AsynchronousClient:
         :class:`osrparse.Replay`
         """
         mode = parse_enum_args(mode)
-        return Replay.from_string(await self.http.make_request('get', Path.get_replay_data(mode, score_id), 
+        return Replay.from_string(await self.http.make_request('get', Path.get_replay_data(mode, score_id),
                                                                is_download=True))

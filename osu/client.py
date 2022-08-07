@@ -268,6 +268,22 @@ class Client:
                                                                   mods=parse_mods_arg(mods), ruleset=ruleset,
                                                                   ruleset_id=ruleset_id))
 
+    def get_beatmapset(self, beatmapset_id: int) -> Beatmapset:
+        """
+        Get beatmapset by id.
+
+        Requires OAuth and scope public
+
+        **Parameters**
+
+        beatmapset_id: :class:`int`
+
+        **Returns**
+
+        :class:`Beatmapset`
+        """
+        return Beatmapset(self.http.make_request('get', Path.get_beatmapset(beatmapset_id)))
+
     def get_beatmapset_discussion_posts(self, beatmapset_discussion_id: Optional[int] = None,
                                         limit: Optional[int] = None, page: Optional[int] = None,
                                         sort: Optional[str] = None, user: Optional[int] = None,
