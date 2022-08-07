@@ -164,6 +164,10 @@ class AuthHandler:
             self.refresh_access_token()
         return self._token
 
+    @property
+    def has_user(self):
+        return 'delegate' in self.scope or self.refresh_token is not None
+
     def set_refresh_callback(self, callback: Callable[['AuthHandler'], None]):
         """
         Set a callback to be called everytime the access token is refreshed.
