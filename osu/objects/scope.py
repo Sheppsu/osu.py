@@ -51,5 +51,5 @@ class Scope:
     def __str__(self):
         return str(self.scopes_list)
 
-    def __contains__(self, item):
-        return item in self.scopes_list
+    def __contains__(self, scope: str):
+        return scope in self.scopes_list
