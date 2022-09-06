@@ -1693,7 +1693,7 @@ class Client:
         """
         Returns list of users.
 
-        Requires OAuth and scope lazer
+        Requires OAuth and scope public
 
         **Parameters**
 
@@ -1704,11 +1704,10 @@ class Client:
         **Returns**
 
         Sequence[:class:`UserCompact`]
-            list of :class:`UserCompact` objects.
-            Includes attributes: country, cover, groups, statistics_fruits,
-            statistics_mania, statistics_osu, statistics_taiko.
+            Includes attributes: country, cover, groups, statistics_rulesets.
         """
-        return list(map(UserCompact, self.http.make_request('get', Path.get_users(), ids=ids)))
+        res = self.http.make_request('get', Path.get_users(), **{"ids[]": ids})
+        return list(map(UserCompact, res["users"]))
 
     def get_wiki_page(self, locale: str, path: str) -> WikiPage:
         """

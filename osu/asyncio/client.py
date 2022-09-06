@@ -1717,21 +1717,21 @@ class AsynchronousClient:
         """
         Returns list of users.
 
-        Requires OAuth and scope lazer
+        Requires OAuth and scope public
 
         **Parameters**
 
         ids: Sequence[:class:`int`]
-            User id to be returned. Specify once for each user id requested. Up to 50 users can be requested at once.
+            User id to be returned. Specify once for each user id requested.
+            Up to 50 users can be requested at once.
 
         **Returns**
 
         Sequence[:class:`UserCompact`]
-            list of :class:`UserCompact` objects.
-            Includes attributes: country, cover, groups, statistics_fruits,
-            statistics_mania, statistics_osu, statistics_taiko.
+            Includes attributes: country, cover, groups, statistics_rulesets.
         """
-        return list(map(UserCompact, await self.http.make_request('get', Path.get_users(), ids=ids)))
+        res = await self.http.make_request('get', Path.get_users(), **{"ids[]": ids})
+        return list(map(UserCompact, res["users"]))
 
     async def get_wiki_page(self, locale: str, path: str) -> WikiPage:
         """
