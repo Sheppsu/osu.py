@@ -279,7 +279,7 @@ class Mods(IntFlag):
         return cls[Mod(abbreviation.upper()).name]
 
     @staticmethod
-    def get_from_list(mods: Sequence['Mods']) -> 'Mods':
+    def get_from_list(mods: Sequence['Mods']) -> Union['Mods', None]:
         """
         Get a :class:`Mods` object from a list of :class:`Mods`.
 
@@ -290,8 +290,10 @@ class Mods(IntFlag):
 
         **Returns**
 
-        :class:`Mods`
+        Union[:class:`Mods`, :class:`NoneType`]
         """
+        if len(mods) == 0:
+            return
         a = mods[0]
         for i in range(1, len(mods)):
             a |= mods[i]
@@ -312,7 +314,7 @@ class Mods(IntFlag):
 
         **Returns**
 
-        :class:`Mods`
+        Union[:class:`Mods`, :class:`NoneType`]
         """
         ret = []
         for mod in mods:
@@ -331,7 +333,7 @@ class Mods(IntFlag):
                 ret.append(Mods(mod))
             else:
                 raise TypeError("Mods can only be parsed to Mods objects if they're of type str, int, or Mods")
-        return Mods.get_from_list(ret)
+        return Mods.get_from_list(ret) if len(ret) > 0 else None
 
     def get_incompatible_mods(self):
         """
@@ -973,3 +975,69 @@ class ScoreRank(Enum):
     B = 'B'
     C = 'C'
     D = 'D'
+
+
+class ObjectType(Enum):
+    """
+    Enum for different object types. Score types are most relevant.
+
+    BeatmapDiscussion = "beatmapset_discussion"
+
+    BeatmapDiscussionPost = "beatmapset_discussion_post"
+
+    Beatmapset = "beatmapset"
+
+    Build = "build"
+
+    Channel = "channel"
+
+    Comment = "comment"
+
+    ForumPost = "forum_post"
+
+    ForumTopic = "forum_topic"
+
+    LegacyMatchScore = "legacy_match_score"
+
+    NewsPost = "news_post"
+
+    ScoreBestFruits = "score_best_fruits"
+
+    ScoreBestMania = "score_best_mania"
+
+    ScoreBestOsu = "score_best_osu"
+
+    ScoreBestTaiko = "score_best_taiko"
+
+    ScoreFruits = "score_fruits"
+
+    ScoreMania = "score_mania"
+
+    ScoreOsu = "score_osu"
+
+    ScoreTaiko = "score_taiko"
+
+    SoloScore = "solo_score"
+
+    User = "user"
+    """
+    BeatmapDiscussion = "beatmapset_discussion"
+    BeatmapDiscussionPost = "beatmapset_discussion_post"
+    Beatmapset = "beatmapset"
+    Build = "build"
+    Channel = "channel"
+    Comment = "comment"
+    ForumPost = "forum_post"
+    ForumTopic = "forum_topic"
+    LegacyMatchScore = "legacy_match_score"
+    NewsPost = "news_post"
+    ScoreBestFruits = "score_best_fruits"
+    ScoreBestMania = "score_best_mania"
+    ScoreBestOsu = "score_best_osu"
+    ScoreBestTaiko = "score_best_taiko"
+    ScoreFruits = "score_fruits"
+    ScoreMania = "score_mania"
+    ScoreOsu = "score_osu"
+    ScoreTaiko = "score_taiko"
+    SoloScore = "solo_score"
+    User = "user"
