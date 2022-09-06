@@ -25,6 +25,10 @@ class Path:
         return cls(f"beatmaps/{beatmap}/scores", 'public')
 
     @classmethod
+    def lazer_beatmap_scores(cls, beatmap):
+        return cls(f"beatmaps/{beatmap}/solo-scores", 'public')
+
+    @classmethod
     def beatmap(cls, beatmap):
         return cls(f"beatmaps/{beatmap}", 'public')
 
