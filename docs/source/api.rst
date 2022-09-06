@@ -296,6 +296,11 @@ KudosuHistory
 .. autoclass:: osu.KudosuHistory
    :members:
    
+LegacyScore
+^^^^^^^^^^^
+.. autoclas:: osu.LegacyScore 
+   :members:
+   
 ManiaBeatmapDifficultyAttributes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.ManiaBeatmapDifficultyAttributes
@@ -314,11 +319,6 @@ MatchEvent
 MatchExtended
 ^^^^^^^^^^^^^
 .. autoclass:: osu.MatchExtended
-   :members:
-
-MultiplayerScore
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.MultiplayerScore
    :members:
 
 MultiplayerScores
@@ -405,15 +405,20 @@ Scope
 ^^^^^
 .. autoclass:: osu.Scope
    :members:
-
-Score
-^^^^^
-.. autoclass:: osu.Score
+   
+ScoreDataStatistics
+^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.ScoreDataStatistics
    :members:
 
 ScoreStatistics
 ^^^^^^^^^^^^^^^
 .. autoclass:: osu.ScoreStatistics
+   :members:
+   
+SoloScore
+^^^^^^^^^
+.. autoclass:: osu.SoloScore
    :members:
 
 Spotlight
@@ -527,6 +532,11 @@ Mod
 Mods
 ^^^^
 .. autoclass:: osu.Mods
+   :members:
+   
+ObjectType
+^^^^^^^^^^
+.. autoclass:: osu.ObjectType
    :members:
    
 PlaylistQueueMode
