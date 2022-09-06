@@ -226,7 +226,7 @@ class Path:
 
     @classmethod
     def get_users(cls):
-        return cls('users', 'lazer')
+        return cls('users', 'public')
 
     @classmethod
     def get_wiki_page(cls, locale, path):
