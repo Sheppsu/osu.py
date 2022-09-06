@@ -530,7 +530,6 @@ class UserStatisticsRulesets:
 
 
 class CurrentUserAttributes:
-    # TODO: Name for BeatmapsetDiscussionPermissions will be changing eventually
     """
     An object listing various related permissions and states for the current user,
     related to the object it is attached to.
