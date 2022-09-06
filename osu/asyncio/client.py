@@ -146,7 +146,7 @@ class AsynchronousClient:
             await self.http.make_request('get', Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
 
     async def get_user_beatmap_scores(self, beatmap: int, user: int,
-                                      mode: Optional[Union[str, GameModeStr]] = None) -> Sequence[Score]:
+                                      mode: Optional[Union[str, GameModeStr]] = None) -> Sequence[LegacyScore]:
         """
         Returns a user's scores on a Beatmap
 
@@ -165,10 +165,10 @@ class AsynchronousClient:
 
         **Returns**
 
-        Sequence[:class:`Score`]
+        Sequence[:class:`LegacyScore`]
         """
         mode = parse_enum_args(mode)
-        return list(map(Score, (await self.http.make_request('get', Path.user_beatmap_scores(beatmap, user),
+        return list(map(LegacyScore, (await self.http.make_request('get', Path.user_beatmap_scores(beatmap, user),
                                                              mode=mode))["scores"]))
 
     async def get_beatmap_scores(self, beatmap: int, mode: Optional[Union[str, GameModeStr]] = None,
@@ -196,10 +196,41 @@ class AsynchronousClient:
         **Returns**
 
         :class:`BeatmapScores`
+            :class:`LegacyScore` object inside includes "user" and the included user includes "country" and "cover".
         """
         mode = parse_enum_args(mode)
         return BeatmapScores(
             await self.http.make_request('get', Path.beatmap_scores(beatmap), mode=mode, mods=mods, type=type))
+
+    async def get_lazer_beatmap_scores(self, beatmap: int, mode: Optional[Union[str, GameModeStr]] = None,
+                                       mods: Optional[Sequence[str]] = None,
+                                       type: Optional[Sequence[str]] = None) -> BeatmapScores:
+        """
+        Returns the top scores for a beatmap on the lazer client.
+
+        Requires OAuth and scope public
+
+        **Parameters**
+
+        beatmap: :class:`int`
+            Id of the beatmap
+
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+            The game mode to get scores for
+
+        mods: Optional[Sequence[:class:`str`]]
+            An array of matching mods, or none. Currently doesn't do anything.
+
+        type: Optional[Sequence[:class:`str`]]
+            Beatmap score ranking type. Currently doesn't do anything.
+
+        **Returns**
+
+        :class:`BeatmapScores`
+        """
+        mode = parse_enum_args(mode)
+        return BeatmapScores(await self.http.make_request('get', Path.lazer_beatmap_scores(beatmap), mode=mode,
+                                                          mods=mods, type=type), "lazer")
 
     async def get_beatmap(self, beatmap: int) -> Beatmap:
         """
@@ -1548,7 +1579,7 @@ class AsynchronousClient:
 
     async def get_user_scores(self, user: int, type: str, include_fails: Optional[int] = None,
                               mode: Optional[Union[str, GameModeStr]] = None,
-                              limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[Score]:
+                              limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[LegacyScore]:
         """
         This endpoint returns the scores of specified user.
 
@@ -1576,11 +1607,11 @@ class AsynchronousClient:
 
         **Returns**
 
-        Sequence[:class:`Score`]
+        Sequence[:class:`LegacyScore`]
             Includes attributes beatmap, beatmapset, weight: Only for type best, user
         """
         mode = parse_enum_args(mode)
-        return [Score(score) for score in
+        return [LegacyScore(score) for score in
                 await self.http.make_request('get', Path.get_user_scores(user, type), include_fails=include_fails,
                                              mode=mode,
                                              limit=limit, offset=offset)]
@@ -1859,7 +1890,7 @@ class AsynchronousClient:
         """
         return Room(await self.http.make_request('get', Path.get_room(room_id)))
 
-    async def get_score_by_id(self, mode, score_id) -> Score:
+    async def get_score_by_id(self, mode, score_id) -> LegacyScore:
         """
         Returns a score by id.
 
@@ -1873,10 +1904,10 @@ class AsynchronousClient:
 
         **Returns**
 
-        :class:`Score`
+        :class:`LegacyScore`
         """
         mode = parse_enum_args(mode)
-        return Score(await self.http.make_request('get', Path.get_score_by_id(mode, score_id)))
+        return LegacyScore(await self.http.make_request('get', Path.get_score_by_id(mode, score_id)))
 
     async def search_beatmapsets(self, filters=None, page=None):
         """
