@@ -313,8 +313,9 @@ class BeatmapDifficultyAttributes:
 
     star_rating: :class:`float`
 
-    mode_attributes: :class:`OsuBeatmapDifficultyAttributes` | :class:`TaikoBeatmapDifficultyAttributes` |
-    :class:`FruitsBeatmapDifficultyAttributes` | :class:`ManiaBeatmapDifficultyAttributes`
+    mode_attributes: Union[:class:`OsuBeatmapDifficultyAttributes`, :class:`TaikoBeatmapDifficultyAttributes`,
+    :class:`FruitsBeatmapDifficultyAttributes`, :class:`ManiaBeatmapDifficultyAttributes`, :class:`None`]
+        Can be none for some beatmaps that are bugged and have no difficulty attributes.
 
     osu
         aim_difficulty: :class:`float`
@@ -355,7 +356,7 @@ class BeatmapDifficultyAttributes:
     def __init__(self, data):
         data = data['attributes']
         self.max_combo = data['max_combo']
-        self.star_rating = data['star_rating']  # TODO maybe round the star rating
+        self.star_rating = data['star_rating']
         if "aim_difficulty" in data:
             self.type = "osu"
             self.mode_attributes = OsuBeatmapDifficultyAttributes(data)
@@ -365,9 +366,12 @@ class BeatmapDifficultyAttributes:
         elif "score_multiplier" in data:
             self.type = "mania"
             self.mode_attributes = ManiaBeatmapDifficultyAttributes(data)
-        else:
+        elif "approach_rate" in data:
             self.type = 'fruits'
             self.mode_attributes = FruitsBeatmapDifficultyAttributes(data)
+        else:
+            self.type = None
+            self.mode_attributes = None
 
     def __getattr__(self, item):
         return getattr(self.mode_attributes, item)
