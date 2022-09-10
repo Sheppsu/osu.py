@@ -503,6 +503,16 @@ BeatmapsetEventType
 ^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.BeatmapsetEventType
    :members:
+   
+ChatChannelType
+^^^^^^^^^^^^^^^
+.. autoclass:: osu.ChatChannelType
+   :members:
+   
+ForumTopicType
+^^^^^^^^^^^^^^
+.. autoclass:: osu.ForumTopicType
+   :members:
 
 GameModeInt
 ^^^^^^^^^^^
@@ -582,6 +592,11 @@ UserBeatmapType
 UserScoreAggregate
 ^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.UserScoreAggregate
+   :members:
+   
+UserScoreType
+^^^^^^^^^^^^^
+.. autoclass:: osu.UserScoreType
    :members:
    
 WikiSearchMode
