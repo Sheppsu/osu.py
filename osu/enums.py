@@ -981,6 +981,8 @@ class ObjectType(Enum):
     """
     Enum for different object types. Score types are most relevant.
 
+    **Object types**
+
     BeatmapDiscussion = "beatmapset_discussion"
 
     BeatmapDiscussionPost = "beatmapset_discussion_post"
@@ -1041,3 +1043,66 @@ class ObjectType(Enum):
     ScoreTaiko = "score_taiko"
     SoloScore = "solo_score"
     User = "user"
+
+
+class UserScoreType(Enum):
+    """
+    Enum for the get_user_scores endpoint that specifies score type.
+
+    **User score types**
+
+    BEST = "best"
+
+    FIRSTS = "firsts"
+
+    RECENT = "recent"
+    """
+    BEST = "best"
+    FIRSTS = "firsts"
+    RECENT = "recent"
+
+
+class ForumTopicType(Enum):
+    """
+    Enum for :class:`ForumTopic` type attribute.
+
+    **Forum topic types**
+
+    NORMAL = "normal"
+
+    STICKY = "sticky"
+
+    ANNOUNCEMENT = "announcement"
+    """
+    NORMAL = "normal"
+    STICKY = "sticky"
+    ANNOUNCEMENT = "announcement"
+
+
+class ChatChannelType(Enum):
+    """
+    Enum for type attribute of :class:`ChatChannel`
+
+    **Chat channel types**
+
+    PUBLIC = "PUBLIC"
+
+    PRIVATE = "PRIVATE"
+
+    MULTIPLAYER = "MULTIPLAYER"
+
+    SPECTATOR = "SPECTATOR"
+
+    TEMPORARY = "TEMPORARY"
+
+    PM = "PM"
+
+    GROUP = "GROUP"
+    """
+    PUBLIC = "PUBLIC"
+    PRIVATE = "PRIVATE"
+    MULTIPLAYER = "MULTIPLAYER"
+    SPECTATOR = "SPECTATOR"
+    TEMPORARY = "TEMPORARY"
+    PM = "PM"
+    GROUP = "GROUP"
