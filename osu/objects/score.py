@@ -214,6 +214,9 @@ class SoloScore:
         self.legacy_total_score = data.get("legacy_total_score")
         self.started_at = parser.parse(data["started_at"]) if data.get("started_at") is not None else None
 
+    def __repr__(self):
+        return prettify(self, "beatmap_id", "statistics")
+
 
 class ScoreStatistics:
     """
