@@ -1,6 +1,7 @@
 from dateutil import parser
 
 from ..util import prettify
+from ..enums import ForumTopicType
 
 
 class ForumPost:
@@ -72,8 +73,7 @@ class ForumTopic:
 
     title: :class:`str`
 
-    type: :class:`str`
-        normal, sticky, or announcement
+    type: :class:`ForumTopicType`
 
     updated_at: :class:`datetime.datetime`
 
@@ -94,7 +94,7 @@ class ForumTopic:
         self.last_post_id = data['last_post_id']
         self.post_count = data['post_count']
         self.title = data['title']
-        self.type = data['type']
+        self.type = ForumTopicType(data['type'])
         self.updated_at = parser.parse(data["updated_at"])
         self.user_id = data['user_id']
 
