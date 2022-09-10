@@ -1,7 +1,7 @@
 from pytest import fixture
 
 from osu import AsynchronousClient, AuthHandler, Client
-from pytest_tests.constants import CLIENT_SECRET, REDIRECT_URI, CLIENT_ID
+from tests.constants import CLIENT_SECRET, REDIRECT_URI, CLIENT_ID
 
 
 @fixture(scope="session")
