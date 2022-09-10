@@ -1577,9 +1577,9 @@ class AsynchronousClient:
             map(KudosuHistory,
                 await self.http.make_request('get', Path.get_user_kudosu(user), limit=limit, offset=offset)))
 
-    async def get_user_scores(self, user: int, type: str, include_fails: Optional[int] = None,
-                              mode: Optional[Union[str, GameModeStr]] = None,
-                              limit: Optional[int] = None, offset: Optional[int] = None) -> Sequence[LegacyScore]:
+    async def get_user_scores(self, user: int, type: Union[UserScoreType, str], include_fails: Optional[int] = None,
+                        mode: Optional[Union[str, GameModeStr]] = None, limit: Optional[int] = None,
+                        offset: Optional[int] = None) -> Sequence[LegacyScore]:
         """
         This endpoint returns the scores of specified user.
 
@@ -1590,13 +1590,13 @@ class AsynchronousClient:
         user: :class:`int`
             Id of the user.
 
-        type: :class:`str`
+        type: union[:class:`UserScoreType` :class:`str`]
             Score type. Must be one of these: best, firsts, recent
 
         include_fails: Optional[:class:`int`]
             Only for recent scores, include scores of failed plays. Set to 1 to include them. Defaults to 0.
 
-        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+        mode: Optional[Union[:class:`GameModeStr`, :class:`str`]]
             game mode of the scores to be returned. Defaults to the specified user's mode.
 
         limit: Optional[:class:`int`]
@@ -1610,11 +1610,10 @@ class AsynchronousClient:
         Sequence[:class:`LegacyScore`]
             Includes attributes beatmap, beatmapset, weight: Only for type best, user
         """
-        mode = parse_enum_args(mode)
-        return [LegacyScore(score) for score in
-                await self.http.make_request('get', Path.get_user_scores(user, type), include_fails=include_fails,
-                                             mode=mode,
-                                             limit=limit, offset=offset)]
+        mode, type = parse_enum_args(mode, type)
+        return [LegacyScore(score) for score in await self.http.make_request('get', Path.get_user_scores(user, type),
+                                                                             include_fails=include_fails, mode=mode,
+                                                                             limit=limit, offset=offset)]
 
     async def get_user_beatmaps(self, user: int, type: Union[str, UserBeatmapType], limit: Optional[int] = None,
                                 offset: Optional[int] = None) -> Sequence[Union[BeatmapPlaycount, Beatmapset]]:
