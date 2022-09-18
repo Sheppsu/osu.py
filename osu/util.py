@@ -1,5 +1,5 @@
 from .enums import Mods, Enum, BeatmapsetSearchSort, BeatmapsetSearchGeneral, BeatmapsetSearchPlayed, \
-    BeatmapsetSearchStatus, BeatmapsetSearchExtra, ScoreRank, GameModeStr
+    BeatmapsetSearchStatus, BeatmapsetSearchExtra, ScoreRank, GameModeInt
 from typing import Sequence, Union
 
 
@@ -99,80 +99,79 @@ class BeatmapsetSearchFilter:
             "s": None,
         }
 
-    @returns_self
-    def set_query(self, query: str):
+    def set_query(self, query: str) -> 'BeatmapsetSearchFilter':
         """
         Set the query to search for.
 
         query: :class:`str`
         """
         self._filters["query"] = query
+        return self
 
-    @returns_self
-    def set_sort(self, sort: Union[BeatmapsetSearchSort, str]):
+    def set_sort(self, sort: Union[BeatmapsetSearchSort, str]) -> 'BeatmapsetSearchFilter':
         """
         Set the sort order of the search.
 
         sort: Union[:class:`BeatmapsetSearchSort`, :class:`str`]
         """
         self._filters["sort"] = sort.value if isinstance(sort, BeatmapsetSearchSort) else sort
+        return self
 
-    @returns_self
-    def set_nsfw(self, nsfw: bool):
+    def set_nsfw(self, nsfw: bool) -> 'BeatmapsetSearchFilter':
         """
         Set whether to include NSFW in the search.
 
         nsfw: :class:`bool`
         """
         self._filters["nsfw"] = nsfw
+        return self
 
-    @returns_self
-    def set_played(self, played: Union[BeatmapsetSearchPlayed, str]):
+    def set_played(self, played: Union[BeatmapsetSearchPlayed, str]) -> 'BeatmapsetSearchFilter':
         """
         Set whether to include played and unplayed beatmapsets in the search.
 
         played: Union[:class:`BeatmapsetSearchPlayed`, :class:`str`]
         """
         self._filters["played"] = played.value if isinstance(played, BeatmapsetSearchPlayed) else played
+        return self
 
-    @returns_self
-    def set_ranked(self, rank: Union[ScoreRank, str]):
+    def set_ranked(self, rank: Union[ScoreRank, str]) -> 'BeatmapsetSearchFilter':
         """
         Filter by rank achieved.
 
         rank: Union[:class:`ScoreRank`, :class:`str`]
         """
         self._filters["r"] = rank.value if isinstance(rank, ScoreRank) else rank
+        return self
 
-    @returns_self
-    def set_mode(self, mode: Union[GameModeStr, str]):
+    def set_mode(self, mode: Union[GameModeInt, str]) -> 'BeatmapsetSearchFilter':
         """
         Set the game mode to filter by.
 
         mode: Union[:class:`GameModeStr`, :class:`str`]
         """
-        self._filters["m"] = mode.value if isinstance(mode, GameModeStr) else mode
+        self._filters["m"] = mode.value if isinstance(mode, GameModeInt) else mode
+        return self
 
-    @returns_self
-    def set_language(self, language: str):
+    def set_language(self, language: str) -> 'BeatmapsetSearchFilter':
         """
         Set the language to filter by.
 
         language: :class:`str`
         """
         self._filters["l"] = language
+        return self
 
-    @returns_self
-    def set_genre(self, genre: str):
+    def set_genre(self, genre: str) -> 'BeatmapsetSearchFilter':
         """
         Set the genre to filter by.
 
         genre: :class:`str`
         """
         self._filters["g"] = genre
+        return self
 
-    @returns_self
-    def set_extra(self, extras: Sequence[Union[BeatmapsetSearchExtra, str]]):
+    def set_extra(self, extras: Sequence[Union[BeatmapsetSearchExtra, str]]) -> 'BeatmapsetSearchFilter':
         """
         Set the extras to filter by.
 
@@ -180,25 +179,26 @@ class BeatmapsetSearchFilter:
         """
         self._filters["e"] = ".".join(list(map(
             lambda x: x.value if isinstance(x, BeatmapsetSearchExtra) else x, extras)))
+        return self
 
-    @returns_self
-    def set_generals(self, generals: Union[BeatmapsetSearchGeneral, str]):
+    def set_generals(self, generals: Sequence[Union[BeatmapsetSearchGeneral, str]]) -> 'BeatmapsetSearchFilter':
         """
         Set the generals to filter by.
 
-        generals: Union[:class:`BeatmapsetSearchGeneral`, :class:`str`]
+        generals: Sequence[Union[:class:`BeatmapsetSearchGeneral`, :class:`str`]]
         """
         self._filters["c"] = ".".join(list(map(
             lambda x: x.value if isinstance(x, BeatmapsetSearchGeneral) else x, generals)))
+        return self
 
-    @returns_self
-    def set_status(self, status: Union[BeatmapsetSearchStatus, str]):
+    def set_status(self, status: Union[BeatmapsetSearchStatus, str]) -> 'BeatmapsetSearchFilter':
         """
         Set the status to filter by.
 
         status: Union[:class:`BeatmapsetSearchStatus`, :class:`str`]
         """
         self._filters["s"] = status.value if isinstance(status, BeatmapsetSearchStatus) else status
+        return self
 
     @property
     def filters(self):
