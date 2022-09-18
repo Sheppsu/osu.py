@@ -1213,7 +1213,7 @@ class Client:
 
         **Parameters**
 
-        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+        mode: Optional[Union[:class:`str`, :class:`WikiSearchMode`]]
             Either all, user, or wiki_page. Default is all.
 
         query: Optional[:class:`str`]
@@ -1885,7 +1885,7 @@ class Client:
         mode = parse_enum_args(mode)
         return LegacyScore(self.http.make_request('get', Path.get_score_by_id(mode, score_id)))
 
-    def search_beatmapsets(self, filters=None, page=None):
+    def search_beatmapsets(self, filters=None, page=None) -> dict:
         """
         Search for beatmapsets.
 
@@ -1896,6 +1896,24 @@ class Client:
         filters: Optional[:class:`BeatmapsetSearchFilter`]
 
         page: Optional[:class:`int`]
+
+        **Returns**
+
+        {
+
+        "beatmapsets": Sequence[:class:`Beatmapset`]
+
+        "cursor": :class:`dict`,
+
+        "search": :class:`dict`,
+
+        "recommended_difficulty": Union[:class:`float`, :class:`None`]
+
+        "error": Union[:class:`str`, :class:`None`]
+
+        "total": :class:`int`
+
+        }
         """
         if filters is None:
             filters = {}
