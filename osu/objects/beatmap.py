@@ -31,7 +31,7 @@ class BeatmapsetCompact:
 
     source: :class:`str`
 
-    status: :class:`str`
+    status: :class:`RankStatus`
 
     title: :class:`str`
 
@@ -94,7 +94,7 @@ class BeatmapsetCompact:
         self.play_count = data['play_count']
         self.preview_url = data['preview_url']
         self.source = data['source']
-        self.status = data['status']
+        self.status = RankStatus[data['status'].upper()]
         self.title = data['title']
         self.title_unicode = data['title_unicode']
         self.user_id = data['user_id']
@@ -193,7 +193,7 @@ class Beatmapset(BeatmapsetCompact):
     nominations: :class:`dict`
         Contains items current: :class:`int` and required: :class:`int`
 
-    ranked: :ref:`RankStatus`
+    ranked: :class:`RankStatus`
 
     ranked_date: :class:`datetime.datetime`
 
@@ -250,8 +250,7 @@ class BeatmapCompact:
 
     mode: :class:`GameModeStr`
 
-    status: :class:`str`
-        Possible values consist of graveyard, wip, pending, ranked, approved, qualified, loved
+    status: :class:`RankStatus`
 
     total_length: :class:`int`
 
@@ -280,7 +279,7 @@ class BeatmapCompact:
         self.difficulty_rating = data['difficulty_rating']
         self.id = data['id']
         self.mode = GameModeStr(data['mode'])
-        self.status = data['status']
+        self.status = RankStatus[data['status'].upper()]
         self.total_length = data['total_length']
         self.user_id = data['user_id']
         self.version = data['version']
