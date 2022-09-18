@@ -1,6 +1,6 @@
 from pytest_asyncio import fixture
 
-from osu import UserBeatmapType, Mods
+from osu import UserBeatmapType
 
 
 @fixture
@@ -37,61 +37,6 @@ def sample_beatmaps():
             "ar": 10,
         }
     ]
-
-
-@fixture
-def sample_scores():
-    yield {
-        "beatmap_id": 741477,
-        "scores": [
-            {
-                "id": 2046025260,
-                "user_id": 214187,
-                "max_combo": 197,
-            },
-            {
-                "id": 2157887005,
-                "user_id": 6143840,
-                "max_combo": 197,
-            },
-            {
-                "id": 2427781720,
-                "user_id": 7162035,
-                "max_combo": 197,
-            },
-        ]
-    }
-
-
-@fixture
-def sample_user_beatmap_score():
-    yield {
-        "user_id": 6943941,
-        "accuracy": 0.9725056689342404,
-        "beatmap_id": 2063622,
-    }
-
-
-@fixture
-def sample_user_beatmap_scores():
-    yield {
-        "user_id": 6943941,
-        "beatmap_id": 2063622,
-        "scores": [
-            {
-                "accuracy": 0.9725056689342404,
-                "mods": Mods.Hidden | Mods.DoubleTime,
-            },
-            {
-                "accuracy": 0.9747732426303855,
-                "mods": Mods.DoubleTime,
-            },
-            {
-                "accuracy": 0.9810090702947846,
-                "mods": None,
-            },
-        ],
-    }
 
 
 @fixture

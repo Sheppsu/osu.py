@@ -14,9 +14,13 @@ class TestAsyncUser:
         assert user.has_supported == sample_user["has_supported"]
 
     @pytest.mark.asyncio
-    async def test_async_get_users(self, async_client, sample_users):
-        # Requires lazer scope
-        ...
+    async def test_get_users(self, async_client, sample_users):
+        sample_users = sorted(sample_users, key=lambda u: u["id"])
+        users = await async_client.get_users([user['id'] for user in sample_users])
+        for user, sample_user in zip(users, sample_users):
+            assert user
+            assert user.id == sample_user["id"]
+            assert user.username == sample_user["username"]
 
     @pytest.mark.asyncio
     async def test_async_get_user_highscore(self, async_client, sample_room):

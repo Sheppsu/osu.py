@@ -11,8 +11,12 @@ class TestUser:
         assert user.has_supported == sample_user["has_supported"]
 
     def test_get_users(self, client, sample_users):
-        # Requires lazer scope
-        ...
+        sample_users = sorted(sample_users, key=lambda u: u["id"])
+        users = client.get_users([user['id'] for user in sample_users])
+        for user, sample_user in zip(users, sample_users):
+            assert user
+            assert user.id == sample_user["id"]
+            assert user.username == sample_user["username"]
 
     def test_get_user_highscore(self, client, sample_room):
         # Requires lazer scope

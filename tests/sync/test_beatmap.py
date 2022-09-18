@@ -1,4 +1,5 @@
-from osu import BeatmapsetEventType
+from osu import BeatmapsetEventType, BeatmapsetSearchFilter, GameModeStr, \
+    BeatmapsetSearchStatus, BeatmapsetSearchExtra, RankStatus, GameModeInt
 
 
 class TestBeatmap:
@@ -20,35 +21,17 @@ class TestBeatmap:
             keys = sample_beatmaps[0].keys()
             assert {key: getattr(beatmap, key) for key in keys} in sample_beatmaps
 
-    def test_get_beatmap_scores(self, client, sample_scores):
-        scores = client.get_beatmap_scores(sample_scores["beatmap_id"])
-        for received_score, sample_score in zip(scores.scores[:3], sample_scores["scores"]):
-            assert received_score.id == sample_score["id"]
-            assert received_score.user_id == sample_score["user_id"]
-            assert received_score.max_combo == sample_score["max_combo"]
-
-    def test_get_user_beatmap_score(self, client, sample_user_beatmap_score):
-        score = (client.get_user_beatmap_score(
-            beatmap=sample_user_beatmap_score["beatmap_id"],
-            user=sample_user_beatmap_score["user_id"],
-        )).score
-        assert score
-        assert score.user_id == sample_user_beatmap_score["user_id"]
-        assert score.accuracy == sample_user_beatmap_score["accuracy"]
-
-    def test_get_user_beatmap_scores(self, client, sample_user_beatmap_scores):
-        scores = client.get_user_beatmap_scores(
-            beatmap=sample_user_beatmap_scores["beatmap_id"],
-            user=sample_user_beatmap_scores["user_id"],
-        )
-        assert scores
-        for score in scores:
-            keys = sample_user_beatmap_scores["scores"][0].keys()
-            assert {key: getattr(score, key) for key in keys} in sample_user_beatmap_scores["scores"]
-
     def test_search_beatmapsets(self, client):
-        # Is undocumented
-        ...
+        filters = BeatmapsetSearchFilter()\
+            .set_mode(GameModeInt.MANIA)\
+            .set_status(BeatmapsetSearchStatus.LOVED)\
+            .set_extra([BeatmapsetSearchExtra.VIDEO])
+        results = client.search_beatmapsets(filters)
+        beatmapsets = results["beatmapsets"]
+        for beatmapset in beatmapsets:
+            assert any([beatmap.mode == GameModeStr.MANIA for beatmap in beatmapset.beatmaps])
+            assert beatmapset.status == RankStatus.LOVED
+            assert beatmapset.video
 
     def test_get_beatmapset_discussion_posts(self, client, sample_beatmapset_discussion_post):
         data = client.get_beatmapset_discussion_posts(

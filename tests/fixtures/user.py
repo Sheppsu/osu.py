@@ -25,7 +25,7 @@ def sample_users():
         ),
         dict(
             id=14895608,
-            username="SheeppOSU",
+            username="Sheppsu",
             has_supported=True,
         ),
     ]
