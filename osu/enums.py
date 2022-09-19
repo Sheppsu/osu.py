@@ -255,12 +255,12 @@ class Mods(IntFlag):
     FadeIn = 1 << 20
     Mirror = 1 << 30
 
-    Key4 = 1 << 15
-    Key5 = 1 << 16
-    Key6 = 1 << 17
-    Key7 = 1 << 18
-    Key8 = 1 << 19
-    Key9 = 1 << 24
+    FourKeys = 1 << 15
+    FiveKeys = 1 << 16
+    SixKeys = 1 << 17
+    SevenKeys = 1 << 18
+    EightKeys = 1 << 19
+    NineKeys = 1 << 24
 
     @classmethod
     def get_from_abbreviation(cls, abbreviation: str) -> 'Mods':
