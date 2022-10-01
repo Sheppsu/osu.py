@@ -416,7 +416,7 @@ class OsuBeatmapDifficultyAttributes:
         self.speed_note_count = data['speed_note_count']
 
     def __repr__(self):
-        return prettify(self, 'aim_difficulty', 'approach_rate', 'overall_difficulty')
+        return prettify(self, 'aim_difficulty', 'speed_difficulty')
 
 
 class TaikoBeatmapDifficultyAttributes:
@@ -450,7 +450,7 @@ class TaikoBeatmapDifficultyAttributes:
         self.peak_difficulty = data['peak_difficulty']
 
     def __repr__(self):
-        return prettify(self, 'approach_rate', 'great_hit_window')
+        return prettify(self, 'stamina_difficulty')
 
 
 class FruitsBeatmapDifficultyAttributes:
@@ -492,7 +492,7 @@ class ManiaBeatmapDifficultyAttributes:
         self.great_hit_window = data['great_hit_window']
 
     def __repr__(self):
-        return prettify(self, 'score_multiplier', 'great_hit_window')
+        return prettify(self, 'great_hit_window')
 
 
 class Failtimes:
