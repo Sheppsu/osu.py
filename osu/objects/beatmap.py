@@ -397,6 +397,8 @@ class OsuBeatmapDifficultyAttributes:
     slider_factor: :class:`float`
 
     speed_difficulty: :class:`float`
+
+    speed_note_count: :class:`float`
     """
     __slots__ = (
         "aim_difficulty", "approach_rate", "flashlight_difficulty",
