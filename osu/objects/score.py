@@ -14,7 +14,7 @@ class BeatmapScores:
     scores: Sequence[:class:``]
         Contains objects of type :class:`Score`. The list of top scores for the beatmap in descending order.
 
-    user_score: :class:`BeatmapUserScore` or :class:`NoneType`
+    user_score: :class:`BeatmapUserScore` or :class:`None`
         The score of the current user. This is not returned if the current user does not have a score.
     """
     __slots__ = (
@@ -318,13 +318,13 @@ class LazerMod:
 
     mod: :class:`Mods`
 
-    settings: :class:`dict`
+    settings: :class:`dict` or :class:`None`
     """
     __slots__ = ("mod", "settings")
 
     def __init__(self, data):
         self.mod = Mod(data['acronym'])
-        self.settings = data['settings']
+        self.settings = data.get('settings')
 
     def __repr__(self):
         return prettify(self, 'mod', 'settings')
