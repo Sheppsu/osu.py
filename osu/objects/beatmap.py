@@ -400,7 +400,8 @@ class OsuBeatmapDifficultyAttributes:
     """
     __slots__ = (
         "aim_difficulty", "approach_rate", "flashlight_difficulty",
-        "overall_difficulty", "slider_factor", "speed_difficulty"
+        "overall_difficulty", "slider_factor", "speed_difficulty",
+        "speed_note_count"
     )
 
     def __init__(self, data):
@@ -410,6 +411,7 @@ class OsuBeatmapDifficultyAttributes:
         self.overall_difficulty = data['overall_difficulty']
         self.slider_factor = data['slider_factor']
         self.speed_difficulty = data['speed_difficulty']
+        self.speed_note_count = data['speed_note_count']
 
     def __repr__(self):
         return prettify(self, 'aim_difficulty', 'approach_rate', 'overall_difficulty')
