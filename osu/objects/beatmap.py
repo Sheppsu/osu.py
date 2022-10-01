@@ -362,7 +362,7 @@ class BeatmapDifficultyAttributes:
         elif "stamina_difficulty" in data:
             self.type = "taiko"
             self.mode_attributes = TaikoBeatmapDifficultyAttributes(data)
-        elif "score_multiplier" in data:
+        elif "great_hit_window" in data:
             self.type = "mania"
             self.mode_attributes = ManiaBeatmapDifficultyAttributes(data)
         elif "approach_rate" in data:
@@ -432,22 +432,22 @@ class TaikoBeatmapDifficultyAttributes:
 
     colour_difficulty: :class:`float`
 
-    approach_rate: :class:`float`
-
     great_hit_window: :class:`float`
+
+    peak_difficulty: :class:`float`
     """
 
     __slots__ = (
-        "stamina_difficulty", "approach_rate", "rhythm_difficulty",
-        "colour_difficulty", "great_hit_window"
+        "stamina_difficulty", "rhythm_difficulty", "colour_difficulty",
+        "great_hit_window", "peak_difficulty"
     )
 
     def __init__(self, data):
         self.stamina_difficulty = data['stamina_difficulty']
-        self.approach_rate = data['approach_rate']
         self.rhythm_difficulty = data['rhythm_difficulty']
         self.colour_difficulty = data['colour_difficulty']
         self.great_hit_window = data['great_hit_window']
+        self.peak_difficulty = data['peak_difficulty']
 
     def __repr__(self):
         return prettify(self, 'approach_rate', 'great_hit_window')
@@ -482,16 +482,13 @@ class ManiaBeatmapDifficultyAttributes:
     **Attributes**
 
     great_hit_window: :class:`float`
-
-    score_multiplier: :class:`float`
     """
 
     __slots__ = (
-        "score_multiplier", "great_hit_window"
+        "great_hit_window"
     )
 
     def __init__(self, data):
-        self.score_multiplier = data['score_multiplier']
         self.great_hit_window = data['great_hit_window']
 
     def __repr__(self):
