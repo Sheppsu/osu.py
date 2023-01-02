@@ -18,24 +18,25 @@ Interactive Classes
 -------------------
 Client
 ^^^^^^
-
 .. autoclass:: osu.Client
     :members:
 
 AsynchronousClient
 ^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: osu.AsynchronousClient
 
 AuthHandler
 ^^^^^^^^^^^
-
 .. autoclass:: osu.AuthHandler
     :members:
+	
+LazerAuthHandler
+^^^^^^^^^^^^^^^^
+.. autoclass:: osu.LazerAuthHandler
+	:members:
 
 NotificationWebsocket
 ^^^^^^^^^^^^^^^^^^^^^
-
 .. autoclass:: osu.NotificationWebsocket
     :members:
 
@@ -366,6 +367,11 @@ PlaylistItemStats
 .. autoclass:: osu.PlaylistItemStats
    :members:
    
+PlaylistItemUtil
+^^^^^^^^^^^^^^^^
+.. autoclass:: osu.PlaylistItemUtil
+   :members:
+   
 PlaylistMod
 ^^^^^^^^^^^
 .. autoclass:: osu.PlaylistMod
@@ -394,6 +400,11 @@ ProfileBanner
 Rankings
 ^^^^^^^^
 .. autoclass:: osu.Rankings
+   :members:
+   
+ReadNotification
+^^^^^^^^^^^^^^^^
+.. autoclass:: osu.ReadNotification
    :members:
    
 Room
@@ -572,6 +583,11 @@ RealTimeType
 RoomCategory
 ^^^^^^^^^^^^
 .. autoclass:: osu.RoomCategory
+   :members:
+   
+RoomFilterMode
+^^^^^^^^^^^^^^
+.. autoclass:: osu.RoomFilterMode
    :members:
    
 RoomSort
