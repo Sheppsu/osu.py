@@ -1,14 +1,13 @@
-from osu import Client, AuthHandler, Scope
-import os
+from util_for_examples import get_user_client
+from osu import RoomType, RoomFilterMode
 
 
-client_id = int(os.getenv('osu_client_id'))
-client_secret = os.getenv('osu_client_secret')
-redirect_url = "http://127.0.0.1:8080"
-
-auth = AuthHandler(client_id, client_secret, redirect_url, Scope.identify())
-print(auth.get_auth_url())
-auth.get_auth_token(input("Code: "))
-client = Client(auth)
-
-print(client.get_rooms())
+client = get_user_client()
+realtime_rooms = client.get_rooms(room_type=RoomType.REALTIME)
+print(realtime_rooms)
+playlists = client.get_rooms(room_type=RoomType.PLAYLISTS)
+print(playlists)
+finished_playlists = client.get_rooms(room_type=RoomType.PLAYLISTS, limit=5, filter_mode=RoomFilterMode.ENDED)
+print(finished_playlists)
+my_rooms = client.get_rooms(filter_mode=RoomFilterMode.OWNED)
+print(my_rooms)

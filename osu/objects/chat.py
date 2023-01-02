@@ -72,7 +72,7 @@ class ChatChannel:
         self.name = data.get("name")
         self.description = data.get("description")
         self.icon = data.get("icon")
-        self.type = ChatChannelType(data.get("type"))
+        self.type = ChatChannelType(data["type"]) if data.get("type") is not None else None
         self.last_read_id = data.get("last_read_id")
         self.last_message_id = data.get("last_message_id")
         self.recent_messages = list(map(ChatMessage, data.get('recent_messages', [])))

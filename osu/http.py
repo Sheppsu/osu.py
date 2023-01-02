@@ -2,25 +2,27 @@ import requests
 import time
 
 from .exceptions import ScopeException
-from .constants import base_url
+from .constants import base_url, lazer_base_url
 
 
 class HTTPHandler:
-    def __init__(self, client, request_wait_time, limit_per_minute):
+    def __init__(self, client, request_wait_time, limit_per_minute, use_lazer=False):
         self.client = client
         self.rate_limit = RateLimitHandler(request_wait_time, limit_per_minute)
+        self.use_lazer = use_lazer
 
-    def get_headers(self, requires_auth=True, **kwargs):
+    def get_headers(self, requires_auth=True, is_files=False, **kwargs):
         headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            'charset': 'utf-8',
             **{str(key): str(value) for key, value in kwargs.items() if value is not None}
         }
+        if not is_files:
+            headers["Content-Type"] = "application/json"
         if requires_auth:
             headers['Authorization'] = f"Bearer {self.client.auth.token}"
         return headers
 
-    def make_request(self, method, path, data=None, headers=None, is_download=False, **kwargs):
+    def make_request(self, path, data=None, headers=None, is_download=False, files=None, **kwargs):
         if headers is None:
             headers = {}
         if data is None:
@@ -39,11 +41,21 @@ class HTTPHandler:
         if not self.rate_limit.can_request:
             self.rate_limit.wait()
 
-        headers = self.get_headers(path.requires_auth, **headers)
+        headers = self.get_headers(path.requires_auth, files is not None, **headers)
         params = {str(key): value for key, value in kwargs.items() if value is not None}
-        response = getattr(requests, method)(base_url + path.path, headers=headers, data=data, params=params)
+        response = getattr(requests, path.method)((lazer_base_url if self.use_lazer else base_url) + path.path,
+                                                  headers=headers, data=data, params=params, files=files)
         self.rate_limit.request_used()
-        response.raise_for_status()
+        try:
+            response.raise_for_status()
+        except Exception as e:
+            try:
+                err = response.json()['error']
+            except:
+                err = None
+            raise type(e)(str(e)+": "+err) if err is not None else e
+        if response.content == b"":
+            return
         return response.json() if not is_download else response.content
 
 

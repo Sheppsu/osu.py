@@ -2,9 +2,10 @@ import requests
 from time import perf_counter
 from typing import Callable, Optional
 
-from .constants import auth_url, token_url
+from .constants import auth_url, token_url, lazer_token_url
 from .objects import Scope
 from .exceptions import ScopeException
+from .util import create_multipart_formdata
 
 
 class AuthHandler:
@@ -114,7 +115,7 @@ class AuthHandler:
         if 'refresh_token' in response:
             self.refresh_token = response['refresh_token']
         self._token = response['access_token']
-        self.expire_time = perf_counter() + response['expires_in'] - 5
+        self.expire_time = perf_counter() + response['expires_in']
 
     def refresh_access_token(self, refresh_token: Optional[str] = None):
         """
@@ -151,7 +152,7 @@ class AuthHandler:
         if 'refresh_token' in response:
             self.refresh_token = response['refresh_token']
         self._token = response['access_token']
-        self.expire_time = perf_counter() + response['expires_in'] - 5
+        self.expire_time = perf_counter() + response['expires_in']
         if self._refresh_callback:
             self._refresh_callback(self)
 
@@ -160,7 +161,7 @@ class AuthHandler:
         """
         Returns the access token. If the token is expired, it will be refreshed before being returned.
         """
-        if self.expire_time <= perf_counter():
+        if self.expire_time-5 <= perf_counter():
             self.refresh_access_token()
         return self._token
 
@@ -227,3 +228,62 @@ class AuthHandler:
         auth = cls(client_id, client_secret, redirect_url, scope)
         auth.refresh_access_token(save_data['refresh_token'])
         return auth
+
+
+class LazerAuthHandler:
+    # https://github.com/ppy/osu/blob/master/osu.Game/Online/ProductionEndpointConfiguration.cs
+    LAZER_CLIENT_ID = 5
+    LAZER_CLIENT_SECRET = "FGc9GAtyHzeQDshWP5Ah7dega8hJACAJpQtw6OXk"
+
+    def __init__(self, username: str, password: str):
+        self.username = username
+        self.password = password
+        self.scope = Scope("*")
+
+        self._token = None
+        self.refresh_token = None
+        self.expire_time = 0
+
+    def get_auth_token(self):
+        data = {
+            "username": self.username,
+            "password": self.password,
+            "grant_type": "password",
+            "client_id": self.LAZER_CLIENT_ID,
+            "client_secret": self.LAZER_CLIENT_SECRET,
+            "scope": self.scope.scopes,
+        }
+
+        resp = requests.post(lazer_token_url, files=create_multipart_formdata(data))
+        resp.raise_for_status()
+        resp = resp.json()
+        self._token = resp["access_token"]
+        self.refresh_token = resp["refresh_token"]
+        self.expire_time = perf_counter() + resp["expires_in"]
+
+    def refresh_access_token(self):
+        if self.refresh_token is None:
+            return ValueError("refresh_token must have a value to refresh the access token (obviously)")
+        data = {
+            "client_id": self.LAZER_CLIENT_ID,
+            "client_secret": self.LAZER_CLIENT_SECRET,
+            "grant_type": "refresh_token",
+            "refresh_token": self.refresh_token,
+        }
+
+        resp = requests.post(lazer_token_url, data=data)
+        resp.raise_for_status()
+        resp = resp.json()
+        self._token = resp["access_token"]
+        self.refresh_token = resp["refresh_token"]
+        self.expire_time = perf_counter() + resp["expires_in"]
+
+    @property
+    def token(self):
+        if self.expire_time-5 <= perf_counter():
+            self.refresh_access_token()
+        return self._token
+
+    @property
+    def has_user(self):
+        return self._token is not None

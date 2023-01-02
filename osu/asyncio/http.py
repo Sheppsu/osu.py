@@ -1,27 +1,30 @@
 import time
 import asyncio
 import aiohttp
+from io import BytesIO
 
 from ..exceptions import ScopeException
 from ..constants import base_url
 
 
 class AsynchronousHTTPHandler:
-    def __init__(self, client, request_wait_time, limit_per_minute):
+    def __init__(self, client, request_wait_time, limit_per_minute, use_lazer=False):
         self.client = client
         self.rate_limit = RateLimitHandler(request_wait_time, limit_per_minute)
+        self.use_lazer = use_lazer
 
-    def get_headers(self, requires_auth=True, **kwargs):
+    def get_headers(self, requires_auth=True, is_files=False, **kwargs):
         headers = {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
+            'charset': 'utf-8',
             **{str(key): str(value) for key, value in kwargs.items() if value is not None}
         }
+        if not is_files:
+            headers["Content-Type"] = "application/json"
         if requires_auth:
             headers['Authorization'] = f"Bearer {self.client.auth.token}"
         return headers
 
-    async def make_request(self, method, path, data=None, headers=None, is_download=False, **kwargs):
+    async def make_request(self, path, data=None, headers=None, is_download=False, files=None, **kwargs):
         if headers is None:
             headers = {}
         if data is None:
@@ -37,16 +40,28 @@ class AsynchronousHTTPHandler:
             raise ScopeException("This request requires a user. You need either a delegate scope or "
                                  "to register OAuth with Authorization Code Grant.")
 
-        headers = self.get_headers(path.requires_auth, **headers)
+        headers = self.get_headers(path.requires_auth, files is not None, **headers)
         params = {str(key): value for key, value in kwargs.items() if value is not None}
+        if files is not None:
+            data = dict(map(lambda item: (item[0], item[1][1]), files.items()))
 
         async with aiohttp.ClientSession() as session:
             if not self.rate_limit.can_request:
                 await self.rate_limit.wait()
 
             self.rate_limit.request_used()
-            async with session.request(method, base_url + path.path, headers=headers, data=data, params=params) as resp:
-                resp.raise_for_status()
+            async with session.request(path.method, base_url + path.path, headers=headers,
+                                       data=data, params=params) as resp:
+                try:
+                    resp.raise_for_status()
+                except Exception as e:
+                    try:
+                        err = (await resp.json())['error']
+                    except:
+                        err = None
+                    raise type(e)(str(e) + ": " + err) if err is not None else e
+                if resp.content == b"":
+                    return
                 return await resp.json() if not is_download else resp.content
 
 

@@ -104,6 +104,32 @@ class Notification:
         return prettify(self, 'name', 'details')
 
 
+class ReadNotification:
+    """
+    Represents a read notification.
+
+    **Attributes**
+
+    category: :class:`str`
+
+    id: :class:`int`
+
+    object_id: :class:`int`
+
+    object_type: :class:`str`
+    """
+    __slots__ = ("category", "id", "object_id", "object_type")
+
+    def __init__(self, data):
+        self.category = data["category"]
+        self.id = data["id"]
+        self.object_id = data["object_id"]
+        self.object_type = data["object_type"]
+
+    def __repr__(self):
+        return prettify(self, 'id')
+
+
 class Details:
     """
     Contains the details for an event
@@ -226,6 +252,10 @@ class Details:
             self.cover_url = data['cover_url']
             self.post_id = data['post_id']
             self.username = data['username']
+        else:
+            print("Unknown event name: "+event_name)
+            for k, v in data.items():
+                setattr(self, k, v)
 
     def __repr__(self):
         return prettify(self, 'title')

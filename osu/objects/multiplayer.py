@@ -1,7 +1,7 @@
 from .user import UserCompact
 from .beatmap import BeatmapCompact
 from .score import ScoreDataStatistic, LazerMod
-from ..enums import RoomCategory, RoomType, RealTimeQueueMode, PlaylistQueueMode, GameModeInt
+from ..enums import RoomCategory, RoomType, RealTimeQueueMode, PlaylistQueueMode, GameModeInt, RealTimeType
 from ..util import prettify
 from dateutil import parser
 
@@ -86,12 +86,12 @@ class MultiplayerScores:
     params: :class:`dict`
         To be used to fetch the next page.
 
-    scores: Sequence[:class:`MultiplayerScore`]
+    scores: Union[Sequence[:class:`MultiplayerScore`], :class:`None`]
 
-    total: :class:`int` or :class:`NoneType`
+    total: Union[:class:`int`, :class:`None`]
         Index only. Total scores of the specified playlist item.
 
-    user_score: :class:`MultiplayerScore` or :class:`NoneType`
+    user_score: Union[:class:`MultiplayerScore`, :class:`None`]
         Index only. Score of the accessing user if exists.
     """
     __slots__ = (
@@ -101,9 +101,9 @@ class MultiplayerScores:
     def __init__(self, data):
         self.cursor = data['cursor']
         self.params = data['params']
-        self.scores = list(map(MultiplayerScore, data['scores'])) if data['scores'] is not None else None
-        self.total = data['total']
-        self.user_score = MultiplayerScore(data['user_score']) if data['user_score'] is not None else None
+        self.scores = list(map(MultiplayerScore, data['scores'])) if data.get('scores') is not None else None
+        self.total = data.get('total')
+        self.user_score = MultiplayerScore(data['user_score']) if data.get('user_score') is not None else None
 
     def __repr__(self):
         return prettify(self, 'total', 'scores')
@@ -146,6 +146,9 @@ class Room:
 
     type: :class:`RoomType`
 
+    realtime_type: :class:`RealTimeType`
+        Only applicable when type is RoomType.REALTIME
+
     user_id: :class:`int`
 
     start_at: Union[:class:`datetime.datetime`, :class:`NoneType`]
@@ -187,14 +190,16 @@ class Room:
         "id", "name", "category", "type", "user_id", "start_at", "ends_at", "max_attempts",
         "participant_count", "channel_id", "active", "has_password", "queue_mode",
         "current_playlist_item", "current_user_score", "difficulty_range", "host",
-        "playlist", "playlist_item_stats", "recent_participants", "scores"
+        "playlist", "playlist_item_stats", "recent_participants", "scores",
+        "realtime_type"
     )
 
     def __init__(self, data):
         self.id = data['id']
         self.name = data['name']
         self.category = RoomCategory(data['category'])
-        self.type = RoomType(data['type'])
+        self.type = RoomType.PLAYLISTS if data["type"] == "playlists" else RoomType.REALTIME
+        self.realtime_type = RealTimeType(data["type"]) if self.type == RoomType.REALTIME else None
         self.user_id = data['user_id']
         self.start_at = parser.parse(data['start_at']) if data.get('start_at') is not None else None
         self.ends_at = parser.parse(data['ends_at']) if data.get('ends_at') is not None else None
@@ -203,8 +208,8 @@ class Room:
         self.channel_id = data['channel_id']
         self.active = data['active']
         self.has_password = data['has_password']
-        self.queue_mode = (PlaylistQueueMode if self.type == RoomType.PLAYLISTS
-                           else RealTimeQueueMode)(data['queue_mode'])
+        self.queue_mode = (RealTimeQueueMode if self.type == RoomType.REALTIME
+                           else PlaylistQueueMode)(data['queue_mode'])
 
         self.current_playlist_item = PlaylistItem(data['current_playlist_item']) \
             if data.get('current_playlist_item') is not None else None

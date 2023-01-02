@@ -89,6 +89,8 @@ class Mod(Enum):
 
     AdaptiveSpeed = 'AS'
 
+    FreezeFrame = 'FR'
+
     TouchDevice = 'TD'
 
     Swap = 'SW'
@@ -165,6 +167,7 @@ class Mod(Enum):
     Magnetised = 'MG'
     Repel = 'RP'
     AdaptiveSpeed = 'AS'
+    FreezeFrame = 'FR'
     TouchDevice = 'TD'
     Swap = 'SW'
     FloatingFruits = 'FF'
@@ -770,6 +773,26 @@ class RoomType(Enum):
     REALTIME = 'realtime'
 
 
+class RoomFilterMode(Enum):
+    """
+    Enum for different filtering modes of rooms.
+
+    **Room filter mode types**
+
+    ENDED = 'ended'
+
+    PARTICIPATED = 'participated'
+
+    OWNED = 'owned'
+
+    ACTIVE = 'active'
+    """
+    ENDED = 'ended'
+    PARTICIPATED = 'participated'
+    OWNED = 'owned'
+    ACTIVE = 'active'
+
+
 class RealTimeType(Enum):
     """
     Enum for realtime types.
@@ -1098,6 +1121,8 @@ class ChatChannelType(Enum):
     PM = "PM"
 
     GROUP = "GROUP"
+
+    ANNOUNCE = "ANNOUNCE"
     """
     PUBLIC = "PUBLIC"
     PRIVATE = "PRIVATE"
@@ -1106,3 +1131,4 @@ class ChatChannelType(Enum):
     TEMPORARY = "TEMPORARY"
     PM = "PM"
     GROUP = "GROUP"
+    ANNOUNCE = "ANNOUNCE"

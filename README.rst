@@ -16,11 +16,12 @@ Easy to use API wrapper for osu!api v2 written in Python.
 Major features/capabilties:
  - Client class which carries out all api requests.
  - AsynchronousClient class which is the same as Client but all api request functions are asynchronous.
- - NotificationWebsocket class for using the notification websocket feature of osu api v2
- - Currently implements all endpoints including undocumented ones.
+ - NotificationWebsocket class for using the notification websocket feature of osu api v2.
+ - Support for Authorization Code Grant, Client Credentials Grant, and Password Grant (lazer auth).
+ - Support for lazer authentication, giving access to all endpoints including those with lazer scope.
+ - Currently implements most if not all endpoints including undocumented ones.
  - Builtin rate limit handling
  - Storage efficient objects used to contain almost all the data returned from osu.py for any given api request.
- - Support for Authorization Code Grant and Client Credentials Grant.
  - Refresh and access token is automatically managed.
  - Support for all scopes (even lazer which is not usable by the general public).
  - Documentation that covers everything osu.py is capable of.

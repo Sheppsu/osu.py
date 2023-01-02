@@ -442,13 +442,19 @@ class UserStatistics:
     pp: :class:`int`
         Performance points
 
+    pp_exp: :class:`int`
+        Experimental performance points (on lazer.ppy.sh)
+
     recommended_difficulty: :class:`float`
         Recommended difficulty for a player. This value is not received from the api, but locally calculated.
 
-    global_rank: :class:`int` or :class:`NoneType`
-        Current rank according to pp.
+    global_rank: Union[:class:`int`, :class:`None`]
+        Current global rank according to pp.
 
-    country_rank: :class:`int` or :class:`NoneType`
+    global_rank_exp: Union[:class:`int`, :class:`None`]
+        Current global rank according to experimental pp.
+
+    country_rank: Union[:class:`int`, :class:`None`]
         Current country rank according to pp.
 
     ranked_score: :class:`int`
@@ -463,14 +469,14 @@ class UserStatistics:
     total_score: :class:`int`
         Total score.
 
-    user: :class:`UserCompact`
+    user: Union[:class:`UserCompact`, :class:`None`]
         The associated user.
     """
     __slots__ = (
         "grade_counts", "level", "hit_accuracy", "is_ranked", "maximum_combo",
         "play_count", "play_time", "pp", "global_rank", "ranked_score",
         "replays_watched_by_others", "total_hits", "total_score", "user",
-        "country_rank"
+        "country_rank", "global_rank_exp", "pp_exp"
     )
 
     def __init__(self, data):
@@ -482,7 +488,9 @@ class UserStatistics:
         self.play_count = data['play_count']
         self.play_time = data['play_time']
         self.pp = data['pp']
+        self.pp_exp = data.get('pp_exp')
         self.global_rank = data['global_rank']
+        self.global_rank_exp = data.get('global_rank_exp')
         self.country_rank = data.get('country_rank')
         self.ranked_score = data['ranked_score']
         self.replays_watched_by_others = data['replays_watched_by_others']
@@ -572,7 +580,7 @@ class CurrentUserAttributes:
             self.vote_score = data['vote_score']
         elif attr_type == "ChatChannelUserAttributes":
             self.can_message = data['can_message']
-            self.can_message_error = data['can_message_erorr']
+            self.can_message_error = data['can_message_error']
             self.last_read_id = data['last_read_id']
         else:
             print(f"WARNING: Unrecognized attr_type for CurrentUserAttributes: \"{attr_type}\"")

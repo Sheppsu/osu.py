@@ -28,7 +28,7 @@ class Scope:
 
     def __init__(self, *scopes):
         for scope in scopes:
-            if scope not in self.valid_scopes:
+            if scope not in self.valid_scopes and scope != "*":
                 raise NameError(f"{scope} is not a valid scope. The valid scopes consist of "
                                 f"{','.join(self.valid_scopes)}")
         self.scopes = ' '.join(scopes)
@@ -52,4 +52,4 @@ class Scope:
         return str(self.scopes_list)
 
     def __contains__(self, scope: str):
-        return scope in self.scopes_list
+        return scope in self.scopes_list or "*" in self.scopes_list

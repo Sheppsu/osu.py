@@ -1,8 +1,9 @@
 import websockets
 import asyncio
 import json
+from dateutil import parser
 
-from .objects import Notification
+from .objects import Notification, ReadNotification
 
 
 class NotificationWebsocket:
@@ -29,16 +30,20 @@ class NotificationWebsocket:
 
         **Arguments**
 
-        ids: :class:`int`
-            list of ids of Notifications which are read.
+        notifications: Sequence[:class:`ReadNotification`]
+            list of notifications that were read
+
+        timestamp: :class:`datetime.datetime`
+            time at which the notifications were read
 
     on_unplanned_disconnect
-        Event fired by NotificationWebsocket object when connection without having been sent a logout event.
-        Default function fires connect to try and reconnect.
+        Event fired by NotificationWebsocket object when there's a disconnection
+        without having been sent a logout event.
     """
     valid_events = [
         'logout', 'new', 'read', 'unplanned_disconnect'
     ]
+    valid_event_functions = ["on_" + event for event in valid_events]
 
     def __init__(self, notification_uri, auth):
         """
@@ -61,10 +66,11 @@ class NotificationWebsocket:
         headers = {
             "Authorization": f"Bearer {self.auth.token}"
         }
-        async with websockets.connect(self.uri, headers=headers) as ws:
+        async with websockets.connect(self.uri, extra_headers=headers) as ws:
             self.ws = ws
             self.connected = True
             while self.connected:
+                print("beep boop")
                 try:
                     event = await self.ws.recv()
                 except websockets.exceptions.ConnectionClosed:
@@ -74,21 +80,20 @@ class NotificationWebsocket:
                     return
 
                 event = json.loads(event)
+                if 'error' in event:
+                    print(f"Error received: {event['error']}")
+                    continue
                 event_type = event['event']
                 del event['event']
 
-                getattr(self, "_"+event_type, event_type)(*list(event.values()))
+                getattr(self, "_on_"+event_type, event_type)(event)
 
     def connect(self):
         """
         Connect to the uri and start receiving events.
-        Runs with asyncio.run_coroutine_threadsafe
-
-        **Returns**
-
-        :class:`concurrent.futures.Future`
+        This function does not return until the websocket disconnects.
         """
-        return asyncio.run_coroutine_threadsafe(self._run())
+        self.loop.run_until_complete(self._run())
 
     def event(self, func):
         """
@@ -102,29 +107,31 @@ class NotificationWebsocket:
             def new(notification):
                 print(notification.name)
         """
-        if func.__name__ not in self.valid_events:
-            raise NameError(f"This is not a valid event name. Valid events consist of {', '.join(self.valid_events)}")
+        if func.__name__ not in self.valid_event_functions:
+            raise NameError(f"This is not a valid event name. Valid events consist of "
+                            f"{', '.join(self.valid_event_functions)}")
         setattr(self, func.__name__, func)
 
     # Default events
 
-    def _on_logout(self):
+    def _on_logout(self, event):
         self.connected = False
         if hasattr(self, 'on_logout'):
             self.on_logout()
 
-    def _on_new(self, data):
-        data = Notification(data)
+    def _on_new(self, event):
+        data = Notification(event["data"])
         if hasattr(self, 'on_new'):
             self.on_new(data)
 
-    def _on_read(self, ids):
+    def _on_read(self, event):
+        data = event["data"]
+        notifications = list(map(ReadNotification, data["notifications"]))
+        timestamp = parser.parse(data["timestamp"])
         if hasattr(self, 'on_read'):
-            self.on_read(ids)
+            self.on_read(notifications, timestamp)
 
+    # Event fired by NotificationWebsocket object when connection without having been sent a logout event.
     def _on_unplanned_disconnect(self):
-        # Event fired by NotificationWebsocket object when connection without having been sent a logout event.
-        # Default function fires connect to try and reconnect.
-        self.connect()
         if hasattr(self, 'on_unplanned_disconnect'):
             self.on_unplanned_disconnect()

@@ -1,11 +1,11 @@
-from .auth import AuthHandler
+from .auth import AuthHandler, LazerAuthHandler
 from .client import Client
 from .exceptions import *
 from .notification import NotificationWebsocket
 from .asyncio.client import AsynchronousClient
 from .enums import *
 from .objects import *
-from .util import BeatmapsetSearchFilter
+from .util import BeatmapsetSearchFilter, PlaylistItemUtil
 
 
-__version__ = '0.4.2'
+__version__ = '0.5.0-alpha.1'

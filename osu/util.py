@@ -1,5 +1,5 @@
 from .enums import Mods, Enum, BeatmapsetSearchSort, BeatmapsetSearchGeneral, BeatmapsetSearchPlayed, \
-    BeatmapsetSearchStatus, BeatmapsetSearchExtra, ScoreRank, GameModeInt
+    BeatmapsetSearchStatus, BeatmapsetSearchExtra, ScoreRank, GameModeInt, Mod
 from typing import Sequence, Union
 
 
@@ -55,6 +55,10 @@ def parse_enum_args(*args):
     return args if len(args) != 1 else args[0]
 
 
+def create_multipart_formdata(data: dict):
+    return {k: (None, v, "text/plain", {"charset": "utf-8"}) for k, v in data.items()}
+
+
 class Util:
     @staticmethod
     def int(value):
@@ -67,13 +71,6 @@ class Util:
         if value is None:
             return
         return float(value)
-
-
-def returns_self(func):
-    def wrapper(self, *args, **kwargs):
-        func(self, *args, **kwargs)
-        return self
-    return wrapper
 
 
 class BeatmapsetSearchFilter:
@@ -206,3 +203,45 @@ class BeatmapsetSearchFilter:
         Dictionary of all filters only including ones that have been set.
         """
         return {k: v for k, v in self._filters.items() if v is not None}
+
+
+class PlaylistItemUtil:
+    """
+    Util class for passing playlist items to endpoints that involve creating a room
+    like create_multiplayer_room and create_playlist.
+
+    **Init Parameters**
+
+    beatmap_id: :class:`int`
+
+    ruleset_id: Union[:class:`GameModeInt`, :class:`int`]
+
+    allowed_mods: Sequence[:class:`Mod`]
+
+    required_mods: Sequence[:class:`Mod`]
+
+    **Properties**
+
+    json: :class:`dict`
+        Dictionary format of all the attributes which the client uses
+        when sending a http request
+    """
+    __slots__ = ("beatmap_id", "ruleset_id", "allowed_mods", "required_mods")
+
+    def __init__(self, beatmap_id: int, ruleset_id: Union[GameModeInt, int],
+                 allowed_mods: Sequence[Mod] = None, required_mods: Sequence[Mod] = None):
+        self.beatmap_id = beatmap_id
+        self.ruleset_id = ruleset_id
+        self.allowed_mods = allowed_mods
+        self.required_mods = required_mods
+        
+    @property
+    def json(self) -> dict:
+        def mod_map(mod):
+            return {"acronym": mod.value}
+        return {
+            "beatmap_id": self.beatmap_id,
+            "ruleset_id": parse_enum_args(self.ruleset_id),
+            "allowed_mods": list(map(mod_map, self.allowed_mods)) if self.allowed_mods is not None else None,
+            "required_mods": list(map(mod_map, self.required_mods)) if self.required_mods is not None else None,
+        }

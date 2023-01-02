@@ -19,28 +19,28 @@ class Comment:
     created_at: :class:`datetime.datetime`
         ISO 8601 date
 
-    deleted_at: :class:`datetime.datetime` or :class:`NoneType`
+    deleted_at: Union[:class:`datetime.datetime`, :class:`None`]
         ISO 8601 date if the comment was deleted; null, otherwise
 
-    edited_at: :class:`datetime.datetime` or :class:`NoneType`
+    edited_at: Union[:class:`datetime.datetime`, :class:`None`]
         ISO 8601 date if the comment was edited; null, otherwise
 
-    edited_by_id: :class:`int` or :class:`NoneType`
+    edited_by_id: Union[:class:`int`, :class:`None`]
         user id of the user that edited the post; null, otherwise
 
     id: :class:`int`
         the ID of the comment
 
-    legacy_name: :class:`str` or :class:`NoneType`
+    legacy_name: Union[:class:`str`, :class:`None`]
         username displayed on legacy comments
 
-    message: :class:`str` or :class:`NoneType`
+    message: Union[:class:`str`, :class:`None`]
         markdown of the comment's content
 
-    message_html: :class:`str` or :class:`NoneType`
+    message_html: Union[:class:`str`, :class:`None`]
         html version of the comment's content
 
-    parent_id: :class:`int` or :class:`NoneType`
+    parent_id: Union[:class:`int`, :class:`None`]
         ID of the comment's parent
 
     pinned: :class:`bool`
@@ -72,12 +72,12 @@ class Comment:
         self.commentable_type = data['commentable_type']
         self.created_at = parser.parse(data['created_at'])
         self.deleted_at = parser.parse(data['deleted_at']) if data['deleted_at'] is not None else None
-        self.edited_at = data['edited_at']
+        self.edited_at = parser.parse(data['edited_at']) if data['edited_at'] is not None else None
         self.edited_by_id = data['edited_by_id']
         self.id = data['id']
         self.legacy_name = data['legacy_name']
-        self.message = data['message']
-        self.message_html = data['message_html']
+        self.message = data.get('message')
+        self.message_html = data.get('message_html')
         self.parent_id = data['parent_id']
         self.pinned = data['pinned']
         self.replies_count = data['replies_count']
@@ -90,7 +90,7 @@ class Comment:
         return f"https://osu.ppy.sh/comments/{self.id}"
 
     def __repr__(self):
-        return prettify(self, 'message', 'user_id', 'created_at')
+        return prettify(self, 'user_id', 'message')
 
 
 class CommentBundle:
