@@ -4,7 +4,7 @@ import aiohttp
 from io import BytesIO
 
 from ..exceptions import ScopeException
-from ..constants import base_url
+from ..constants import base_url, lazer_base_url
 
 
 class AsynchronousHTTPHandler:
@@ -50,8 +50,9 @@ class AsynchronousHTTPHandler:
                 await self.rate_limit.wait()
 
             self.rate_limit.request_used()
-            async with session.request(path.method, base_url + path.path, headers=headers,
-                                       data=data, params=params) as resp:
+            async with session.request(path.method,
+                                       (lazer_base_url if self.use_lazer else base_url) + path.path,
+                                       headers=headers, data=data, params=params) as resp:
                 try:
                     resp.raise_for_status()
                 except Exception as e:
