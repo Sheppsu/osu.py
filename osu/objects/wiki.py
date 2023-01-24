@@ -48,3 +48,21 @@ class WikiPage:
 
     def __repr__(self):
         return prettify(self, 'title')
+
+
+class SearchResults:
+    """
+    Represents the results of a search.
+
+    **Attributes**
+
+    results: Union[:class:`UserCompact`, :class:`WikiPage`]
+        type depends on search type
+
+    total: :class:`int`
+    """
+    __slots__ = ("results", "total")
+
+    def __init__(self, data, data_type):
+        self.results = list(map(data_type, data["data"]))
+        self.total = data["total"]
