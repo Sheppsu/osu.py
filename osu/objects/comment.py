@@ -111,12 +111,12 @@ class CommentBundle:
     has_more: :class:`bool`
         If there are more comments or replies available
 
-    has_more_id: :class:`id` or :class:`NoneType`
+    has_more_id: Union[:class:`id`, :class:`None`]
 
     included_comments: Sequence[:class:`Comment`]
         Related comments; e.g. parent comments and nested replies
 
-    pinned_comments: Sequence[:class:`Comment`] or :class:`NoneType`
+    pinned_comments: Union[Sequence[:class:`Comment`], :class:`None`]
         Pinned comments
 
     sort: :class:`str`
@@ -125,10 +125,10 @@ class CommentBundle:
             old (created_at (ascending), id (ascending))
             top (votes_count (descending), created_at (descending), id (descending))
 
-    top_level_count: :class:`int` or :class:`NoneType`
+    top_level_count: Union[:class:`int`, :class:`None`]
         Number of comments at the top level. Not returned for replies.
 
-    total: :class:`int` or :class:`NoneType`
+    total: Union[:class:`int`, :class:`None`]
         Total number of comments. Not retuned for replies.
 
     user_follow: :class:`bool`
@@ -150,13 +150,13 @@ class CommentBundle:
         self.comments = list(map(Comment, data['comments']))
         self.cursor = data['cursor']
         self.has_more = data['has_more']
-        self.has_more_id = data['has_more_id']
+        self.has_more_id = data.get('has_more_id')
         self.included_comments = list(map(Comment, data['included_comments']))
         self.pinned_comments = list(map(Comment, data['pinned_comments'])) \
             if data.get('pinned_comments') is not None else None
         self.sort = data['sort']
-        self.top_level_count = data['top_level_count']
-        self.total = data['total']
+        self.top_level_count = data.get('top_level_count')
+        self.total = data.get('total')
         self.user_follow = data['user_follow']
         self.user_votes = data['user_votes']
         self.users = list(map(UserCompact, data['users']))
