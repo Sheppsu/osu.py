@@ -1,4 +1,4 @@
-from osu import Client
+from osu import Client, GameModeStr, RankingType
 import os
 
 
@@ -14,7 +14,7 @@ mode = 'osu'
 # Print the top 100 players
 cursor = None
 for _ in range(2):
-    ranking = client.get_ranking('osu', 'performance', cursor=cursor)
+    ranking = client.get_ranking(GameModeStr.STANDARD, RankingType.PERFORMANCE, cursor=cursor)
     cursor = ranking.cursor
     for r in ranking.ranking:
         print(f"{r.user.username} - #{r.global_rank} ({r.pp})")
