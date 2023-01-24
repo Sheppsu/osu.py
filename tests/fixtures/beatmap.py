@@ -5,38 +5,48 @@ from osu import UserBeatmapType
 
 @fixture
 def sample_beatmap():
-    yield {
-        "md5_sum": "8d351b3db141b2aa426d992374e80b24",
-        "id": 2063622,
-        "artist": "Loki",
-        "title": "Wizard's Tower",
-        "type": "osu",
-        "max_combo": 866,
-    }
+    yield dict(
+        md5_sum="8d351b3db141b2aa426d992374e80b24",
+        id=2063622,
+        artist="Loki",
+        title="Wizard's Tower",
+        type="osu",
+        max_combo=866,
+    )
 
 
 @fixture
 def sample_beatmaps():
-    yield [
-        {
-            "id": 2063622,
-            "max_combo": 866,
-            "beatmapset_id": 985788,
-            "ar": 9,
-        },
-        {
-            "id": 1031991,
-            "max_combo": 4353,
-            "beatmapset_id": 461744,
-            "ar": 10,
-        },
-        {
-            "id": 252238,
-            "max_combo": 2646,
-            "beatmapset_id": 93523,
-            "ar": 10,
-        }
-    ]
+    yield list([
+        dict(
+            id=2063622,
+            max_combo=866,
+            beatmapset_id=985788,
+            ar=9,
+        ),
+        dict(
+            id=1031991,
+            max_combo=4353,
+            beatmapset_id=461744,
+            ar=10,
+        ),
+        dict(
+            id=252238,
+            max_combo=2646,
+            beatmapset_id=93523,
+            ar=10,
+        )
+    ])
+
+
+@fixture
+def sample_beatmapset():
+    yield dict(
+        id=461966,
+        title="Contrail ~Kiseki~ (Epsilon Remix)",
+        artist="Mami Kawada",
+        mapper="Charlotte",
+    )
 
 
 @fixture

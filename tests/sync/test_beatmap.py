@@ -21,6 +21,12 @@ class TestBeatmap:
             keys = sample_beatmaps[0].keys()
             assert {key: getattr(beatmap, key) for key in keys} in sample_beatmaps
 
+    def test_get_beatmapset(self, client, sample_beatmapset):
+        beatmapset = client.get_beatmapset(sample_beatmapset["id"])
+        assert beatmapset.id == sample_beatmapset["id"]
+        assert beatmapset.title == sample_beatmapset["title"]
+        assert beatmapset.creator == sample_beatmapset["mapper"]
+
     def test_search_beatmapsets(self, client):
         filters = BeatmapsetSearchFilter()\
             .set_mode(GameModeInt.MANIA)\
@@ -88,3 +94,7 @@ class TestBeatmap:
             events = data["events"]
             if event_type != BeatmapsetEventType.DISCUSSION_LOCK and event_type != BeatmapsetEventType.DISCUSSION_UNLOCK:
                 assert all([event.type == event_type for event in events])
+
+    def favourite_beatmapset(self, lazer_client):
+        beatmapset_id = 1545382
+        assert lazer_client.favourite_beatmapset(beatmapset_id, True) > 0

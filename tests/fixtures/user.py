@@ -12,7 +12,7 @@ def sample_user():
 
 @fixture
 def sample_users():
-    yield [
+    yield list([
         dict(
             id=6943941,
             username="nouvelle",
@@ -28,12 +28,4 @@ def sample_users():
             username="Sheppsu",
             has_supported=True,
         ),
-    ]
-
-
-@fixture
-def sample_room():
-    yield dict(
-        id=213518,
-        user_id=8116659,
-    )
+    ])

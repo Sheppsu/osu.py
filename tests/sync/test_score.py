@@ -1,14 +1,19 @@
+from osu import SoloScore, LegacyScore
+
+
 class TestScore:
     def test_get_beatmap_scores(self, client, sample_beatmap_scores):
         scores = client.get_beatmap_scores(sample_beatmap_scores["beatmap_id"])
         for received_score, sample_score in zip(scores.scores[:3], sample_beatmap_scores["scores"]):
+            assert isinstance(received_score, LegacyScore)
             assert received_score.id == sample_score["id"]
             assert received_score.user_id == sample_score["user_id"]
             assert received_score.max_combo == sample_score["max_combo"]
 
     def test_get_lazer_beatmap_scores(self, client, sample_beatmap_scores):
-        client.get_lazer_beatmap_scores(sample_beatmap_scores["beatmap_id"])
-        # TODO: add some asserts
+        scores = client.get_lazer_beatmap_scores(sample_beatmap_scores["beatmap_id"])
+        for score in scores.scores:
+            assert isinstance(score, SoloScore)
 
     def test_get_user_beatmap_score(self, client, sample_user_beatmap_score):
         score = (client.get_user_beatmap_score(
@@ -38,3 +43,4 @@ class TestScore:
             assert score.accuracy == sample_score["accuracy"]
             assert score.accuracy == sample_score["accuracy"]
             assert score.score == sample_score["score"]
+

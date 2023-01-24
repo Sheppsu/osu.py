@@ -18,10 +18,6 @@ class TestUser:
             assert user.id == sample_user["id"]
             assert user.username == sample_user["username"]
 
-    def test_get_user_highscore(self, client, sample_room):
-        # Requires lazer scope
-        ...
-
     def test_get_user_kudosu(self, client):
         kudosu_list = client.get_user_kudosu(user=2)
         assert kudosu_list
@@ -56,3 +52,11 @@ class TestUser:
         assert target_beatmap.artist == expected_beatmap["artist"]
         assert target_beatmap.title == expected_beatmap["title"]
         assert target_beatmap.creator == expected_beatmap["creator"]
+
+    def test_get_own_data(self, own_data):
+        assert own_data
+        assert own_data.id
+        assert own_data.username
+
+    def get_friends(self, lazer_client):
+        lazer_client.get_friends()

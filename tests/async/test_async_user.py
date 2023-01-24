@@ -3,9 +3,9 @@ import pytest
 from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType
 
 
-class TestAsyncUser:
+class TestAsynchronousUser:
     @pytest.mark.asyncio
-    async def test_async_get_user(self, async_client, sample_user):
+    async def test_get_user(self, async_client, sample_user):
         user = await async_client.get_user(6943941)
         assert user
         assert user.statistics
@@ -23,12 +23,7 @@ class TestAsyncUser:
             assert user.username == sample_user["username"]
 
     @pytest.mark.asyncio
-    async def test_async_get_user_highscore(self, async_client, sample_room):
-        # Requires lazer scope
-        ...
-
-    @pytest.mark.asyncio
-    async def test_async_get_user_kudosu(self, async_client):
+    async def test_get_user_kudosu(self, async_client):
         kudosu_list = await async_client.get_user_kudosu(user=2)
         assert kudosu_list
         for kudosu in kudosu_list:
@@ -37,7 +32,7 @@ class TestAsyncUser:
             assert kudosu.action
 
     @pytest.mark.asyncio
-    async def test_async_get_user_recent_activity(self, async_client):
+    async def test_get_user_recent_activity(self, async_client):
         activity = await async_client.get_user_recent_activity(user=2)
         assert activity
         for a in activity:
@@ -45,7 +40,7 @@ class TestAsyncUser:
             assert getattr(a, "user", None) or getattr(a, "beatmapset", None)
 
     @pytest.mark.asyncio
-    async def test_async_get_user_scores(self, async_client, sample_user):
+    async def test_get_user_scores(self, async_client, sample_user):
         scores = await async_client.get_user_scores(user=sample_user["id"], type="best")
         assert scores
         for score in scores:
@@ -54,7 +49,7 @@ class TestAsyncUser:
             assert score.accuracy
 
     @pytest.mark.asyncio
-    async def test_async_get_user_beatmaps(self, async_client, sample_user_beatmaps):
+    async def test_get_user_beatmaps(self, async_client, sample_user_beatmaps):
         beatmaps = await async_client.get_user_beatmaps(
             user=sample_user_beatmaps["user_id"],
             type=UserBeatmapType.GRAVEYARD,
@@ -65,3 +60,14 @@ class TestAsyncUser:
         assert target_beatmap.artist == expected_beatmap["artist"]
         assert target_beatmap.title == expected_beatmap["title"]
         assert target_beatmap.creator == expected_beatmap["creator"]
+
+    @pytest.mark.asyncio
+    async def test_get_own_data(self, lazer_async_client):
+        me = await lazer_async_client.get_own_data()
+        assert me
+        assert me.id
+        assert me.username
+
+    @pytest.mark.asyncio
+    async def test_get_friends(self, lazer_async_client):
+        await lazer_async_client.get_friends()
