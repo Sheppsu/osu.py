@@ -9,7 +9,7 @@ load_dotenv()
 
 #  Simple Twitch Bot class
 class Bot:
-    username = "sheepposubot"
+    username = "sheppsubot"
     oauth = os.getenv("TWITCH_OAUTH")
     uri = "ws://irc-ws.chat.twitch.tv:80"
 
@@ -53,7 +53,7 @@ class Bot:
                 await self.start()
 
     async def run(self):
-        await self.join("sheepposu")
+        await self.join(self.username)
 
     async def connect(self):
         await self.ws.send(f"PASS {self.oauth}")
