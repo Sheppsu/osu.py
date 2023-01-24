@@ -73,8 +73,8 @@ class Navigation:
     __slots__ = ("newer", "older")
 
     def __init__(self, data):
-        self.newer = NewsPost(data['newer']) if data["newer"] is not None else None
-        self.older = NewsPost(data['older']) if data["older"] is not None else None
+        self.newer = NewsPost(data['newer']) if data.get("newer") is not None else None
+        self.older = NewsPost(data['older']) if data.get("older") is not None else None
 
     def __repr__(self):
         return prettify(self, 'newer', 'older')
