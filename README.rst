@@ -54,17 +54,10 @@ Example
 
 .. code:: py
 
-	from osu import Client
+	from osu import Client, GameModeStr
 
-	client_id = 0
-	client_secret = "***"
-	redirect_url = "http://127.0.0.1:8080"
-
-	client = Client.from_client_credentials(client_id, client_secret, redirect_url)
-
-	user_id = 14895608
-	mode = 'osu'
-	user = client.get_user(user_id, mode)
+	client = Client.from_client_credentials(0, "*****, None)
+	user = client.get_user(14895608, GameModeStr.STANDARD)
 	print(user.username)
 
 You can see more examples `here <https://github.com/Sheepposu/osu.py/tree/main/examples>`_, 
