@@ -22,7 +22,7 @@ class BeatmapScores:
     )
 
     def __init__(self, data, score_type="legacy"):
-        self.scores = [(Score if score_type == "legacy" else SoloScore)(score) for score in data['scores']]
+        self.scores = list(map(LegacyScore if score_type == "legacy" else SoloScore, data['scores']))
         var_name = 'userScore' if 'userScore' in data else 'user_score'
         self.user_score = BeatmapUserScore(data[var_name]) if data.get(var_name) is not None else None
 
