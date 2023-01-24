@@ -1,5 +1,4 @@
 from util_for_examples import get_lazer_client
-from osu import RoomType, RoomCategory, RoomFilterMode, GameModeStr
 
 
 client = get_lazer_client()
