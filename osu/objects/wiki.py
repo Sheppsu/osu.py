@@ -66,3 +66,6 @@ class SearchResults:
     def __init__(self, data, data_type):
         self.results = list(map(data_type, data["data"]))
         self.total = data["total"]
+
+    def __repr__(self):
+        return prettify(self, 'results', 'total')
