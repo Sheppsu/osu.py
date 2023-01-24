@@ -1,7 +1,6 @@
 import time
 import asyncio
 import aiohttp
-from io import BytesIO
 
 from ..exceptions import ScopeException
 from ..constants import base_url, lazer_base_url
@@ -63,7 +62,7 @@ class AsynchronousHTTPHandler:
                     raise type(e)(str(e) + ": " + err) if err is not None else e
                 if resp.content == b"":
                     return
-                return await resp.json() if not is_download else resp.content
+                return await resp.json() if not is_download else await resp.content.read()
 
 
 class RateLimitHandler:
