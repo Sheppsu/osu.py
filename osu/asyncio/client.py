@@ -833,7 +833,8 @@ class AsynchronousClient:
         user: :class:`str`
             user leaving (you)
         """
-        await self.http.make_request(Path.leave_channel(channel, user))
+        # is_download=True because the api does not return a json response
+        await self.http.make_request(Path.leave_channel(channel, user), is_download=True)
 
     async def mark_channel_as_read(self, channel_id: int, message_id: int):
         """
@@ -849,7 +850,8 @@ class AsynchronousClient:
         message_id: :class:`int`
             The message_id of the message to mark as read up to
         """
-        await self.http.make_request(Path.mark_channel_as_read(channel_id, message_id))
+        # is_download=True because the api does not return a json response
+        await self.http.make_request(Path.mark_channel_as_read(channel_id, message_id), is_download=True)
 
     async def get_channel_list(self) -> Sequence[ChatChannel]:
         """
@@ -1581,8 +1583,8 @@ class AsynchronousClient:
         """
         mode, type = parse_enum_args(mode, type)
         return Rankings(await self.http.make_request(Path.get_ranking(mode, type), country=country,
-                                               **(cursor if cursor else {}), filter=filter,
-                                               spotlight=spotlight, variant=variant))
+                                                     **(cursor if cursor else {}), filter=filter,
+                                                     spotlight=spotlight, variant=variant))
 
     async def get_spotlights(self) -> Spotlights:
         """
@@ -1735,7 +1737,8 @@ class AsynchronousClient:
         return list(map(Event, await self.http.make_request(Path.get_user_recent_activity(user),
                                                       limit=limit, offset=offset)))
 
-    async def get_user(self, user: int, mode: Optional[Union[str, GameModeStr]] = '', key: Optional[str] = None) -> User:
+    async def get_user(self, user: int, mode: Optional[Union[str, GameModeStr]] = '',
+                       key: Optional[str] = None) -> User:
         """
         This endpoint returns the detail of specified user.
 
