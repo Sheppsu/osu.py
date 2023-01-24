@@ -11,7 +11,7 @@ class BeatmapScores:
 
     **Attributes**
 
-    scores: Sequence[:class:``]
+    scores: Sequence[Union[:class:`Score`, :class:`SoloScore`]]
         Contains objects of type :class:`Score`. The list of top scores for the beatmap in descending order.
 
     user_score: :class:`BeatmapUserScore` or :class:`None`
