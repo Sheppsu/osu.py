@@ -19,7 +19,7 @@ with open('osu/__init__.py') as f:
 
 project_urls = {
     "Bug Tracker": "https://github.com/Sheepposu/osu.py/issues",
-    "osu.py documentation": "https://osupy.readthedocs.io/en/latest/",
+    "osu.py documentation": "https://osupy.readthedocs.io/",
     "osu!api v2 documentation": "https://osu.ppy.sh/docs/index.html",
     "Code examples": "https://github.com/Sheepposu/osu.py/tree/main/examples"
 }
