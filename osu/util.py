@@ -234,7 +234,7 @@ class PlaylistItemUtil:
         self.ruleset_id = ruleset_id
         self.allowed_mods = allowed_mods
         self.required_mods = required_mods
-        
+
     @property
     def json(self) -> dict:
         def mod_map(mod):
