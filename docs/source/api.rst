@@ -427,6 +427,11 @@ ScoreStatistics
 .. autoclass:: osu.ScoreStatistics
    :members:
    
+SearchResults
+^^^^^^^^^^^^^
+.. autoclass:: osu.SearchResults
+   :members:
+   
 SoloScore
 ^^^^^^^^^
 .. autoclass:: osu.SoloScore
