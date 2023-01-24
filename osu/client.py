@@ -1855,7 +1855,8 @@ class Client:
             "users": [UserCompact(user) for user in resp['users']],
         }
 
-    def get_matches(self, limit=None, sort=None) -> Dict[str, Union[Sequence[Match], Dict]]:
+    def get_matches(self, limit: Optional[int] = None, sort: Optional[Union[str, MatchSort]] = None) \
+            -> Dict[str, Union[Sequence[Match], Dict]]:
         """
         Returns a list of matches.
 
