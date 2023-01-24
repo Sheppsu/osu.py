@@ -53,7 +53,7 @@ class Spotlight:
     mode_specific: :class:`bool`
         If the spotlight has different mades specific to each :ref:`GameMode`.
 
-    participant_count: :class:`int` or :class:`NoneType`
+    participant_count: Union[:class:`int`, :class:`None`]
         The number of users participating in this spotlight. This is only shown when viewing a single spotlight.
 
     name: :class:`str`
@@ -73,7 +73,7 @@ class Spotlight:
         self.end_date = data['end_date']
         self.id = data['id']
         self.mode_specific = data['mode_specific']
-        self.participant_count = data['participant_count']
+        self.participant_count = data.get('participant_count')
         self.name = data['name']
         self.start_date = data['start_date']
         self.type = data['type']
