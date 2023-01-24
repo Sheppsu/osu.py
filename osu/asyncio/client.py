@@ -1297,7 +1297,7 @@ class AsynchronousClient:
         return ForumPost(await self.http.make_request(Path.edit_post(post), data=data))
 
     async def search(self, mode: Optional[Union[str, WikiSearchMode]] = None, query: Optional[str] = None,
-               page: Optional[int] = None) -> dict:
+               page: Optional[int] = None) -> Dict[str, SearchResults]:
         """
         Searches users and wiki pages.
 
@@ -1316,34 +1316,20 @@ class AsynchronousClient:
 
         **Returns**
 
-        :class:`dict`
+        Dict[:class:`str`, :class:`SearchResults`]
             {
 
-            user: :class:`dict`
-                For all or user mode. Only first 100 results are accessible
-                {
-                results: Sequence
+            "user": Union[:class:`SearchResults`, :class:`None`]
 
-                total: :class:`int`
-                }
-
-            wiki_page: :class:`dict`
-                For all or wiki_page mode
-                {
-                results: Sequence
-
-                total: :class:`int`
-                }
+            "wiki_page": Union[:class:`SearchResults`, :class:`None`]
 
             }
         """
         mode = parse_enum_args(mode)
         resp = await self.http.make_request(Path.search(), mode=mode, query=query, page=page)
         return {
-            'user': {'results': resp['user']['data'], 'total': resp['user']['total']}
-            if mode is None or mode == 'all' or mode == 'user' else None,
-            'wiki_page': {'results': resp['wiki_page']['data'], 'total': resp['wiki_page']['total']}
-            if mode is None or mode == 'all' or mode == 'wiki_page' else None
+            'user': SearchResults(resp["user"], UserCompact) if 'user' in resp else None,
+            'wiki_page': SearchResults(resp["wiki_page"], WikiPage) if 'wiki_page' in resp else None,
         }
 
     async def get_user_highscore(self, room: int, playlist: int, user: int) -> MultiplayerScore:
