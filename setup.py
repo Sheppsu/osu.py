@@ -2,11 +2,11 @@ import setuptools
 import re
 
 requirements = [
-    "aiohttp==3.7.4",
-    "python_dateutil==2.8.2",
-    "requests==2.25.1",
-    "websockets==10.2",
-    "osrparse==6.0.1",
+    "aiohttp>=3.7.4,<4",
+    "python_dateutil>=2.4.0,<3",
+    "requests>=2.25.1,<3",
+    "websockets>=10.2,<11",
+    "osrparse>=6.0.1,<7",
 ]
 
 readme = ''
