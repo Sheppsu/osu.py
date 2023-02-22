@@ -316,14 +316,18 @@ class LazerMod:
     """
     **Attributes**
 
-    mod: :class:`Mods`
+    mod: Union[:class:`Mod`, :class:`str`]
+        :class:`str` if mod acronym doesn't exist in :class:`Mod` enum
 
     settings: :class:`dict` or :class:`None`
     """
     __slots__ = ("mod", "settings")
 
     def __init__(self, data):
-        self.mod = Mod(data['acronym'])
+        try:
+            self.mod = Mod(data['acronym'])
+        except ValueError:
+            self.mod = data['acronym']
         self.settings = data.get('settings')
 
     def __repr__(self):
