@@ -8,4 +8,4 @@ from .objects import *
 from .util import BeatmapsetSearchFilter, PlaylistItemUtil
 
 
-__version__ = '0.5.0'
+__version__ = '0.5.1'
