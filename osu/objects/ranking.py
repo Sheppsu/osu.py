@@ -51,7 +51,7 @@ class Spotlight:
         The ID of this spotlight.
 
     mode_specific: :class:`bool`
-        If the spotlight has different mades specific to each :ref:`GameMode`.
+        If the spotlight has different modes specific to each game mode.
 
     participant_count: Union[:class:`int`, :class:`None`]
         The number of users participating in this spotlight. This is only shown when viewing a single spotlight.
