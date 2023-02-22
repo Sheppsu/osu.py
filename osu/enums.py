@@ -126,6 +126,8 @@ class Mod(Enum):
     ConstantSpeed = 'CS'
 
     HoldOff = 'HO'
+
+    AccuracyChallenge = 'AC'
     """
     Easy = 'EZ'
     NoFail = 'NF'
@@ -186,6 +188,7 @@ class Mod(Enum):
     Invert = 'IN'
     ConstantSpeed = 'CS'
     HoldOff = 'HO'
+    AccuracyChallenge = 'AC'
 
 
 class Mods(IntFlag):
