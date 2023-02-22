@@ -99,6 +99,18 @@ class Client:
         """
         Returns a :class:`Client` object which will make authorize and make requests to
         lazer.ppy.sh
+
+        username: :class:`str`
+            osu! username login
+
+        password: :class:`str`
+            osu! password login
+
+        request_wait_time: Optional[:class:`float`]
+            Read under Client init parameters.
+
+        limit_per_minute: Optional[:class:`float`]
+            Read under Client init parameters.
         """
         auth = LazerAuthHandler(username, password)
         auth.get_auth_token()
@@ -1552,7 +1564,7 @@ class Client:
         mode: Union[:class:`str`, :class:`GameModeStr`]
 
         type: Union[:class:`str`, :class:`RankingType`]
-            :ref:`RankingType`
+            :class:`RankingType`
 
         country: Optional[:class:`str`]
             Filter ranking by country code. Only available for type of performance.

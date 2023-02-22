@@ -102,8 +102,34 @@ class AsynchronousClient:
                              request_wait_time: Optional[float] = 1.0,
                              limit_per_minute: Optional[float] = 60.0):
         """
-        Returns a :class:`Client` object which will make authorize and make requests to
-        lazer.ppy.sh
+        Returns a :class:`Client` object from client id, client secret, redirect uri, and scope.
+
+        **Parameters**
+
+        client_id: :class:`int`
+            API Client id
+
+        client_secret: :class:`int`
+            API Client secret
+
+        redirect_uri: :class:`str`
+            API redirect uri
+
+        scope: Optional[:class:`Scope`]
+            Scopes to use. Default is Scope.default() which is just the public scope.
+
+        code: Optional[:class:`str`]
+            If provided, is used to authorize. Read more about this under :class:`AuthHandler.get_auth_token`
+
+        request_wait_time: Optional[:class:`float`]
+            Read under Client init parameters.
+
+        limit_per_minute: Optional[:class:`float`]
+            Read under Client init parameters.
+
+        **Returns**
+
+        :class:`Client`
         """
         auth = LazerAuthHandler(username, password)
         auth.get_auth_token()
@@ -1559,7 +1585,7 @@ class AsynchronousClient:
         mode: Union[:class:`str`, :class:`GameModeStr`]
 
         type: Union[:class:`str`, :class:`RankingType`]
-            :ref:`RankingType`
+            :class:`RankingType`
 
         country: Optional[:class:`str`]
             Filter ranking by country code. Only available for type of performance.
