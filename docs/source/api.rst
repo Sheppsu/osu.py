@@ -299,7 +299,7 @@ KudosuHistory
    
 LegacyScore
 ^^^^^^^^^^^
-.. autoclas:: osu.LegacyScore 
+.. autoclass:: osu.LegacyScore 
    :members:
    
 ManiaBeatmapDifficultyAttributes
@@ -325,11 +325,6 @@ MatchExtended
 MultiplayerScores
 ^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.MultiplayerScores
-   :members:
-   
-MultiplayerScoreStatistics
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.MultiplayerScoreStatistics
    :members:
 
 MultiplayerScoresAround
@@ -370,11 +365,6 @@ PlaylistItemStats
 PlaylistItemUtil
 ^^^^^^^^^^^^^^^^
 .. autoclass:: osu.PlaylistItemUtil
-   :members:
-   
-PlaylistMod
-^^^^^^^^^^^
-.. autoclass:: osu.PlaylistMod
    :members:
    
 Poll
