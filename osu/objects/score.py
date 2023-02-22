@@ -193,12 +193,12 @@ class SoloScore:
         self.beatmap_id = data["beatmap_id"]
         self.ended_at = parser.parse(data["ended_at"])
         self.max_combo = data["max_combo"]
-        self.maximum_statistics = ScoreDataStatistic(data["maximum_statistics"])
+        self.maximum_statistics = ScoreDataStatistics(data["maximum_statistics"])
         self.mods = list(map(LazerMod, data["mods"]))
         self.passed = data["passed"]
         self.rank = data["rank"]
         self.ruleset_id = data["ruleset_id"]
-        self.statistics = ScoreDataStatistic(data["statistics"])
+        self.statistics = ScoreDataStatistics(data["statistics"])
         self.total_score = data["total_score"]
         self.user_id = data["user_id"]
         self.best_id = data["best_id"]
@@ -251,7 +251,7 @@ class ScoreStatistics:
         return prettify(self, 'count_300', 'count_miss')
 
 
-class ScoreDataStatistic:
+class ScoreDataStatistics:
     """
     **Attributes**
 

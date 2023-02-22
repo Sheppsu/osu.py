@@ -1,6 +1,6 @@
 from .user import UserCompact
 from .beatmap import BeatmapCompact
-from .score import ScoreDataStatistic, LazerMod
+from .score import ScoreDataStatistics, LazerMod
 from ..enums import RoomCategory, RoomType, RealTimeQueueMode, PlaylistQueueMode, GameModeInt, RealTimeType
 from ..util import prettify
 from dateutil import parser
@@ -33,7 +33,7 @@ class MultiplayerScore:
 
     mods: Sequence[:class:`LazerMod`]
 
-    statistics: :class:`ScoreStatistics`
+    statistics: :class:`ScoreDataStatistics`
 
     passed: :class:`bool`
 
@@ -61,7 +61,7 @@ class MultiplayerScore:
         self.accuracy = data['accuracy']
         self.max_combo = data['max_combo']
         self.mods = list(map(LazerMod, data['mods'])) if data["mods"] is not None else []
-        self.statistics = ScoreDataStatistic(data['statistics'])
+        self.statistics = ScoreDataStatistics(data['statistics'])
         self.passed = data['passed']
         self.position = data.get('position')
         self.scores_around = MultiplayerScoresAround(data['scores_around']) \
