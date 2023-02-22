@@ -61,4 +61,4 @@ Example
 
 You can see more examples `here <https://github.com/Sheepposu/osu.py/tree/main/examples>`_, 
 check out the `guide <https://osupy.readthedocs.io/en/latest/guide.html>`_ if you're new to osu.py, and 
-to learn more you can go to the `documentation <https://osupy.readthedocs.io/en/latest/>`_
+to learn more you can go to the `documentation <https://osupy.readthedocs.io/>`_
