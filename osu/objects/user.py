@@ -285,15 +285,19 @@ class ProfileBanner:
     tournament_id: :class:`int`
 
     image: :class:`str`
+
+    image2x: :class:`str`
     """
     __slots__ = (
-        "id", "tournament_id", "image"
+        "id", "tournament_id", "image", "image2x"
     )
 
     def __init__(self, data):
+        print(data)
         self.id = data['id']
         self.tournament_id = data['tournament_id']
         self.image = data['image']
+        self.image2x = data['image@2x']
 
     def __repr__(self):
         return prettify(self, 'tournament_id')
@@ -403,6 +407,14 @@ class UserStatistics:
 
     **Attributes**
 
+    count_300: :class:`int`
+
+    count_100: :class:`int`
+
+    count_50: :class:`int`
+
+    count_miss: :class:`int`
+
     grade_counts: :class:`dict`
         Below are the keys, their type, and meaning.
 
@@ -476,10 +488,15 @@ class UserStatistics:
         "grade_counts", "level", "hit_accuracy", "is_ranked", "maximum_combo",
         "play_count", "play_time", "pp", "global_rank", "ranked_score",
         "replays_watched_by_others", "total_hits", "total_score", "user",
-        "country_rank", "global_rank_exp", "pp_exp"
+        "country_rank", "global_rank_exp", "pp_exp", "count_100", "count_300",
+        "count_50", "count_miss"
     )
 
     def __init__(self, data):
+        self.count_100 = data['count_100']
+        self.count_300 = data['count_300']
+        self.count_50 = data['count_50']
+        self.count_miss = data['count_miss']
         self.grade_counts = data['grade_counts']
         self.level = data['level']
         self.hit_accuracy = data['hit_accuracy']
