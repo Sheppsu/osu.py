@@ -23,7 +23,7 @@ Client
 
 AsynchronousClient
 ^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.AsynchronousClient
+Asyncio version of :class:`Client`. Functionality is all the same, but all functions are asynchronous.
 
 AuthHandler
 ^^^^^^^^^^^
@@ -497,6 +497,155 @@ WikiPage
 .. autoclass:: osu.WikiPage
    :members:
 
+Utility
+-------
+BeatmapsetSearchFilter
+^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetSearchFilter
+   :members:
+   
+IdentitiesUtil
+^^^^^^^^^^^^^^
+.. autoclass:: osu.IdentitiesUtil
+   :members:
+   
+NotificationsUtil
+^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.NotificationsUtil
+   :members:
+   
+PlaylistItemUtil
+^^^^^^^^^^^^^^^^
+.. autoclass:: PlaylistItemUtil
+   :members:
+   
+Notifications
+-------------
+BeatmapOwnerChangeDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapOwnerChangeDetails
+   :members:
+
+BeatmapsetDiscussionLockDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetDiscussionLockDetails
+   :members:
+
+BeatmapsetDiscussionPostNewDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetDiscussionPostNewDetails
+   :members:
+   
+BeatmapsetDiscussionPostNotificationDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetDiscussionPostNotificationDetails
+   :members:
+
+BeatmapsetDiscussionQualifiedProblemDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetDiscussionQualifiedProblemDetails
+   :members:
+   
+BeatmapsetDiscussionReviewNewDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetDiscussionReviewNewDetails
+   :members:
+
+BeatmapsetDiscussionUnlockDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetDiscussionUnlockDetails
+   :members:
+
+BeatmapsetDisqualifyDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetDisqualifyDetails
+   :members:
+
+BeatmapsetLoveDetails
+^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetLoveDetails
+   :members:
+
+BeatmapsetNominateDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetNominateDetails
+   :members:
+   
+BeatmapsetNotificationDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetNotificationDetails
+   :members:
+
+BeatmapsetQualifyDetails
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetQualifyDetails
+   :members:
+
+BeatmapsetRankDetails
+^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetRankDetails
+   :members:
+
+BeatmapsetRemoveFromLovedDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetRemoveFromLovedDetails
+   :members:
+
+BeatmapsetResetNominationsDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapsetResetNominationsDetails
+   :members:
+
+ChannelAnnouncementDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.ChannelAnnouncementDetails
+   :members:
+
+ChannelMessageDetails
+^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.ChannelMessageDetails
+   :members:
+
+CommentNewDetails
+^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.CommentNewDetails
+   :members:
+
+ForumTopicReplyDetails
+^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.ForumTopicReplyDetails
+   :members:
+   
+Notification
+^^^^^^^^^^^^
+.. autoclass:: osu.Notification
+   :members:
+
+NotificationsDetailsBase
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.NotificationsDetailsBase
+   :members:
+
+ReadNotification
+^^^^^^^^^^^^^^^^
+.. autoclass:: osu.ReadNotification
+   :members:
+
+
+UserAchievementUnlockDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.UserAchievementUnlockDetails
+   :members:
+
+UserBeatmapsetNewDetails
+^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.UserBeatmapsetNewDetails
+   :members:
+   
+UserBeatmapsetReviveDetails
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.UserBeatmapsetReviveDetails
+   :members:
 
 Enums
 -----
@@ -548,6 +697,16 @@ Mod
 Mods
 ^^^^
 .. autoclass:: osu.Mods
+   :members:
+   
+NotificationCategory
+^^^^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.NotificationCategory
+   :members:
+   
+NotificationType
+^^^^^^^^^^^^^^^^
+.. autoclass:: osu.NotificationType
    :members:
    
 ObjectType
