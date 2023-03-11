@@ -1135,3 +1135,142 @@ class ChatChannelType(Enum):
     PM = "PM"
     GROUP = "GROUP"
     ANNOUNCE = "ANNOUNCE"
+
+
+class NotificationType(Enum):
+    """
+    Types of notifications that can be received.
+
+    **Notification types**
+
+    BEATMAP_OWNER_CHANGE = 'beatmap_owner_change'
+
+    BEATMAPSET_DISCUSSION_LOCK = 'beatmapset_discussion_lock'
+
+    BEATMAPSET_DISCUSSION_POST_NEW = 'beatmapset_discussion_post_new'
+
+    BEATMAPSET_DISCUSSION_QUALIFIED_PROBLEM = 'beatmapset_discussion_qualified_problem'
+
+    BEATMAPSET_DISCUSSION_REVIEW_NEW = 'beatmapset_discussion_review_new'
+
+    BEATMAPSET_DISCUSSION_UNLOCK = 'beatmapset_discussion_unlock'
+
+    BEATMAPSET_DISQUALIFY = 'beatmapset_disqualify'
+
+    BEATMAPSET_LOVE = 'beatmapset_love'
+
+    BEATMAPSET_NOMINATE = 'beatmapset_nominate'
+
+    BEATMAPSET_QUALIFY = 'beatmapset_qualify'
+
+    BEATMAPSET_RANK = 'beatmapset_rank'
+
+    BEATMAPSET_REMOVE_FROM_LOVED = 'beatmapset_remove_from_loved'
+
+    BEATMAPSET_RESET_NOMINATIONS = 'beatmapset_reset_nominations'
+
+    CHANNEL_ANNOUNCEMENT = 'channel_announcement'
+
+    CHANNEL_MESSAGE = 'channel_message'
+
+    COMMENT_NEW = 'comment_new'
+
+    FORUM_TOPIC_REPLY = 'forum_topic_reply'
+
+    USER_ACHIEVEMENT_UNLOCK = 'user_achievement_unlock'
+
+    USER_BEATMAPSET_NEW = 'user_beatmapset_new'
+
+    USER_BEATMAPSET_REVIVE = 'user_beatmapset_revive'
+    """
+    BEATMAP_OWNER_CHANGE = 'beatmap_owner_change'
+    BEATMAPSET_DISCUSSION_LOCK = 'beatmapset_discussion_lock'
+    BEATMAPSET_DISCUSSION_POST_NEW = 'beatmapset_discussion_post_new'
+    BEATMAPSET_DISCUSSION_QUALIFIED_PROBLEM = 'beatmapset_discussion_qualified_problem'
+    BEATMAPSET_DISCUSSION_REVIEW_NEW = 'beatmapset_discussion_review_new'
+    BEATMAPSET_DISCUSSION_UNLOCK = 'beatmapset_discussion_unlock'
+    BEATMAPSET_DISQUALIFY = 'beatmapset_disqualify'
+    BEATMAPSET_LOVE = 'beatmapset_love'
+    BEATMAPSET_NOMINATE = 'beatmapset_nominate'
+    BEATMAPSET_QUALIFY = 'beatmapset_qualify'
+    BEATMAPSET_RANK = 'beatmapset_rank'
+    BEATMAPSET_REMOVE_FROM_LOVED = 'beatmapset_remove_from_loved'
+    BEATMAPSET_RESET_NOMINATIONS = 'beatmapset_reset_nominations'
+    CHANNEL_ANNOUNCEMENT = 'channel_announcement'
+    CHANNEL_MESSAGE = 'channel_message'
+    COMMENT_NEW = 'comment_new'
+    FORUM_TOPIC_REPLY = 'forum_topic_reply'
+    USER_ACHIEVEMENT_UNLOCK = 'user_achievement_unlock'
+    USER_BEATMAPSET_NEW = 'user_beatmapset_new'
+    USER_BEATMAPSET_REVIVE = 'user_beatmapset_revive'
+
+    def get_category(self):
+        return NotificationCategory[self.name]
+
+
+class NotificationCategory(Enum):
+    """
+    Enum for notification categories.
+
+    **Attributes**
+
+    BEATMAP_OWNER_CHANGE = 'beatmap_owner_change'
+
+    BEATMAPSET_DISCUSSION_LOCK = 'beatmapset_discussion'
+
+    BEATMAPSET_DISCUSSION_POST_NEW = 'beatmapset_discussion'
+
+    BEATMAPSET_DISCUSSION_QUALIFIED_PROBLEM = 'beatmapset_problem'
+
+    BEATMAPSET_DISCUSSION_REVIEW_NEW = 'beatmapset_discussion'
+
+    BEATMAPSET_DISCUSSION_UNLOCK = 'beatmapset_discussion'
+
+    BEATMAPSET_DISQUALIFY = 'beatmapset_state'
+
+    BEATMAPSET_LOVE = 'beatmapset_state'
+
+    BEATMAPSET_NOMINATE = 'beatmapset_state'
+
+    BEATMAPSET_QUALIFY = 'beatmapset_state'
+
+    BEATMAPSET_RANK = 'beatmapset_state'
+
+    BEATMAPSET_REMOVE_FROM_LOVED = 'beatmapset_state'
+
+    BEATMAPSET_RESET_NOMINATIONS = 'beatmapset_state'
+
+    CHANNEL_ANNOUNCEMENT = 'announcement'
+
+    CHANNEL_MESSAGE = 'channel'
+
+    COMMENT_NEW = 'comment'
+
+    FORUM_TOPIC_REPLY = 'forum_topic_reply'
+
+    USER_ACHIEVEMENT_UNLOCK = 'user_achievement_unlock'
+
+    USER_BEATMAPSET_NEW = 'user_beatmapset_new'
+
+    USER_BEATMAPSET_REVIVE = 'user_beatmapset_new'
+    """
+    BEATMAP_OWNER_CHANGE = 'beatmap_owner_change'
+    BEATMAPSET_DISCUSSION_LOCK = 'beatmapset_discussion'
+    BEATMAPSET_DISCUSSION_POST_NEW = 'beatmapset_discussion'
+    BEATMAPSET_DISCUSSION_QUALIFIED_PROBLEM = 'beatmapset_problem'
+    BEATMAPSET_DISCUSSION_REVIEW_NEW = 'beatmapset_discussion'
+    BEATMAPSET_DISCUSSION_UNLOCK = 'beatmapset_discussion'
+    BEATMAPSET_DISQUALIFY = 'beatmapset_state'
+    BEATMAPSET_LOVE = 'beatmapset_state'
+    BEATMAPSET_NOMINATE = 'beatmapset_state'
+    BEATMAPSET_QUALIFY = 'beatmapset_state'
+    BEATMAPSET_RANK = 'beatmapset_state'
+    BEATMAPSET_REMOVE_FROM_LOVED = 'beatmapset_state'
+    BEATMAPSET_RESET_NOMINATIONS = 'beatmapset_state'
+    CHANNEL_ANNOUNCEMENT = 'announcement'
+    CHANNEL_MESSAGE = 'channel'
+    COMMENT_NEW = 'comment'
+    FORUM_TOPIC_REPLY = 'forum_topic_reply'
+    USER_ACHIEVEMENT_UNLOCK = 'user_achievement_unlock'
+    USER_BEATMAPSET_NEW = 'user_beatmapset_new'
+    USER_BEATMAPSET_REVIVE = 'user_beatmapset_new'
