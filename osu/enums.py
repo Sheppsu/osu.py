@@ -1107,7 +1107,7 @@ class ForumTopicType(Enum):
 
 class ChatChannelType(Enum):
     """
-    Enum for type attribute of :class:`ChatChannel`
+    Enum for type of :class:`ChatChannel`
 
     **Chat channel types**
 

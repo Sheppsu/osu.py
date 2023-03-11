@@ -318,7 +318,7 @@ class ChannelAnnouncementDetails(NotificationsDetailsBase):
         self.channel_id = data["channel_id"]
         self.name = data["name"]
         self.title = data["title"]
-        self.type = ChatChannelType(data["type"])
+        self.type = ChatChannelType(data["type"].upper())
         self.cover_url = data["cover_url"]
 
 
@@ -341,7 +341,7 @@ class ChannelMessageDetails(NotificationsDetailsBase):
     def __init__(self, data):
         super().__init__(data)
         self.title = data["title"]
-        self.type = ChatChannelType(data["type"])
+        self.type = ChatChannelType(data["type"].upper())
         self.cover_url = data["cover_url"]
 
 
@@ -404,7 +404,7 @@ class UserAchievementUnlockDetails(NotificationsDetailsBase):
 
     achievement_id: :class:`int`
 
-    achievement_mode: :class:`GameModeStr`
+    achievement_mode: Optional[:class:`GameModeStr`]
 
     cover_url: :class:`str`
 
@@ -422,7 +422,8 @@ class UserAchievementUnlockDetails(NotificationsDetailsBase):
     def __init__(self, data):
         super().__init__(data)
         self.achievement_id = data["achievement_id"]
-        self.achievement_mode = GameModeStr(data["achievement_mode"])
+        self.achievement_mode = GameModeStr(data["achievement_mode"]) \
+            if data["achievement_mode"] is not None else None
         self.cover_url = data["cover_url"]
         self.slug = data["slug"]
         self.title = data["title"]
