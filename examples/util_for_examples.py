@@ -1,6 +1,6 @@
 import json
 import os
-from osu import Client, AuthHandler, Scope
+from osu import Client, AuthHandler, Scope, AsynchronousClient
 
 
 def get_user_client():
@@ -30,9 +30,9 @@ def get_user_client():
     return client
 
 
-def get_lazer_client():
+def get_lazer_client(asynchronous=False):
     with open(".env", "r") as f:
         env = f.readlines()
         env = dict(map(lambda k: k.replace("\n", "").split("="), env))
 
-    return Client.from_osu_credentials(env["OSU_USERNAME"], env["OSU_PASSWORD"])
+    return (Client if not asynchronous else AsynchronousClient).from_osu_credentials(env["OSU_USERNAME"], env["OSU_PASSWORD"])
