@@ -17,9 +17,9 @@ class AsynchronousHTTPHandler:
             'charset': 'utf-8',
             **{str(key): str(value) for key, value in kwargs.items() if value is not None}
         }
-        if not is_files:
+        if not is_files and "Content-Type" not in headers:
             headers["Content-Type"] = "application/json"
-        if requires_auth:
+        if requires_auth and "Authorization" not in headers:
             headers['Authorization'] = f"Bearer {self.client.auth.token}"
         return headers
 
@@ -60,7 +60,7 @@ class AsynchronousHTTPHandler:
                     except:
                         err = None
                     raise type(e)(str(e) + ": " + err) if err is not None else e
-                if resp.content == b"":
+                if resp.content_length == 0:
                     return
                 return await resp.json() if not is_download else await resp.content.read()
 

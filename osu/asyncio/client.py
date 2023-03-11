@@ -7,7 +7,11 @@ from ..objects import *
 from ..path import Path
 from ..enums import *
 from ..auth import AuthHandler, LazerAuthHandler
-from ..util import parse_mods_arg, parse_enum_args, BeatmapsetSearchFilter, create_multipart_formdata, PlaylistItemUtil
+from ..util import (
+    parse_mods_arg, parse_enum_args, BeatmapsetSearchFilter,
+    create_multipart_formdata, PlaylistItemUtil,
+    NotificationsUtil, IdentitiesUtil, JsonUtil
+)
 from typing import Union, Optional, Sequence, Dict
 from datetime import datetime
 from osrparse import Replay
@@ -16,41 +20,7 @@ import json
 
 class AsynchronousClient:
     """
-    Main object for interacting with osu!api
-
-    **Init Parameters**
-
-    auth: :class:`AuthHandler`
-        The AuthHandler object passed in when initiating the Client object
-
-    request_wait_time: Optional[:class:`float`]
-        Default is 1.
-
-        This defines the amount of time that the client should wait before making another request.
-        It can make it easier to stay within the rate limits without using all your requests up quickly
-        and then waiting forever to make another. It's most applicable in bot-type apps.
-
-    limit_per_minute: Optional[:class:`float`]
-        Default is 60 because that's the limit peppy requests that we stay under.
-
-        This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
-
-    use_lazer: Optional[:class:`bool`]
-        Default is False. This changes which base api endpoint the client will use.
-
-        Uses lazer.ppy.sh when True and osu.ppy.sh when False.
-
-    Make sure if you are changing the ratelimit handling that you are still following peppy's
-    TOU for using the API:
-
-    Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :).
-    this section may expand as necessary.
-
-    Current rate limit is set at an insanely high 1200 requests per minute,
-    with burst capability of up to 200 beyond that.
-    If you require more, you probably fall into the above category of abuse.
-    If you are doing more than 60 requests a minute,
-    you should probably give peppy a yell.
+    Asyncio version of :class:`Client`. Functionality is all the same, but all functions are asynchronous.
     """
 
     def __init__(self, auth: Union[AuthHandler, LazerAuthHandler] = None, request_wait_time: Optional[float] = 1.0,
@@ -1544,26 +1514,39 @@ class AsynchronousClient:
         """
         resp = await self.http.make_request(Path.get_notifications(), max_id=max_id)
         return {
-            'notifications': list(map(Notification, resp['notifications'])),
+            "notifications": list(map(Notification, resp['notifications'])),
             "stacks": resp["stacks"],
             "timestamp": resp["timestamp"],
             "types": resp["types"],
-            'notification_endpoint': resp['notification_endpoint'],
+            "notification_endpoint": resp['notification_endpoint'],
         }
 
-    async def mark_notifications_read(self, ids: Sequence[int]):
+    async def mark_notifications_read(self, identities: Optional[Sequence[Union[
+        IdentitiesUtil, Dict[str, Union[str, int]]]]] = None,
+        notifications: Optional[Sequence[Union[
+            NotificationsUtil, Dict[str, str]]]] = None):
         """
-        This endpoint allows you to mark notifications read.
+        This endpoint allows you to mark notifications read. Should only supply one of the arguments.
 
         Requires OAuth, scope lazer, a user (authorization code grant, delegate scope, or password auth)
 
         **Parameters**
 
-        ids: Sequence[:class:`int`]
-            ids of notifications to be marked as read.
+        identities: Sequence[Union[:class:`ReadNotifIdentitiesUtil`,
+        Dict[:class:`str`, Union[:class:`str`, :class:`int`]]]]
+
+        notifications: Sequence[Union[:class:`ReadNotifNotificationsUtil`, Dict[:class:`str`, :class:`str`]]]
         """
-        data = {'ids': ids}
-        await self.http.make_request(Path.mark_notifications_as_read(), data=data)
+        if identities is not None and notifications is not None:
+            raise ValueError("Should only supply one argument, either identities or notifications.")
+        elif identities is None and notifications is None:
+            raise ValueError("Must supply at least one argument, either identities or notifications.")
+        try:
+            name = "identities" if notifications is None else "notifications"
+            params = JsonUtil.list_to_labeled_dict(locals()[name], name)
+        except Exception as exc:
+            raise ValueError("An error occurred while parsing the argument you provided.") from exc
+        await self.http.make_request(Path.mark_notifications_as_read(), **params)
 
     async def revoke_current_token(self):
         """

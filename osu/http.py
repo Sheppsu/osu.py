@@ -16,9 +16,9 @@ class HTTPHandler:
             'charset': 'utf-8',
             **{str(key): str(value) for key, value in kwargs.items() if value is not None}
         }
-        if not is_files:
+        if not is_files and "Content-Type" not in headers:
             headers["Content-Type"] = "application/json"
-        if requires_auth:
+        if requires_auth and "Authorization" not in headers:
             headers['Authorization'] = f"Bearer {self.client.auth.token}"
         return headers
 

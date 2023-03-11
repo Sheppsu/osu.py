@@ -5,7 +5,12 @@ from .notification import NotificationWebsocket
 from .asyncio.client import AsynchronousClient
 from .enums import *
 from .objects import *
-from .util import BeatmapsetSearchFilter, PlaylistItemUtil
+from .util import (
+    BeatmapsetSearchFilter,
+    PlaylistItemUtil,
+    NotificationsUtil,
+    IdentitiesUtil,
+)
 
 
 __version__ = '0.5.1'

@@ -1,5 +1,10 @@
-from .enums import Mods, Enum, BeatmapsetSearchSort, BeatmapsetSearchGeneral, BeatmapsetSearchPlayed, \
-    BeatmapsetSearchStatus, BeatmapsetSearchExtra, ScoreRank, GameModeInt, Mod
+from .enums import (
+    Mods, Enum, BeatmapsetSearchSort,
+    BeatmapsetSearchGeneral, BeatmapsetSearchPlayed,
+    BeatmapsetSearchStatus, BeatmapsetSearchExtra,
+    ScoreRank, GameModeInt, Mod, NotificationCategory,
+    ObjectType
+)
 from typing import Sequence, Union
 
 
@@ -245,3 +250,80 @@ class PlaylistItemUtil:
             "allowed_mods": list(map(mod_map, self.allowed_mods)) if self.allowed_mods is not None else None,
             "required_mods": list(map(mod_map, self.required_mods)) if self.required_mods is not None else None,
         }
+
+
+class JsonUtil:
+    __slots__ = ()
+
+    def __init__(self, *args):
+        for attr, value in zip(self.__slots__, args):
+            setattr(self, attr, value)
+
+    def __getitem__(self, item):
+        return getattr(self, item)
+
+    def values(self):
+        return [getattr(self, attr) for attr in self.__slots__]
+
+    def json(self):
+        return {attr: getattr(self, attr) for attr in self.__slots__}
+
+    def items(self):
+        return map(lambda attr: (attr, getattr(self, attr)), self.__slots__)
+
+    @staticmethod
+    def parse_list(l):
+        return list(map(lambda item: item.json if isinstance(item, JsonUtil) else item, l))
+
+    @staticmethod
+    def list_to_labeled_dict(l, name):
+        return dict(sum(map(
+            lambda i: list(map(
+                lambda i2: (f"{name}[{i[0]}][{i2[0]}]", f"{i2[1]}"),
+                filter(lambda i2: i2[1] is not None, i[1].items())
+            )),
+            enumerate(l)
+        ), []))
+
+
+class NotificationsUtil(JsonUtil):
+    __slots__ = ("category", "id", "object_id", "object_type")
+
+    def __init__(self, category: Union[NotificationCategory, str] = None, id: int = None,
+                 object_id: str = None, object_type: Union[ObjectType, str] = None):
+        """
+        **Arguments**
+
+        category: Optional[:class:`str`]
+            Notification category.
+
+        id: Optional[:class:`id`]
+            Id of notification to be marked as read
+
+        object_id: Optional[:class:`str`]
+            Id of the object that triggered the notification
+
+        object_type: Optional[:class:`str`]
+            Type of the object that triggered the notification
+        """
+        super().__init__(*parse_enum_args(category, id, object_id, object_type))
+
+
+class IdentitiesUtil(JsonUtil):
+    __slots__ = ("category", "object_id", "object_type")
+
+    def __init__(self, category: Union[NotificationCategory, str] = None, object_id: str = None,
+                 object_type: Union[ObjectType, str] = None):
+        """
+        **Arguments**
+
+        category: Optional[:class:`str`]
+            Notification category.
+
+        object_id: Optional[:class:`str`]
+            Id of the object that triggered the notification
+
+        object_type: Optional[:class:`str`]
+            Type of the object that triggered the notification
+        """
+        super().__init__(*parse_enum_args(category, object_id, object_type))

@@ -3,7 +3,12 @@ from .objects import *
 from .path import Path
 from .enums import *
 from .auth import AuthHandler, LazerAuthHandler
-from .util import parse_mods_arg, parse_enum_args, BeatmapsetSearchFilter, create_multipart_formdata, PlaylistItemUtil
+from .util import (
+    parse_mods_arg, parse_enum_args,
+    BeatmapsetSearchFilter, create_multipart_formdata,
+    PlaylistItemUtil, IdentitiesUtil, NotificationsUtil,
+    JsonUtil
+)
 from typing import Union, Optional, Sequence, Dict
 from datetime import datetime
 from osrparse import Replay
@@ -1523,26 +1528,39 @@ class Client:
         """
         resp = self.http.make_request(Path.get_notifications(), max_id=max_id)
         return {
-            'notifications': list(map(Notification, resp['notifications'])),
+            "notifications": list(map(Notification, resp['notifications'])),
             "stacks": resp["stacks"],
             "timestamp": resp["timestamp"],
             "types": resp["types"],
-            'notification_endpoint': resp['notification_endpoint'],
+            "notification_endpoint": resp['notification_endpoint'],
         }
 
-    def mark_notifications_read(self, ids: Sequence[int]):
+    def mark_notifications_read(self, identities: Optional[Sequence[Union[
+        IdentitiesUtil, Dict[str, Union[str, int]]]]] = None,
+        notifications: Optional[Sequence[Union[
+            NotificationsUtil, Dict[str, str]]]] = None):
         """
-        This endpoint allows you to mark notifications read.
+        This endpoint allows you to mark notifications read. Should only supply one of the arguments.
 
         Requires OAuth, scope lazer, a user (authorization code grant, delegate scope, or password auth)
 
         **Parameters**
 
-        ids: Sequence[:class:`int`]
-            ids of notifications to be marked as read.
+        identities: Sequence[Union[:class:`ReadNotifIdentitiesUtil`,
+        Dict[:class:`str`, Union[:class:`str`, :class:`int`]]]]
+
+        notifications: Sequence[Union[:class:`ReadNotifNotificationsUtil`, Dict[:class:`str`, :class:`str`]]]
         """
-        data = {'ids': ids}
-        self.http.make_request(Path.mark_notifications_as_read(), data=data)
+        if identities is not None and notifications is not None:
+            raise ValueError("Should only supply one argument, either identities or notifications.")
+        elif identities is None and notifications is None:
+            raise ValueError("Must supply at least one argument, either identities or notifications.")
+        try:
+            name = "identities" if notifications is None else "notifications"
+            params = JsonUtil.list_to_labeled_dict(locals()[name], name)
+        except Exception as exc:
+            raise ValueError("An error occurred while parsing the argument you provided.") from exc
+        self.http.make_request(Path.mark_notifications_as_read(), **params)
 
     def revoke_current_token(self):
         """
@@ -1550,7 +1568,7 @@ class Client:
 
         Requires OAuth
         """
-        self.http.make_request(self, Path.revoke_current_token())
+        self.http.make_request(Path.revoke_current_token())
 
     def get_ranking(self, mode: Union[str, GameModeStr], type: Union[str, RankingType],
                     country: Optional[str] = None, cursor: Optional[dict] = None,
