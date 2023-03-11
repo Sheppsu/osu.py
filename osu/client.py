@@ -635,7 +635,7 @@ class Client:
         """
         Returns details of the specified build.
 
-        **Parameter**
+        **Parameters**
 
         changelog: :class:`str`
             Build version, update stream name, or build ID.
@@ -653,17 +653,27 @@ class Client:
         return Build(self.http.make_request(Path.lookup_changelog_build(changelog),
                                             key=key, message_formats=message_formats))
 
-    def chat_acknowledge(self) -> Sequence[UserSilence]:
+    def chat_acknowledge(self, history_since: Optional[int] = None, since: Optional[int] = None) -> \
+            Sequence[UserSilence]:
         """
         Send a chat ack.
 
         Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
 
+        **Parameters**
+
+        history_since: Optional[:class:`int]
+            :class:`UserSilence`s after the specified id to return.
+            This field is preferred and takes precedence over since.
+
+        since: Optional[:class:`int`]
+            :class:`UserSilence`s after the specified :class:`ChatMessage`.message_id to return.
+
         **Returns**
 
         Sequence[:class:`UserSilence`]
         """
-        resp = self.http.make_request(Path.chat_ack())
+        resp = self.http.make_request(Path.chat_ack(), history_since=history_since, since=since)
         return list(map(UserSilence, resp["silences"]))
 
     def create_new_pm(self, target_id: int, message: str, is_action: bool, uuid: Optional[str] = None) -> dict:
