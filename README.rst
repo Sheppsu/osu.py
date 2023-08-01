@@ -10,6 +10,9 @@ osu.py
 .. image:: https://static.pepy.tech/personalized-badge/osu-py?period=month&units=international_system&left_color=blue&right_color=brightgreen&left_text=Downloads/month
    :target: https://pepy.tech/project/osu-py
    :alt: Download metric
+.. image:: https://readthedocs.org/projects/osupy/badge/?version=latest
+   :target: https://osupy.readthedocs.io
+   :alt: Documentation
 
 Easy to use API wrapper for osu!api v2 written in Python.
 
