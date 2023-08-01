@@ -12,4 +12,4 @@ user_ids = [7562902, 11443437, 3717598, 1473890, 4230827]
 mode = 'osu'
 users = client.get_users(user_ids)
 for user in users:
-    print(user.username)
+    print(user)

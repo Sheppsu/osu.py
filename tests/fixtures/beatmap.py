@@ -17,26 +17,28 @@ def sample_beatmap():
 
 @fixture
 def sample_beatmaps():
-    yield list([
-        dict(
-            id=2063622,
-            max_combo=866,
-            beatmapset_id=985788,
-            ar=9,
-        ),
-        dict(
-            id=1031991,
-            max_combo=4353,
-            beatmapset_id=461744,
-            ar=10,
-        ),
-        dict(
-            id=252238,
-            max_combo=2646,
-            beatmapset_id=93523,
-            ar=10,
-        )
-    ])
+    yield list(
+        [
+            dict(
+                id=2063622,
+                max_combo=866,
+                beatmapset_id=985788,
+                ar=9,
+            ),
+            dict(
+                id=1031991,
+                max_combo=4353,
+                beatmapset_id=461744,
+                ar=10,
+            ),
+            dict(
+                id=252238,
+                max_combo=2646,
+                beatmapset_id=93523,
+                ar=10,
+            ),
+        ]
+    )
 
 
 @fixture
@@ -70,7 +72,7 @@ def sample_beatmapset_discussion_post():
         beatmapset_title="put' l'da",
         beatmapset_artist="Camellia",
         target_message="2 > 3.5 > 5 if I'm going to change it, I still want the lower diffs "
-                       "to be more forgiving considering their difficulty isn't well represented with SR",
+        "to be more forgiving considering their difficulty isn't well represented with SR",
         target_user=4116573,
         discussion_user=6175280,
         discussion_message="HP settings are quite low for Advanced-Insane. Would go for HP3 - HP4 - HP5",

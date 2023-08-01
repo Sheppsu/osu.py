@@ -6,3 +6,4 @@ from .rooms import *
 from .chat import *
 from .comments import *
 from .misc import *
+from .changelog import *

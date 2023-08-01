@@ -16,760 +16,884 @@ This page covers *everything* osu.py is capable of.
 
 Interactive Classes
 -------------------
-Client
-^^^^^^
+
+.. autoclass:: osu.AsynchronousClient
+
 .. autoclass:: osu.Client
     :members:
 
-AsynchronousClient
-^^^^^^^^^^^^^^^^^^
-Asyncio version of :class:`Client`. Functionality is all the same, but all functions are asynchronous.
-
-AuthHandler
-^^^^^^^^^^^
 .. autoclass:: osu.AuthHandler
     :members:
-	
-LazerAuthHandler
-^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.LazerAuthHandler
 	:members:
 
-NotificationWebsocket
-^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.NotificationWebsocket
     :members:
+	
+Endpoint results
+----------------
+Some endpoints return specific responses that don't represent any specific objects.
+
+
+.. autoclass:: osu.BeatmapsetDiscussionPostsResult
+   :members:
+   
+
+.. autoclass:: osu.BeatmapsetDiscussionsResult
+   :members:
+   
+
+.. autoclass:: osu.BeatmapsetDiscussionVotesResult
+   :members:
+   
+
+.. autoclass:: osu.BeatmapsetSearchResult
+   :members:
+   
+
+.. autoclass:: osu.ChangelogListingResult
+   :members:
+   
+
+.. autoclass:: osu.ChangelogListingSearch
+   :members:
+   
+
+.. autoclass:: osu.CreateNewPmResult
+   :members:
+   
+
+.. autoclass:: osu.CreateTopicResult
+   :members:
+   
+
+.. autoclass:: osu.GetBeatmapsetEventsResult
+   :members:
+   
+
+.. autoclass:: osu.GetChannelResult
+   :members:
+   
+
+.. autoclass:: osu.GetMatchesResult
+   :members:
+   
+
+.. autoclass:: osu.GetNewsListingResult
+   :members:
+   
+
+.. autoclass:: osu.GetNotificationsResult
+   :members:
+   
+
+.. autoclass:: osu.GetRoomLeaderboardResult
+   :members:
+   
+
+.. autoclass:: osu.GetTopicAndPostsResult
+   :members:
+   
+
+.. autoclass:: osu.GetUpdatesResult
+   :members:
+   
+
+.. autoclass:: osu.NewsSidebar
+   :members:
+   
+
+.. autoclass:: osu.NotificationStackResult
+   :members:
+   
+
+.. autoclass:: osu.NotificationTypeResult
+   :members:
+   
+
+.. autoclass:: osu.ReviewsConfig
+   :members:
+
+
+.. autoclass:: osu.SearchInfo
+   :members:
+   
+
+.. autoclass:: osu.SearchResult
+   :members:
 
 Objects
 -------
-Beatmap
-^^^^^^^
+
+.. autoclass:: osu.Achievement
+   :members:
+   
+
+.. autoclass:: osu.AchievementEvent
+   
+
+.. autoclass:: osu.BaseNominations
+   :members:
+
+
 .. autoclass:: osu.Beatmap
    :members:
 
-BeatmapCompact
-^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapCompact
    :members:
    
-BeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapDifficultyAttributes
    :members:
    
-BeatmapPlaycount
-^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapPlaycount
    :members:
+   
 
-BeatmapScores
-^^^^^^^^^^^^^
+.. autoclass:: osu.BeatmapPlaycountEvent
+   :members:
+
+
 .. autoclass:: osu.BeatmapScores
    :members:
    
-Beatmapset
-^^^^^^^^^^
+
 .. autoclass:: osu.Beatmapset
    :members:
    
-BeatmapsetCompact
-^^^^^^^^^^^^^^^^^
+
+.. autoclass:: osu.BeatmapsetApproveEvent
+   :members:
+   
+
+.. autoclass:: osu.BeatmapsetAvailability
+   :members:
+   
+
 .. autoclass:: osu.BeatmapsetCompact
    :members:
    
-BeatmapsetDiscussion
-^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: osu.BeatmapsetDeleteEvent
+   :members:
+   
+
 .. autoclass:: osu.BeatmapsetDiscussion
    :members:
    
-BeatmapsetDiscussionPost
-^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: osu.BeatmapsetDiscussionPermissions
+   :members:
+   
+
 .. autoclass:: osu.BeatmapsetDiscussionPost
    :members:
 
-BeatmapsetDiscussionVote
-^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetDiscussionVote
    :members:
 
-BeatmapsetEvent
-^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEvent
    :members:
    
-BeatmapsetEventComment
-^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventComment
    :members:
    
-BeatmapsetEventNominate
-^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventNominate
    :members:
    
-BeatmapsetEventRemoveFromLoved
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventRemoveFromLoved
    :members:
    
-BeatmapsetEventDisqualify
-^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventDisqualify
    :members:
 
-BeatmapsetEventVote
-^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventVote
    :members:
 
-BeatmapsetEventKudosuGain
-^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventKudosuGain
    :members:
 
-BeatmapsetEventKudosuLost
-^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventKudosuLost
    :members:
    
-BeatmapsetEventKudosuRecalculate
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventKudosuRecalculate
    :members:
    
-BeatmapsetEventDiscussionLock
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventDiscussionLock
    :members:
    
-BeatmapsetEventNominationReset
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventNominationReset
    :members:
    
-BeatmapsetEventNominationResetReceived
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventNominationResetReceived
    :members:
    
-BeatmapsetEventGenreEdit
-^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventGenreEdit
    :members:
    
-BeatmapsetEventLanguageEdit
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventLanguageEdit
    :members:
    
-BeatmapsetEventNsfwToggle
-^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventNsfwToggle
    :members:
    
-BeatmapsetEventOffsetEdit
-^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventOffsetEdit
    :members:
    
-BeatmapsetEventBeatmapOwnerChange
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventBeatmapOwnerChange
    :members:
    
-BeatmapUserScore
-^^^^^^^^^^^^^^^^
+
+.. autoclass:: osu.BeatmapsetPermissions
+   :members:
+   
+
+.. autoclass:: osu.BeatmapsetRequirement
+   :members:
+   
+
+.. autoclass:: osu.BeatmapsetReviveEvent
+   :members:
+   
+
+.. autoclass:: osu.BeatmapsetUpdateEvent
+   :members:
+   
+
+.. autoclass:: osu.BeatmapsetUploadEvent
+   :members:
+   
+
 .. autoclass:: osu.BeatmapUserScore
    :members:
    
-Build
-^^^^^
+
 .. autoclass:: osu.Build
    :members:
    
-ChangelogEntry
-^^^^^^^^^^^^^^
+
 .. autoclass:: osu.ChangelogEntry
    :members:
 
-ChatChannel
-^^^^^^^^^^^
+
 .. autoclass:: osu.ChatChannel
    :members:
+   
 
-ChatMessage
-^^^^^^^^^^^
+.. autoclass:: osu.ChatChannelUserAttributes
+   :members:
+
+
 .. autoclass:: osu.ChatMessage
    :members:
 
-Comment
-^^^^^^^
+
 .. autoclass:: osu.Comment
    :members:
 
-CommentableMeta
-^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.CommentableMeta
    :members:
+   
 
-CommentBundle
-^^^^^^^^^^^^^
+.. autoclass:: osu.CommentableMetaAttributes
+   :members:
+
+
 .. autoclass:: osu.CommentBundle
    :members:
    
-Covers
-^^^^^^
+
+.. autoclass:: osu.Country
+   :members:
+   
+
 .. autoclass:: osu.Covers
    :members:
    
-CurrentUserAttributes
-^^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.CurrentUserAttributes
-   :members:
-   
-Description
-^^^^^^^^^^^
-.. autoclass:: osu.Description
-   :members:
-   
-Details
-^^^^^^^
-.. autoclass:: osu.Details
+
+.. autoclass:: osu.CurrentUserPin
    :members:
 
-Event
-^^^^^
+
 .. autoclass:: osu.Event
    :members:
 
-EventUser
-^^^^^^^^^
+
 .. autoclass:: osu.EventUser
    :members:
 
-EventBeatmap
-^^^^^^^^^^^^
+
 .. autoclass:: osu.EventBeatmap
    :members:
 
-EventBeatmapset
-^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.EventBeatmapset
    :members:
    
-Failtimes
-^^^^^^^^^
+
 .. autoclass:: osu.Failtimes
    :members:
 
-ForumPost
-^^^^^^^^^
+
 .. autoclass:: osu.ForumPost
    :members:
 
-ForumTopic
-^^^^^^^^^^
+
 .. autoclass:: osu.ForumTopic
    :members:
    
-FruitsBeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.FruitsBeatmapDifficultyAttributes
    :members:
    
-GithubUser
-^^^^^^^^^^
+
 .. autoclass:: osu.GithubUser
    :members:
    
-Giver
-^^^^^
-.. autoclass:: osu.Giver
-   :members:
-   
-Group
-^^^^^
+
 .. autoclass:: osu.Group
    :members:
    
-KudosuHistory
-^^^^^^^^^^^^^
+
 .. autoclass:: osu.KudosuHistory
    :members:
    
-LegacyScore
-^^^^^^^^^^^
+
+.. autoclass:: osu.LegacyNominations
+   :members:
+   
+
 .. autoclass:: osu.LegacyScore 
    :members:
    
-ManiaBeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.ManiaBeatmapDifficultyAttributes
    :members:
    
-Match
-^^^^^
+
 .. autoclass:: osu.Match
    :members:
    
-MatchEvent
-^^^^^^^^^^
+
 .. autoclass:: osu.MatchEvent
    :members:
    
-MatchExtended
-^^^^^^^^^^^^^
+
 .. autoclass:: osu.MatchExtended
    :members:
+   
 
-MultiplayerScores
-^^^^^^^^^^^^^^^^^
+.. autoclass:: osu.MatchGame
+   :members:
+   
+
+.. autoclass:: osu.MatchGameScoreInfo
+   :members:
+   
+
+.. autoclass:: osu.MetadataAttribute
+   :members:
+
+
 .. autoclass:: osu.MultiplayerScores
    :members:
 
-MultiplayerScoresAround
-^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.MultiplayerScoresAround
    :members:
    
-NewsPost
-^^^^^^^^
+
 .. autoclass:: osu.NewsPost
    :members:
    
-Navigation
-^^^^^^^^^^
+
 .. autoclass:: osu.Navigation
    :members:
+   
 
-Notification
-^^^^^^^^^^^^
+.. autoclass:: osu.Nominations
+   :members:
+
+
 .. autoclass:: osu.Notification
    :members:
    
-OsuBeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.OsuBeatmapDifficultyAttributes
    :members:
    
-PlaylistItem
-^^^^^^^^^^^^
+
 .. autoclass:: osu.PlaylistItem
    :members:
    
-PlaylistItemStats
-^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.PlaylistItemStats
    :members:
    
-PlaylistItemUtil
-^^^^^^^^^^^^^^^^
-.. autoclass:: osu.PlaylistItemUtil
-   :members:
-   
-Poll
-^^^^
+
 .. autoclass:: osu.Poll
    :members:
 
-PollOption
-^^^^^^^^^^
+
 .. autoclass:: osu.PollOption
    :members:
+   
 
-Post
-^^^^
-.. autoclass:: osu.Post
+.. autoclass:: osu.PpWeight
    :members:
    
-ProfileBanner
-^^^^^^^^^^^^^
+
 .. autoclass:: osu.ProfileBanner
    :members:
 
-Rankings
-^^^^^^^^
+
+.. autoclass:: osu.RankEvent
+   :members:
+   
+
+.. autoclass:: osu.RankHighest
+   :members:
+   
+
+.. autoclass:: osu.RankHistory
+   :members:
+
+
 .. autoclass:: osu.Rankings
    :members:
    
-ReadNotification
-^^^^^^^^^^^^^^^^
+
+.. autoclass:: osu.RankLostEvent
+   :members:
+   
+
 .. autoclass:: osu.ReadNotification
    :members:
    
-Room
-^^^^
+
+.. autoclass:: osu.Review
+   :members:
+   
+
 .. autoclass:: osu.Room
    :members:
    
-Scope
-^^^^^
+
 .. autoclass:: osu.Scope
    :members:
    
-ScoreDataStatistics
-^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.ScoreDataStatistics
    :members:
 
-ScoreStatistics
-^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.ScoreStatistics
    :members:
    
-SearchResults
-^^^^^^^^^^^^^
+
+.. autoclass:: osu.ScoreUserAttributes
+   :members:
+   
+
 .. autoclass:: osu.SearchResults
    :members:
    
-SoloScore
-^^^^^^^^^
+
 .. autoclass:: osu.SoloScore
    :members:
 
-Spotlight
-^^^^^^^^^
+
 .. autoclass:: osu.Spotlight
    :members:
 
-Spotlights
-^^^^^^^^^^
+
 .. autoclass:: osu.Spotlights
    :members:
    
-TaikoBeatmapDifficultyAttributes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: osu.SystemDiscussionPostMessage
+   :members:
+   
+
 .. autoclass:: osu.TaikoBeatmapDifficultyAttributes
    :members:
    
-UpdateStream
-^^^^^^^^^^^^
+
+.. autoclass:: osu.TextFormat
+   :members:
+   
+
 .. autoclass:: osu.UpdateStream
    :members:
 
-User
-^^^^
+
 .. autoclass:: osu.User
    :members:
    
-UserCompact
-^^^^^^^^^^^
+
 .. autoclass:: osu.UserCompact
    :members:
+   
 
-UserAccountHistory
-^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.UserAccountHistory
+.. autoclass:: osu.UserCover
    :members:
 
-UserBadge
-^^^^^^^^^
+
+.. autoclass:: osu.UserAccountHistory
+   :members:
+   
+
+.. autoclass:: osu.UserAchievement
+   :members:
+
+
 .. autoclass:: osu.UserBadge
    :members:
 
-UserGroup
-^^^^^^^^^
+
 .. autoclass:: osu.UserGroup
    :members:
+   
 
-UserMonthlyPlaycount
-^^^^^^^^^^^^^^^^^^^^
-.. autoclass:: osu.UserMonthlyPlaycount
+.. autoclass:: osu.UserKudosu
    :members:
 
-UserStatistics
-^^^^^^^^^^^^^^
+
+.. autoclass:: osu.UserMonthlyPlaycount
+   :members:
+   
+
+.. autoclass:: osu.UsernameChangeEvent
+   :members:
+   
+
+.. autoclass:: osu.UserPreferences
+   :members:
+   
+
+.. autoclass:: osu.UserRelations
+   :members:
+   
+
+.. autoclass:: osu.UserReplaysWatchedCount
+   :members:
+
+
 .. autoclass:: osu.UserStatistics
    :members:
    
-UserStatisticsRulesets
-^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.UserStatisticsRulesets
    :members:
    
-Versions
-^^^^^^^^
+
+.. autoclass:: osu.UserStatisticVariant
+   :members:
+   
+
+.. autoclass:: osu.UserSupportAgain
+   :members:
+   
+
+.. autoclass:: osu.UserSupportFirst
+   :members:
+   
+
+.. autoclass:: osu.UserSupportGift
+   :members:
+   
+
 .. autoclass:: osu.Versions
    :members:
 
-WikiPage
-^^^^^^^^
+
+.. autoclass:: osu.VotersSummary
+   :members:
+
+
+.. autoclass:: osu.VotesSummary
+   :members:
+
+
 .. autoclass:: osu.WikiPage
    :members:
 
 Utility
 -------
-BeatmapsetSearchFilter
-^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetSearchFilter
    :members:
    
-IdentitiesUtil
-^^^^^^^^^^^^^^
+
 .. autoclass:: osu.IdentitiesUtil
    :members:
    
-NotificationsUtil
-^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.NotificationsUtil
    :members:
    
-PlaylistItemUtil
-^^^^^^^^^^^^^^^^
-.. autoclass:: PlaylistItemUtil
+
+.. autoclass:: osu.PlaylistItemUtil
    :members:
    
 Notifications
 -------------
-BeatmapOwnerChangeDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapOwnerChangeDetails
    :members:
 
-BeatmapsetDiscussionLockDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetDiscussionLockDetails
    :members:
 
-BeatmapsetDiscussionPostNewDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetDiscussionPostNewDetails
    :members:
    
-BeatmapsetDiscussionPostNotificationDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetDiscussionPostNotificationDetails
    :members:
 
-BeatmapsetDiscussionQualifiedProblemDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetDiscussionQualifiedProblemDetails
    :members:
    
-BeatmapsetDiscussionReviewNewDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetDiscussionReviewNewDetails
    :members:
 
-BeatmapsetDiscussionUnlockDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetDiscussionUnlockDetails
    :members:
 
-BeatmapsetDisqualifyDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetDisqualifyDetails
    :members:
 
-BeatmapsetLoveDetails
-^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetLoveDetails
    :members:
 
-BeatmapsetNominateDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetNominateDetails
    :members:
    
-BeatmapsetNotificationDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetNotificationDetails
    :members:
 
-BeatmapsetQualifyDetails
-^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetQualifyDetails
    :members:
 
-BeatmapsetRankDetails
-^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetRankDetails
    :members:
 
-BeatmapsetRemoveFromLovedDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetRemoveFromLovedDetails
    :members:
 
-BeatmapsetResetNominationsDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetResetNominationsDetails
    :members:
 
-ChannelAnnouncementDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.ChannelAnnouncementDetails
    :members:
 
-ChannelMessageDetails
-^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.ChannelMessageDetails
    :members:
 
-CommentNewDetails
-^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.CommentNewDetails
    :members:
 
-ForumTopicReplyDetails
-^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.ForumTopicReplyDetails
    :members:
    
-Notification
-^^^^^^^^^^^^
+
 .. autoclass:: osu.Notification
    :members:
 
-NotificationsDetailsBase
-^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.NotificationsDetailsBase
    :members:
 
-ReadNotification
-^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.ReadNotification
+   :members:
+   
+
+.. autoclass:: osu.ReviewStats
    :members:
 
 
-UserAchievementUnlockDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. autoclass:: osu.UserAchievementUnlockDetails
    :members:
 
-UserBeatmapsetNewDetails
-^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.UserBeatmapsetNewDetails
    :members:
    
-UserBeatmapsetReviveDetails
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.UserBeatmapsetReviveDetails
    :members:
 
 Enums
 -----
-BeatmapsetEventSort
-^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventSort
    :members:
 
-BeatmapsetEventType
-^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.BeatmapsetEventType
    :members:
    
-ChatChannelType
-^^^^^^^^^^^^^^^
+
+.. autoclass:: osu.BeatmapsetGenre
+   :members:
+   
+
+.. autoclass:: osu.BeatmapsetLanguage
+   :members:
+   
+
 .. autoclass:: osu.ChatChannelType
    :members:
    
-ForumTopicType
-^^^^^^^^^^^^^^
+
+.. autoclass:: osu.ChatMessageType
+   :members:
+   
+
 .. autoclass:: osu.ForumTopicType
    :members:
 
-GameModeInt
-^^^^^^^^^^^
+
 .. autoclass:: osu.GameModeInt
    :members:
    
-GameModeStr
-^^^^^^^^^^^
+
 .. autoclass:: osu.GameModeStr
    :members:
    
-MatchEventType
-^^^^^^^^^^^^^^
+
+.. autoclass:: osu.KudosuAction
+   :members:
+   
+
 .. autoclass:: osu.MatchEventType
    :members:
    
-MatchSort
-^^^^^^^^^
+
 .. autoclass:: osu.MatchSort
    :members:
    
-Mod
-^^^
+
+.. autoclass:: osu.MessageType
+   :members:
+   
+
 .. autoclass:: osu.Mod
    :members:
    
-Mods
-^^^^
+
 .. autoclass:: osu.Mods
    :members:
    
-NotificationCategory
-^^^^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.NotificationCategory
    :members:
    
-NotificationType
-^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.NotificationType
    :members:
    
-ObjectType
-^^^^^^^^^^
+
 .. autoclass:: osu.ObjectType
    :members:
    
-PlaylistQueueMode
-^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.PlaylistQueueMode
    :members:
    
-RankStatus
-^^^^^^^^^^
+
 .. autoclass:: osu.RankStatus
    :members:
    
-RealTimeQueueMode
-^^^^^^^^^^^^^^^^^
+
 .. autoclass:: osu.RealTimeQueueMode
    :members:
    
-RealTimeType
-^^^^^^^^^^^^
-.. autoclass:: osu.RealTimeType
-   :members:
-   
-RoomCategory
-^^^^^^^^^^^^
+
 .. autoclass:: osu.RoomCategory
    :members:
    
-RoomFilterMode
-^^^^^^^^^^^^^^
+
 .. autoclass:: osu.RoomFilterMode
    :members:
    
-RoomSort
-^^^^^^^^
+
 .. autoclass:: osu.RoomSort
    :members:
    
-RoomType
-^^^^^^^^
+
 .. autoclass:: osu.RoomType
    :members:
+   
 
-UserBeatmapType
-^^^^^^^^^^^^^^^
+.. autoclass:: osu.ScoringType
+   :members:
+   
+
+.. autoclass:: osu.TeamType
+   :members:
+
+
+.. autoclass:: osu.UserAccountHistoryType
+   :members:
+
+
 .. autoclass:: osu.UserBeatmapType
    :members:
    
-UserScoreAggregate
-^^^^^^^^^^^^^^^^^^
+
+.. autoclass:: osu.UserRelationType
+   :members:
+   
+
 .. autoclass:: osu.UserScoreAggregate
    :members:
    
-UserScoreType
-^^^^^^^^^^^^^
+
 .. autoclass:: osu.UserScoreType
    :members:
    
-WikiSearchMode
-^^^^^^^^^^^^^^
+
 .. autoclass:: osu.WikiSearchMode
    :members:

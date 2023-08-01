@@ -12,8 +12,7 @@ def event_loop():
 
 @fixture(scope="session")
 def client():
-    yield Client.from_client_credentials(
-        client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
+    yield Client.from_client_credentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
 
 
 @fixture(scope="session")

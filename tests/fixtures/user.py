@@ -12,20 +12,22 @@ def sample_user():
 
 @fixture
 def sample_users():
-    yield list([
-        dict(
-            id=6943941,
-            username="nouvelle",
-            has_supported=True,
-        ),
-        dict(
-            id=2,
-            username="peppy",
-            has_supported=True,
-        ),
-        dict(
-            id=14895608,
-            username="Sheppsu",
-            has_supported=True,
-        ),
-    ])
+    yield list(
+        [
+            dict(
+                id=6943941,
+                username="nouvelle",
+                has_supported=True,
+            ),
+            dict(
+                id=2,
+                username="peppy",
+                has_supported=True,
+            ),
+            dict(
+                id=14895608,
+                username="Sheppsu",
+                has_supported=True,
+            ),
+        ]
+    )

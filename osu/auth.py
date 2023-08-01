@@ -36,10 +36,17 @@ class AuthHandler:
         Scope object helps the program identify what requests you can
         and can't make with your scope. Default is 'public' (Scope.default())
     """
+
     SAVE_VERSION = 1
 
-    def __init__(self, client_id: int, client_secret: str, redirect_url: str, scope: Optional[Scope] = Scope.default()):
-        if scope == 'lazer':
+    def __init__(
+        self,
+        client_id: int,
+        client_secret: str,
+        redirect_url: str,
+        scope: Optional[Scope] = Scope.default(),
+    ):
+        if scope == "lazer":
             raise ScopeException("The lazer scope signifies that an endpoint only meant for use by the lazer client.")
         self.client_id = client_id
         self.client_secret = client_secret
@@ -51,7 +58,7 @@ class AuthHandler:
         self.expire_time = perf_counter()
         self._refresh_callback = None
 
-    def get_auth_url(self, state: Optional[str] = ''):
+    def get_auth_url(self, state: Optional[str] = ""):
         """
         Returns a url that a user can authorize their account at. They'll then be returned to
         the redirect_uri with a code that can be used under get_auth_token.
@@ -62,15 +69,15 @@ class AuthHandler:
             Will be returned to the redirect_uri along with the code.
         """
         params = {
-            'client_id': self.client_id,
-            'redirect_uri': self.redirect_url,
-            'response_type': 'code',
-            'scope': self.scope.scopes,
-            'state': state,
+            "client_id": self.client_id,
+            "redirect_uri": self.redirect_url,
+            "response_type": "code",
+            "scope": self.scope.scopes,
+            "state": state,
         }
-        if not params['state']:
-            del params['state']
-        return auth_url + "?" + "&".join([f'{key}={value}' for key, value in params.items()])
+        if not params["state"]:
+            del params["state"]
+        return auth_url + "?" + "&".join([f"{key}={value}" for key, value in params.items()])
 
     def get_auth_token(self, code: Optional[str] = None):
         """
@@ -93,29 +100,33 @@ class AuthHandler:
             code from user authorizing at a specific url
         """
         data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
         }
 
         if code is None:
-            data.update({
-                'grant_type': 'client_credentials',
-                'scope': 'public' if 'delegate' not in self.scope else self.scope.scopes,
-            })
+            data.update(
+                {
+                    "grant_type": "client_credentials",
+                    "scope": "public" if "delegate" not in self.scope else self.scope.scopes,
+                }
+            )
         else:
-            data.update({
-                'code': code,
-                'grant_type': 'authorization_code',
-                'redirect_uri': self.redirect_url,
-            })
+            data.update(
+                {
+                    "code": code,
+                    "grant_type": "authorization_code",
+                    "redirect_uri": self.redirect_url,
+                }
+            )
 
         response = requests.post(token_url, data=data)
         response.raise_for_status()
         response = response.json()
-        if 'refresh_token' in response:
-            self.refresh_token = response['refresh_token']
-        self._token = response['access_token']
-        self.expire_time = perf_counter() + response['expires_in']
+        if "refresh_token" in response:
+            self.refresh_token = response["refresh_token"]
+        self._token = response["access_token"]
+        self.expire_time = perf_counter() + response["expires_in"]
 
     def refresh_access_token(self, refresh_token: Optional[str] = None):
         """
@@ -133,26 +144,30 @@ class AuthHandler:
         if perf_counter() < self.expire_time:
             return
         data = {
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
         }
         if self.refresh_token:
-            data.update({
-                'grant_type': 'refresh_token',
-                'refresh_token': self.refresh_token,
-            })
+            data.update(
+                {
+                    "grant_type": "refresh_token",
+                    "refresh_token": self.refresh_token,
+                }
+            )
         else:
-            data.update({
-                'grant_type': 'client_credentials',
-                'scope': 'public',
-            })
+            data.update(
+                {
+                    "grant_type": "client_credentials",
+                    "scope": "public",
+                }
+            )
         response = requests.post(token_url, data=data)
         response.raise_for_status()
         response = response.json()
-        if 'refresh_token' in response:
-            self.refresh_token = response['refresh_token']
-        self._token = response['access_token']
-        self.expire_time = perf_counter() + response['expires_in']
+        if "refresh_token" in response:
+            self.refresh_token = response["refresh_token"]
+        self._token = response["access_token"]
+        self.expire_time = perf_counter() + response["expires_in"]
         if self._refresh_callback:
             self._refresh_callback(self)
 
@@ -161,15 +176,15 @@ class AuthHandler:
         """
         Returns the access token. If the token is expired, it will be refreshed before being returned.
         """
-        if self.expire_time-5 <= perf_counter():
+        if self.expire_time - 5 <= perf_counter():
             self.refresh_access_token()
         return self._token
 
     @property
     def has_user(self):
-        return 'delegate' in self.scope or self.refresh_token is not None
+        return "delegate" in self.scope or self.refresh_token is not None
 
-    def set_refresh_callback(self, callback: Callable[['AuthHandler'], None]):
+    def set_refresh_callback(self, callback: Callable[["AuthHandler"], None]):
         """
         Set a callback to be called everytime the access token is refreshed.
 
@@ -203,12 +218,12 @@ class AuthHandler:
         }
         """
         return {
-            'save_version': self.SAVE_VERSION,
-            'client_id': self.client_id,
-            'client_secret': self.client_secret,
-            'redirect_url': self.redirect_url,
-            'scope': self.scope.scopes,
-            'refresh_token': self.refresh_token,
+            "save_version": self.SAVE_VERSION,
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "redirect_url": self.redirect_url,
+            "scope": self.scope.scopes,
+            "refresh_token": self.refresh_token,
         }
 
     @classmethod
@@ -216,17 +231,19 @@ class AuthHandler:
         """
         Create a new :class:`AuthHandler` object from save data.
         """
-        save_version = save_data['save_version']
+        save_version = save_data["save_version"]
         if save_version != cls.SAVE_VERSION:
-            raise ValueError(f"The version of this save data ({save_version}) is not compatible "
-                             f"with the save data version of this AuthHandler object ({cls.SAVE_VERSION}).")
+            raise ValueError(
+                f"The version of this save data ({save_version}) is not compatible "
+                f"with the save data version of this AuthHandler object ({cls.SAVE_VERSION})."
+            )
 
-        client_id = save_data['client_id']
-        client_secret = save_data['client_secret']
-        redirect_url = save_data['redirect_url']
-        scope = Scope(*save_data['scope'].split())
+        client_id = save_data["client_id"]
+        client_secret = save_data["client_secret"]
+        redirect_url = save_data["redirect_url"]
+        scope = Scope(*save_data["scope"].split())
         auth = cls(client_id, client_secret, redirect_url, scope)
-        auth.refresh_access_token(save_data['refresh_token'])
+        auth.refresh_access_token(save_data["refresh_token"])
         return auth
 
 
@@ -280,7 +297,7 @@ class LazerAuthHandler:
 
     @property
     def token(self):
-        if self.expire_time-5 <= perf_counter():
+        if self.expire_time - 5 <= perf_counter():
             self.refresh_access_token()
         return self._token
 

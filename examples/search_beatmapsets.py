@@ -1,5 +1,12 @@
-from osu import Client, BeatmapsetSearchFilter as Filter, BeatmapsetSearchStatus as Status, \
-    BeatmapsetSearchGeneral as General, BeatmapsetSearchExtra as Extra
+from osu import (
+    Client,
+    BeatmapsetSearchFilter as Filter,
+    BeatmapsetSearchStatus as Status,
+    BeatmapsetSearchGeneral as General,
+    BeatmapsetSearchExtra as Extra,
+    BeatmapsetLanguage as Language,
+    BeatmapsetGenre as Genre
+)
 import os
 
 
@@ -17,18 +24,24 @@ recently_qualified = client.search_beatmapsets(
 )
 japanese_ranked = client.search_beatmapsets(
     Filter()
-    .set_language('Japanese')
+    .set_language(Language.JAPANESE)
     .set_status(Status.RANKED)
 )
 russian_rock_loved = client.search_beatmapsets(
     Filter()
-    .set_genre('Rock')
-    .set_language('Japanese')
+    .set_language(Language.ENGLISH)
+    .set_genre(Genre.METAL)
     .set_status(Status.LOVED)
 )
 english_featured_artists_has_video_and_storyboard_including_converts = client.search_beatmapsets(
     Filter()
-    .set_language('English')
+    .set_language(Language.ENGLISH)
     .set_generals([General.FEATURED_ARTISTS, General.CONVERTS])
     .set_extra([Extra.VIDEO, Extra.STORYBOARD])
+    .set_status(Status.ANY)
 )
+
+print(f"Default: {default_search_result}\n")
+print(f"Japanese ranked: {japanese_ranked}\n")
+print(f"Russian rock loved: {russian_rock_loved}\n")
+print(f"English featured artists has video and storyboard including converts: {english_featured_artists_has_video_and_storyboard_including_converts}")

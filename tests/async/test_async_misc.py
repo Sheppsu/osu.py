@@ -10,9 +10,15 @@ class TestAsynchronousMisc:
 
     @pytest.mark.asyncio
     async def test_search(self, async_client):
+        result = await async_client.search(query="Hardrock")
+        assert result.wiki_page is not None
+        assert result.user is not None
+        result = await async_client.search(WikiSearchMode.USER, "BTMC")
+        assert result.user is not None
+        assert result.wiki_page is None
         result = await async_client.search(WikiSearchMode.WIKI, "Hardrock")
-        assert result["wiki_page"]
-        assert result['wiki_page'].results
+        assert result.wiki_page is not None
+        assert result.user is None
 
     @pytest.mark.asyncio
     async def test_get_news_listing(self, async_client):
@@ -64,6 +70,15 @@ class TestAsynchronousMisc:
         assert len(matches["matches"]) == 5
 
     @pytest.mark.asyncio
+    async def test_get_match(self, async_client, sample_match):
+        match = await async_client.get_match(sample_match["id"])
+        assert match
+        assert match.id == sample_match["id"]
+        assert match.name == sample_match["name"]
+        assert match.start_time == sample_match["start_time"]
+        assert match.end_time == sample_match["end_time"]
+
+    @pytest.mark.asyncio
     async def test_get_seasonal_backgrounds(self, async_client):
         backgrounds = await async_client.get_seasonal_backgrounds()
         assert backgrounds
@@ -80,4 +95,12 @@ class TestAsynchronousMisc:
 
     @pytest.mark.asyncio
     async def test_check_download_quota(self, lazer_async_client):
-        await lazer_async_client.check_download_quota()
+        assert await lazer_async_client.check_download_quota() is not None
+
+    @pytest.mark.asyncio
+    async def test_get_topic_and_posts(self, async_client, sample_topic):
+        ret = await async_client.get_topic_and_posts(1699086)
+        assert ret.topic
+        assert ret.topic.id == sample_topic["id"]
+        assert ret.topic.title == sample_topic["title"]
+        assert ret.posts

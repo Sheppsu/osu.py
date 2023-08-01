@@ -4,7 +4,7 @@ import random
 client = get_user_client()
 
 rooms = client.get_rooms()
-print(rooms, len(rooms))
 room = random.choice(rooms)
+print(f"Picked {room} at random among {len(rooms)} rooms.")
 scores = client.get_scores(room.id, room.playlist[0].id)
-print(scores)
+print(f"Scores: {scores}")

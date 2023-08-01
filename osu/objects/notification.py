@@ -1,7 +1,18 @@
 from dateutil import parser
+from typing import Optional, TYPE_CHECKING, Union
 
-from ..util import prettify
-from ..enums import NotificationCategory, ObjectType, NotificationType, ChatChannelType, GameModeStr
+from ..util import prettify, get_optional
+from ..enums import (
+    NotificationCategory,
+    ObjectType,
+    NotificationType,
+    ChatChannelType,
+    GameModeStr,
+)
+
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class Notification:
@@ -22,13 +33,13 @@ class Notification:
 
     object_id: :class:`int`
 
-    source_user_id: :class:`int`
+    source_user_id: Optional[:class:`int`]
 
     is_read: :class:`bool`
 
-    details: Optional[Union[
+    details: Union[
     :class:`BeatmapOwnerChangeDetails`, :class:`BeatmapsetDiscussionLockDetails`,
-    :class:`BeatmapsetDiscussionPostDetails`, :class:`BeatmapsetDiscussionQualifiedProblemDetails`,
+    :class:`BeatmapsetDiscussionPostNewDetails`, :class:`BeatmapsetDiscussionQualifiedProblemDetails`,
     :class:`BeatmapsetDiscussionReviewNewDetails`, :class:`BeatmapsetDiscussionUnlockDetails`,
     :class:`BeatmapsetDisqualifyDetails`, :class:`BeatmapsetLoveDetails`,
     :class:`BeatmapsetNominateDetails`, :class:`BeatmapsetQualifyDetails`,
@@ -37,11 +48,8 @@ class Notification:
     :class:`ChannelMessageDetails`, :class:`CommentNewDetails`,
     :class:`ForumTopicReplyDetails`, :class:`UserAchievementUnlockDetails`,
     :class:`UserBeatmapsetNewDetails`, :class:`UserBeatmapsetReviveDetails`
-    ]]
+    ]
         Details of the notification.
-
-    source_user_id: Optional[int]
-
 
     **Documented event names and their attribute meanings**
 
@@ -100,24 +108,30 @@ class Notification:
         object_type: forum_topic
         source_user_id: User who posted message
     """
+
     __slots__ = (
-        "id", "name", "created_at", "object_type", "object_id", "is_read",
-        "source_user_id", "details"
+        "id",
+        "name",
+        "created_at",
+        "object_type",
+        "object_id",
+        "is_read",
+        "source_user_id",
+        "details",
     )
 
     def __init__(self, data):
-        self.id = data['id']
-        self.name = NotificationType(data['name'])
-        self.created_at = parser.parse(data['created_at'])
-        self.object_type = ObjectType(data['object_type'])
-        self.object_id = data['object_id']
-        self.is_read = data['is_read']
-        self.details = Details(data['details'], self.name)
-
-        self.source_user_id = data.get('source_user_id', None)
+        self.id: int = data["id"]
+        self.name: NotificationType = NotificationType(data["name"])
+        self.created_at: datetime = parser.parse(data["created_at"])
+        self.object_type: ObjectType = ObjectType(data["object_type"])
+        self.object_id: int = data["object_id"]
+        self.source_user_id: Optional[int] = data.get("source_user_id")
+        self.is_read: bool = data["is_read"]
+        self.details: _DETAILS_TYPE = _get_details_object(data["details"], self.name)
 
     def __repr__(self):
-        return prettify(self, 'name', 'details')
+        return prettify(self, "name", "details")
 
 
 class ReadNotification:
@@ -126,24 +140,25 @@ class ReadNotification:
 
     **Attributes**
 
-    category: :class:`str`
+    category: :class:`NotificationCategory`
 
     id: :class:`int`
 
     object_id: :class:`int`
 
-    object_type: :class:`str`
+    object_type: :class:`ObjectType`
     """
+
     __slots__ = ("category", "id", "object_id", "object_type")
 
     def __init__(self, data):
-        self.category = NotificationCategory(data["category"])
-        self.id = data["id"]
-        self.object_id = data["object_id"]
-        self.object_type = ObjectType(data["object_type"])
+        self.category: NotificationCategory = NotificationCategory(data["category"])
+        self.id: int = data["id"]
+        self.object_id: int = data["object_id"]
+        self.object_type: ObjectType = ObjectType(data["object_type"])
 
     def __repr__(self):
-        return prettify(self, 'id')
+        return prettify(self, "id")
 
 
 class NotificationsDetailsBase:
@@ -154,10 +169,11 @@ class NotificationsDetailsBase:
 
     username: :class:`str`
     """
+
     __slots__ = ("username",)
 
     def __init__(self, data):
-        self.username = data["username"]
+        self.username: str = data["username"]
 
     def __repr__(self):
         # all the subclasses have a title attribute
@@ -182,15 +198,16 @@ class BeatmapOwnerChangeDetails(NotificationsDetailsBase):
 
     version: :class:`str`
     """
+
     __slots__ = ("beatmap_id", "cover_url", "title", "title_unicode", "version")
 
     def __init__(self, data):
         super().__init__(data)
-        self.beatmap_id = data["beatmap_id"]
-        self.cover_url = data["cover_url"]
-        self.title = data["title"]
-        self.title_unicode = data["title_unicode"]
-        self.version = data["version"]
+        self.beatmap_id: int = data["beatmap_id"]
+        self.cover_url: str = data["cover_url"]
+        self.title: str = data["title"]
+        self.title_unicode: str = data["title_unicode"]
+        self.version: str = data["version"]
 
 
 class BeatmapsetNotificationDetails(NotificationsDetailsBase):
@@ -207,13 +224,14 @@ class BeatmapsetNotificationDetails(NotificationsDetailsBase):
 
     cover_url: :class:`str`
     """
+
     __slots__ = ("title", "title_unicode", "cover_url")
 
     def __init__(self, data):
         super().__init__(data)
-        self.title = data["title"]
-        self.title_unicode = data["title_unicode"]
-        self.cover_url = data["cover_url"]
+        self.title: str = data["title"]
+        self.title_unicode: str = data["title_unicode"]
+        self.cover_url: str = data["cover_url"]
 
 
 class BeatmapsetDiscussionPostNotificationDetails(NotificationsDetailsBase):
@@ -238,20 +256,45 @@ class BeatmapsetDiscussionPostNotificationDetails(NotificationsDetailsBase):
 
     cover_url: :class:`str`
     """
+
     __slots__ = (
-        "content", "title", "title_unicode", "post_id", "discussion_id",
-        "beatmap_id", "cover_url"
+        "content",
+        "title",
+        "title_unicode",
+        "post_id",
+        "discussion_id",
+        "beatmap_id",
+        "cover_url",
     )
 
     def __init__(self, data):
         super().__init__(data)
-        self.content = data["content"]
-        self.title = data["title"]
-        self.title_unicode = data["title_unicode"]
-        self.post_id = data["post_id"]
-        self.discussion_id = data["discussion_id"]
-        self.beatmap_id = data["beatmap_id"]
-        self.cover_url = data["cover_url"]
+        self.content: str = data["content"]
+        self.title: str = data["title"]
+        self.title_unicode: str = data["title_unicode"]
+        self.post_id: int = data["post_id"]
+        self.discussion_id: int = data["discussion_id"]
+        self.beatmap_id: int = data["beatmap_id"]
+        self.cover_url: str = data["cover_url"]
+
+
+class ReviewStats:
+    """
+    **Attributes**
+
+    praises: :class:`int`
+
+    suggestions: :class:`int`
+
+    problems: :class:`int`
+    """
+
+    __slots__ = ("praises", "suggestions", "problems")
+
+    def __init__(self, data):
+        self.praises = data["praises"]
+        self.suggestions = data["suggestions"]
+        self.problems = data["problems"]
 
 
 class BeatmapsetDiscussionReviewNewDetails(NotificationsDetailsBase):
@@ -274,23 +317,28 @@ class BeatmapsetDiscussionReviewNewDetails(NotificationsDetailsBase):
 
     cover_url: :class:`str`
 
-    embeds: :class:`dict`
-        contains keys 'suggestions', 'problems', and 'praises'
+    embeds: :class:`ReviewStats`
     """
+
     __slots__ = (
-        "title", "title_unicode", "post_id", "discussion_id",
-        "beatmap_id", "cover_url", "embeds"
+        "title",
+        "title_unicode",
+        "post_id",
+        "discussion_id",
+        "beatmap_id",
+        "cover_url",
+        "embeds",
     )
 
     def __init__(self, data):
         super().__init__(data)
-        self.title = data["title"]
-        self.title_unicode = data["title_unicode"]
-        self.post_id = data["post_id"]
-        self.discussion_id = data["discussion_id"]
-        self.beatmap_id = data["beatmap_id"]
-        self.cover_url = data["cover_url"]
-        self.embeds = data["embeds"]
+        self.title: str = data["title"]
+        self.title_unicode: str = data["title_unicode"]
+        self.post_id: int = data["post_id"]
+        self.discussion_id: int = data["discussion_id"]
+        self.beatmap_id: int = data["beatmap_id"]
+        self.cover_url: str = data["cover_url"]
+        self.embeds: ReviewStats = ReviewStats(data["embeds"])
 
 
 class ChannelAnnouncementDetails(NotificationsDetailsBase):
@@ -311,15 +359,16 @@ class ChannelAnnouncementDetails(NotificationsDetailsBase):
 
     cover_url: :class:`str`
     """
+
     __slots__ = ("channel_id", "name", "title", "type", "cover_url")
 
     def __init__(self, data):
         super().__init__(data)
-        self.channel_id = data["channel_id"]
-        self.name = data["name"]
-        self.title = data["title"]
-        self.type = ChatChannelType(data["type"].upper())
-        self.cover_url = data["cover_url"]
+        self.channel_id: int = data["channel_id"]
+        self.name: str = data["name"]
+        self.title: str = data["title"]
+        self.type: ChatChannelType = ChatChannelType(data["type"].upper())
+        self.cover_url: str = data["cover_url"]
 
 
 class ChannelMessageDetails(NotificationsDetailsBase):
@@ -336,13 +385,14 @@ class ChannelMessageDetails(NotificationsDetailsBase):
 
     cover_url: :class:`str`
     """
+
     __slots__ = ("title", "type", "cover_url")
 
     def __init__(self, data):
         super().__init__(data)
-        self.title = data["title"]
-        self.type = ChatChannelType(data["type"].upper())
-        self.cover_url = data["cover_url"]
+        self.title: str = data["title"]
+        self.type: ChatChannelType = ChatChannelType(data["type"].upper())
+        self.cover_url: str = data["cover_url"]
 
 
 class CommentNewDetails(NotificationsDetailsBase):
@@ -361,14 +411,15 @@ class CommentNewDetails(NotificationsDetailsBase):
 
     cover_url: :class:`str`
     """
+
     __slots__ = ("comment_id", "title", "content", "cover_url")
 
     def __init__(self, data):
         super().__init__(data)
-        self.comment_id = data["comment_id"]
-        self.title = data["title"]
-        self.content = data["content"]
-        self.cover_url = data["cover_url"]
+        self.comment_id: int = data["comment_id"]
+        self.title: str = data["title"]
+        self.content: str = data["content"]
+        self.cover_url: str = data["cover_url"]
 
 
 class ForumTopicReplyDetails(NotificationsDetailsBase):
@@ -385,13 +436,14 @@ class ForumTopicReplyDetails(NotificationsDetailsBase):
 
     cover_url: :class:`str`
     """
+
     __slots__ = ("title", "post_id", "cover_url")
 
     def __init__(self, data):
         super().__init__(data)
-        self.title = data["title"]
-        self.post_id = data["post_id"]
-        self.cover_url = data["cover_url"]
+        self.title: str = data["title"]
+        self.post_id: int = data["post_id"]
+        self.cover_url: str = data["cover_url"]
 
 
 class UserAchievementUnlockDetails(NotificationsDetailsBase):
@@ -414,20 +466,24 @@ class UserAchievementUnlockDetails(NotificationsDetailsBase):
 
     user_id: :class:`int`
     """
+
     __slots__ = (
-        "achievement_id", "achievement_mode", "cover_url",
-        "slug", "title", "user_id"
+        "achievement_id",
+        "achievement_mode",
+        "cover_url",
+        "slug",
+        "title",
+        "user_id",
     )
 
     def __init__(self, data):
         super().__init__(data)
-        self.achievement_id = data["achievement_id"]
-        self.achievement_mode = GameModeStr(data["achievement_mode"]) \
-            if data["achievement_mode"] is not None else None
-        self.cover_url = data["cover_url"]
-        self.slug = data["slug"]
-        self.title = data["title"]
-        self.user_id = data["user_id"]
+        self.achievement_id: int = data["achievement_id"]
+        self.achievement_mode: Optional[GameModeStr] = get_optional(data, "achievement_mode", GameModeStr)
+        self.cover_url: str = data["cover_url"]
+        self.slug: str = data["slug"]
+        self.title: str = data["title"]
+        self.user_id: int = data["user_id"]
 
 
 class UserBeatmapsetNewDetails(NotificationsDetailsBase):
@@ -446,15 +502,15 @@ class UserBeatmapsetNewDetails(NotificationsDetailsBase):
 
     cover_url: :class:`str`
     """
+
     __slots__ = ("beatmapset_id", "title", "title_unicode", "cover_url")
 
     def __init__(self, data):
         super().__init__(data)
-        self.beatmapset_id = data["beatmapset_id"]
-        self.title = data["title"]
-        self.title_unicode = data["title_unicode"]
-        self.cover_url = data["cover_url"]
-        self.username = data.get("username")
+        self.beatmapset_id: int = data["beatmapset_id"]
+        self.title: str = data["title"]
+        self.title_unicode: str = data["title_unicode"]
+        self.cover_url: str = data["cover_url"]
 
 
 class BeatmapsetDiscussionLockDetails(BeatmapsetNotificationDetails):
@@ -553,29 +609,51 @@ class UserBeatmapsetReviveDetails(UserBeatmapsetNewDetails):
     """
 
 
-class Details:
-    DETAIL_MAP = {
-        NotificationType.BEATMAP_OWNER_CHANGE: BeatmapOwnerChangeDetails,
-        NotificationType.BEATMAPSET_DISCUSSION_LOCK: BeatmapsetDiscussionLockDetails,
-        NotificationType.BEATMAPSET_DISCUSSION_POST_NEW: BeatmapsetDiscussionPostNewDetails,
-        NotificationType.BEATMAPSET_DISCUSSION_QUALIFIED_PROBLEM: BeatmapsetDiscussionQualifiedProblemDetails,
-        NotificationType.BEATMAPSET_DISCUSSION_REVIEW_NEW: BeatmapsetDiscussionReviewNewDetails,
-        NotificationType.BEATMAPSET_DISCUSSION_UNLOCK: BeatmapsetDiscussionUnlockDetails,
-        NotificationType.BEATMAPSET_DISQUALIFY: BeatmapsetDisqualifyDetails,
-        NotificationType.BEATMAPSET_LOVE: BeatmapsetLoveDetails,
-        NotificationType.BEATMAPSET_NOMINATE: BeatmapsetNominateDetails,
-        NotificationType.BEATMAPSET_QUALIFY: BeatmapsetQualifyDetails,
-        NotificationType.BEATMAPSET_RANK: BeatmapsetRankDetails,
-        NotificationType.BEATMAPSET_REMOVE_FROM_LOVED: BeatmapsetRemoveFromLovedDetails,
-        NotificationType.BEATMAPSET_RESET_NOMINATIONS: BeatmapsetResetNominationsDetails,
-        NotificationType.CHANNEL_ANNOUNCEMENT: ChannelAnnouncementDetails,
-        NotificationType.CHANNEL_MESSAGE: ChannelMessageDetails,
-        NotificationType.COMMENT_NEW: CommentNewDetails,
-        NotificationType.FORUM_TOPIC_REPLY: ForumTopicReplyDetails,
-        NotificationType.USER_ACHIEVEMENT_UNLOCK: UserAchievementUnlockDetails,
-        NotificationType.USER_BEATMAPSET_NEW: UserBeatmapsetNewDetails,
-        NotificationType.USER_BEATMAPSET_REVIVE: UserBeatmapsetReviveDetails,
-    }
+_DETAILS_TYPE = Union[
+    BeatmapOwnerChangeDetails,
+    BeatmapsetDiscussionLockDetails,
+    BeatmapsetDiscussionPostNewDetails,
+    BeatmapsetDiscussionQualifiedProblemDetails,
+    BeatmapsetDiscussionReviewNewDetails,
+    BeatmapsetDiscussionUnlockDetails,
+    BeatmapsetDisqualifyDetails,
+    BeatmapsetLoveDetails,
+    BeatmapsetNominateDetails,
+    BeatmapsetQualifyDetails,
+    BeatmapsetRankDetails,
+    BeatmapsetRemoveFromLovedDetails,
+    BeatmapsetResetNominationsDetails,
+    ChannelAnnouncementDetails,
+    ChannelMessageDetails,
+    CommentNewDetails,
+    ForumTopicReplyDetails,
+    UserAchievementUnlockDetails,
+    UserBeatmapsetNewDetails,
+    UserBeatmapsetReviveDetails,
+]
+_DETAIL_MAP = {
+    NotificationType.BEATMAP_OWNER_CHANGE: BeatmapOwnerChangeDetails,
+    NotificationType.BEATMAPSET_DISCUSSION_LOCK: BeatmapsetDiscussionLockDetails,
+    NotificationType.BEATMAPSET_DISCUSSION_POST_NEW: BeatmapsetDiscussionPostNewDetails,
+    NotificationType.BEATMAPSET_DISCUSSION_QUALIFIED_PROBLEM: BeatmapsetDiscussionQualifiedProblemDetails,
+    NotificationType.BEATMAPSET_DISCUSSION_REVIEW_NEW: BeatmapsetDiscussionReviewNewDetails,
+    NotificationType.BEATMAPSET_DISCUSSION_UNLOCK: BeatmapsetDiscussionUnlockDetails,
+    NotificationType.BEATMAPSET_DISQUALIFY: BeatmapsetDisqualifyDetails,
+    NotificationType.BEATMAPSET_LOVE: BeatmapsetLoveDetails,
+    NotificationType.BEATMAPSET_NOMINATE: BeatmapsetNominateDetails,
+    NotificationType.BEATMAPSET_QUALIFY: BeatmapsetQualifyDetails,
+    NotificationType.BEATMAPSET_RANK: BeatmapsetRankDetails,
+    NotificationType.BEATMAPSET_REMOVE_FROM_LOVED: BeatmapsetRemoveFromLovedDetails,
+    NotificationType.BEATMAPSET_RESET_NOMINATIONS: BeatmapsetResetNominationsDetails,
+    NotificationType.CHANNEL_ANNOUNCEMENT: ChannelAnnouncementDetails,
+    NotificationType.CHANNEL_MESSAGE: ChannelMessageDetails,
+    NotificationType.COMMENT_NEW: CommentNewDetails,
+    NotificationType.FORUM_TOPIC_REPLY: ForumTopicReplyDetails,
+    NotificationType.USER_ACHIEVEMENT_UNLOCK: UserAchievementUnlockDetails,
+    NotificationType.USER_BEATMAPSET_NEW: UserBeatmapsetNewDetails,
+    NotificationType.USER_BEATMAPSET_REVIVE: UserBeatmapsetReviveDetails,
+}
 
-    def __new__(cls, data, detail_type):
-        return cls.DETAIL_MAP[detail_type](data)
+
+def _get_details_object(data, detail_type) -> _DETAILS_TYPE:
+    return _DETAIL_MAP[detail_type](data)

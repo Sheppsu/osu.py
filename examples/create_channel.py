@@ -3,10 +3,12 @@ from osu import ChatChannelType
 
 
 client = get_lazer_client()
-channel = client.create_channel(ChatChannelType.PM, 3)
+channel = client.create_channel(ChatChannelType.PM, 2070907)
 print(channel)
 print(channel.recent_messages)
 
 # this won't work unless you have access to do announcements
-channel = client.create_channel(ChatChannelType.ANNOUNCE, message="hi",
-                                channel={"name": "haihai", "description": "hello"})
+channel = client.create_channel(ChatChannelType.ANNOUNCE,
+                                channel={"name": "test", "description": "testing create channel endpoint"},
+                                message=":3",
+                                target_ids=[2070907])

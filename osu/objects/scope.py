@@ -17,30 +17,33 @@ class Scope:
     chat.write
         Allows sending chat messages on a user's behalf.
     """
+
+    __slots__ = ("scopes", "scopes_list")
     valid_scopes = [
-        'chat.write',
-        'delegate',
-        'forum.write',
-        'friends.read',
-        'identify',
-        'public',
+        "chat.write",
+        "delegate",
+        "forum.write",
+        "friends.read",
+        "identify",
+        "public",
     ]
 
     def __init__(self, *scopes):
         for scope in scopes:
             if scope not in self.valid_scopes and scope != "*":
-                raise NameError(f"{scope} is not a valid scope. The valid scopes consist of "
-                                f"{','.join(self.valid_scopes)}")
-        self.scopes = ' '.join(scopes)
+                raise NameError(
+                    f"{scope} is not a valid scope. The valid scopes consist of " f"{','.join(self.valid_scopes)}"
+                )
+        self.scopes = " ".join(scopes)
         self.scopes_list = list(scopes)
 
     @classmethod
     def default(cls):
-        return cls('public')
+        return cls("public")
 
     @classmethod
     def identify(cls):
-        return cls('public', 'identify')
+        return cls("public", "identify")
 
     def __iter__(self):
         return iter(self.scopes_list)

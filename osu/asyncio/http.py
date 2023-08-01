@@ -12,15 +12,19 @@ class AsynchronousHTTPHandler:
         self.rate_limit = RateLimitHandler(request_wait_time, limit_per_minute)
         self.use_lazer = use_lazer
 
-    def get_headers(self, requires_auth=True, is_files=False, **kwargs):
+    def get_headers(self, path, is_files=False, **kwargs):
         headers = {
-            'charset': 'utf-8',
-            **{str(key): str(value) for key, value in kwargs.items() if value is not None}
+            "charset": "utf-8",
+            "x-api-version": "20220705",
+            "Accept": path.accept,
         }
-        if not is_files and "Content-Type" not in headers:
-            headers["Content-Type"] = "application/json"
-        if requires_auth and "Authorization" not in headers:
-            headers['Authorization'] = f"Bearer {self.client.auth.token}"
+        if not is_files:  # otherwise let requests library handle it
+            headers["Content-Type"] = path.content_type
+        if path.requires_auth and "Authorization" not in headers:
+            headers["Authorization"] = f"Bearer {self.client.auth.token}"
+        for key, value in kwargs.items():
+            if value is not None:
+                headers[str(key)] = str(value)
         return headers
 
     async def make_request(self, path, data=None, headers=None, is_download=False, files=None, **kwargs):
@@ -36,10 +40,12 @@ class AsynchronousHTTPHandler:
             raise ScopeException(f"You don't have the {path.scope} scope, which is required to make this request.")
 
         if path.requires_user and not self.client.auth.has_user:
-            raise ScopeException("This request requires a user. You need either a delegate scope or "
-                                 "to register OAuth with Authorization Code Grant.")
+            raise ScopeException(
+                "This request requires a user. You need either a delegate scope or "
+                "to register OAuth with Authorization Code Grant."
+            )
 
-        headers = self.get_headers(path.requires_auth, files is not None, **headers)
+        headers = self.get_headers(path, files is not None, **headers)
         params = {str(key): value for key, value in kwargs.items() if value is not None}
         if files is not None:
             data = dict(map(lambda item: (item[0], item[1][1]), files.items()))
@@ -49,17 +55,21 @@ class AsynchronousHTTPHandler:
                 await self.rate_limit.wait()
 
             self.rate_limit.request_used()
-            async with session.request(path.method,
-                                       (lazer_base_url if self.use_lazer else base_url) + path.path,
-                                       headers=headers, data=data, params=params) as resp:
+            async with session.request(
+                path.method,
+                (lazer_base_url if self.use_lazer else base_url) + path.path,
+                headers=headers,
+                data=data,
+                params=params,
+            ) as resp:
                 try:
                     resp.raise_for_status()
                 except Exception as e:
                     try:
-                        err = (await resp.json())['error']
+                        err = (await resp.json())["error"]
                     except:
                         err = None
-                    raise type(e)(str(e) + ": " + err) if err is not None else e
+                    raise type(e)(str(e) + ": " + err) if err is not None else e from None
                 if resp.content_length == 0:
                     return
                 return await resp.json() if not is_download else await resp.content.read()
@@ -70,24 +80,24 @@ class RateLimitHandler:
         self.wait_limit = request_wait_limit
         self.limit = limit_per_minute
         self.requests = []
-        self.waiting = False
+        self._wait = asyncio.Event()
+        self._wait.set()
 
     def request_used(self):
         self.requests.append(time.perf_counter())
         self.reset()
 
     async def wait(self):
-        while self.waiting:
-            await asyncio.sleep(0.1)
-        self.waiting = True
+        await self._wait.wait()
+        self._wait.clear()
         if self.can_request:  # Check again due to asynchronous running
-            self.waiting = False
+            self._wait.set()
             return
-        next_available_request = self.wait_limit-(time.perf_counter()-self.last_request)
+        next_available_request = self.wait_limit - (time.perf_counter() - self.last_request)
         if len(self.requests) >= self.limit:
-            next_available_request = max(next_available_request, self.requests[0]+60-time.perf_counter())
+            next_available_request = max(next_available_request, self.requests[0] + 60 - time.perf_counter())
         await asyncio.sleep(next_available_request)
-        self.waiting = False
+        self._wait.set()
 
     def reset(self):
         while len(self.requests) > 0:
@@ -99,7 +109,7 @@ class RateLimitHandler:
     @property
     def can_request(self):
         self.reset()
-        return time.perf_counter()-self.last_request >= self.wait_limit and len(self.requests) < self.limit
+        return time.perf_counter() - self.last_request >= self.wait_limit and len(self.requests) < self.limit
 
     @property
     def last_request(self):

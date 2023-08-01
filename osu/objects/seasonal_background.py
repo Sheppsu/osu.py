@@ -1,7 +1,12 @@
-from .user import UserCompact
 from dateutil import parser
+from typing import TYPE_CHECKING, List
 
+from .user import UserCompact
 from ..util import prettify
+
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class SeasonalBackgrounds:
@@ -13,17 +18,18 @@ class SeasonalBackgrounds:
     ends_at: :class:`datetime.datetime`
         The date when the seasonal backgrounds will end.
 
-    backgrounds: Sequence[:class:`SeasonalBackground`]
+    backgrounds: List[:class:`SeasonalBackground`]
         A list of all the seasonal backgrounds.
     """
-    __slots__ = ('ends_at', 'backgrounds')
+
+    __slots__ = ("ends_at", "backgrounds")
 
     def __init__(self, data):
-        self.ends_at = parser.parse(data['ends_at'])
-        self.backgrounds = list(map(SeasonalBackground, data['backgrounds']))
+        self.ends_at: datetime = parser.parse(data["ends_at"])
+        self.backgrounds: List[SeasonalBackground] = list(map(SeasonalBackground, data["backgrounds"]))
 
     def __repr__(self):
-        return prettify(self, 'ends_at', 'backgrounds')
+        return prettify(self, "ends_at", "backgrounds")
 
 
 class SeasonalBackground:
@@ -38,11 +44,12 @@ class SeasonalBackground:
     user: :class:`UserCompact`
         The artist of the background.
     """
-    __slots__ = ('url', 'user')
+
+    __slots__ = ("url", "user")
 
     def __init__(self, data):
-        self.url = data['url']
-        self.user = UserCompact(data['user'])
+        self.url: str = data["url"]
+        self.user: UserCompact = UserCompact(data["user"])
 
     def __repr__(self):
-        return prettify(self, 'url', 'user')
+        return prettify(self, "url", "user")

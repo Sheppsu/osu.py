@@ -1,6 +1,6 @@
 import pytest
 
-from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType
+from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType, SoloScore
 
 
 class TestAsynchronousUser:
@@ -16,7 +16,7 @@ class TestAsynchronousUser:
     @pytest.mark.asyncio
     async def test_get_users(self, async_client, sample_users):
         sample_users = sorted(sample_users, key=lambda u: u["id"])
-        users = await async_client.get_users([user['id'] for user in sample_users])
+        users = await async_client.get_users([user["id"] for user in sample_users])
         for user, sample_user in zip(users, sample_users):
             assert user
             assert user.id == sample_user["id"]
@@ -33,8 +33,7 @@ class TestAsynchronousUser:
 
     @pytest.mark.asyncio
     async def test_get_user_recent_activity(self, async_client):
-        activity = await async_client.get_user_recent_activity(user=2)
-        assert activity
+        activity = await async_client.get_user_recent_activity(user=7562902)
         for a in activity:
             assert isinstance(a, Event)
             assert getattr(a, "user", None) or getattr(a, "beatmapset", None)
@@ -44,7 +43,7 @@ class TestAsynchronousUser:
         scores = await async_client.get_user_scores(user=sample_user["id"], type="best")
         assert scores
         for score in scores:
-            assert isinstance(score, LegacyScore)
+            assert isinstance(score, LegacyScore) or isinstance(score, SoloScore)
             assert score.user_id == sample_user["id"]
             assert score.accuracy
 

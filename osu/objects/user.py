@@ -1,8 +1,16 @@
-from .group import UserGroup
-from ..util import Util, prettify
-from ..enums import GameModeStr
 from dateutil import parser
+from typing import TYPE_CHECKING, List, Optional, NamedTuple
 import math
+from collections import namedtuple
+
+from .group import UserGroup
+from .forum import TextFormat
+from ..util import prettify, get_optional, get_optional_list
+from ..enums import GameModeStr, UserAccountHistoryType, UserRelationType
+
+
+if TYPE_CHECKING:
+    from datetime import datetime, date
 
 
 class UserCompact:
@@ -37,171 +45,269 @@ class UserCompact:
     is_supporter: :class:`bool`
         does this user have supporter?
 
-    last_visit: :class:`datetime.datetime`
+    last_visit: Optional[:class:`datetime.datetime`]
         null if the user hides online presence
 
     pm_friends_only: :class:`bool`
         whether or not the user allows PM from other than friends
 
-    profile_colour: :class:`str`
+    profile_colour: Optional[:class:`str`]
         colour of username/profile highlight, hex code (e.g. #333333)
 
     username: :class:`str`
         user's display name
 
-    **Possible Attributes**
+    account_history: Optional[List[:class:`UserAccountHistory`]]
 
-    account_history: Sequence[:class:`UserAccountHistory`]
+    active_tournament_banner: Optional[:class:`ProfileBanner`]
 
-    active_tournament_banner: :class:`ProfileBanner`
+    badges: Optional[List[:class:`UserBadge`]]
 
-    badges: Sequence[:class:`UserBadge`]
+    beatmap_playcounts_count: Optional[:class:`int`]
 
-    beatmap_playcounts_count: :class:`int`
+    blocks: Optional[List[:class:`UserRelations`]]
 
-    blocks
+    comments_count: Optional[:class:`int`]
 
-    country
+    country: Optional[:class:`Country`]
 
-    cover
+    cover: Optional[:class:`UserCover`]
 
-    favourite_beatmapset_count: :class:`int`
+    favourite_beatmapset_count: Optional[:class:`int`]
 
-    follower_count: :class:`int`
+    follow_user_mapping: Optional[List[:class:`int`]]
 
-    mapping_follower_count: :class:`int`
+    follower_count: Optional[:class:`int`]
 
-    friends
+    friends: Optional[List[UserRelations]]
 
-    graveyard_beatmapset_count: :class:`int`
+    graveyard_beatmapset_count: Optional[:class:`int`]
 
-    groups: Sequencep[:class:`UserGroup`]
+    groups: Optional[List[:class:`UserGroup`]]
 
-    is_restricted: :class:`bool`
+    guest_beatmapset_count: Optional[:class:`int`]
 
-    loved_beatmapset_count: :class:`int`
+    is_admin: Optional[:class:`bool`]
 
-    monthly_playcounts: Sequence[:class:`UserMonthlyPlaycount`]
+    is_bng: Optional[:class:`bool`]
 
-    page
+    is_gmt: Optional[:class:`bool`]
 
-    previous_usernames
+    is_limited_bn: Optional[:class:`bool`]
 
-    ranked_beatmapset_count
+    is_moderator: Optional[:class:`bool`]
 
-    replays_watched_counts
+    is_nat: Optional[:class:`bool`]
 
-    scores_best_count: :class:`int`
+    is_restricted: Optional[:class:`bool`]
 
-    scores_first_count: :class:`int`
+    is_silenced: Optional[:class:`bool`]
 
-    scores_recent_count: :class:`int`
+    loved_beatmapset_count: Optional[:class:`int`]
 
-    statistics
+    mapping_follower_count: Optional[:class:`int`]
 
-    statistics_rulesets: :class:`UserStatisticsRulesets`
+    monthly_playcounts: Optional[List[:class:`UserMonthlyPlaycount`]]
 
-    support_level
+    nominated_beatmapset_count: Optional[:class:`int`]
 
-    pending_beatmapset_count
+    page: Optional[:class:`TextFormat`]
 
-    unread_pm_count
+    pending_beatmapset_count: Optional[:class:`int`]
 
-    user_achievements
+    previous_usernames: Optional[List[:class:`str`]]
 
-    user_preferences
+    rank_highest: Optional[:class:`RankHighest`]
 
-    rank_history
+    rank_history: Optional[:class:`RankHistory`]
+
+    ranked_beatmapset_count: Optional[:class:`int`]
+
+    replays_watched_counts: Optional[List[:class:`UserReplaysWatchedCount`]]
+
+    scores_best_count: Optional[:class:`int`]
+
+    scores_first_count: Optional[:class:`int`]
+
+    scores_pinned_count: Optional[:class:`int`]
+
+    scores_recent_count: Optional[:class:`int`]
+
+    statistics: Optional[:class:`UserStatistics`]
+
+    statistics_rulesets: Optional[:class:`UserStatisticsRulesets`]
+
+    support_level: Optional[:class:`int`]
+
+    unread_pm_count: Optional[:class:`int`]
+
+    user_achievements: Optional[List[:class:`UserAchievement`]]
+
+    user_preferences: Optional[:class:`UserPreferences`]
     """
+
     __slots__ = (
-        'avatar_url', 'country_code', 'default_group', 'id', 'is_active', 'is_bot', 'is_deleted', 'is_online',
-        'is_supporter', 'last_visit', 'pm_friends_only', 'profile_colour', 'username', 'account_history',
-        'active_tournament_banner', 'badges', 'beatmap_playcounts_count', 'blocks', 'country', 'cover',
-        'favourite_beatmapset_count', 'follower_count', 'mapping_follower_count', 'friends',
-        'graveyard_beatmapset_count', 'groups', 'is_restricted', 'loved_beatmapset_count', 'monthly_playcounts',
-        'page', 'previous_usernames', 'ranked_beatmapset_count', 'replays_watched_counts', 'scores_best_count',
-        'scores_first_count', 'scores_recent_count', 'statistics', 'statistics_rulesets', 'support_level',
-        'pending_beatmapset_count', 'unread_pm_count', 'user_achievements', 'user_preferences', 'rank_history',
-        'ranked_beatmapset_counts'
+        "avatar_url",
+        "country_code",
+        "default_group",
+        "id",
+        "is_active",
+        "is_bot",
+        "is_deleted",
+        "is_online",
+        "is_supporter",
+        "last_visit",
+        "pm_friends_only",
+        "profile_colour",
+        "username",
+        "account_history",
+        "active_tournament_banner",
+        "badges",
+        "beatmap_playcounts_count",
+        "blocks",
+        "comments_count",
+        "country",
+        "cover",
+        "favourite_beatmapset_count",
+        "follow_user_mapping",
+        "follower_count",
+        "friends",
+        "graveyard_beatmapset_count",
+        "groups",
+        "guest_beatmapset_count",
+        "is_admin",
+        "is_bng",
+        "is_full_bn",
+        "is_gmt",
+        "is_limited_bn",
+        "is_moderator",
+        "is_nat",
+        "is_restricted",
+        "is_silenced",
+        "loved_beatmapset_count",
+        "mapping_follower_count",
+        "monthly_playcounts",
+        "nominated_beatmapset_count",
+        "page",
+        "pending_beatmapset_count",
+        "previous_usernames",
+        "rank_highest",
+        "rank_history",
+        "ranked_beatmapset_count",
+        "replays_watched_counts",
+        "scores_best_count",
+        "scores_first_count",
+        "scores_pinned_count",
+        "scores_recent_count",
+        "statistics",
+        "statistics_rulesets",
+        "support_level",
+        "unread_pm_count",
+        "user_achievements",
+        "user_preferences",
     )
 
     def __init__(self, data):
-        self.avatar_url = data['avatar_url']
-        self.country_code = data['country_code']
-        self.default_group = data['default_group']
-        self.id = data['id']
-        self.is_active = data['is_active']
-        self.is_bot = data['is_bot']
-        self.is_deleted = data['is_deleted']
-        self.is_online = data['is_online']
-        self.is_supporter = data['is_supporter']
-        self.last_visit = parser.parse(data['last_visit']) if data['last_visit'] is not None else None
-        self.pm_friends_only = data['pm_friends_only']
-        self.profile_colour = data['profile_colour']
-        self.username = data['username']
+        self.avatar_url: str = data["avatar_url"]
+        self.country_code: str = data["country_code"]
+        self.default_group: str = data["default_group"]
+        self.id: int = data["id"]
+        self.is_active: bool = data["is_active"]
+        self.is_bot: bool = data["is_bot"]
+        self.is_deleted: bool = data["is_deleted"]
+        self.is_online: bool = data["is_online"]
+        self.is_supporter: bool = data["is_supporter"]
+        self.last_visit: Optional[datetime] = get_optional(data, "last_visit", parser.parse)
+        self.pm_friends_only: bool = data["pm_friends_only"]
+        self.profile_colour: Optional[str] = data["profile_colour"]
+        self.username: str = data["username"]
 
         # Optional attributes
-        self.active_tournament_banner = ProfileBanner(data['active_tournament_banner']) \
-            if data.get('active_tournament_banner') is not None else None
-        self.account_history = list(map(UserAccountHistory, data.get('account_history', [])))
-        self.badges = list(map(UserBadge, data.get('badges', [])))
-        self.groups = list(map(UserGroup, data.get('groups', [])))
-        self.monthly_playcounts = list(map(UserMonthlyPlaycount, data.get('monthly_playcounts', []))) \
-            if data.get("monthly_playcounts") is not None else None
-        self.statistics = UserStatistics(data['statistics']) if 'statistics' in data else None
-        self.page = data.get('page')
-        self.pending_beatmapset_count = Util.int(data.get('pending_beatmapset_count'))
-        self.previous_usernames = data.get('previous_usernames')
-        self.rank_history = data.get('rank_history')
-        self.ranked_beatmapset_counts = data.get('ranked_beatmapset_counts')
-        self.replays_watched_counts = data.get('replays_watched_counts')
-        self.scores_best_count = Util.int(data.get('scores_best_count'))
-        self.scores_first_count = Util.int(data.get('scores_first_count'))
-        self.scores_recent_count = Util.int(data.get('scores_recent_count'))
-        self.statistics_rulesets = UserStatisticsRulesets(data['statistics_rulesets']) \
-            if 'statistics_rulesets' in data else None  # TODO
-        self.support_level = data.get('support_level')
-        self.unread_pm_count = Util.int(data.get('unread_pm_count'))
-        self.user_achievements = data.get('user_achievements')
-        self.user_preferences = data.get('user_preferences')
-        self.beatmap_playcounts_count = Util.int(data.get('beatmap_playcounts_count'))
-        self.blocks = data.get('blocks')
-        self.country = data.get('country')
-        self.cover = data.get('cover')
-        self.favourite_beatmapset_count = Util.int(data.get('favourite_beatmapset_count'))
-        self.follower_count = Util.int(data.get('follower_count'))
-        self.mapping_follower_count = Util.int(data.get('mapping_follower_count'))
-        self.friends = data.get('friends')
-        self.graveyard_beatmapset_count = Util.int(data.get('graveyard_beatmapset_count'))
-        self.is_restricted = data.get('is_restricted')
-        self.loved_beatmapset_count = Util.int(data.get('loved_beatmapset_count'))
+        self.account_history: Optional[List[UserAccountHistory]] = get_optional_list(
+            data, "account_history", UserAccountHistory
+        )
+        self.active_tournament_banner: Optional[ProfileBanner] = get_optional(
+            data, "active_tournament_banner", ProfileBanner
+        )
+        self.badges: Optional[List[UserBadge]] = get_optional_list(data, "badges", UserBadge)
+        self.beatmap_playcounts_count: Optional[int] = data.get("beatmap_playcounts_count")
+        self.blocks: Optional[List[UserRelations]] = get_optional_list(data, "blocks", UserRelations)
+        self.comments_count: Optional[int] = data.get("comments_count")
+        self.country: Optional[Country] = get_optional(data, "country", Country)
+        self.cover: Optional[UserCover] = get_optional(data, "cover", UserCover)
+        self.favourite_beatmapset_count: Optional[int] = data.get("favourite_beatmapset_count")
+        self.follow_user_mapping: Optional[List[int]] = data.get("follower_user_mapping")
+        self.follower_count: Optional[int] = data.get("follower_count")
+        self.friends: Optional[List[UserRelations]] = get_optional_list(data, "friends", UserRelations)
+        self.graveyard_beatmapset_count: Optional[int] = data.get("graveyard_beatmapset_count")
+        self.groups: Optional[List[UserGroup]] = get_optional_list(data, "groups", UserGroup)
+        self.guest_beatmapset_count: Optional[int] = data.get("guest_beatmapset_count")
+        self.is_admin: Optional[bool] = data.get("is_admin")
+        self.is_bng: Optional[bool] = data.get("is_bng")
+        self.is_full_bn: Optional[bool] = data.get("is_full_bn")
+        self.is_gmt: Optional[bool] = data.get("is_gmt")
+        self.is_limited_bn: Optional[bool] = data.get("is_limited_bn")
+        self.is_moderator: Optional[bool] = data.get("is_moderator")
+        self.is_nat: Optional[bool] = data.get("is_nat")
+        self.is_restricted: Optional[bool] = data.get("is_restricted")
+        self.is_silenced: Optional[bool] = data.get("is_silenced")
+        self.loved_beatmapset_count: Optional[int] = data.get("loved_beatmapset_count")
+        self.mapping_follower_count: Optional[int] = data.get("mapping_follower_count")
+        self.monthly_playcounts: Optional[List[UserMonthlyPlaycount]] = get_optional_list(
+            data, "monthly_playcounts", UserMonthlyPlaycount
+        )
+        self.nominated_beatmapset_count: Optional[int] = data.get("nominated_beatmapset_count")
+        self.page: Optional[TextFormat] = get_optional(data, "page", TextFormat)
+        self.pending_beatmapset_count: Optional[int] = data.get("pending_beatmapset_count")
+        self.previous_usernames: Optional[List[str]] = data.get("previous_usernames")
+        self.rank_highest: Optional[RankHighest] = get_optional(data, "rank_highest", RankHighest)
+        self.rank_history: Optional[RankHistory] = get_optional(data, "rank_history", RankHistory)
+        self.ranked_beatmapset_count: Optional[int] = data.get("ranked_beatmapset_count")
+        self.replays_watched_counts: Optional[List[UserReplaysWatchedCount]] = get_optional_list(
+            data, "replays_watched_counts", UserReplaysWatchedCount
+        )
+        self.scores_best_count: Optional[int] = data.get("scores_best_count")
+        self.scores_first_count: Optional[int] = data.get("scores_first_count")
+        self.scores_pinned_count: Optional[int] = data.get("scores_pinned_count")
+        self.scores_recent_count: Optional[int] = data.get("scores_recent_count")
+        self.statistics: Optional[UserStatistics] = get_optional(data, "statistics", UserStatistics)
+        self.statistics_rulesets: Optional[UserStatisticsRulesets] = get_optional(
+            data, "statistics_rulesets", UserStatisticsRulesets
+        )
+        self.support_level: Optional[int] = data.get("support_level")
+        self.unread_pm_count: Optional[int] = data.get("unread_pm_count")
+        self.user_achievements: Optional[List[UserAchievement]] = get_optional_list(
+            data, "user_achievements", UserAchievement
+        )
+        self.user_preferences: Optional[UserPreferences] = get_optional(data, "user_preferences", UserPreferences)
 
     def __repr__(self):
-        return prettify(self, 'username', 'id')
+        return prettify(self, "username", "id")
 
 
 class User(UserCompact):
+    # TODO: playstyle enum, profile order enum
     """
-    Represents a User. Extends UserCompact object with additional attributes.
+    Represents a User. Extends :class:`UserCompact` with additional attributes.
+    Includes `country`, `cover`, and `is_restricted` attributes of :class:`UserCompact`.
 
     **Attributes**
 
     cover_url: :class:`str`
-        url of profile cover. Deprecated, use cover['url'] instead.
+        url of profile cover. Deprecated, use cover.url instead.
 
-    discord: :class:`str` or :class:`NoneType`
+    discord: Optional[:class:`str`]
 
     has_supported: :class:`bool`
-        whether or not ever being a supporter in the past
+        Has been a supporter in the past
 
-    interests: :class:`str` or :class:`NoneType`
+    interests: Optional[:class:`str`]
 
     join_date: :class:`datetime.datetime`
 
-    kudosu: :class:`dict`
-        Contains items available: :class:`int` and total: :class:`int`
+    kudosu: :class:`UserKudosu`
 
-    location: :class:`str` or :class:`NoneType`
+    location: Optional[:class:`str`]
 
     max_blocks: :class:`int`
         maximum number of users allowed to be blocked
@@ -209,71 +315,160 @@ class User(UserCompact):
     max_friends: :class:`int`
         maximum number of friends allowed to be added
 
-    occupation: :class:`str` or :class:`NoneType`
+    occupation: Optional[:class:`str`]
 
     playmode: :class:`GameModeStr`
 
-    playstyle: Sequence[:class:`str`]
+    playstyle: List[:class:`str`]
         Device choices of the user.
 
     post_count: :class:`int`
         number of forum posts
 
-    profile_order: Sequence[:class:`str`]
+    profile_order: List[:class:`str`]
         Ordered list of sections in user profile page. Sections consist of:
         me, recent_activity, beatmaps, historical, kudosu, top_ranks, medals
 
-    title: :class:`str` or :class:`NoneType`
+    title: Optional[:class:`str`]
         user-specific title
 
-    title_url: :class:`str` or :class:`NoneType`
+    title_url:  Optional[:class:`str`]
 
-    twitter: :class:`str` or :class:`NoneType`
+    twitter:  Optional[:class:`str`]
 
-    website: :class:`str` or :class:`NoneType`
-
-    country: :class:`dict`
-        Contains items code: :class:`str` and name: :class:`str`
-
-    cover: :class:`dict`
-        Contains items custom_url: :class:`str`, url: :class:`str`, and id: :class:`int`.
-
-    is_restricted: :class:`bool`
-        present only if this is the currently authenticated user
-
-    **Possible Attributes**
-
-    All possible attributes come from :class:`UserCompact`
+    website:  Optional[:class:`str`]
     """
     __slots__ = (
-        'cover_url', 'discord', 'has_supported', 'interests', 'join_date', 'kudosu', 'location', 'max_blocks',
-        'max_friends', 'occupation', 'playmode', 'playstyle', 'post_count', 'profile_order', 'title', 'title_url',
-        'twitter', 'website'
+        "cover_url",
+        "discord",
+        "has_supported",
+        "interests",
+        "join_date",
+        "kudosu",
+        "location",
+        "max_blocks",
+        "max_friends",
+        "occupation",
+        "playmode",
+        "playstyle",
+        "post_count",
+        "profile_order",
+        "title",
+        "title_url",
+        "twitter",
+        "website",
     )
 
     def __init__(self, data):
         super().__init__(data)
-        self.cover_url = data['cover']
-        self.discord = data['discord']
-        self.has_supported = data['has_supported']
-        self.interests = data['interests']
-        self.join_date = parser.parse(data['join_date'])
-        self.kudosu = data['kudosu']
-        self.location = data['location']
-        self.max_blocks = data['max_blocks']
-        self.max_friends = data['max_friends']
-        self.occupation = data['occupation']
-        self.playmode = GameModeStr(data['playmode'])
-        self.playstyle = data['playstyle']
-        self.post_count = data['post_count']
-        self.profile_order = data['profile_order']
-        self.title = data['title']
-        self.title_url = data['title_url']
-        self.twitter = data['twitter']
-        self.website = data['website']
+        self.cover_url: str = data.get("cover_url")
+        self.discord: Optional[str] = data["discord"]
+        self.has_supported: bool = data["has_supported"]
+        self.interests: Optional[str] = data["interests"]
+        self.join_date: datetime = parser.parse(data["join_date"])
+        self.kudosu: UserKudosu = UserKudosu(data["kudosu"])
+        self.location: Optional[str] = data["location"]
+        self.max_blocks: int = data["max_blocks"]
+        self.max_friends: int = data["max_friends"]
+        self.occupation: Optional[str] = data["occupation"]
+        self.playmode: GameModeStr = GameModeStr(data["playmode"])
+        self.playstyle: List[str] = data["playstyle"]
+        self.post_count: int = data["post_count"]
+        self.profile_order: List[str] = data["profile_order"]
+        self.title: Optional[str] = data["title"]
+        self.title_url: Optional[str] = data["title_url"]
+        self.twitter: Optional[str] = data["twitter"]
+        self.website: Optional[str] = data["website"]
 
-    def __str__(self):
-        return super().__repr__()
+
+class UserPreferences:
+    # TODO: enum for beatmapset_card_size, beatmapset_download, user_list_filter, user_list_sort, user_list_view
+    """
+    The settings preferences of a user
+
+    audio_autoplay: :class:`bool`
+
+    audio_muted: :class:`bool`
+
+    audio_volume: :class:`float`
+
+    beatmapset_card_size: :class:`str`
+        normal or extra
+
+    beatmapset_download: :class:`str`
+        all, no_video, or direct
+
+    beatmapset_show_nsfw: :class:`bool`
+
+    beatmapset_title_show_original: :class:`bool`
+
+    comments_show_deleted: :class:`bool`
+
+    forum_posts_show_deleted: :class:`bool`
+
+    profile_cover_expanded: :class:`bool`
+
+    user_list_filter: :class:`str`
+        all, online, or offline
+
+    user_list_sort: :class:`str`
+        last_visit, rank, or username
+
+    user_list_view: :class:`str`
+        brick, card, or list
+    """
+    __slots__ = (
+        "audio_autoplay",
+        "audio_muted",
+        "audio_volume",
+        "beatmapset_card_size",
+        "beatmapset_download",
+        "beatmapset_show_nsfw",
+        "beatmapset_title_show_original",
+        "comments_show_deleted",
+        "forum_posts_show_deleted",
+        "profile_cover_expanded",
+        "user_list_filter",
+        "user_list_sort",
+        "user_list_view",
+    )
+
+    def __init__(self, data):
+        self.audio_autoplay: bool = data["audio_autoplay"]
+        self.audio_muted: bool = data["audio_muted"]
+        self.audio_volume: float = data["audio_volume"]
+        self.beatmapset_card_size: str = data["beatmapset_card_size"]
+        self.beatmapset_download: str = data["beatmapset_download"]
+        self.beatmapset_show_nsfw: bool = data["beatmapset_show_nsfw"]
+        self.beatmapset_title_show_original: bool = data["beatmapset_title_show_original"]
+        self.comments_show_deleted: bool = data["comments_show_deleted"]
+        self.forum_posts_show_deleted: bool = data["forum_posts_show_deleted"]
+        self.profile_cover_expanded: bool = data["profile_cover_expanded"]
+        self.user_list_filter: str = data["user_list_filter"]
+        self.user_list_sort: str = data["user_list_sort"]
+        self.user_list_view: str = data["user_list_view"]
+
+
+class UserRelations:
+    """
+    Info about relationship to a user
+
+    **Attributes**
+
+    target_id: :class:`int`
+        zebra id
+
+    relation_type: :class:`UserRelationType`
+
+    mutual: :class:`bool`
+    """
+
+    __slots__ = ("target_id", "relation_type", "mutual")
+
+    def __init__(self, data):
+        self.target_id: int = data["target_id"]
+        self.relation_type: UserRelationType = UserRelationType(data["relation_type"])
+        self.mutual: bool = data["mutual"]
 
 
 class ProfileBanner:
@@ -284,23 +479,21 @@ class ProfileBanner:
 
     tournament_id: :class:`int`
 
-    image: :class:`str`
+    image: Optional[:class:`str`]
 
-    image2x: :class:`str`
+    image2x: Optional[:class:`str`]
     """
-    __slots__ = (
-        "id", "tournament_id", "image", "image2x"
-    )
+
+    __slots__ = ("id", "tournament_id", "image", "image2x")
 
     def __init__(self, data):
-        print(data)
-        self.id = data['id']
-        self.tournament_id = data['tournament_id']
-        self.image = data['image']
-        self.image2x = data['image@2x']
+        self.id: int = data["id"]
+        self.tournament_id: int = data["tournament_id"]
+        self.image: Optional[str] = data["image"]
+        self.image2x: Optional[str] = data["image@2x"]
 
     def __repr__(self):
-        return prettify(self, 'tournament_id')
+        return prettify(self, "tournament_id")
 
 
 class UserSilence:
@@ -313,44 +506,61 @@ class UserSilence:
     user_id: :class:`int`
         id of the User that was silenced
     """
-    __slots__ = (
-        "id", "user_id"
-    )
+
+    __slots__ = ("id", "user_id")
 
     def __init__(self, data):
-        self.id = data['id']
-        self.user_id = data['user_id']
+        self.id: int = data["id"]
+        self.user_id: int = data["user_id"]
 
     def __repr__(self):
-        return prettify(self, 'user_id')
+        return prettify(self, "user_id")
 
 
 class UserAccountHistory:
     """
     **Attributes**
 
+    actor: Optional[:class:`UserCompact`]
+
+    description: :class:`str`
+
     id: :class:`int`
 
-    type: :class:`str`
-        Can be one of the following: note, restriction, or silence.
+    length: :class:`int`
+
+    permanent: :class:`bool`
+
+    supporting_url: Optional[:class:`str`]
 
     timestamp: :class:`datetime.datetime`
 
-    length: :class:`int`
-        In seconds.
+    type: :class:`UserAccountHistoryType`
     """
+
     __slots__ = (
-        "id", "type", "timestamp", "length"
+        "actor",
+        "description",
+        "id",
+        "length",
+        "permanent",
+        "supporting_url",
+        "timestamp",
+        "type",
     )
 
     def __init__(self, data):
-        self.id = data['id']
-        self.type = data['type']
-        self.timestamp = parser.parse(data['timestamp'])
-        self.length = data['length']
+        self.actor: Optional[UserCompact] = get_optional(data, "actor", UserCompact)
+        self.description: str = data["description"]
+        self.id: int = data["id"]
+        self.length: int = data["length"]
+        self.permanent: bool = data["permanent"]
+        self.supporting_url: Optional[str] = data["supporting_url"]
+        self.timestamp: datetime = parser.parse(data["timestamp"])
+        self.type: UserAccountHistoryType = UserAccountHistoryType(data["type"])
 
     def __repr__(self):
-        return prettify(self, 'type', 'length')
+        return prettify(self, "type", "length")
 
 
 class UserBadge:
@@ -365,40 +575,38 @@ class UserBadge:
 
     url: :class:`str`
     """
-    __slots__ = (
-        "awarded_at", "description", "image_url", "url"
-    )
+
+    __slots__ = ("awarded_at", "description", "image_url", "url")
 
     def __init__(self, data):
-        self.awarded_at = parser.parse(data['awarded_at'])
-        self.description = data['description']
-        self.image_url = data['image_url']
-        self.url = data['url']
+        self.awarded_at: datetime = parser.parse(data["awarded_at"])
+        self.description: str = data["description"]
+        self.image_url: str = data["image_url"]
+        self.url: str = data["url"]
 
     def __repr__(self):
-        return prettify(self, 'awarded_at')
+        return prettify(self, "awarded_at")
 
 
 class UserMonthlyPlaycount:
     """
     **Attributes**
 
-    start_date: :class:`str`
+    start_date: :class:`datetime.date`
         year-month-day format
 
     count: class:`int`
         playcount
     """
-    __slots__ = (
-        "start_date", "count"
-    )
+
+    __slots__ = ("start_date", "count")
 
     def __init__(self, data):
-        self.start_date = data['start_date']
-        self.count = data['count']
+        self.start_date: date = parser.parse(data["start_date"]).date()
+        self.count: int = data["count"]
 
     def __repr__(self):
-        return prettify(self, 'start_date', 'count')
+        return prettify(self, "start_date", "count")
 
 
 class UserStatistics:
@@ -415,8 +623,17 @@ class UserStatistics:
 
     count_miss: :class:`int`
 
-    grade_counts: :class:`dict`
-        Below are the keys, their type, and meaning.
+    country_rank: Optional[:class:`int`]
+        Current country rank according to pp.
+
+     global_rank: Optional[:class:`int`]
+        Current global rank according to pp.
+
+    global_rank_exp: Optional[:class:`int`]
+        Current global rank according to experimental pp.
+
+    grade_counts: :class:`NamedTuple`
+        Below are the attributes and their meanings.
 
         a: :class:`int`
             Number of A ranked scores.
@@ -433,14 +650,14 @@ class UserStatistics:
         ssh: :class:`int`
             Number of Silver SS ranked scores.
 
-    hit_accuracy: :class:`int`
+    hit_accuracy: :class:`float`
         Hit accuracy percentage
 
     is_ranked: :class:`bool`
-        Is actively ranked
+        Does the player have a rank
 
-    level: :class:`dict`
-        Contains keys 'current' (current level) and 'progress' (progress to next level).
+    level: :class:`NamedTuple`
+        Has attributes 'current' (current level) and 'progress' (progress to next level).
 
     maximum_combo: :class:`int`
         Highest maximum combo.
@@ -459,15 +676,10 @@ class UserStatistics:
 
     recommended_difficulty: :class:`float`
         Recommended difficulty for a player. This value is not received from the api, but locally calculated.
+        The formula is pp^0.4 * 0.195
 
-    global_rank: Union[:class:`int`, :class:`None`]
-        Current global rank according to pp.
-
-    global_rank_exp: Union[:class:`int`, :class:`None`]
-        Current global rank according to experimental pp.
-
-    country_rank: Union[:class:`int`, :class:`None`]
-        Current country rank according to pp.
+    recommended_difficulty_exp: :class:`float`
+        Recommended difficulty based on the pp_exp value.
 
     ranked_score: :class:`int`
         Current ranked score.
@@ -481,46 +693,95 @@ class UserStatistics:
     total_score: :class:`int`
         Total score.
 
-    user: Union[:class:`UserCompact`, :class:`None`]
+    user: Optional[:class:`UserCompact`]
         The associated user.
+
+    variants: Optional[List[:class:`UserStatisticVariant`]]
     """
+
     __slots__ = (
-        "grade_counts", "level", "hit_accuracy", "is_ranked", "maximum_combo",
-        "play_count", "play_time", "pp", "global_rank", "ranked_score",
-        "replays_watched_by_others", "total_hits", "total_score", "user",
-        "country_rank", "global_rank_exp", "pp_exp", "count_100", "count_300",
-        "count_50", "count_miss"
+        "grade_counts",
+        "level",
+        "hit_accuracy",
+        "is_ranked",
+        "maximum_combo",
+        "play_count",
+        "play_time",
+        "pp",
+        "global_rank",
+        "ranked_score",
+        "replays_watched_by_others",
+        "total_hits",
+        "total_score",
+        "user",
+        "country_rank",
+        "global_rank_exp",
+        "pp_exp",
+        "count_100",
+        "count_300",
+        "count_50",
+        "count_miss",
+        "recommended_difficulty",
+        "recommended_difficulty_exp",
+        "variants",
     )
 
     def __init__(self, data):
-        self.count_100 = data['count_100']
-        self.count_300 = data['count_300']
-        self.count_50 = data['count_50']
-        self.count_miss = data['count_miss']
-        self.grade_counts = data['grade_counts']
-        self.level = data['level']
-        self.hit_accuracy = data['hit_accuracy']
-        self.is_ranked = data['is_ranked']
-        self.maximum_combo = data['maximum_combo']
-        self.play_count = data['play_count']
-        self.play_time = data['play_time']
-        self.pp = data['pp']
-        self.pp_exp = data.get('pp_exp')
-        self.global_rank = data['global_rank']
-        self.global_rank_exp = data.get('global_rank_exp')
-        self.country_rank = data.get('country_rank')
-        self.ranked_score = data['ranked_score']
-        self.replays_watched_by_others = data['replays_watched_by_others']
-        self.total_hits = data['total_hits']
-        self.total_score = data['total_score']
-        self.user = UserCompact(data['user']) if data.get("user") is not None else None
-
-    @property
-    def recommended_difficulty(self):
-        return math.pow(self.pp, 0.4) * 0.195
+        self.count_100: int = data["count_100"]
+        self.count_300: int = data["count_300"]
+        self.count_50: int = data["count_50"]
+        self.count_miss: int = data["count_miss"]
+        self.country_rank: Optional[int] = data.get("country_rank")
+        self.global_rank: Optional[int] = data["global_rank"]
+        self.global_rank_exp: Optional[int] = data.get("global_rank_exp")
+        self.grade_counts: NamedTuple = namedtuple("GradeCounts", ("ssh", "ss", "sh", "s", "a"))(**data["grade_counts"])
+        self.level: NamedTuple = namedtuple("Level", ("current", "progress"))(**data["level"])
+        self.hit_accuracy: float = data["hit_accuracy"]
+        self.is_ranked: bool = data["is_ranked"]
+        self.maximum_combo: int = data["maximum_combo"]
+        self.play_count: int = data["play_count"]
+        self.play_time: int = data["play_time"]
+        self.pp: int = data["pp"]
+        self.pp_exp: int = data.get("pp_exp")
+        self.recommended_difficulty: float = math.pow(self.pp, 0.4) * 0.195
+        self.recommended_difficulty_exp: float = math.pow(self.pp_exp, 0.4) * 0.195 if self.pp_exp is not None else None
+        self.ranked_score: int = data["ranked_score"]
+        self.replays_watched_by_others: int = data["replays_watched_by_others"]
+        self.total_hits: int = data["total_hits"]
+        self.total_score: int = data["total_score"]
+        self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
+        self.variants: Optional[List[UserStatisticVariant]] = get_optional_list(data, "variants", UserStatisticVariant)
 
     def __repr__(self):
-        return prettify(self, 'pp', 'global_rank', 'user')
+        return prettify(self, "pp", "global_rank", "user")
+
+
+class UserStatisticVariant:
+    """
+    A variant ranking system.
+
+    **Attributes**
+
+    country_rank: Optional[:class:`int`]
+
+    global_rank: Optional[:class:`int`]
+
+    mode: :class:`GameModeStr`
+
+    pp: :class:`int`
+
+    variant: :class:`str`
+        4k or 7k
+    """
+
+    __slots__ = ("country_rank", "global_rank", "mode", "pp", "variant")
+
+    def __init__(self, data):
+        self.country_rank: Optional[int] = data["country_rank"]
+        self.global_rank: Optional[int] = data["global_rank"]
+        self.mode: GameModeStr = GameModeStr(data["mode"])
+        self.pp: int = data["pp"]
+        self.variant: str = data["variant"]
 
 
 class UserStatisticsRulesets:
@@ -529,80 +790,181 @@ class UserStatisticsRulesets:
 
     **Attributes**
 
-    osu: :class:`UserStatistics`
+    osu: Optional[:class:`UserStatistics`]
         statistics for osu!standard.
 
-    taiko: :class:`UserStatistics`
+    taiko: Optional[:class:`UserStatistics`]
         statistics for osu!taiko.
 
-    fruits: :class:`UserStatistics`
+    fruits: Optional[:class:`UserStatistics`]
         statistics for osu!catch.
 
-    mania: :class:`UserStatistics`
+    mania: Optional[:class:`UserStatistics`]
         statistics for osu!mania.
     """
-    __slots__ = ('osu', 'taiko', 'fruits', 'mania')
+
+    __slots__ = ("osu", "taiko", "fruits", "mania")
 
     def __init__(self, data):
-        self.osu = UserStatistics(data['osu']) if data.get('osu') else None
-        self.taiko = UserStatistics(data['taiko']) if data.get('taiko') else None
-        self.fruits = UserStatistics(data['fruits']) if data.get('fruits') else None
-        self.mania = UserStatistics(data['mania']) if data.get('mania') else None
+        self.osu: Optional[UserStatistics] = get_optional(data, "osu", UserStatistics)
+        self.taiko: Optional[UserStatistics] = get_optional(data, "taiko", UserStatistics)
+        self.fruits: Optional[UserStatistics] = get_optional(data, "fruits", UserStatistics)
+        self.mania: Optional[UserStatistics] = get_optional(data, "mania", UserStatistics)
 
     def __repr__(self):
-        fields = [getattr(self, slot) for slot in self.__slots__ if getattr(self, slot, None)]
+        fields = [slot for slot in self.__slots__ if getattr(self, slot, None) is not None]
         return prettify(self, *fields)
 
 
-class CurrentUserAttributes:
+class RankHighest:
     """
-    An object listing various related permissions and states for the current user,
-    related to the object it is attached to.
+    Highest rank a player achieved at any point in time.
 
-    **BeatmapDiscussionPermissions Attributes**
+    **Attributes**
 
-    can_destroy: :class:`bool`
-        Can delete the discussion.
+    rank: :class:`int`
 
-    can_reopen: :class:`bool`
-        Can reopen the discussion.
-
-    can_moderate_kudosu: :class:`bool`
-        Can allow or deny kudosu.
-
-    can_resolve: :class:`bool`
-        Can resolve the discussion.
-
-    vote_score: :class:`bool`
-        Current vote given to the discussion.
-
-    **ChatChannelUserAttributes Attributes**
-
-    can_message: :class:`bool`
-        Can send messages to this channel.
-
-    can_message_error: :class:`str`
-        Reason messages cannot be sent to this channel
-
-    last_read_id: :class:`int`
-        message_id of last message read.
+    updated_at: :class:`datetime.datetime`
     """
-    def __init__(self, data, attr_type):
-        self.type = attr_type
-        if attr_type == "BeatmapsetDiscussionPermissions":
-            self.can_destroy = data['can_destroy']
-            self.can_reopen = data['can_reopen']
-            self.can_moderate_kudosu = data['can_moderate_kudosu']
-            self.can_resolve = data['can_resolve']
-            self.vote_score = data['vote_score']
-        elif attr_type == "ChatChannelUserAttributes":
-            self.can_message = data['can_message']
-            self.can_message_error = data['can_message_error']
-            self.last_read_id = data['last_read_id']
-        else:
-            print(f"WARNING: Unrecognized attr_type for CurrentUserAttributes: \"{attr_type}\"")
-            for k, v in data.items():
-                setattr(self, k, v)
+
+    __slots__ = ("rank", "updated_at")
+
+    def __init__(self, data):
+        self.rank: int = data["rank"]
+        self.updated_at: datetime = parser.parse(data["updated_at"])
 
     def __repr__(self):
-        return prettify(self, 'type')
+        return prettify(self, "rank", "updated_at")
+
+
+class UserAchievement:
+    """
+    An achievement that a user received
+
+    **Attributes**
+
+    achieved_at: :class:`datetime.datetime`
+
+    achievement_id: :class:`int`
+    """
+
+    __slots__ = ("achieved_at", "achievement_id")
+
+    def __init__(self, data):
+        self.achieved_at: datetime = parser.parse(data["achieved_at"])
+        self.achievement_id: int = data["achievement_id"]
+
+    def __repr__(self):
+        return prettify(self, "achievement_id", "achieved_at")
+
+
+class UserReplaysWatchedCount:
+    """
+    The count of replays watched for a month
+
+    **Attributes**
+
+    start_date: :class:`datetime.datetime`
+
+    count: :class:`int`
+    """
+
+    __slots__ = ("start_date", "count")
+
+    def __init__(self, data):
+        self.start_date: datetime = parser.parse(data["start_date"])
+        self.count: int = data["count"]
+
+    def __repr__(self):
+        return prettify(self, "count", "start_date")
+
+
+class RankHistory:
+    """
+    Rank history data for a user
+
+    **Attributes**
+
+    mode: :class:`GameModeStr`
+
+    data: List[:class:`int`]
+        List of ranks from oldest to newest
+    """
+
+    __slots__ = ("mode", "data")
+
+    def __init__(self, data):
+        self.mode: GameModeStr = GameModeStr(data["mode"])
+        self.data: List[int] = data["data"]
+
+    def __repr__(self):
+        return prettify(self, "mode", "data")
+
+
+class UserCover:
+    """
+    Cover of a user's profile
+
+    **Attributes**
+
+    custom_url: Optional[:class:`str`]
+
+    url: Optional[:class:`str`]
+
+    id: Optional[:class:`int`]
+    """
+
+    __slots__ = ("custom_url", "url", "id")
+
+    def __init__(self, data):
+        self.custom_url: Optional[str] = data["custom_url"]
+        self.url: Optional[str] = data["url"]
+        self.id: Optional[int] = data.get("id")
+
+    def __repr__(self):
+        return prettify(self, "custom_url")
+
+
+class Country:
+    """
+    Country data
+
+    **Attributes**
+
+    code: :class:`str`
+
+    name: :class:`str`
+
+    display: Optional[:class:`int`]
+    """
+
+    __slots__ = ("code", "name", "display")
+
+    def __init__(self, data):
+        self.code: str = data["code"]
+        self.name: str = data["name"]
+        self.display: Optional[int] = data.get("display")
+
+    def __repr__(self):
+        return prettify(self, "code", "name")
+
+
+class UserKudosu:
+    """
+    User kudosu data
+
+    **Attributes**
+
+    total: :class:`int`
+
+    available: :class:`int`
+    """
+
+    __slots__ = ("total", "available")
+
+    def __init__(self, data):
+        self.total: int = data["total"]
+        self.available: int = data["available"]
+
+    def __repr__(self):
+        return prettify(self, "total", "available")

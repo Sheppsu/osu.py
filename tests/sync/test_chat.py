@@ -1,10 +1,15 @@
 class TestChat:
     def test_chat_acknowledge(self, lazer_client):
+        # TODO: test parameters
         lazer_client.chat_acknowledge()
 
     def test_create_new_pm(self, lazer_client):
         # This is kinda ehhhhhhhhh to implement
         pass
+
+    def get_updates(self, lazer_client):
+        ret = lazer_client.get_updates()
+        assert ret
 
     def test_send_message_to_channel(self, lazer_client):
         # This is kinda ehhhhhhhhh to implement
@@ -20,10 +25,10 @@ class TestChat:
         assert real_messages
 
     def test_get_channel(self, lazer_client, sample_channel):
-        channel = lazer_client.get_channel(sample_channel["id"])
-        assert channel
-        assert channel["channel"]
-        assert channel["channel"].channel_id == sample_channel["id"]
+        ret = lazer_client.get_channel(sample_channel["id"])
+        assert ret
+        assert ret.channel
+        assert ret.channel.channel_id == sample_channel["id"]
 
     def test_mark_channel_as_read(self, lazer_client, sample_channel, real_messages):
         lazer_client.mark_channel_as_read(sample_channel["id"], real_messages[-1].message_id)
@@ -41,4 +46,5 @@ class TestChat:
         pass
 
     def test_get_open_chat_channels(self, lazer_client):
-        lazer_client.get_open_chat_channels()
+        channels = lazer_client.get_open_chat_channels()
+        assert channels

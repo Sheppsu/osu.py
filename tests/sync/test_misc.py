@@ -6,17 +6,26 @@ class TestMisc:
         lazer_client.get_updates(0)
 
     def test_search(self, client):
+        result = client.search(query="Hardrock")
+        assert result.wiki_page is not None
+        assert result.user is not None
+        result = client.search(WikiSearchMode.USER, "BTMC")
+        assert result.user is not None
+        assert result.wiki_page is None
         result = client.search(WikiSearchMode.WIKI, "Hardrock")
-        assert result["wiki_page"]
-        assert result['wiki_page'].results
+        assert result.wiki_page is not None
+        assert result.user is None
 
     def test_get_news_listing(self, client):
-        news = client.get_news_listing(limit=5)
+        news = client.get_news_listing(limit=5, year=2022)
         assert news
-        assert len(news["news_posts"]) == 5
+        assert news.news_posts
+        assert len(news.news_posts) == 5
+        for post in news.news_posts:
+            assert post.published_at.year == 2022
 
     def test_get_news_post(self, client, sample_news_post):
-        news = client.get_news_post(sample_news_post["id"], "id")
+        news = client.get_news_post(sample_news_post["id"], key="id")
         assert news
         assert news.id == sample_news_post["id"]
         assert news.slug == sample_news_post["slug"]
@@ -24,13 +33,15 @@ class TestMisc:
         assert news.title == sample_news_post["title"]
 
     def test_get_notifications(self, lazer_client):
-        lazer_client.get_notifications()
+        ret = lazer_client.get_notifications()
+        assert ret
 
     def test_mark_notifications_as_read(self, lazer_client):
         # can't really implement
         pass
 
     def test_get_ranking(self, client):
+        # TODO: test more parameters
         rankings = client.get_ranking(GameModeStr.STANDARD, RankingType.PERFORMANCE)
         assert rankings
         assert rankings.ranking
@@ -49,7 +60,15 @@ class TestMisc:
     def test_get_matches(self, client):
         matches = client.get_matches(limit=5)
         assert matches
-        assert len(matches["matches"]) == 5
+        assert len(matches.matches) == 5
+
+    def test_get_match(self, client, sample_match):
+        match = client.get_match(sample_match["id"])
+        assert match
+        assert match.id == sample_match["id"]
+        assert match.name == sample_match["name"]
+        assert match.start_time == sample_match["start_time"]
+        assert match.end_time == sample_match["end_time"]
 
     def test_get_seasonal_backgrounds(self, client):
         backgrounds = client.get_seasonal_backgrounds()
@@ -64,4 +83,11 @@ class TestMisc:
         pass
 
     def test_check_download_quota(self, lazer_client):
-        lazer_client.check_download_quota()
+        assert lazer_client.check_download_quota() is not None
+
+    def test_get_topic_and_posts(self, client, sample_topic):
+        ret = client.get_topic_and_posts(1699086)
+        assert ret.topic
+        assert ret.topic.id == sample_topic["id"]
+        assert ret.topic.title == sample_topic["title"]
+        assert ret.posts

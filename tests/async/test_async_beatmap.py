@@ -1,7 +1,14 @@
 import pytest
 
-from osu import BeatmapsetEventType, BeatmapsetSearchFilter, GameModeStr, \
-    BeatmapsetSearchStatus, BeatmapsetSearchExtra, RankStatus, GameModeInt
+from osu import (
+    BeatmapsetEventType,
+    BeatmapsetSearchFilter,
+    GameModeStr,
+    BeatmapsetSearchStatus,
+    BeatmapsetSearchExtra,
+    RankStatus,
+    GameModeInt,
+)
 
 
 class TestAsynchronousBeatmap:
@@ -16,7 +23,7 @@ class TestAsynchronousBeatmap:
     async def test_get_beatmap_attributes(self, async_client, sample_beatmap):
         attributes = await async_client.get_beatmap_attributes(sample_beatmap["id"])
         assert attributes.max_combo == sample_beatmap["max_combo"]
-        assert attributes.type == sample_beatmap["type"]
+        assert attributes.type.value == sample_beatmap["type"]
 
     @pytest.mark.asyncio
     async def test_get_beatmaps(self, async_client, sample_beatmaps):
@@ -35,10 +42,12 @@ class TestAsynchronousBeatmap:
 
     @pytest.mark.asyncio
     async def test_search_beatmapsets(self, async_client):
-        filters = BeatmapsetSearchFilter()\
-            .set_mode(GameModeInt.MANIA)\
-            .set_status(BeatmapsetSearchStatus.LOVED)\
+        filters = (
+            BeatmapsetSearchFilter()
+            .set_mode(GameModeInt.MANIA)
+            .set_status(BeatmapsetSearchStatus.LOVED)
             .set_extra([BeatmapsetSearchExtra.VIDEO])
+        )
         results = await async_client.search_beatmapsets(filters)
         beatmapsets = results["beatmapsets"]
         for beatmapset in beatmapsets:
@@ -60,8 +69,8 @@ class TestAsynchronousBeatmap:
         target_post = None
         for post in data["posts"]:
             if (
-                    post.user_id == sample_beatmapset_discussion_post["target_user"] and
-                    post.message == sample_beatmapset_discussion_post["target_message"]
+                post.user_id == sample_beatmapset_discussion_post["target_user"]
+                and post.message == sample_beatmapset_discussion_post["target_message"]
             ):
                 target_post = post
         assert target_post
@@ -76,16 +85,16 @@ class TestAsynchronousBeatmap:
 
     @pytest.mark.asyncio
     async def test_get_beatmapset_discussions(self, async_client, sample_beatmapset_discussion_post):
-        data = await async_client.get_beatmapset_discussions(
+        ret = await async_client.get_beatmapset_discussions(
             beatmapset_id=sample_beatmapset_discussion_post["beatmapset_id"]
         )
-        assert data
-        assert data["discussions"]
+        assert ret
+        assert ret.discussions
         target_post = None
-        for discussion in data["discussions"]:
+        for discussion in ret.discussions:
             if (
-                    discussion.starting_post.user_id == sample_beatmapset_discussion_post["discussion_user"] and
-                    discussion.starting_post.message == sample_beatmapset_discussion_post["discussion_message"]
+                discussion.starting_post.user_id == sample_beatmapset_discussion_post["discussion_user"]
+                and discussion.starting_post.message == sample_beatmapset_discussion_post["discussion_message"]
             ):
                 target_post = discussion.starting_post
         assert target_post
@@ -104,7 +113,10 @@ class TestAsynchronousBeatmap:
             data = await async_client.get_beatmapset_events(type=event_type)
             assert data
             events = data["events"]
-            if event_type != BeatmapsetEventType.DISCUSSION_LOCK and event_type != BeatmapsetEventType.DISCUSSION_UNLOCK:
+            if (
+                event_type != BeatmapsetEventType.DISCUSSION_LOCK
+                and event_type != BeatmapsetEventType.DISCUSSION_UNLOCK
+            ):
                 assert all([event.type == event_type for event in events])
 
     @pytest.mark.asyncio

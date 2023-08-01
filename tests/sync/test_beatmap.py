@@ -1,5 +1,12 @@
-from osu import BeatmapsetEventType, BeatmapsetSearchFilter, GameModeStr, \
-    BeatmapsetSearchStatus, BeatmapsetSearchExtra, RankStatus, GameModeInt
+from osu import (
+    BeatmapsetEventType,
+    BeatmapsetSearchFilter,
+    GameModeStr,
+    BeatmapsetSearchStatus,
+    BeatmapsetSearchExtra,
+    RankStatus,
+    GameModeInt,
+)
 
 
 class TestBeatmap:
@@ -12,7 +19,7 @@ class TestBeatmap:
     def test_get_beatmap_attributes(self, client, sample_beatmap):
         attributes = client.get_beatmap_attributes(sample_beatmap["id"])
         assert attributes.max_combo == sample_beatmap["max_combo"]
-        assert attributes.type == sample_beatmap["type"]
+        assert attributes.type.value == sample_beatmap["type"]
 
     def test_get_beatmaps(self, client, sample_beatmaps):
         beatmaps = client.get_beatmaps([beatmap["id"] for beatmap in sample_beatmaps])
@@ -28,10 +35,12 @@ class TestBeatmap:
         assert beatmapset.creator == sample_beatmapset["mapper"]
 
     def test_search_beatmapsets(self, client):
-        filters = BeatmapsetSearchFilter()\
-            .set_mode(GameModeInt.MANIA)\
-            .set_status(BeatmapsetSearchStatus.LOVED)\
+        filters = (
+            BeatmapsetSearchFilter()
+            .set_mode(GameModeInt.MANIA)
+            .set_status(BeatmapsetSearchStatus.LOVED)
             .set_extra([BeatmapsetSearchExtra.VIDEO])
+        )
         results = client.search_beatmapsets(filters)
         beatmapsets = results["beatmapsets"]
         for beatmapset in beatmapsets:
@@ -40,9 +49,7 @@ class TestBeatmap:
             assert beatmapset.video
 
     def test_get_beatmapset_discussion_posts(self, client, sample_beatmapset_discussion_post):
-        data = client.get_beatmapset_discussion_posts(
-            beatmapset_discussion_id=sample_beatmapset_discussion_post["id"]
-        )
+        data = client.get_beatmapset_discussion_posts(beatmapset_discussion_id=sample_beatmapset_discussion_post["id"])
         assert data
         assert data["posts"]
         assert len(data["beatmapsets"]) == 1
@@ -52,8 +59,8 @@ class TestBeatmap:
         target_post = None
         for post in data["posts"]:
             if (
-                    post.user_id == sample_beatmapset_discussion_post["target_user"] and
-                    post.message == sample_beatmapset_discussion_post["target_message"]
+                post.user_id == sample_beatmapset_discussion_post["target_user"]
+                and post.message == sample_beatmapset_discussion_post["target_message"]
             ):
                 target_post = post
         assert target_post
@@ -66,16 +73,14 @@ class TestBeatmap:
         assert target_vote.score == 1
 
     def test_get_beatmapset_discussions(self, client, sample_beatmapset_discussion_post):
-        data = client.get_beatmapset_discussions(
-            beatmapset_id=sample_beatmapset_discussion_post["beatmapset_id"]
-        )
-        assert data
-        assert data["discussions"]
+        ret = client.get_beatmapset_discussions(beatmapset_id=sample_beatmapset_discussion_post["beatmapset_id"])
+        assert ret
+        assert ret.discussions
         target_post = None
-        for discussion in data["discussions"]:
+        for discussion in ret.discussions:
             if (
-                    discussion.starting_post.user_id == sample_beatmapset_discussion_post["discussion_user"] and
-                    discussion.starting_post.message == sample_beatmapset_discussion_post["discussion_message"]
+                discussion.starting_post.user_id == sample_beatmapset_discussion_post["discussion_user"]
+                and discussion.starting_post.message == sample_beatmapset_discussion_post["discussion_message"]
             ):
                 target_post = discussion.starting_post
         assert target_post
@@ -89,11 +94,14 @@ class TestBeatmap:
 
     def test_get_beatmapset_events(self, client):
         for event_type in BeatmapsetEventType:
-            data = client.get_beatmapset_events(type=event_type)
-            assert data
-            events = data["events"]
-            if event_type != BeatmapsetEventType.DISCUSSION_LOCK and event_type != BeatmapsetEventType.DISCUSSION_UNLOCK:
-                assert all([event.type == event_type for event in events])
+            ret = client.get_beatmapset_events(type=event_type)
+            assert ret
+            assert ret.reviews_config
+            if (
+                event_type != BeatmapsetEventType.DISCUSSION_LOCK
+                and event_type != BeatmapsetEventType.DISCUSSION_UNLOCK
+            ):
+                assert all([event.type == event_type for event in ret.events])
 
     def favourite_beatmapset(self, lazer_client):
         beatmapset_id = 1545382

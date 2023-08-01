@@ -1,9 +1,21 @@
+from dateutil import parser
+from typing import Dict, Optional, List, TYPE_CHECKING, Union
+
+from ..enums import (
+    GameModeInt,
+    PlaylistQueueMode,
+    RealTimeQueueMode,
+    RoomCategory,
+    RoomType,
+)
+from ..util import prettify, get_optional, get_optional_list
 from .user import UserCompact
 from .beatmap import BeatmapCompact
 from .score import ScoreDataStatistics, LazerMod
-from ..enums import RoomCategory, RoomType, RealTimeQueueMode, PlaylistQueueMode, GameModeInt, RealTimeType
-from ..util import prettify
-from dateutil import parser
+
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class MultiplayerScore:
@@ -23,90 +35,100 @@ class MultiplayerScore:
     beatmap_id: :class:`int`
 
     rank: :class:`str`
-        Can be one of the following: charts (Spotlight), country (Country), performance (Performance), score (Score)
 
     total_score: :class:`int`
 
-    accuracy: :class:`int`
+    accuracy: :class:`float`
 
     max_combo: :class:`int`
 
-    mods: Sequence[:class:`LazerMod`]
+    mods: List[:class:`LazerMod`]
 
     statistics: :class:`ScoreDataStatistics`
 
     passed: :class:`bool`
 
-    position: :class:`int` or :class:`NoneType`
+    position: Optional[:class:`int`]
 
-    scores_around: :class:`MultiplayerScoresAround` or :class:`NoneType`
+    scores_around: Optional[:class:`MultiplayerScoresAround`]
         Scores around the specified score.
 
     user: :class:`User`
     """
+
     __slots__ = (
-        "id", "user_id", "room_id", "playlist_item_id", "beatmap_id", "rank",
-        "total_score", "accuracy", "max_combo", "mods", "statistics", "passed",
-        "position", "scores_around", "user"
+        "id",
+        "user_id",
+        "room_id",
+        "playlist_item_id",
+        "beatmap_id",
+        "rank",
+        "total_score",
+        "accuracy",
+        "max_combo",
+        "mods",
+        "statistics",
+        "passed",
+        "position",
+        "scores_around",
+        "user",
     )
 
     def __init__(self, data):
-        self.id = data['id']
-        self.user_id = data['user_id']
-        self.room_id = data['room_id']
-        self.playlist_item_id = data['playlist_item_id']
-        self.beatmap_id = data['beatmap_id']
-        self.rank = data['rank']
-        self.total_score = data['total_score']
-        self.accuracy = data['accuracy']
-        self.max_combo = data['max_combo']
-        self.mods = list(map(LazerMod, data['mods'])) if data["mods"] is not None else []
-        self.statistics = ScoreDataStatistics(data['statistics'])
-        self.passed = data['passed']
-        self.position = data.get('position')
-        self.scores_around = MultiplayerScoresAround(data['scores_around']) \
-            if data.get('scores_around') is not None else None
-        self.user = UserCompact(data['user']) if data.get('user') is not None else None
+        self.id: int = data["id"]
+        self.user_id: int = data["user_id"]
+        self.room_id: int = data["room_id"]
+        self.playlist_item_id: int = data["playlist_item_id"]
+        self.beatmap_id: int = data["beatmap_id"]
+        self.rank: str = data["rank"]
+        self.total_score: int = data["total_score"]
+        self.accuracy: float = data["accuracy"]
+        self.max_combo: int = data["max_combo"]
+        self.mods: Optional[List[LazerMod]] = get_optional_list(data, "mods", LazerMod)
+        self.statistics: ScoreDataStatistics = ScoreDataStatistics(data["statistics"])
+        self.passed: bool = data["passed"]
+        self.position: Optional[int] = data.get("position")
+        self.scores_around: Optional[MultiplayerScoresAround] = get_optional(
+            data, "scores_around", MultiplayerScoresAround
+        )
+        self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
 
     def __repr__(self):
-        return prettify(self, 'user', 'position')
+        return prettify(self, "user", "position")
 
 
 class MultiplayerScores:
     """
     An object which contains scores and related data for fetching next page of the result.
-    To fetch the next page, make request to scores index (Client.get_scores) with relevant
-    room and playlist, use the data in attribute params and cursor to fill in the 3 other optional queries.
 
     **Attributes**
 
-    cursor: :class:`dict`
+    cursor: :class:`str`
         To be used to fetch the next page.
 
     params: :class:`dict`
         To be used to fetch the next page.
 
-    scores: Union[Sequence[:class:`MultiplayerScore`], :class:`None`]
+    scores: List[:class:`MultiplayerScore`]
 
-    total: Union[:class:`int`, :class:`None`]
+    total: Optional[:class:`int`]
         Index only. Total scores of the specified playlist item.
 
-    user_score: Union[:class:`MultiplayerScore`, :class:`None`]
+    user_score: Optional[:class:`MultiplayerScore`]
         Index only. Score of the accessing user if exists.
     """
-    __slots__ = (
-        "cursor", "params", "scores", "total", "user_score"
-    )
+
+    __slots__ = ("cursor", "params", "scores", "total", "user_score")
 
     def __init__(self, data):
-        self.cursor = data['cursor']
-        self.params = data['params']
-        self.scores = list(map(MultiplayerScore, data['scores'])) if data.get('scores') is not None else None
-        self.total = data.get('total')
-        self.user_score = MultiplayerScore(data['user_score']) if data.get('user_score') is not None else None
+        self.cursor: str = data["cursor"]
+        self.params: Dict = data["params"]
+        self.scores: List[MultiplayerScore] = list(map(MultiplayerScore, data["scores"]))
+        self.total: Optional[int] = data.get("total")
+        self.user_score: Optional[MultiplayerScore] = get_optional(data, "user_score", MultiplayerScore)
 
     def __repr__(self):
-        return prettify(self, 'total', 'scores')
+        return prettify(self, "total", "scores")
 
 
 class MultiplayerScoresAround:
@@ -117,16 +139,15 @@ class MultiplayerScoresAround:
 
     lower: :class:`MultiplayerScores`
     """
-    __slots__ = (
-        "higher", "lower"
-    )
+
+    __slots__ = ("higher", "lower")
 
     def __init__(self, data):
-        self.higher = MultiplayerScores(data['higher'])
-        self.lower = MultiplayerScores(data['lower'])
+        self.higher: MultiplayerScores = MultiplayerScores(data["higher"])
+        self.lower: MultiplayerScores = MultiplayerScores(data["lower"])
 
     def __repr__(self):
-        return prettify(self, 'higher', 'lower')
+        return prettify(self, "higher", "lower")
 
 
 class Room:
@@ -151,9 +172,9 @@ class Room:
 
     user_id: :class:`int`
 
-    start_at: Union[:class:`datetime.datetime`, :class:`NoneType`]
+    starts_at: Optional[:class:`datetime.datetime`]
 
-    ends_at: Union[:class:`datetime.datetime`, :class:`NoneType`]
+    ends_at: Optional[:class:`datetime.datetime`]
 
     max_attempts: :class:`int`
 
@@ -166,66 +187,85 @@ class Room:
     has_password: :class:`bool`
 
     queue_mode: Union[:class:`RealTimeQueueMode`, :class:`PlaylistQueueMode`]
-        type depends on the room type. :class:`RealTimeQueueMode` for type :class:`RoomType`.REALTIME and
-        :class:`PlaylistQueueMode` for type :class:`RoomType`.PLAYLIST.
+        Type depends on the room type. :class:`PlaylistQueueMode` for type :class:`RoomType`.PLAYLIST
+        and :class:`RealTimeQueueMode` otherwise.
 
-    current_playlist_item: Union[:class:`PlaylistItem`, :class:`NoneType`]
+    current_playlist_item: Optional[:class:`PlaylistItem`]
 
-    current_user_score: Union[:class:`UserScoreAggregate`, :class:`NoneType`]
+    current_user_score: Optional[:class:`UserScoreAggregate`]
 
-    difficulty_range: Union[Dict[:class:`str`, :class:`int`], :class:`NoneType`]
-        When not none, is a dictionary containing keys "max" and "min."
+    difficulty_range: Optional[Dict[:class:`str`, :class:`int`]]
+        When not none, is a dictionary containing keys "max" and "min"
 
-    host: Union[:class:`UserCompact`, :class:`NoneType`]
+    host: Optional[:class:`UserCompact`]
 
-    playlist: Union[Sequence[:class:`PlaylistItem`], :class:`NoneType`]
+    playlist: Optional[List[:class:`PlaylistItem`]]
 
-    playlist_item_stats: Union[:class:`PlaylistItemStats`, :class:`NoneType`]
+    playlist_item_stats: Optional[:class:`PlaylistItemStats`]
 
-    recent_participants: Union[Sequence[:class:`UserCompact`], :class:`NoneType`]
+    recent_participants: Optional[List[:class:`UserCompact`]]
 
-    scores: Union[:class:`MultiplayerScore`, :class:`NoneType`]
+    scores: Optional[:class:`MultiplayerScore`]
     """
+
     __slots__ = (
-        "id", "name", "category", "type", "user_id", "start_at", "ends_at", "max_attempts",
-        "participant_count", "channel_id", "active", "has_password", "queue_mode",
-        "current_playlist_item", "current_user_score", "difficulty_range", "host",
-        "playlist", "playlist_item_stats", "recent_participants", "scores",
-        "realtime_type"
+        "id",
+        "name",
+        "category",
+        "type",
+        "user_id",
+        "starts_at",
+        "ends_at",
+        "max_attempts",
+        "participant_count",
+        "channel_id",
+        "active",
+        "has_password",
+        "queue_mode",
+        "current_playlist_item",
+        "current_user_score",
+        "difficulty_range",
+        "host",
+        "playlist",
+        "playlist_item_stats",
+        "recent_participants",
+        "scores",
     )
 
     def __init__(self, data):
-        self.id = data['id']
-        self.name = data['name']
-        self.category = RoomCategory(data['category'])
-        self.type = RoomType.PLAYLISTS if data["type"] == "playlists" else RoomType.REALTIME
-        self.realtime_type = RealTimeType(data["type"]) if self.type == RoomType.REALTIME else None
-        self.user_id = data['user_id']
-        self.start_at = parser.parse(data['start_at']) if data.get('start_at') is not None else None
-        self.ends_at = parser.parse(data['ends_at']) if data.get('ends_at') is not None else None
-        self.max_attempts = data['max_attempts']
-        self.participant_count = data['participant_count']
-        self.channel_id = data['channel_id']
-        self.active = data['active']
-        self.has_password = data['has_password']
-        self.queue_mode = (RealTimeQueueMode if self.type == RoomType.REALTIME
-                           else PlaylistQueueMode)(data['queue_mode'])
+        self.id: int = data["id"]
+        self.name: str = data["name"]
+        self.category: RoomCategory = RoomCategory(data["category"])
+        self.type: RoomType = RoomType(data["type"])
+        self.user_id: int = data["user_id"]
+        self.starts_at: datetime = parser.parse(data["starts_at"])
+        self.ends_at: Optional[datetime] = get_optional(data, "ends_at", parser.parse)
+        self.max_attempts: Optional[int] = data["max_attempts"]
+        self.participant_count: int = data["participant_count"]
+        self.channel_id: Optional[int] = data["channel_id"]
+        self.active: bool = data["active"]
+        self.has_password: bool = data["has_password"]
+        self.queue_mode: Union[RealTimeQueueMode, PlaylistQueueMode] = (
+            RealTimeQueueMode if self.type != RoomType.PLAYLISTS else PlaylistQueueMode
+        )(data["queue_mode"])
 
-        self.current_playlist_item = PlaylistItem(data['current_playlist_item']) \
-            if data.get('current_playlist_item') is not None else None
-        self.current_user_score = UserScoreAggregate(data['current_user_score']) \
-            if data.get('current_user_score') is not None else None
-        self.difficulty_range = data.get('difficulty_range')  # {min, max}
-        self.host = UserCompact(data['host']) if data.get('host') is not None else None
-        self.playlist = list(map(PlaylistItem, data['playlist'])) if data.get('playlist') is not None else None
-        self.playlist_item_stats = PlaylistItemStats(data['playlist_item_stats']) \
-            if data.get('playlist_item_stats') is not None else None
-        self.recent_participants = list(map(UserCompact, data['recent_participants'])) \
-            if data.get('recent_participants') is not None else None
-        self.scores = list(map(MultiplayerScore, data['scores'])) if data.get('scores') is not None else None
+        self.current_playlist_item: Optional[PlaylistItem] = get_optional(data, "current_playlist_item", PlaylistItem)
+        self.current_user_score: Optional[UserScoreAggregate] = get_optional(
+            data, "current_user_score", UserScoreAggregate
+        )
+        self.difficulty_range: Optional[Dict[str, int]] = data.get("difficulty_range")  # {min: int, max: int}
+        self.host: Optional[UserCompact] = get_optional(data, "host", UserCompact)
+        self.playlist: Optional[List[PlaylistItem]] = get_optional_list(data, "playlist", PlaylistItem)
+        self.playlist_item_stats: Optional[PlaylistItemStats] = get_optional(
+            data, "playlist_item_stats", PlaylistItemStats
+        )
+        self.recent_participants: Optional[List[UserCompact]] = get_optional_list(
+            data, "recent_participants", UserCompact
+        )
+        self.scores: Optional[List[MultiplayerScore]] = get_optional_list(data, "scores", MultiplayerScore)
 
     def __repr__(self):
-        return prettify(self, 'name', 'type')
+        return prettify(self, "name", "type")
 
 
 class UserScoreAggregate:
@@ -246,33 +286,44 @@ class UserScoreAggregate:
 
     user_id: :class:`int`
 
-    playlist_item_attempts: Union[Dict[:class:`str`, :class:`int`], :class:`NoneType`]
-        contains keys "attempts" and "id."
+    playlist_item_attempts: Optional[Dict[:class:`str`, :class:`int`]]
+        contains keys "attempts" and "id".
 
-    position: Union[:class:`int`, :class:`NoneType`]
+    position: Optional[:class:`int`]
         user rank
 
-    user: Union[:class:`UserCompact`, :class:`NoneType`]
+    user: Optional[:class:`UserCompact`]
     """
+
     __slots__ = (
-        "accuracy", "attempts", "completed", "pp", "room_id", "total_score",
-        "user_id", "playlist_item_attempts", "position", "user"
+        "accuracy",
+        "attempts",
+        "completed",
+        "pp",
+        "room_id",
+        "total_score",
+        "user_id",
+        "playlist_item_attempts",
+        "position",
+        "user",
     )
 
     def __init__(self, data):
-        self.accuracy = data['accuracy']
-        self.attempts = data['attempts']
-        self.completed = data['completed']
-        self.pp = data['pp']
-        self.room_id = data['room_id']
-        self.total_score = data['total_score']
-        self.user_id = data['user_id']
-        self.playlist_item_attempts = data.get('playlist_item_attempts')  # {attempts, id}
-        self.position = data.get('position')
-        self.user = UserCompact(data['user']) if data.get('user') is not None else None
+        self.accuracy: float = data["accuracy"]
+        self.attempts: int = data["attempts"]
+        self.completed: int = data["completed"]
+        self.pp: float = data["pp"]
+        self.room_id: int = data["room_id"]
+        self.total_score: int = data["total_score"]
+        self.user_id: int = data["user_id"]
+        self.playlist_item_attempts: Optional[Dict[str, int]] = data.get(
+            "playlist_item_attempts"
+        )  # {attempts: int, id: int}
+        self.position: Optional[int] = data.get("position")
+        self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
 
     def __repr__(self):
-        attributes = ('total_score', 'user' if self.user is not None else 'user_id')
+        attributes = ("total_score", "user" if self.user is not None else "user_id")
         return prettify(self, *attributes)
 
 
@@ -284,17 +335,18 @@ class PlaylistItemStats:
 
     count_total: :class:`int`
 
-    ruleset_ids: :class:`Sequence[:class:`GameModeInt`]
+    ruleset_ids: List[:class:`GameModeInt`]
     """
+
     __slots__ = ("count_active", "count_total", "ruleset_ids")
 
     def __init__(self, data):
-        self.count_active = data['count_active']
-        self.count_total = data['count_total']
-        self.ruleset_ids = list(map(GameModeInt, data['ruleset_ids']))
+        self.count_active: int = data["count_active"]
+        self.count_total: int = data["count_total"]
+        self.ruleset_ids: List[GameModeInt] = list(map(GameModeInt, data["ruleset_ids"]))
 
     def __repr__(self):
-        return prettify(self, 'count_active', 'count_total')
+        return prettify(self, "count_active", "count_total")
 
 
 class PlaylistItem:
@@ -309,38 +361,48 @@ class PlaylistItem:
 
     ruleset_id: :class:`GameModeInt`
 
-    allowed_mods: Sequence[:class:`LazerMod`]
+    allowed_mods: List[:class:`LazerMod`]
 
-    required_mods: Sequence[:class:`LazerMod`]
+    required_mods: List[:class:`LazerMod`]
 
     expired: :class:`bool`
 
     owner_id: :class:`int`
 
-    playlist_order: Union[:class:`int`, :class:`NoneType`]
+    playlist_order: Optional[:class:`int`]
 
-    played_at: Union[:class:`datetime.datetime`, :class:`NoneType`]
+    played_at: Optional[:class:`datetime.datetime`]
 
-    beatmap: Union[:class:`BeatmapCompact`, :class:`NoneType`]
+    beatmap: Optional[:class:`BeatmapCompact`]
     """
+
     __slots__ = (
-        "id", "room_id", "beatmap_id", "ruleset_id", "allowed_mods", "required_mods",
-        "expired", "owner_id", "playlist_order", "played_at", "beatmap"
+        "id",
+        "room_id",
+        "beatmap_id",
+        "ruleset_id",
+        "allowed_mods",
+        "required_mods",
+        "expired",
+        "owner_id",
+        "playlist_order",
+        "played_at",
+        "beatmap",
     )
 
     def __init__(self, data):
-        self.id = data['id']
-        self.room_id = data['room_id']
-        self.beatmap_id = data['beatmap_id']
-        self.ruleset_id = GameModeInt(data['ruleset_id'])
-        self.allowed_mods = list(map(LazerMod, data['allowed_mods']))
-        self.required_mods = list(map(LazerMod, data['required_mods']))
-        self.expired = data['expired']
-        self.owner_id = data['owner_id']
-        self.playlist_order = data['playlist_order']
-        self.played_at = parser.parse(data['played_at']) if data['played_at'] is not None else None
-        self.beatmap = BeatmapCompact(data['beatmap']) if data.get('beatmap') is not None else None
+        self.id: int = data["id"]
+        self.room_id: int = data["room_id"]
+        self.beatmap_id: int = data["beatmap_id"]
+        self.ruleset_id: int = GameModeInt(data["ruleset_id"])
+        self.allowed_mods: List[LazerMod] = list(map(LazerMod, data["allowed_mods"]))
+        self.required_mods: List[LazerMod] = list(map(LazerMod, data["required_mods"]))
+        self.expired: bool = data["expired"]
+        self.owner_id: int = data["owner_id"]
+        self.playlist_order: Optional[int] = data["playlist_order"]
+        self.played_at: Optional[datetime] = get_optional(data, "played_at", parser.parse)
+        self.beatmap: Optional[BeatmapCompact] = get_optional(data, "beatmap", BeatmapCompact)
 
     def __repr__(self):
-        attributes = ('id', 'beatmap' if self.beatmap is not None else 'beatmap_id')
+        attributes = ("id", "beatmap" if self.beatmap is not None else "beatmap_id")
         return prettify(self, *attributes)

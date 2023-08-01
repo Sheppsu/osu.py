@@ -1,9 +1,9 @@
-from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType
+from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType, SoloScore
 
 
 class TestUser:
     def test_get_user(self, client, sample_user):
-        user = client.get_user(6943941)
+        user = client.get_user(sample_user["id"])
         assert user
         assert user.statistics
         assert user.id == sample_user["id"]
@@ -11,8 +11,8 @@ class TestUser:
         assert user.has_supported == sample_user["has_supported"]
 
     def test_get_users(self, client, sample_users):
-        sample_users = sorted(sample_users, key=lambda u: u["id"])
-        users = client.get_users([user['id'] for user in sample_users])
+        user_ids = [user["id"] for user in sample_users]
+        users = sorted(client.get_users(user_ids), key=lambda u: user_ids.index(u.id))
         for user, sample_user in zip(users, sample_users):
             assert user
             assert user.id == sample_user["id"]
@@ -27,8 +27,7 @@ class TestUser:
             assert kudosu.action
 
     def test_get_user_recent_activity(self, client):
-        activity = client.get_user_recent_activity(user=2)
-        assert activity
+        activity = client.get_user_recent_activity(user=7562902)
         for a in activity:
             assert isinstance(a, Event)
             assert getattr(a, "user", None) or getattr(a, "beatmapset", None)
@@ -37,7 +36,7 @@ class TestUser:
         scores = client.get_user_scores(user=sample_user["id"], type="best")
         assert scores
         for score in scores:
-            assert isinstance(score, LegacyScore)
+            assert isinstance(score, LegacyScore) or isinstance(score, SoloScore)
             assert score.user_id == sample_user["id"]
             assert score.accuracy
 

@@ -1,8 +1,14 @@
-from ..enums import RankStatus, GameModeStr, GameModeInt
-from .user import UserCompact, CurrentUserAttributes
 from dateutil import parser
+from typing import Dict, Optional, List, Union, TYPE_CHECKING
 
-from ..util import prettify
+from ..enums import RankStatus, GameModeStr, GameModeInt
+from ..util import prettify, get_optional, get_optional_list
+from .user import UserCompact
+from .current_user_attributes import BeatmapsetPermissions
+
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class BeatmapsetCompact:
@@ -15,15 +21,22 @@ class BeatmapsetCompact:
 
     artist_unicode: :class:`str`
 
+    background_url: :class:`str`
+        Not given by api but created locally based on beatmapset id.
+
     covers: :class:`Covers`
 
     creator: :class:`str`
 
     favourite_count: :class:`int`
 
+    hype: Optional[:class:`BeatmapsetRequirement`]
+
     id: :class:`int`
 
     nsfw: :class:`bool`
+
+    offset: :class:`int`
 
     play_count: :class:`int`
 
@@ -31,209 +44,229 @@ class BeatmapsetCompact:
 
     source: :class:`str`
 
+    spotlight: :class:`bool`
+
     status: :class:`RankStatus`
 
     title: :class:`str`
 
     title_unicode: :class:`str`
 
+    track_id: Optional[:class:`int`]
+
     user_id: :class:`int`
 
-    video: :class:`str`
+    video: :class:`bool`
 
-    **Possible Attributes**
+    availability: Optional[:class:`BeatmapsetAvailability`]
 
-    (Information about these attributes is lacking on the documentation)
+    beatmaps: Optional[List[:class:`BeatmapCompact`]]
+        Beatmaps contained in the beatmapset
 
-    beatmaps: :class:`list`
-        list containing objects of type :class:`Beatmap`
+    converts: Optional[List[:class:`Beatmap`]]
 
-    converts
+    current_nominations: Optional[List[Union[:class:`LegacyNominations`, :class:`Nominations`]]]
 
-    current_user_attributes: :class:`CurrentUserAttributes`
+    current_user_attributes: Optional[:class:`BeatmapsetDiscussionPermissions`]
 
-    description
+    description: Optional[:class:`str`]
 
-    discussions
+    description_bbcode: Optional[:class:`str`]
 
-    events
+    discussions: Optional[:class:`BeatmapsetDiscussion`]
 
-    genre
+    events: Optional[List[:class:`BeatmapsetEvent`]]
 
-    has_favourited: :class:`bool`
+    genre: Optional[:class:`MetadataAttribute`]
 
-    language
+    has_favourited: Optional[:class:`bool`]
 
-    nominations: :class:`dict`
-        Contains items current: :class:`int` and required: :class:`int`
+    language: Optional[:class:`MetadataAttribute`]
 
-    ratings
+    nominations: Optional[Union[:class:`LegacyNominations`, :class:`Nominations`]]
 
-    recent_favourites
+    ratings: Optional[List[:class:`int`]]
 
-    related_users
+    recent_favourites: Optional[List[:class:`UserCompact`]]
 
-    user: :class:`UserCompact`
+    related_users: Optional[List[:class:`UserCompact`]]
+
+    user: Optional[:class:`UserCompact`]
     """
+
     __slots__ = (
-        "artist", "artist_unicode", "covers", "creator", "favourite_count", "id", "nsfw",
-        "play_count", "preview_url", "source", "status", "title", "title_unicode", "user_id",
-        "video", "beatmaps", "current_user_attributes", "user", "converts", "description", "discussions",
-        "events", "genre", "has_favourited", "language", "nominations", "ratings", "recent_favourites",
-        "related_users"
+        "artist",
+        "artist_unicode",
+        "covers",
+        "creator",
+        "favourite_count",
+        "hype",
+        "id",
+        "nsfw",
+        "offset",
+        "play_count",
+        "preview_url",
+        "source",
+        "spotlight",
+        "status",
+        "title",
+        "title_unicode",
+        "track_id",
+        "user_id",
+        "video",
+        "background_url",
+        "availability",
+        "beatmaps",
+        "converts",
+        "current_nominations",
+        "current_user_attributes",
+        "description",
+        "description_bbcode",
+        "discussions",
+        "events",
+        "genre",
+        "has_favourited",
+        "language",
+        "nominations",
+        "ratings",
+        "recent_favourites",
+        "related_users",
+        "user",
     )
 
     def __init__(self, data):
-        self.artist = data['artist']
-        self.artist_unicode = data['artist_unicode']
-        self.covers = Covers(data['covers'])
-        self.creator = data['creator']
-        self.favourite_count = data['favourite_count']
-        self.id = data['id']
-        self.nsfw = data['nsfw']
-        self.play_count = data['play_count']
-        self.preview_url = data['preview_url']
-        self.source = data['source']
-        self.status = RankStatus[data['status'].upper()]
-        self.title = data['title']
-        self.title_unicode = data['title_unicode']
-        self.user_id = data['user_id']
-        self.video = data['video']
+        from .discussion import BeatmapsetDiscussion
+        from .beatmapset_event import BeatmapsetEvent
 
-        # Documentation lacks information on all the possible attributes :/
-        self.beatmaps = list(map(Beatmap, data['beatmaps'])) if 'beatmaps' in data else None
-        self.current_user_attributes = CurrentUserAttributes(data['current_user_attributes'],
-                                                             'BeatmapsetDiscussionPermissions') \
-            if 'current_user_attributes' in data else None
-        self.user = UserCompact(data['user']) if 'user' in data else None
-        self.converts = data.get('converts')
-        self.description = data.get('description')
-        self.discussions = data.get('discussions')
-        self.events = data.get('events')
-        self.genre = data.get('genre')
-        self.has_favourited = data.get('has_favourited')
-        self.language = data.get('language')
-        self.nominations = data.get('nominations')
-        self.ratings = data.get('ratings')
-        self.recent_favourites = data.get('recent_favourites')
-        self.related_users = data.get('related_users')
+        self.artist: str = data["artist"]
+        self.artist_unicode: str = data["artist_unicode"]
+        self.covers: Covers = Covers(data["covers"])
+        self.creator: str = data["creator"]
+        self.favourite_count: int = data["favourite_count"]
+        self.hype: Optional[BeatmapsetRequirement] = get_optional(data, "hype", BeatmapsetRequirement)
+        self.id: int = data["id"]
+        self.nsfw: bool = data["nsfw"]
+        self.offset: int = data["offset"]
+        self.play_count: int = data["play_count"]
+        self.preview_url: str = data["preview_url"]
+        self.source: str = data["source"]
+        self.spotlight: bool = data["spotlight"]
+        self.status: RankStatus = RankStatus[data["status"].upper()]
+        self.title: str = data["title"]
+        self.title_unicode: str = data["title_unicode"]
+        self.track_id: Optional[int] = data["track_id"]
+        self.user_id: int = data["user_id"]
+        self.video: bool = data["video"]
 
-    def __repr__(self):
-        return prettify(self, 'artist', 'title', 'creator')
+        self.background_url: str = f"https://assets.ppy.sh/beatmaps/{self.id}/covers/raw.jpg"
 
-
-class Covers:
-    """
-    **Attributes**
-
-    cover: :class:`str`
-
-    cover_2x: :class:`str`
-
-    card: :class:`str`
-
-    card_2x: :class:`str`
-
-    list: :class:`str`
-
-    list_2x: :class:`str`
-
-    slimcover: :class:`str`
-
-    slimcover_2x: :class:`str`
-    """
-    __slots__ = (
-        "cover", "cover_2x", "card", "card_2x", "list", "list_2x", "slimcover", "slimcover_2x"
-    )
-
-    def __init__(self, data):
-        self.cover = data['cover']
-        self.cover_2x = data['cover@2x']
-        self.card = data['card']
-        self.card_2x = data['card@2x']
-        self.list = data['list']
-        self.list_2x = data['list@2x']
-        self.slimcover = data['slimcover']
-        self.slimcover_2x = data['slimcover@2x']
+        self.availability: BeatmapsetAvailability = get_optional(data, "availability", BeatmapsetAvailability)
+        self.beatmaps: Optional[List[BeatmapCompact]] = get_optional_list(data, "beatmaps", BeatmapCompact)
+        self.converts: Optional[List[Beatmap]] = get_optional_list(data, "converts", Beatmap)
+        self.current_nominations: Optional[List[_NOMINATIONS_TYPE]] = get_optional_list(
+            data, "current_nominations", get_beatmapset_nominations
+        )
+        self.current_user_attributes: Optional[BeatmapsetPermissions] = get_optional(
+            data, "current_user_attributes", BeatmapsetPermissions
+        )
+        self.description: Optional[str] = get_optional(data, "description", lambda value: value["description"])
+        self.description_bbcode: Optional[str] = get_optional(data, "description", lambda value: value.get("bbcode"))
+        self.discussions: Optional[List[BeatmapsetDiscussion]] = get_optional_list(
+            data, "discussions", BeatmapsetDiscussion
+        )
+        self.events: Optional[List[BeatmapsetEvent]] = get_optional_list(data, "events", BeatmapsetEvent)
+        self.genre: Optional[MetadataAttribute] = get_optional(data, "genre", MetadataAttribute)
+        self.has_favourited: Optional[bool] = data.get("has_favourited")
+        self.language: Optional[MetadataAttribute] = get_optional(data, "language", MetadataAttribute)
+        self.nominations: Optional[_NOMINATIONS_TYPE] = get_optional(data, "nominations", get_beatmapset_nominations)
+        self.ratings: Optional[List[int]] = data.get("ratings")
+        self.recent_favourites: Optional[List[UserCompact]] = get_optional_list(data, "recent_favourites", UserCompact)
+        self.related_users: Optional[List[UserCompact]] = get_optional_list(data, "related_users", UserCompact)
+        self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
 
     def __repr__(self):
-        return prettify(self, 'cover')
+        return prettify(self, "artist", "title", "creator")
 
 
 class Beatmapset(BeatmapsetCompact):
     """
     Represents a beatmapset. This extends :class:`BeatmapsetCompact` with additional attributes.
+    Also overrides the type of `beatmaps` attribute.
 
     **Attributes**
 
-    availability: :class:`dict`
-        Contains two items, download_disabled: :class:`bool` and more_information: :class:`str`
+    availability: :class:`BeatmapsetAvailability`
+
+    beatmaps: Optional[List[:class:`Beatmap`]]
+        null when this :class:`Beatmapset` object comes from a :class:`Beatmap` object
 
     bpm: :class:`float`
 
     can_be_hyped: :class:`bool`
 
-    creator: :class:`str`
-        Username of the mapper at the time of beatmapset creation.
+    deleted_at: :class:`datetime.datetime`
 
     discussion_enabled: :class:`bool`
         Deprecated. Is always true.
 
     discussion_locked: :class:`bool`
 
-    hype: :class:`dict`
-        Contains items current: :class:`int` and required: :class:`int`
-
     is_scoreable: :class:`bool`
 
-    last_updated: :class:`datetime.datetime`
+    last_updated: Optional[:class:`datetime.datetime`]
 
     legacy_thread_url: :class:`str`
 
-    nominations: :class:`dict`
-        Contains items current: :class:`int` and required: :class:`int`
+    nominations_summary: :class:`NominationsSummary`
 
     ranked: :class:`RankStatus`
 
-    ranked_date: :class:`datetime.datetime`
-
-    source: :class:`str`
+    ranked_date: Optional[:class:`datetime.datetime`]
 
     storyboard: :class:`bool`
 
-    submitted_date: :class:`datetime.datetime`
+    submitted_date: Optional[:class:`datetime.datetime`]
 
     tags: :class:`str`
     """
+
     __slots__ = (
-        "availability", "bpm", "can_be_hyped", "creator", "discussion_enabled", "discussion_locked",
-        "hype", "is_scoreable", "last_updated", "legacy_thread_url", "ranked", "ranked_date", "storyboard",
-        "submitted_date", "tags", "has_favourited", "nominations"
+        "availability",
+        "bpm",
+        "can_be_hyped",
+        "deleted_at",
+        "discussion_enabled",
+        "discussion_locked",
+        "is_scoreable",
+        "last_updated",
+        "legacy_thread_url",
+        "nominations_summary",
+        "ranked",
+        "ranked_date",
+        "storyboard",
+        "submitted_date",
+        "tags",
     )
 
     def __init__(self, data):
         super().__init__(data)
-        self.availability = data['availability']
-        self.bpm = data['bpm']
-        self.can_be_hyped = data['can_be_hyped']
-        self.creator = data['creator']
-        self.discussion_enabled = True  # Deprecated, all beatmapset discussions are enabled
-        self.discussion_locked = data['discussion_locked']
-        self.hype = data['hype']
-        self.is_scoreable = data['is_scoreable']
-        self.last_updated = parser.parse(data['last_updated']) if data.get('last_updated') is not None else None
-        self.legacy_thread_url = data['legacy_thread_url']
-        self.ranked_date = parser.parse(data['ranked_date']) if data.get('ranked_date') is not None else None
-        self.source = data['source']
-        self.storyboard = data['storyboard']
-        self.tags = data['tags']
-        self.submitted_date = parser.parse(data['submitted_date']) if data.get('submitted_date') is not None else None
-        self.has_favourited = data['has_favourited'] if 'has_favourited' in data else None
-        self.ranked = RankStatus(int(data['ranked']))
-        self.nominations = data['nominations'] if 'nominations' in data else None
 
-    def __repr__(self):
-        return super().__repr__()
+        self.availability: BeatmapsetAvailability = BeatmapsetAvailability(data["availability"])
+        self.beatmaps: Optional[List[Beatmap]] = get_optional_list(data, "beatmaps", Beatmap)
+        self.bpm: float = data["bpm"]
+        self.can_be_hyped: bool = data["can_be_hyped"]
+        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
+        self.discussion_enabled: bool = True  # Deprecated, all beatmapset discussions are enabled
+        self.discussion_locked: bool = data["discussion_locked"]
+        self.is_scoreable: bool = data["is_scoreable"]
+        self.last_updated: Optional[datetime] = get_optional(data, "last_updated", parser.parse)
+        self.legacy_thread_url: Optional[str] = data["legacy_thread_url"]
+        self.nominations_summary: BeatmapsetRequirement = BeatmapsetRequirement(data["nominations_summary"])
+        self.ranked: RankStatus = RankStatus(data["ranked"])
+        self.ranked_date: Optional[datetime] = get_optional(data, "ranked_date", parser.parse)
+        self.storyboard: bool = data["storyboard"]
+        self.submitted_date: Optional[datetime] = get_optional(data, "submitted_date", parser.parse)
+        self.tags: str = data["tags"]
 
 
 class BeatmapCompact:
@@ -258,125 +291,164 @@ class BeatmapCompact:
 
     version: :class:`str`
 
-    **Possible Attributes**
+    beatmapset: Optional[:class:`BeatmapsetCompact`]
 
-    beatmapset: :class:`Beatmapset` | :class:`BeatmapsetCompact` | :class:`NoneType`
-        Beatmapset for Beatmap object, BeatmapsetCompact for BeatmapCompact object.
-        null if the beatmap doesn't have associated beatmapset (e.g. deleted).
+    checksum: Optional[:class:`str`]
 
-    checksum: :class:`str` or :class:`NoneType`
+    failtimes: Optional[:class:`Failtimes`]
 
-    failtimes: :class:`Failtimes`
+    max_combo: Optional[:class:`int`]
 
-    max_combo: :class:`int`
+    user: Optional[:class:`UserCompact`]
     """
+
     __slots__ = (
-        "difficulty_rating", "id", "mode", "status", "total_length", "user_id", "version",
-        "checksum", "max_combo", "failtimes", "beatmapset"
+        "beatmapset_id",
+        "difficulty_rating",
+        "id",
+        "mode",
+        "status",
+        "total_length",
+        "user_id",
+        "version",
+        "beatmapset",
+        "checksum",
+        "failtimes",
+        "max_combo",
+        "user",
     )
 
     def __init__(self, data):
-        self.difficulty_rating = data['difficulty_rating']
-        self.id = data['id']
-        self.mode = GameModeStr(data['mode'])
-        self.status = RankStatus[data['status'].upper()]
-        self.total_length = data['total_length']
-        self.user_id = data['user_id']
-        self.version = data['version']
-        self.checksum = data.get("checksum", None)
-        self.max_combo = data.get("max_combo", None)
-        self.failtimes = Failtimes(data['failtimes']) if "failtimes" in data else None
+        self.beatmapset_id: int = data["beatmapset_id"]
+        self.difficulty_rating: float = data["difficulty_rating"]
+        self.id: int = data["id"]
+        self.mode: GameModeStr = GameModeStr(data["mode"])
+        self.status: RankStatus = RankStatus[data["status"].upper()]
+        self.total_length: int = data["total_length"]
+        self.user_id: int = data["user_id"]
+        self.version: str = data["version"]
 
-        if 'beatmapset' in data and data['beatmapset'] is not None:
-            if type(self).__name__ == 'Beatmap':
-                self.beatmapset = Beatmapset(data['beatmapset'])
-            else:
-                self.beatmapset = BeatmapsetCompact(data['beatmapset'])
-        else:
-            self.beatmapset = None
+        self.beatmapset: Optional[BeatmapsetCompact] = get_optional(data, "beatmapset", BeatmapsetCompact)
+        self.checksum: Optional[str] = data.get("checksum")
+        self.failtimes: Optional[Failtimes] = get_optional(data, "failtimes", Failtimes)
+        self.max_combo: Optional[int] = data.get("max_combo")
+        self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
 
     def __repr__(self):
-        return prettify(self, 'version', 'beatmapset')
+        return prettify(
+            self,
+            "beatmapset_id" if self.beatmapset is None else "beatmapset",
+            "version",
+        )
 
 
-class BeatmapDifficultyAttributes:
+class Beatmap(BeatmapCompact):
     """
-    Represent beatmap difficulty attributes. Following fields are always present and
-    then there are additional fields for different rulesets.
+    Represent a beatmap. This extends :class:`BeatmapCompact` with additional attributes.
+    Also overrides the type of `beatmapset`
 
     **Attributes**
 
-    The parameters depend on the ruleset, but the following two attributes are present in all rulesets.
+    accuracy: :class:`float`
 
-    max_combo: :class:`int`
+    ar: :class:`float`
 
-    star_rating: :class:`float`
+    beatmapset: Optional[:class:`Beatmapset`]
 
-    mode_attributes: Union[:class:`OsuBeatmapDifficultyAttributes`, :class:`TaikoBeatmapDifficultyAttributes`,
-    :class:`FruitsBeatmapDifficultyAttributes`, :class:`ManiaBeatmapDifficultyAttributes`, :class:`None`]
-        Can be none for some beatmaps that are bugged and have no difficulty attributes.
+    bpm: :class:`float`
 
-    osu
-        aim_difficulty: :class:`float`
+    convert: Optional[:class:`bool`]
 
-        approach_rate: :class:`float`
+    count_circles: :class:`int`
 
-        flashlight_difficulty: :class:`float`
+    count_sliders: :class:`int`
 
-        overall_difficulty: :class:`float`
+    count_spinners: :class:`int`
 
-        slider_factor: :class:`float`
+    cs: :class:`float`
 
-        speed_difficulty: :class:`float`
+    deleted_at: Optional[:class:`datetime.datetime`]
 
-    taiko
-        stamina_difficulty: :class:`float`
+    drain: :class:`float`
 
-        rhythm_difficulty: :class:`float`
+    hit_length: :class:`int`
 
-        colour_difficulty: :class:`float`
+    is_scoreable: :class:`bool`
 
-        approach_rate: :class:`float`
+    last_updated: :class:`datetime.datetime`
 
-        great_hit_window: :class:`float`
+    mode_int: :class:`GameModeInt`
 
-    fruits
-        approach_rate: :class:`float`
+    passcount: :class:`int`
 
-    mania
-        great_hit_window: :class:`float`
+    playcount: :class:`int`
 
-        score_multiplier: :class:`float`
+    ranked: :class:`RankStatus`
+
+    url: :class:`str`
     """
+
     __slots__ = (
-        "max_combo", "star_rating", "type", "mode_attributes"
+        "accuracy",
+        "ar",
+        "bpm",
+        "convert",
+        "count_circles",
+        "count_sliders",
+        "count_spinners",
+        "cs",
+        "deleted_at",
+        "drain",
+        "hit_length",
+        "is_scoreable",
+        "last_updated",
+        "mode_int",
+        "passcount",
+        "playcount",
+        "ranked",
+        "url",
     )
 
     def __init__(self, data):
-        data = data['attributes']
-        self.max_combo = data['max_combo']
-        self.star_rating = data['star_rating']
-        if "aim_difficulty" in data:
-            self.type = "osu"
-            self.mode_attributes = OsuBeatmapDifficultyAttributes(data)
-        elif "stamina_difficulty" in data:
-            self.type = "taiko"
-            self.mode_attributes = TaikoBeatmapDifficultyAttributes(data)
-        elif "great_hit_window" in data:
-            self.type = "mania"
-            self.mode_attributes = ManiaBeatmapDifficultyAttributes(data)
-        elif "approach_rate" in data:
-            self.type = 'fruits'
-            self.mode_attributes = FruitsBeatmapDifficultyAttributes(data)
-        else:
-            self.type = None
-            self.mode_attributes = None
+        super().__init__(data)
 
-    def __getattr__(self, item):
-        return getattr(self.mode_attributes, item)
+        self.accuracy: float = data["accuracy"]
+        self.ar: float = data["ar"]
+        self.beatmapset: Optional[Beatmapset] = get_optional(data, "beatmapset", Beatmapset)
+        self.bpm: float = data["bpm"]
+        self.convert: Optional[bool] = data["convert"]
+        self.count_circles: int = data["count_circles"]
+        self.count_sliders: int = data["count_sliders"]
+        self.count_spinners: int = data["count_spinners"]
+        self.cs: float = data["cs"]
+        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
+        self.drain: float = data["drain"]
+        self.hit_length: int = data["hit_length"]
+        self.is_scoreable: bool = data["is_scoreable"]
+        self.last_updated: datetime = parser.parse(data["last_updated"])
+        self.mode_int: GameModeInt = GameModeInt(data["mode_int"])
+        self.passcount: int = data["passcount"]
+        self.playcount: int = data["playcount"]
+        self.ranked: RankStatus = RankStatus(data["ranked"])
+        self.url: str = data["url"]
 
-    def __repr__(self):
-        return prettify(self, 'star_rating', 'type', 'mode_attributes')
+
+class MetadataAttribute:
+    """
+    Genre of a beatmapset
+
+    **Attributes**
+
+    id: Optional[:class:`int`]
+
+    name: :class:`str`
+    """
+
+    __slots__ = ("id", "name")
+
+    def __init__(self, data):
+        self.id: Optional[int] = data["id"]
+        self.name: str = data["name"]
 
 
 class OsuBeatmapDifficultyAttributes:
@@ -400,23 +472,28 @@ class OsuBeatmapDifficultyAttributes:
 
     speed_note_count: :class:`float`
     """
+
     __slots__ = (
-        "aim_difficulty", "approach_rate", "flashlight_difficulty",
-        "overall_difficulty", "slider_factor", "speed_difficulty",
-        "speed_note_count"
+        "aim_difficulty",
+        "approach_rate",
+        "flashlight_difficulty",
+        "overall_difficulty",
+        "slider_factor",
+        "speed_difficulty",
+        "speed_note_count",
     )
 
     def __init__(self, data):
-        self.aim_difficulty = data['aim_difficulty']
-        self.approach_rate = data['approach_rate']
-        self.flashlight_difficulty = data['flashlight_difficulty']
-        self.overall_difficulty = data['overall_difficulty']
-        self.slider_factor = data['slider_factor']
-        self.speed_difficulty = data['speed_difficulty']
-        self.speed_note_count = data['speed_note_count']
+        self.aim_difficulty: float = data["aim_difficulty"]
+        self.approach_rate: float = data["approach_rate"]
+        self.flashlight_difficulty: float = data["flashlight_difficulty"]
+        self.overall_difficulty: float = data["overall_difficulty"]
+        self.slider_factor: float = data["slider_factor"]
+        self.speed_difficulty: float = data["speed_difficulty"]
+        self.speed_note_count: float = data["speed_note_count"]
 
     def __repr__(self):
-        return prettify(self, 'aim_difficulty', 'speed_difficulty')
+        return prettify(self, "aim_difficulty", "speed_difficulty")
 
 
 class TaikoBeatmapDifficultyAttributes:
@@ -438,19 +515,22 @@ class TaikoBeatmapDifficultyAttributes:
     """
 
     __slots__ = (
-        "stamina_difficulty", "rhythm_difficulty", "colour_difficulty",
-        "great_hit_window", "peak_difficulty"
+        "stamina_difficulty",
+        "rhythm_difficulty",
+        "colour_difficulty",
+        "great_hit_window",
+        "peak_difficulty",
     )
 
     def __init__(self, data):
-        self.stamina_difficulty = data['stamina_difficulty']
-        self.rhythm_difficulty = data['rhythm_difficulty']
-        self.colour_difficulty = data['colour_difficulty']
-        self.great_hit_window = data['great_hit_window']
-        self.peak_difficulty = data['peak_difficulty']
+        self.stamina_difficulty: float = data["stamina_difficulty"]
+        self.rhythm_difficulty: float = data["rhythm_difficulty"]
+        self.colour_difficulty: float = data["colour_difficulty"]
+        self.great_hit_window: float = data["great_hit_window"]
+        self.peak_difficulty: float = data["peak_difficulty"]
 
     def __repr__(self):
-        return prettify(self, 'stamina_difficulty')
+        return prettify(self, "stamina_difficulty")
 
 
 class FruitsBeatmapDifficultyAttributes:
@@ -463,15 +543,13 @@ class FruitsBeatmapDifficultyAttributes:
     approach_rate: :class:`float`
     """
 
-    __slots__ = (
-        "approach_rate"
-    )
+    __slots__ = "approach_rate"
 
     def __init__(self, data):
-        self.approach_rate = data['approach_rate']
+        self.approach_rate: float = data["approach_rate"]
 
     def __repr__(self):
-        return prettify(self, 'approach_rate')
+        return prettify(self, "approach_rate")
 
 
 class ManiaBeatmapDifficultyAttributes:
@@ -482,119 +560,144 @@ class ManiaBeatmapDifficultyAttributes:
     **Attributes**
 
     great_hit_window: :class:`float`
+
+    score_multiplier: :class:`float`
     """
 
-    __slots__ = (
-        "great_hit_window"
-    )
+    __slots__ = ("great_hit_window", "score_multiplier")
 
     def __init__(self, data):
-        self.great_hit_window = data['great_hit_window']
+        self.great_hit_window: float = data["great_hit_window"]
+        self.score_multiplier: float = data["score_multiplier"]
 
     def __repr__(self):
-        return prettify(self, 'great_hit_window')
+        return prettify(self, "great_hit_window")
+
+
+class BeatmapDifficultyAttributes:
+    """
+    Represent beatmap difficulty attributes. Following fields are always present and
+    then there are additional fields for different rulesets.
+
+    **Attributes**
+
+    The parameters depend on the ruleset, but the following two attributes are present in all rulesets.
+
+    max_combo: :class:`int`
+
+    star_rating: :class:`float`
+
+    mode_attributes: Optional[Union[:class:`OsuBeatmapDifficultyAttributes`, :class:`TaikoBeatmapDifficultyAttributes`,
+    :class:`FruitsBeatmapDifficultyAttributes`, :class:`ManiaBeatmapDifficultyAttributes`]]
+        Can be none for some beatmaps that are bugged and have no difficulty attributes.
+
+    type: Optional[:class:`GameModeStr`]
+    """
+
+    __slots__ = ("max_combo", "star_rating", "type", "mode_attributes")
+    if TYPE_CHECKING:
+        type: Optional[GameModeStr]
+        mode_attributes: Optional[
+            Union[
+                OsuBeatmapDifficultyAttributes,
+                TaikoBeatmapDifficultyAttributes,
+                ManiaBeatmapDifficultyAttributes,
+                FruitsBeatmapDifficultyAttributes,
+            ]
+        ]
+
+    def __init__(self, data):
+        data = data["attributes"]
+        self.max_combo: int = data["max_combo"]
+        self.star_rating: float = data["star_rating"]
+        if "aim_difficulty" in data:
+            self.type = GameModeStr.STANDARD
+            self.mode_attributes = OsuBeatmapDifficultyAttributes(data)
+        elif "stamina_difficulty" in data:
+            self.type = GameModeStr.TAIKO
+            self.mode_attributes = TaikoBeatmapDifficultyAttributes(data)
+        elif "great_hit_window" in data:
+            self.type = GameModeStr.MANIA
+            self.mode_attributes = ManiaBeatmapDifficultyAttributes(data)
+        elif "approach_rate" in data:
+            self.type = GameModeStr.CATCH
+            self.mode_attributes = FruitsBeatmapDifficultyAttributes(data)
+        else:
+            self.type = None
+            self.mode_attributes = None
+
+    def __getattr__(self, item):
+        return getattr(self.mode_attributes, item)
+
+    def __repr__(self):
+        return prettify(self, "star_rating", "type", "mode_attributes")
 
 
 class Failtimes:
     """
-    All attributes are optional but there's always at least one attribute present.
-
     **Attributes**
 
-    exit: Sequence[:class:`int`]
-        Sequence of integers. List is length 100.
+    exit: Optional[List[:class:`int`]]
+        List of 100 integers.
 
-    fail: Sequence[:class:`int`]
-        Sequence of integers. List is length 100.
+    fail: Optional[List[:class:`int`]]
+        List of 100 integers.
     """
+
+    __slots__ = ("exit", "fail")
+
     def __init__(self, data):
-        if 'exit' in data:
-            self.exit = data['exit']
-        if 'fail' in data:
-            self.fail = data['fail']
+        self.exit: Optional[List[int]] = data.get("exit")
+        self.fail: Optional[List[int]] = data.get("fail")
 
     def __repr__(self):
-        try:
-            return prettify(self, 'exit')
-        except AttributeError:
-            return prettify(self, 'fail')
+        return prettify(self, "exit" if self.exit is not None else "fail")
 
 
-class Beatmap(BeatmapCompact):
+class Covers:
     """
-    Represent a beatmap. This extends :class:`BeatmapCompact` with additional attributes.
-
     **Attributes**
 
-    accuracy: :class:`float`
+    cover: :class:`str`
 
-    ar: :class:`float`
+    cover_2x: :class:`str`
 
-    beatmapset_id: :class:`int`
+    card: :class:`str`
 
-    bpm: :class:`float` or :class:`NoneType`
+    card_2x: :class:`str`
 
-    convert: :class:`bool`
+    list: :class:`str`
 
-    count_circles: :class:`int`
+    list_2x: :class:`str`
 
-    count_sliders: :class:`int`
+    slimcover: :class:`str`
 
-    count_spinners: :class:`int`
-
-    cs: :class:`float`
-
-    deleted_at: :class:`datetime.datetime` or :class:`NoneType`
-
-    drain: :class:`float`
-
-    hit_length: :class:`int`
-
-    is_scoreable: :class:`bool`
-
-    last_updated: :class:`datetime.datetime`
-
-    mode_int: :class:`GameModeInt`
-
-    passcount: :class:`int`
-
-    playcount: :class:`int`
-
-    ranked: :class:`RankStatus`
-
-    url: :class:`str`
+    slimcover_2x: :class:`str`
     """
+
     __slots__ = (
-        "ranked", "url", "playcount", "passcount", "mode_int", "last_updated",
-        "is_scoreable", "hit_length", "drain", "deleted_at", "cs", "count_spinners",
-        "count_circles", "count_sliders", "convert", "bpm", "beatmapset_id", "ar",
-        "accuracy"
+        "cover",
+        "cover_2x",
+        "card",
+        "card_2x",
+        "list",
+        "list_2x",
+        "slimcover",
+        "slimcover_2x",
     )
 
     def __init__(self, data):
-        super().__init__(data)
-        self.ranked = RankStatus(int(data['ranked']))
-        self.url = data['url']
-        self.playcount = data['playcount']
-        self.passcount = data['passcount']
-        self.mode_int = GameModeInt(data['mode_int'])
-        self.last_updated = parser.parse(data['last_updated'])
-        self.is_scoreable = data['is_scoreable']
-        self.hit_length = data['hit_length']
-        self.drain = data['drain']
-        self.deleted_at = parser.parse(data['deleted_at']) if data['deleted_at'] is not None else None
-        self.cs = data['cs']
-        self.count_spinners = data['count_spinners']
-        self.count_sliders = data['count_sliders']
-        self.count_circles = data['count_circles']
-        self.convert = data['convert']
-        self.bpm = data['bpm']
-        self.beatmapset_id = data['beatmapset_id']
-        self.ar = data['ar']
-        self.accuracy = data['accuracy']
+        self.cover: str = data["cover"]
+        self.cover_2x: str = data["cover@2x"]
+        self.card: str = data["card"]
+        self.card_2x: str = data["card@2x"]
+        self.list: str = data["list"]
+        self.list_2x: str = data["list@2x"]
+        self.slimcover: str = data["slimcover"]
+        self.slimcover_2x: str = data["slimcover@2x"]
 
     def __repr__(self):
-        return super().__repr__()
+        return prettify(self, "cover")
 
 
 class BeatmapPlaycount:
@@ -605,21 +708,163 @@ class BeatmapPlaycount:
 
     beatmap_id: :class:`int`
 
-    beatmap: :class:`BeatmapCompact` or :class:`NoneType`
+    beatmap: Optional[:class:`BeatmapCompact`]
 
-    beatmapset: :class:`BeatmapsetCompact` or :class:`NoneType`
+    beatmapset: Optional[:class:`BeatmapsetCompact`]
 
     count: :class:`int`
     """
+
+    __slots__ = ("beatmap_id", "beatmap", "beatmapset", "count")
+
+    def __init__(self, data):
+        self.beatmap_id: int = data["beatmap_id"]
+        self.beatmap: Optional[BeatmapCompact] = get_optional(data, "beatmap", BeatmapCompact)
+        self.beatmapset: Optional[BeatmapsetCompact] = get_optional(data, "beatmapset", BeatmapsetCompact)
+        self.count: int = data["count"]
+
+    def __repr__(self):
+        return prettify(self, "beatmap_id", "count")
+
+
+class BeatmapsetRequirement:
+    """
+    Gives information on requirements for a beatmap
+
+    **Attributes**
+
+    current: :class:`int`
+
+    required: :class:`int`
+    """
+
+    __slots__ = ("current", "required")
+
+    def __init__(self, data):
+        self.current: int = data["current"]
+        self.required: int = data["required"]
+
+    def __repr__(self):
+        return prettify(self, "current", "required")
+
+
+class BeatmapsetAvailability:
+    """
+    Gives information on the availability of a beatmap for download.
+
+    **Attributes**
+
+    download_disabled: :class:`bool`
+
+    more_information: Optional[:class:`str`]
+    """
+
+    __slots__ = ("download_disabled", "more_information")
+
+    def __init__(self, data):
+        self.download_disabled: bool = data["download_disabled"]
+        self.more_information: Optional[str] = data.get("more_information")
+
+    def __repr__(self):
+        return prettify(self, "download_disabled", "more_information")
+
+
+class BaseNominations:
+    """
+    Base attributes for :class:`LegacyNominations` and :class:`Nominations`
+
+    **Attributes**
+
+    disqualification: Optional[:class:`BeatmapsetEvent`]
+
+    nominated: Optional[:class:`bool`]
+
+    nomination_reset: Optional[:class:`BeatmapsetEvent`]
+
+    ranking_eta: Optional[:class:`str`]
+
+    ranking_queue_position: Optional[:class:`int`]
+
+    required_hype: :class:`int`
+    """
+
     __slots__ = (
-        "beatmap_id", "beatmap", "beatmapset", "count"
+        "disqualification",
+        "nominated",
+        "nomination_reset",
+        "ranking_eta",
+        "ranking_queue_position",
+        "required_hype",
     )
 
     def __init__(self, data):
-        self.beatmap_id = data['beatmap_id']
-        self.beatmap = BeatmapCompact(data['beatmap']) if data['beatmap'] is not None else None
-        self.beatmapset = BeatmapsetCompact(data['beatmapset']) if data['beatmapset'] is not None else None
-        self.count = data['count']
+        from .beatmapset_event import BeatmapsetEvent
 
-    def __repr__(self):
-        return prettify(self, 'beatmap_id', 'count')
+        self.disqualification: Optional[BeatmapsetEvent] = get_optional(data, "disqualification", BeatmapsetEvent)
+        self.nominated: Optional[bool] = data["nominated"]
+        self.nomination_reset: Optional[BeatmapsetEvent] = get_optional(data, "nomination_reset", BeatmapsetEvent)
+        self.ranking_eta: Optional[str] = data["ranking_eta"]
+        self.ranking_queue_position: Optional[int] = data["ranking_queue_position"]
+        self.required_hype: int = data["required_hype"]
+
+
+class LegacyNominations(BaseNominations):
+    """
+    Shows info about nominations on a beatmapset, extending :class:`BaseNominations`
+
+    **Attributes**
+
+    is_legacy: :class:`bool`
+        True
+
+    current: :class:`int`
+
+    required: :class:`int`
+    """
+
+    __slots__ = ("current", "required")
+    is_legacy = True
+
+    def __init__(self, data):
+        super().__init__(data)
+        self.current: int = data["current"]
+        self.required: int = data["required"]
+
+
+class Nominations(BaseNominations):
+    """
+    Shows info about nominations on a beatmapset, extending :class:`BaseNominations`
+
+    **Attributes**
+
+    is_legacy: :class:`bool`
+        False
+
+    current: Union[:class:`int`, Dict[:class:`GameModeStr`, :class:`int`]]
+
+    required: :class:`int`
+    """
+
+    __slots__ = ("current", "required")
+    is_legacy = False
+
+    def __init__(self, data):
+        super().__init__(data)
+        self.current: Dict[GameModeStr, int] = dict(
+            zip(map(GameModeStr, (current := data["current"]).keys()), current.values())
+        )
+        self.required: Dict[GameModeStr, int] = dict(
+            zip(
+                map(GameModeStr, (required := data["required"]).keys()),
+                required.values(),
+            )
+        )
+
+
+_NOMINATIONS_TYPE = Union[LegacyNominations, Nominations]
+
+
+def get_beatmapset_nominations(data) -> _NOMINATIONS_TYPE:
+    if data.get("legacy_mode", False):
+        return LegacyNominations(data)
+    return Nominations(data)

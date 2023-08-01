@@ -1,4 +1,4 @@
-from osu import Client
+from osu import Client, MessageType
 import os
 
 
@@ -9,19 +9,33 @@ redirect_url = "http://127.0.0.1:8080"
 client = Client.from_client_credentials(client_id, client_secret, redirect_url)
 
 bm_id = 1031991  # PepeLaugh
-discussions = client.get_beatmapset_discussions(beatmapset_id=1145452, message_types=["problem", "review", "suggestion"])
-for disc in discussions['discussions']:
+result = client.get_beatmapset_discussions(beatmapset_id=1145452, message_types=[MessageType.PROBLEM, MessageType.REVIEW, MessageType.SUGGESTION])
+
+
+def get_user(users, user_id):
+    for user in users:
+        if user.id == user_id:
+            return user
+
+
+for disc in result.discussions:
     post = disc.starting_post
     print("----------------------------------------------------")
-    votes = client.get_beatmapset_discussion_votes(disc.id)["votes"]
-    print(f"User{post.user_id} created Post{post.beatmapset_discussion_id} at {post.created_at} (Score: {sum(map(lambda vote: vote.score, votes))}): {post.message}")
+    votes_result = client.get_beatmapset_discussion_votes(disc.id)
+    votes = votes_result.votes
+    user = get_user(result.users, post.user_id)
+    print(f"{user.username} created {disc.message_type.value} Post{post.beatmapset_discussion_id} at {post.created_at} (Score: {sum(map(lambda vote: vote.score, votes))}): {post.message}")
 
     if disc.posts is not None:
         posts = disc.posts
+        posts_users = result.users
     else:
-        posts = client.get_beatmapset_discussion_posts(disc.id)["posts"]
-    for post in posts:
+        posts_result = client.get_beatmapset_discussion_posts(disc.id)
+        posts = posts_result.posts
+        posts_users = posts_result.users
+    for post in sorted(posts, key=lambda p: p.created_at):
         print("################################################")
-        print(f"User{post.user_id} replied with Post{post.beatmapset_discussion_id} at {post.created_at}: {post.message}")
+        user = get_user(posts_users, post.user_id)
+        print(f"{user.username} replied with Post{post.beatmapset_discussion_id} at {post.created_at}: {post.message}")
 
 

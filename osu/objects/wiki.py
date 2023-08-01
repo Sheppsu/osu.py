@@ -1,4 +1,10 @@
+from typing import List, Optional, Union, TYPE_CHECKING
+
 from ..util import prettify
+
+
+if TYPE_CHECKING:
+    from .user import UserCompact
 
 
 class WikiPage:
@@ -7,7 +13,7 @@ class WikiPage:
 
     **Attributes**
 
-    available_locales: Sequence[:class:`str`]
+    available_locales: List[:class:`str`]
         All available locales for the article.
 
     layout: :class:`str`
@@ -22,32 +28,39 @@ class WikiPage:
     path: :class:`str`
         Path of the article.
 
-    subtitle: :class:`str` or :class:`NoneType`
+    subtitle: Optional[:class:`str`]
         The article's subtitle.
 
-    tags: Sequence[:class:`str`]
+    tags: List[:class:`str`]
         Associated tags for the article.
 
     title: :class:`str`
         The article's title.
     """
+
     __slots__ = (
-        'available_locales', 'layout', 'locale', 'markdown', 'path', 'subtitle',
-        'tags', 'title'
+        "available_locales",
+        "layout",
+        "locale",
+        "markdown",
+        "path",
+        "subtitle",
+        "tags",
+        "title",
     )
 
     def __init__(self, data):
-        self.available_locales = data['available_locales']
-        self.layout = data['layout']
-        self.locale = data['locale']
-        self.markdown = data['markdown']
-        self.path = data['path']
-        self.subtitle = data['subtitle']
-        self.tags = data['tags']
-        self.title = data['title']
+        self.available_locales: List[str] = data["available_locales"]
+        self.layout: str = data["layout"]
+        self.locale: str = data["locale"]
+        self.markdown: str = data["markdown"]
+        self.path: str = data["path"]
+        self.subtitle: Optional[str] = data["subtitle"]
+        self.tags: List[str] = data["tags"]
+        self.title: str = data["title"]
 
     def __repr__(self):
-        return prettify(self, 'title')
+        return prettify(self, "title")
 
 
 class SearchResults:
@@ -56,16 +69,17 @@ class SearchResults:
 
     **Attributes**
 
-    results: Union[:class:`UserCompact`, :class:`WikiPage`]
+    results: List[Union[:class:`UserCompact`, :class:`WikiPage`]]
         type depends on search type
 
     total: :class:`int`
     """
+
     __slots__ = ("results", "total")
 
     def __init__(self, data, data_type):
-        self.results = list(map(data_type, data["data"]))
-        self.total = data["total"]
+        self.results: List[Union[UserCompact, WikiPage]] = list(map(data_type, data["data"]))
+        self.total: int = data["total"]
 
     def __repr__(self):
-        return prettify(self, 'results', 'total')
+        return prettify(self, "results", "total")

@@ -18,3 +18,5 @@ from .news import *
 from .beatmapset_event import *
 from .match import *
 from .seasonal_background import *
+from .current_user_attributes import *
+from .achievement import *

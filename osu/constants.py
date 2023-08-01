@@ -23,5 +23,5 @@ incompatible_mods = {
     "Perfect": ["NoFail", "SuddenDeath", "Relax"],
     "FadeIn": ["Hidden", "Flashlight"],
     "Mirror": ["HardRock"],
-    **{f"Key{k}": [f"Key{k2}" for k2 in range(4, 10) if k2 != k] for k in range(4, 10)}
+    **{f"Key{k}": [f"Key{k2}" for k2 in range(4, 10) if k2 != k] for k in range(4, 10)},
 }

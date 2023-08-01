@@ -1,6 +1,10 @@
 from dateutil import parser
+from typing import Optional, TYPE_CHECKING
 
-from ..util import prettify
+from ..util import prettify, get_optional
+
+if TYPE_CHECKING:
+    from datetime import datetime
 
 
 class NewsPost:
@@ -12,7 +16,7 @@ class NewsPost:
     edit_url: :class:`str`
         Link to the file view on GitHub.
 
-    first_image: :class:`str` or :class:`NoneType`
+    first_image: Optional[:class:`str`]
         Link to the first image in the document.
 
     id: :class:`int`
@@ -26,55 +30,63 @@ class NewsPost:
 
     updated_at: :class:`datetime.datetime`
 
-    **Optional Attributes**
-
-    content: :class:`str`
+    content: Optional[:class:`str`]
         HTML post content.
 
-    navigation: :class:`Navigation`
+    navigation: Optional[:class:`Navigation`]
         Navigation metadata.
 
-    preview: :class:`str`
+    preview: Optional[:class:`str`]
         First paragraph of content with HTML markup stripped.
     """
+
     __slots__ = (
-        "author", "edit_url", "first_image", "id",
-        "published_at", "slug", "title", "updated_at",
-        "content", "navigation", "preview"
+        "author",
+        "edit_url",
+        "first_image",
+        "id",
+        "published_at",
+        "slug",
+        "title",
+        "updated_at",
+        "content",
+        "navigation",
+        "preview",
     )
 
     def __init__(self, data):
-        self.author = data['author']
-        self.edit_url = data['edit_url']
-        self.first_image = data['first_image']
-        self.id = data['id']
-        self.published_at = parser.parse(data['published_at'])
-        self.slug = data['slug']
-        self.title = data['title']
-        self.updated_at = parser.parse(data['updated_at'])
-        self.content = data.get("content", "")
-        self.navigation = Navigation(data) if "navigation" in data else None
-        self.preview = data.get("preview", "")
+        self.author: str = data["author"]
+        self.edit_url: str = data["edit_url"]
+        self.first_image: Optional[str] = data["first_image"]
+        self.id: int = data["id"]
+        self.published_at: datetime = parser.parse(data["published_at"])
+        self.slug: str = data["slug"]
+        self.title: str = data["title"]
+        self.updated_at: datetime = parser.parse(data["updated_at"])
+        self.content: Optional[str] = data.get("content")
+        self.navigation: Optional[Navigation] = get_optional(data, "navigation", Navigation)
+        self.preview: Optional[str] = data.get("preview")
 
     def __repr__(self):
-        return prettify(self, 'title')
+        return prettify(self, "title")
 
 
 class Navigation:
     """
     **Attributes**
 
-    newer: :class:`NewsPost` or :class:`NoneType`
+    newer: Optional[:class:`NewsPost`]
         null if the next post is not present.
 
-    older: :class:`NewsPost` or :class:`NoneType`
+    older: Optional[:class:`NewsPost`]
         null if the previous post is not present.
     """
+
     __slots__ = ("newer", "older")
 
     def __init__(self, data):
-        self.newer = NewsPost(data['newer']) if data.get("newer") is not None else None
-        self.older = NewsPost(data['older']) if data.get("older") is not None else None
+        self.newer: Optional[NewsPost] = get_optional(data, "newer", NewsPost)
+        self.older: Optional[NewsPost] = get_optional(data, "older", NewsPost)
 
     def __repr__(self):
-        return prettify(self, 'newer', 'older')
+        return prettify(self, "newer", "older")

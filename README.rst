@@ -23,6 +23,7 @@ Major features/capabilties:
  - Builtin rate limit handling
  - Storage efficient objects used to contain almost all the data returned from osu.py for any given api request.
  - Refresh and access token is automatically managed.
+ - Utility functions and classes that make your life easier.
  - Documentation that covers everything osu.py is capable of.
 This uses osu!api v2, which is still under development. 
 So some code that was originally working may break overnight. 

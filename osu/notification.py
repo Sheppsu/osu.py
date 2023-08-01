@@ -11,8 +11,8 @@ class NotificationWebsocket:
     """
     This class allows you to receive notifications without constantly polling the server.
     To utilize it you should do either of:
-        - Make a class inheriting this one and redefine the event functions (on_logout, on_new, ...).
-        - Use the event function as a decorator, read more on its use under its docs.
+    - Make a class inheriting this one and redefine the event functions (on_logout, on_new, ...).
+    - Use the event function as a decorator, read more on its use under its docs.
 
     **Event types**
 
@@ -77,9 +77,16 @@ class NotificationWebsocket:
         Event fired by NotificationWebsocket object when there's a disconnection
         without having been sent a logout event.
     """
+
     valid_events = [
-        'ready', 'logout', 'new', 'read', 'unplanned_disconnect', 'chat_channel_join',
-        'chat_channel_part', 'chat_message_new',
+        "ready",
+        "logout",
+        "new",
+        "read",
+        "unplanned_disconnect",
+        "chat_channel_join",
+        "chat_channel_part",
+        "chat_message_new",
     ]
     valid_event_functions = ["on_" + event for event in valid_events]
 
@@ -101,9 +108,7 @@ class NotificationWebsocket:
         self.connected = False
 
     async def _run(self):
-        headers = {
-            "Authorization": f"Bearer {self.auth.token}"
-        }
+        headers = {"Authorization": f"Bearer {self.auth.token}"}
         async with websockets.connect(self.uri, extra_headers=headers) as ws:
             self.ws = ws
             await self._on_ready()
@@ -117,13 +122,15 @@ class NotificationWebsocket:
                     return
 
                 event = json.loads(event)
-                if 'error' in event:
+                if "error" in event:
                     print(f"Notification websocket received error: {event['error']}")
                     continue
-                event_type = event['event'].replace(".", "_")
-                del event['event']
+                event_type = event["event"].replace(".", "_")
+                del event["event"]
 
-                func = getattr(self, "_on_"+event_type)
+                # TODO: run event funcs using run_coroutine_threadsafe
+
+                func = getattr(self, "_on_" + event_type)
                 if func is None:
                     return print(f"Received {event_type} event but cannot parse it.")
                 try:
@@ -151,8 +158,9 @@ class NotificationWebsocket:
                 print(notification.name)
         """
         if func.__name__ not in self.valid_event_functions:
-            raise ValueError(f"This is not a valid event name. Valid events consist of "
-                             f"{', '.join(self.valid_event_functions)}")
+            raise ValueError(
+                f"This is not a valid event name. Valid events consist of " f"{', '.join(self.valid_event_functions)}"
+            )
         setattr(self, func.__name__, func)
 
     # Default events
@@ -165,16 +173,16 @@ class NotificationWebsocket:
 
     async def _on_logout(self, event):
         self.connected = False
-        if hasattr(self, 'on_logout'):
+        if hasattr(self, "on_logout"):
             await self.on_logout()
 
     async def _on_new(self, event):
-        if hasattr(self, 'on_new'):
+        if hasattr(self, "on_new"):
             data = Notification(event["data"])
             await self.on_new(data)
 
     async def _on_read(self, event):
-        if hasattr(self, 'on_read'):
+        if hasattr(self, "on_read"):
             data = event["data"]
             notifications = list(map(lambda notification: notification["id"], data["notifications"]))
             timestamp = parser.parse(data["timestamp"])
@@ -197,7 +205,7 @@ class NotificationWebsocket:
 
     # Event fired by NotificationWebsocket object when connection without having been sent a logout event.
     async def _on_unplanned_disconnect(self):
-        if hasattr(self, 'on_unplanned_disconnect'):
+        if hasattr(self, "on_unplanned_disconnect"):
             await self.on_unplanned_disconnect()
 
     # Commands

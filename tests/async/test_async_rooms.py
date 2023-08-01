@@ -7,8 +7,8 @@ class TestAsynchronousRooms:
     @pytest.mark.asyncio
     async def test_get_user_highscore(self, lazer_async_client, sample_user_highscore):
         highscore = await lazer_async_client.get_user_highscore(
-            sample_user_highscore["room_id"], sample_user_highscore["playlist_id"],
-            sample_user_highscore["user_id"])
+            sample_user_highscore["room_id"], sample_user_highscore["playlist_id"], sample_user_highscore["user_id"]
+        )
         assert highscore
         assert highscore.user
         assert highscore.user.id == sample_user_highscore["user_id"]
@@ -17,14 +17,15 @@ class TestAsynchronousRooms:
     @pytest.mark.asyncio
     async def test_get_scores(self, lazer_async_client, sample_user_highscore):
         scores = await lazer_async_client.get_scores(
-            sample_user_highscore["room_id"], sample_user_highscore["playlist_id"])
+            sample_user_highscore["room_id"], sample_user_highscore["playlist_id"]
+        )
         assert any(map(lambda score: score.user_id == sample_user_highscore["user_id"], scores.scores))
 
     @pytest.mark.asyncio
     async def test_get_score(self, lazer_async_client, sample_user_highscore):
         score = await lazer_async_client.get_score(
-            sample_user_highscore["room_id"], sample_user_highscore["playlist_id"],
-            sample_user_highscore["score_id"])
+            sample_user_highscore["room_id"], sample_user_highscore["playlist_id"], sample_user_highscore["score_id"]
+        )
         assert score
         assert score.user
         assert score.user.id == sample_user_highscore["user_id"]
@@ -43,8 +44,8 @@ class TestAsynchronousRooms:
 
     @pytest.mark.asyncio
     async def test_get_room_leaderboard(self, lazer_async_client, sample_user_highscore):
-        leaderboard = await lazer_async_client.get_room_leaderboard(sample_user_highscore["room_id"])
-        scores = leaderboard["leaderboard"]
+        ret = await lazer_async_client.get_room_leaderboard(sample_user_highscore["room_id"])
+        scores = ret.leaderboard
         assert scores
         assert all(map(lambda score: score.room_id == sample_user_highscore["room_id"], scores))
         assert any(map(lambda score: score.user_id == sample_user_highscore["user_id"], scores))
