@@ -10,7 +10,7 @@ osu.py
 .. image:: https://static.pepy.tech/personalized-badge/osu-py?period=month&units=international_system&left_color=blue&right_color=brightgreen&left_text=Downloads/month
    :target: https://pepy.tech/project/osu-py
    :alt: Download metric
-.. image:: https://readthedocs.org/projects/osupy/badge/?version=latest
+.. image:: https://readthedocs.org/projects/osupy/badge/?version=v1.0.0&style=flat
    :target: https://osupy.readthedocs.io
    :alt: Documentation
 
