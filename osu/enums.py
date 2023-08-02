@@ -705,15 +705,14 @@ class MatchSort(Enum):
 
     **Match sort options**
 
-    ID_ASC = 'id_asc'
+    ASCENDING = "id_asc"
 
-    ID_DESC = 'id_desc'
-
-    NAME_ASC = 'name_asc'
-
-    NAME_DESC = 'name_desc'
+    DESCENDING = "id_desc"
     """
 
+    ASCENDING = "id_asc"
+    DESCENDING = "id_desc"
+    # purely for backwards compatibility
     OLDEST = "id_asc"
     NEWEST = "id_desc"
 
