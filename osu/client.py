@@ -2073,7 +2073,7 @@ class Client:
         )
 
     def get_matches(
-        self, limit: Optional[int] = None, sort: Optional[Union[str, MatchSort]] = None
+        self, limit: Optional[int] = None, sort: Optional[Union[str, MatchSort]] = None, cursor: Optional[Dict] = None
     ) -> GetMatchesResult:
         """
         Returns a list of matches.
@@ -2086,12 +2086,17 @@ class Client:
 
         sort: Optional[Union[:class:`str`, :class:`MatchSort`]]
 
+        cursor: Optional[Dict]
+            Dictionary containing one key: `match_id`.
+            Can be obtained from a previous call to this function or manually created.
+
         **Returns**
 
         :class:`GetMatchesResult`
         """
+        match_id = cursor.get("match_id") if cursor is not None else None
         sort = parse_enum_args(sort)
-        resp = self.http.make_request(Path.get_matches(), limit=limit, sort=sort)
+        resp = self.http.make_request(Path.get_matches(), limit=limit, sort=sort, **{"cursor[match_id]": match_id})
         return GetMatchesResult(list(map(Match, resp["matches"])), resp["params"], resp["cursor"])
 
     def get_match(self, match_id: int) -> MatchExtended:
