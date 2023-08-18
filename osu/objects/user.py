@@ -555,7 +555,7 @@ class UserAccountHistory:
         self.id: int = data["id"]
         self.length: int = data["length"]
         self.permanent: bool = data["permanent"]
-        self.supporting_url: Optional[str] = data["supporting_url"]
+        self.supporting_url: Optional[str] = data.get("supporting_url")
         self.timestamp: datetime = parser.parse(data["timestamp"])
         self.type: UserAccountHistoryType = UserAccountHistoryType(data["type"])
 
