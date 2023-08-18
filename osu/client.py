@@ -28,6 +28,9 @@ class Client:
     Main object for interacting with osu!api, which uses synchronous requests.
     If you're looking for asynchronous requests, use :class:`AsynchronousClient`.
 
+    IMPORTANT NOTE: This class is not thread-safe. If you wish to use with threading,
+    use a threading lock when making requests.
+
     **Init Parameters**
 
     auth: :class:`AuthHandler`
