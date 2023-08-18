@@ -80,24 +80,22 @@ class RateLimitHandler:
         self.wait_limit = request_wait_limit
         self.limit = limit_per_minute
         self.requests = []
-        self._wait = asyncio.Event()
-        self._wait.set()
+        self._lock = asyncio.Lock()
 
     def request_used(self):
         self.requests.append(time.perf_counter())
         self.reset()
 
     async def wait(self):
-        await self._wait.wait()
-        self._wait.clear()
-        if self.can_request:  # Check again due to asynchronous running
-            self._wait.set()
+        await self._lock.acquire()
+        if self.can_request:
+            self._lock.release()
             return
         next_available_request = self.wait_limit - (time.perf_counter() - self.last_request)
         if len(self.requests) >= self.limit:
             next_available_request = max(next_available_request, self.requests[0] + 60 - time.perf_counter())
         await asyncio.sleep(next_available_request)
-        self._wait.set()
+        self._lock.release()
 
     def reset(self):
         while len(self.requests) > 0:
