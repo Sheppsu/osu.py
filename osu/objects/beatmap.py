@@ -65,7 +65,7 @@ class BeatmapsetCompact:
 
     converts: Optional[List[:class:`Beatmap`]]
 
-    current_nominations: Optional[List[Union[:class:`LegacyNominations`, :class:`Nominations`]]]
+    current_nominations: Optional[List[:class:`CurrentNomination`]]
 
     current_user_attributes: Optional[:class:`BeatmapsetDiscussionPermissions`]
 
@@ -163,8 +163,8 @@ class BeatmapsetCompact:
         self.availability: BeatmapsetAvailability = get_optional(data, "availability", BeatmapsetAvailability)
         self.beatmaps: Optional[List[BeatmapCompact]] = get_optional_list(data, "beatmaps", BeatmapCompact)
         self.converts: Optional[List[Beatmap]] = get_optional_list(data, "converts", Beatmap)
-        self.current_nominations: Optional[List[_NOMINATIONS_TYPE]] = get_optional_list(
-            data, "current_nominations", get_beatmapset_nominations
+        self.current_nominations: Optional[List[CurrentNomination]] = get_optional_list(
+            data, "current_nominations", CurrentNomination
         )
         self.current_user_attributes: Optional[BeatmapsetPermissions] = get_optional(
             data, "current_user_attributes", BeatmapsetPermissions
@@ -803,9 +803,12 @@ class BaseNominations:
         self.disqualification: Optional[BeatmapsetEvent] = get_optional(data, "disqualification", BeatmapsetEvent)
         self.nominated: Optional[bool] = data.get("nominated")
         self.nomination_reset: Optional[BeatmapsetEvent] = get_optional(data, "nomination_reset", BeatmapsetEvent)
-        self.ranking_eta: Optional[str] = data["ranking_eta"]
-        self.ranking_queue_position: Optional[int] = data["ranking_queue_position"]
+        self.ranking_eta: Optional[str] = data.get("ranking_eta")
+        self.ranking_queue_position: Optional[int] = data.get("ranking_queue_position")
         self.required_hype: int = data["required_hype"]
+
+    def __repr__(self):
+        return prettify(self, "nominated")
 
 
 class LegacyNominations(BaseNominations):
@@ -829,6 +832,9 @@ class LegacyNominations(BaseNominations):
         super().__init__(data)
         self.current: int = data["current"]
         self.required: int = data["required"]
+
+    def __repr__(self):
+        return prettify("current", "required")
 
 
 class Nominations(BaseNominations):
@@ -859,6 +865,34 @@ class Nominations(BaseNominations):
                 required.values(),
             )
         )
+
+    def __repr__(self):
+        return prettify(self, "current", "required")
+
+
+class CurrentNomination:
+    """
+    Info about a nomination
+
+    **Attributes**
+
+    beatmapset_id: :class:`int`
+
+    rulesets: Optional[List[:class:`GameModeStr`]]
+
+    reset: :class:`bool`
+
+    user_id: :class:`int`
+    """
+
+    def __init__(self, data):
+        self.beatmapset_id: int = data["beatmapset_id"]
+        self.rulesets: Optional[List[GameModeStr]] = get_optional_list(data, "rulesets", GameModeStr)
+        self.reset: bool = data["reset"]
+        self.user_id: int = data["user_id"]
+
+    def __repr__(self):
+        return prettify(self, "beatmapset_id", "user_id")
 
 
 _NOMINATIONS_TYPE = Union[LegacyNominations, Nominations]
