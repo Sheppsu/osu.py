@@ -573,15 +573,18 @@ class UserBadge:
 
     image_url: :class:`str`
 
+    image_2x_url: :class:`str`
+
     url: :class:`str`
     """
 
-    __slots__ = ("awarded_at", "description", "image_url", "url")
+    __slots__ = ("awarded_at", "description", "image_url", "image_2x_url", "url")
 
     def __init__(self, data):
         self.awarded_at: datetime = parser.parse(data["awarded_at"])
         self.description: str = data["description"]
         self.image_url: str = data["image_url"]
+        self.image_2x_url = data["image@2x_url"]
         self.url: str = data["url"]
 
     def __repr__(self):
