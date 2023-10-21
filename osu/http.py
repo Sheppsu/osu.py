@@ -26,7 +26,9 @@ class HTTPHandler:
                 headers[str(key)] = str(value)
         return headers
 
-    def make_request(self, path, data=None, headers=None, is_download=False, files=None, **kwargs):
+    def make_request_to_endpoint(
+        self, endpoint, path, data=None, headers=None, is_download=False, files=None, **kwargs
+    ):
         if headers is None:
             headers = {}
         if data is None:
@@ -50,11 +52,7 @@ class HTTPHandler:
         headers = self.get_headers(path, files is not None, **headers)
         params = {str(key): value for key, value in kwargs.items() if value is not None}
         response = getattr(requests, path.method)(
-            (lazer_base_url if self.use_lazer else base_url) + path.path,
-            headers=headers,
-            data=data,
-            params=params,
-            files=files,
+            endpoint + path.path, headers=headers, data=data, params=params, files=files
         )
         self.rate_limit.request_used()
         try:
@@ -67,31 +65,34 @@ class HTTPHandler:
             raise type(e)(str(e) + ": " + err) if err is not None else e from None
         if response.content == b"":
             return
-        return response.json() if not is_download else response.content
+        return response.json() if not is_download else response
+
+    def make_request(self, path, *args, **kwargs):
+        return self.make_request_to_endpoint(lazer_base_url if self.use_lazer else base_url, path, *args, **kwargs)
 
 
 class RateLimitHandler:
     def __init__(self, request_wait_limit, limit_per_minute):
         self.wait_limit = request_wait_limit
         self.limit = limit_per_minute
-        self.last_request = time.perf_counter() - self.wait_limit
+        self.last_request = time.monotonic() - self.wait_limit
         self.requests = []
 
     def request_used(self):
-        self.requests.append(time.perf_counter())
-        self.last_request = time.perf_counter()
+        self.requests.append(time.monotonic())
+        self.last_request = time.monotonic()
 
     def wait(self):
-        next_available_request = self.wait_limit - (time.perf_counter() - self.last_request)
+        next_available_request = self.wait_limit - (time.monotonic() - self.last_request)
         if len(self.requests) >= self.limit:
-            next_available_request = max(next_available_request, self.requests[0] + 60 - time.perf_counter())
+            next_available_request = max(next_available_request, self.requests[0] + 60 - time.monotonic())
         if next_available_request <= 0:
             return
         time.sleep(next_available_request)
 
     def reset(self):
         while len(self.requests) > 0:
-            if self.requests[0] + 60 < time.perf_counter():
+            if self.requests[0] + 60 < time.monotonic():
                 self.requests.pop(0)
             else:
                 break
@@ -99,4 +100,4 @@ class RateLimitHandler:
     @property
     def can_request(self):
         self.reset()
-        return time.perf_counter() - self.last_request >= self.wait_limit and len(self.requests) < self.limit
+        return time.monotonic() - self.last_request >= self.wait_limit and len(self.requests) < self.limit

@@ -27,11 +27,11 @@ class AsynchronousHTTPHandler:
                 headers[str(key)] = str(value)
         return headers
 
-    async def make_request(self, path, data=None, headers=None, is_download=False, files=None, **kwargs):
+    async def make_request_to_endpoint(self, endpoint, path, data=None, headers=None, files=None, **kwargs):
         if headers is None:
             headers = {}
-        if data is None:
-            data = {}
+        json = data
+        file_data = None
 
         if path.requires_auth and self.client.auth is None:
             raise ScopeException("You need to be authenticated to make this request.")
@@ -48,7 +48,7 @@ class AsynchronousHTTPHandler:
         headers = self.get_headers(path, files is not None, **headers)
         params = {str(key): value for key, value in kwargs.items() if value is not None}
         if files is not None:
-            data = dict(map(lambda item: (item[0], item[1][1]), files.items()))
+            file_data = dict(map(lambda item: (item[0], item[1][1]), files.items()))
 
         async with aiohttp.ClientSession() as session:
             if not self.rate_limit.can_request:
@@ -57,9 +57,10 @@ class AsynchronousHTTPHandler:
             self.rate_limit.request_used()
             async with session.request(
                 path.method,
-                (lazer_base_url if self.use_lazer else base_url) + path.path,
+                endpoint + path.path,
                 headers=headers,
-                data=data,
+                data=file_data,
+                json=json,
                 params=params,
             ) as resp:
                 try:
@@ -72,7 +73,15 @@ class AsynchronousHTTPHandler:
                     raise type(e)(str(e) + ": " + err) if err is not None else e from None
                 if resp.content_length == 0:
                     return
-                return await resp.json() if not is_download else await resp.content.read()
+                yield resp
+
+    def get_req_gen(self, path, *args, **kwargs):
+        return self.make_request_to_endpoint(lazer_base_url if self.use_lazer else base_url, path, *args, **kwargs)
+
+    async def make_request(self, path, *args, **kwargs):
+        gen = self.get_req_gen(path, *args, **kwargs)
+        async for resp in gen:
+            return await resp.json()
 
 
 class RateLimitHandler:
@@ -83,7 +92,7 @@ class RateLimitHandler:
         self._lock = asyncio.Lock()
 
     def request_used(self):
-        self.requests.append(time.perf_counter())
+        self.requests.append(time.monotonic())
         self.reset()
 
     async def wait(self):
@@ -91,15 +100,15 @@ class RateLimitHandler:
         if self.can_request:
             self._lock.release()
             return
-        next_available_request = self.wait_limit - (time.perf_counter() - self.last_request)
+        next_available_request = self.wait_limit - (time.monotonic() - self.last_request)
         if len(self.requests) >= self.limit:
-            next_available_request = max(next_available_request, self.requests[0] + 60 - time.perf_counter())
+            next_available_request = max(next_available_request, self.requests[0] + 60 - time.monotonic())
         await asyncio.sleep(next_available_request)
         self._lock.release()
 
     def reset(self):
         while len(self.requests) > 0:
-            if self.requests[0] + 60 < time.perf_counter():
+            if self.requests[0] + 60 < time.monotonic():
                 self.requests.pop(0)
             else:
                 break
@@ -107,7 +116,7 @@ class RateLimitHandler:
     @property
     def can_request(self):
         self.reset()
-        return time.perf_counter() - self.last_request >= self.wait_limit and len(self.requests) < self.limit
+        return time.monotonic() - self.last_request >= self.wait_limit and len(self.requests) < self.limit
 
     @property
     def last_request(self):
