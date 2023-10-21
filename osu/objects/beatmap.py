@@ -801,7 +801,7 @@ class BaseNominations:
         from .beatmapset_event import BeatmapsetEvent
 
         self.disqualification: Optional[BeatmapsetEvent] = get_optional(data, "disqualification", BeatmapsetEvent)
-        self.nominated: Optional[bool] = data["nominated"]
+        self.nominated: Optional[bool] = data.get("nominated")
         self.nomination_reset: Optional[BeatmapsetEvent] = get_optional(data, "nomination_reset", BeatmapsetEvent)
         self.ranking_eta: Optional[str] = data["ranking_eta"]
         self.ranking_queue_position: Optional[int] = data["ranking_queue_position"]
