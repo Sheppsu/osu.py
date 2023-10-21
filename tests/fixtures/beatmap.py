@@ -44,10 +44,10 @@ def sample_beatmaps():
 @fixture
 def sample_beatmapset():
     yield dict(
-        id=461966,
-        title="Contrail ~Kiseki~ (Epsilon Remix)",
-        artist="Mami Kawada",
-        mapper="Charlotte",
+        id=1817884,
+        title="Dance In The Game",
+        artist="ZAQ",
+        mapper="Airiesu",
     )
 
 
