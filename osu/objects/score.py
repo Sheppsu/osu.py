@@ -72,7 +72,7 @@ class LegacyScore:
 
     mode_int: :class:`GameModeInt`
 
-    replay: :class:`bool`
+    has_replay: :class:`bool`
         is the replay is available
 
     beatmap: Optional[:class:`BeatmapCompact`]
@@ -108,7 +108,7 @@ class LegacyScore:
         "created_at",
         "mode",
         "mode_int",
-        "replay",
+        "has_replay",
         "beatmap",
         "beatmapset",
         "rank_country",
@@ -136,7 +136,7 @@ class LegacyScore:
         self.created_at: datetime = parser.parse(data["created_at"])
         self.mode: GameModeStr = GameModeStr(data["mode"])
         self.mode_int: GameModeInt = GameModeInt(data["mode_int"])
-        self.replay: bool = data["replay"]
+        self.has_replay: bool = data["replay"]
         self.type: ObjectType = ObjectType(data["type"])
 
         from .match import MatchGameScoreInfo
@@ -151,6 +151,11 @@ class LegacyScore:
         self.current_user_attributes: Optional[ScoreUserAttributes] = get_optional(
             data, "current_user_attributes", ScoreUserAttributes
         )
+
+    # backwards compatibility
+    @property
+    def replay(self):
+        return self.has_replay
 
     def __repr__(self):
         return prettify(self, "user_id", "accuracy")
