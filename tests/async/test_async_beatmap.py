@@ -1,4 +1,5 @@
 import pytest
+import os
 
 from osu import (
     BeatmapsetEventType,
@@ -121,4 +122,13 @@ class TestAsynchronousBeatmap:
 
     @pytest.mark.asyncio
     async def test_favourite_beatmapset(self, lazer_async_client):
-        pass
+        beatmapset_id = 1545382
+        assert await lazer_async_client.favourite_beatmapset(beatmapset_id, True) > 0
+
+    @pytest.mark.asyncio
+    async def test_download_beatmapset(self, lazer_async_client, sample_beatmapset):
+        path = f"{sample_beatmapset['id']}.osz"
+        await lazer_async_client.download_beatmapset(sample_beatmapset["id"], path)
+        with open(path, "rb") as f:
+            assert f.read(4) == b"\x50\x4B\x03\x04"
+        os.remove(path)

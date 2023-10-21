@@ -1,3 +1,5 @@
+import os
+
 from osu import (
     BeatmapsetEventType,
     BeatmapsetSearchFilter,
@@ -103,6 +105,13 @@ class TestBeatmap:
             ):
                 assert all([event.type == event_type for event in ret.events])
 
-    def favourite_beatmapset(self, lazer_client):
+    def test_favourite_beatmapset(self, lazer_client):
         beatmapset_id = 1545382
         assert lazer_client.favourite_beatmapset(beatmapset_id, True) > 0
+
+    def test_download_beatmapset(self, lazer_client, sample_beatmapset):
+        path = f"{sample_beatmapset['id']}.osz"
+        lazer_client.download_beatmapset(sample_beatmapset["id"], path)
+        with open(path, "rb") as f:
+            assert f.read(4) == b"\x50\x4B\x03\x04"
+        os.remove(path)
