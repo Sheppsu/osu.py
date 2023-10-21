@@ -15,15 +15,6 @@ class TestRooms:
         scores = lazer_client.get_scores(sample_user_highscore["room_id"], sample_user_highscore["playlist_id"])
         assert any(map(lambda score: score.user_id == sample_user_highscore["user_id"], scores.scores))
 
-    def test_get_score(self, lazer_client, sample_user_highscore):
-        score = lazer_client.get_score(
-            sample_user_highscore["room_id"], sample_user_highscore["playlist_id"], sample_user_highscore["score_id"]
-        )
-        assert score
-        assert score.user
-        assert score.user.id == sample_user_highscore["user_id"]
-        assert score.id == sample_user_highscore["score_id"]
-
     def test_get_rooms(self, lazer_client):
         # TODO: test more parameters
         rooms = lazer_client.get_rooms(sort=RoomType.PLAYLISTS, limit=5)

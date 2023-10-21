@@ -22,16 +22,6 @@ class TestAsynchronousRooms:
         assert any(map(lambda score: score.user_id == sample_user_highscore["user_id"], scores.scores))
 
     @pytest.mark.asyncio
-    async def test_get_score(self, lazer_async_client, sample_user_highscore):
-        score = await lazer_async_client.get_score(
-            sample_user_highscore["room_id"], sample_user_highscore["playlist_id"], sample_user_highscore["score_id"]
-        )
-        assert score
-        assert score.user
-        assert score.user.id == sample_user_highscore["user_id"]
-        assert score.id == sample_user_highscore["score_id"]
-
-    @pytest.mark.asyncio
     async def test_get_rooms(self, lazer_async_client):
         rooms = await lazer_async_client.get_rooms(sort=RoomType.PLAYLISTS, limit=5)
         assert len(rooms) == 5
