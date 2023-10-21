@@ -1,5 +1,5 @@
 import requests
-from time import perf_counter
+from time import monotonic
 from typing import Callable, Optional
 
 from .constants import auth_url, token_url, lazer_token_url
@@ -55,7 +55,7 @@ class AuthHandler:
 
         self.refresh_token = None
         self._token = None
-        self.expire_time = perf_counter()
+        self.expire_time = monotonic()
         self._refresh_callback = None
 
     def get_auth_url(self, state: Optional[str] = ""):
@@ -126,7 +126,7 @@ class AuthHandler:
         if "refresh_token" in response:
             self.refresh_token = response["refresh_token"]
         self._token = response["access_token"]
-        self.expire_time = perf_counter() + response["expires_in"]
+        self.expire_time = monotonic() + response["expires_in"]
 
     def refresh_access_token(self, refresh_token: Optional[str] = None):
         """
@@ -141,7 +141,7 @@ class AuthHandler:
         """
         if refresh_token:
             self.refresh_token = refresh_token
-        if perf_counter() < self.expire_time:
+        if monotonic() < self.expire_time:
             return
         data = {
             "client_id": self.client_id,
@@ -167,7 +167,7 @@ class AuthHandler:
         if "refresh_token" in response:
             self.refresh_token = response["refresh_token"]
         self._token = response["access_token"]
-        self.expire_time = perf_counter() + response["expires_in"]
+        self.expire_time = monotonic() + response["expires_in"]
         if self._refresh_callback:
             self._refresh_callback(self)
 
@@ -176,7 +176,7 @@ class AuthHandler:
         """
         Returns the access token. If the token is expired, it will be refreshed before being returned.
         """
-        if self.expire_time - 5 <= perf_counter():
+        if self.expire_time - 5 <= monotonic():
             self.refresh_access_token()
         return self._token
 
@@ -276,7 +276,7 @@ class LazerAuthHandler:
         resp = resp.json()
         self._token = resp["access_token"]
         self.refresh_token = resp["refresh_token"]
-        self.expire_time = perf_counter() + resp["expires_in"]
+        self.expire_time = monotonic() + resp["expires_in"]
 
     def refresh_access_token(self):
         if self.refresh_token is None:
@@ -293,11 +293,11 @@ class LazerAuthHandler:
         resp = resp.json()
         self._token = resp["access_token"]
         self.refresh_token = resp["refresh_token"]
-        self.expire_time = perf_counter() + resp["expires_in"]
+        self.expire_time = monotonic() + resp["expires_in"]
 
     @property
     def token(self):
-        if self.expire_time - 5 <= perf_counter():
+        if self.expire_time - 5 <= monotonic():
             self.refresh_access_token()
         return self._token
 
