@@ -1565,27 +1565,6 @@ class Client:
             )
         )
 
-    def get_score(self, room: int, playlist: int, score: int) -> MultiplayerScore:
-        """
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        room: :class:`int`
-            Id of the room.
-
-        playlist: :class:`int`
-            Id of the playlist item.
-
-        score: :class:`int`
-            Id of the score.
-
-        **Returns**
-
-        :class:`MultiplayerScore`
-        """
-        return MultiplayerScore(self.http.make_request(Path.get_score(room, playlist, score)))
-
     def get_news_listing(
         self,
         limit: Optional[int] = None,
@@ -2266,7 +2245,7 @@ class Client:
             list(map(UserScoreAggregate, resp["leaderboard"])), get_optional(resp, "user_score", UserScoreAggregate)
         )
 
-    def get_replay_data(self, mode, score_id):
+    def get_replay_data(self, mode, score_id) -> Replay:
         """
         Returns replay data for a score.
 
@@ -2283,9 +2262,11 @@ class Client:
         :class:`osrparse.Replay`
         """
         mode = parse_enum_args(mode)
-        return Replay.from_string(self.http.make_request(Path.get_replay_data(mode, score_id), is_download=True))
+        return Replay.from_string(
+            self.http.make_request(Path.get_replay_data(mode, score_id), is_download=True).content
+        )
 
-    def get_friends(self):
+    def get_friends(self) -> List[UserCompact]:
         """
         Returns a list of friends.
 
@@ -2293,7 +2274,7 @@ class Client:
 
         **Returns**
 
-        List[:class:`User`]
+        List[:class:`UserCompact`]
         """
         return list(map(UserCompact, self.http.make_request(Path.get_friends())))
 
@@ -2321,7 +2302,7 @@ class Client:
         )
         return resp["favourite_count"]
 
-    def get_open_chat_channels(self):
+    def get_open_chat_channels(self) -> List[ChatChannel]:
         """
         Get a list of chat channels that you have open. Includes recent DMs and public chat channels.
 
@@ -2520,3 +2501,25 @@ class Client:
         """
         resp = self.http.make_request(Path.download_quota_check())
         return resp["quota_used"]
+
+    def download_beatmapset(self, beatmapset_id: int, path: str, chunk_write_size: int = 4096) -> None:
+        """
+        Download a beatmapset
+
+        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
+
+        **Parameters**
+
+        beatmapset_id: :class:`int`
+            Id of the beatmapset
+
+        path: :class:`str`
+            Path to write the beatmapset to
+
+        chunk_write_size: :class:`int`
+            File is written in chunks and this defines chunk size in bytes. Defaults to 4096.
+        """
+        resp = self.http.make_request(Path.download_beatmapset(beatmapset_id), is_download=True)
+        with open(path, "wb") as f:
+            for chunk in resp.iter_content(chunk_size=chunk_write_size):
+                f.write(chunk)

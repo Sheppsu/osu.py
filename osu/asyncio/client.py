@@ -21,6 +21,8 @@ from datetime import datetime
 from osrparse import Replay
 from dateutil import parser
 import json
+import aiofiles
+import itertools
 
 
 class AsynchronousClient:
@@ -1568,27 +1570,6 @@ class AsynchronousClient:
             )
         )
 
-    async def get_score(self, room: int, playlist: int, score: int) -> MultiplayerScore:
-        """
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        room: :class:`int`
-            Id of the room.
-
-        playlist: :class:`int`
-            Id of the playlist item.
-
-        score: :class:`int`
-            Id of the score.
-
-        **Returns**
-
-        :class:`MultiplayerScore`
-        """
-        return MultiplayerScore(await self.http.make_request(Path.get_score(room, playlist, score)))
-
     async def get_news_listing(
         self,
         limit: Optional[int] = None,
@@ -2102,7 +2083,9 @@ class AsynchronousClient:
         """
         match_id = cursor.get("match_id") if cursor is not None else None
         sort = parse_enum_args(sort)
-        resp = await self.http.make_request(Path.get_matches(), limit=limit, sort=sort, **{"cursor[match_id]": match_id})
+        resp = await self.http.make_request(
+            Path.get_matches(), limit=limit, sort=sort, **{"cursor[match_id]": match_id}
+        )
         return GetMatchesResult(list(map(Match, resp["matches"])), resp["params"], resp["cursor"])
 
     async def get_match(self, match_id: int) -> MatchExtended:
@@ -2269,7 +2252,7 @@ class AsynchronousClient:
             list(map(UserScoreAggregate, resp["leaderboard"])), get_optional(resp, "user_score", UserScoreAggregate)
         )
 
-    async def get_replay_data(self, mode, score_id):
+    async def get_replay_data(self, mode, score_id) -> Replay:
         """
         Returns replay data for a score.
 
@@ -2286,9 +2269,11 @@ class AsynchronousClient:
         :class:`osrparse.Replay`
         """
         mode = parse_enum_args(mode)
-        return Replay.from_string(await self.http.make_request(Path.get_replay_data(mode, score_id), is_download=True))
+        gen = self.http.get_req_gen(Path.get_replay_data(mode, score_id))
+        async for resp in gen:
+            return Replay.from_string(await resp.read())
 
-    async def get_friends(self):
+    async def get_friends(self) -> List[UserCompact]:
         """
         Returns a list of friends.
 
@@ -2296,7 +2281,7 @@ class AsynchronousClient:
 
         **Returns**
 
-        List[:class:`User`]
+        List[:class:`UserCompact`]
         """
         return list(map(UserCompact, await self.http.make_request(Path.get_friends())))
 
@@ -2324,7 +2309,7 @@ class AsynchronousClient:
         )
         return resp["favourite_count"]
 
-    async def get_open_chat_channels(self):
+    async def get_open_chat_channels(self) -> List[ChatChannel]:
         """
         Get a list of chat channels that you have open. Includes recent DMs and public chat channels.
 
@@ -2523,3 +2508,27 @@ class AsynchronousClient:
         """
         resp = await self.http.make_request(Path.download_quota_check())
         return resp["quota_used"]
+
+    async def download_beatmapset(self, beatmapset_id: int, path: str, chunk_write_size: int = 4096) -> None:
+        """
+        Download a beatmapset
+
+        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
+
+        **Parameters**
+
+        beatmapset_id: :class:`int`
+            Id of the beatmapset
+
+        path: :class:`str`
+            Path to write the beatmapset to
+
+        chunk_write_size: :class:`int`
+            File is written in chunks and this defines chunk size in bytes. Defaults to 4096.
+        """
+        async with aiofiles.open(path, "wb") as f:
+            gen = self.http.get_req_gen(Path.download_beatmapset(beatmapset_id))
+            async for resp in gen:
+                data = await resp.read()
+            for i in range(len(data) // chunk_write_size + 1):
+                await f.write(data[i * chunk_write_size : (i + 1) * chunk_write_size])
