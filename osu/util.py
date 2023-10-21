@@ -343,6 +343,7 @@ class NotificationsUtil(JsonUtil):
     object_type: Optional[Union[:class:`str`, :class:`ObjectType`]]
         Type of the object that triggered the notification
     """
+
     __slots__ = ("category", "id", "object_id", "object_type")
 
     def __init__(
@@ -368,6 +369,7 @@ class IdentitiesUtil(JsonUtil):
     object_type: Optional[Union[:class:`str`, :class:`ObjectType`]]
         Type of the object that triggered the notification
     """
+
     __slots__ = ("category", "object_id", "object_type")
 
     def __init__(
