@@ -333,6 +333,10 @@ Objects
    :members:
    
 
+.. autoclass:: osu.CurrentNomination
+   :members:
+
+
 .. autoclass:: osu.CurrentUserPin
    :members:
 
