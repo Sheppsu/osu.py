@@ -1,13 +1,9 @@
 import setuptools
 import re
 
-requirements = [
-    "aiohttp>=3.7.4,<4",
-    "python_dateutil>=2.4.0,<3",
-    "requests>=2.25.1,<3",
-    "websockets>=10.2,<11",
-    "osrparse>=6.0.1,<7",
-]
+
+with open("requirements.txt") as f:
+    requirements = f.read().splitlines()
 
 readme = ''
 with open('README.rst') as f:
@@ -16,6 +12,10 @@ with open('README.rst') as f:
 version = ''
 with open('osu/__init__.py') as f:
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]', f.read(), re.MULTILINE).group(1)
+    
+readme = ''
+with open('README.rst') as f:
+    readme = f.read()
 
 project_urls = {
     "Bug Tracker": "https://github.com/Sheepposu/osu.py/issues",
@@ -27,6 +27,8 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
+    "Natural Language :: English",
+    "Intended Audience :: Developers"
 ]
 
 packages = [
@@ -41,8 +43,7 @@ setuptools.setup(
     packages=packages,
     author="Sheepposu",
     description="API Wrapper for osu!api v2 written in Python.",
-    long_description="See the readme on github :)",
-    long_description_content_type="text/plain",
+    long_description=readme,
     install_requires=requirements,
     project_urls=project_urls,
     classifiers=classifiers,

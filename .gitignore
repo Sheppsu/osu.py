@@ -30,6 +30,7 @@ share/python-wheels/
 *.egg
 MANIFEST
 .idea/
+.pypirc
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
