@@ -1,8 +1,17 @@
+from typing import Optional
+
+
 class Path:
     __slots__ = ("method", "path", "scope", "requires_user", "content_type", "accept")
 
     def __init__(
-        self, method, path, scope, requires_user=False, content_type="application/json", accept="application/json"
+        self,
+        method: str,
+        path: str,
+        scope: Optional[str],
+        requires_user=False,
+        content_type="application/json",
+        accept="application/json",
     ):
         self.method = method
         self.path = path
@@ -185,10 +194,6 @@ class Path:
         return cls("get", f"rooms/{room}/playlist/{playlist}/scores", "public", True)
 
     @classmethod
-    def get_score(cls, room, playlist, score):
-        return cls("get", f"rooms/{room}/playlist/{playlist}/scores/{score}", "lazer", True)
-
-    @classmethod
     def get_news_listing(cls):
         return cls("get", "news", None)
 
@@ -327,3 +332,7 @@ class Path:
     @classmethod
     def beatmapset_search(cls):
         return cls("get", "beatmapsets/search", "public")
+
+    @classmethod
+    def download_beatmapset(cls, beatmapset_id):
+        return cls("get", f"beatmapsets/{beatmapset_id}/download", "lazer", True)
