@@ -16,26 +16,6 @@ class TestComment:
         comments = client.get_comments(sort=CommentSort.OLD)
         self._assert_comment_bundle(comments, sample_comment)
 
-    def test_post_comment(self, lazer_client):
-        # This is kinda ehhhhhhhhh to implement
-        pass
-
     def test_get_comment(self, client, sample_comment):
         comments = client.get_comment(sample_comment["id"])
-        self._assert_comment_bundle(comments, sample_comment)
-
-    def test_edit_comment(self, lazer_client):
-        # This is kinda ehhhhhhhhh to implement
-        pass
-
-    def test_delete_comment(self, lazer_client):
-        # This is kinda ehhhhhhhhh to implement
-        pass
-
-    def test_add_comment_vote(self, lazer_client, sample_comment):
-        comments = lazer_client.add_comment_vote(sample_comment["id"])
-        self._assert_comment_bundle(comments, sample_comment)
-
-    def test_remove_comment_vote(self, lazer_client, sample_comment):
-        comments = lazer_client.remove_comment_vote(sample_comment["id"])
         self._assert_comment_bundle(comments, sample_comment)

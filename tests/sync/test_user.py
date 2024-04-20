@@ -57,5 +57,5 @@ class TestUser:
         assert own_data.id
         assert own_data.username
 
-    def get_friends(self, lazer_client):
-        lazer_client.get_friends()
+    def get_friends(self, user_client):
+        user_client.get_friends()

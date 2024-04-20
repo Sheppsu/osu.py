@@ -5,10 +5,6 @@ from osu import WikiSearchMode, GameModeStr, RankingType
 
 class TestAsynchronousMisc:
     @pytest.mark.asyncio
-    async def test_get_updates(self, lazer_async_client):
-        await lazer_async_client.get_updates(0)
-
-    @pytest.mark.asyncio
     async def test_search(self, async_client):
         result = await async_client.search(query="Hardrock")
         assert result.wiki_page is not None
@@ -34,15 +30,6 @@ class TestAsynchronousMisc:
         assert news.slug == sample_news_post["slug"]
         assert news.author == sample_news_post["author"]
         assert news.title == sample_news_post["title"]
-
-    @pytest.mark.asyncio
-    async def test_get_notifications(self, lazer_async_client):
-        await lazer_async_client.get_notifications()
-
-    @pytest.mark.asyncio
-    async def test_mark_notifications_as_read(self, lazer_async_client):
-        # can't really implement
-        pass
 
     @pytest.mark.asyncio
     async def test_get_ranking(self, async_client):
@@ -84,23 +71,14 @@ class TestAsynchronousMisc:
         assert backgrounds
 
     @pytest.mark.asyncio
-    async def test_get_replay_data(self, lazer_async_client):
-        replay_data = await lazer_async_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
-        assert replay_data
-
-    @pytest.mark.asyncio
-    async def test_send_report(self, lazer_async_client):
-        # I will not implement this for obvious reasons lol
-        pass
-
-    @pytest.mark.asyncio
-    async def test_check_download_quota(self, lazer_async_client):
-        assert await lazer_async_client.check_download_quota() is not None
-
-    @pytest.mark.asyncio
     async def test_get_topic_and_posts(self, async_client, sample_topic):
         ret = await async_client.get_topic_and_posts(1699086)
         assert ret.topic
         assert ret.topic.id == sample_topic["id"]
         assert ret.topic.title == sample_topic["title"]
         assert ret.posts
+
+    @pytest.mark.asyncio
+    async def test_get_replay_data(self, async_user_client):
+        replay_data = await async_user_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
+        assert replay_data

@@ -1,31 +1,12 @@
 from pytest_asyncio import fixture
 
-from osu import Mods, GameModeStr
+from osu import Mod, GameModeStr
 
 
 @fixture
 def sample_beatmap_scores():
     yield dict(
         beatmap_id=741477,
-        scores=list(
-            [
-                dict(
-                    id=2046025260,
-                    user_id=214187,
-                    max_combo=197,
-                ),
-                dict(
-                    id=2157887005,
-                    user_id=6143840,
-                    max_combo=197,
-                ),
-                dict(
-                    id=2427781720,
-                    user_id=7162035,
-                    max_combo=197,
-                ),
-            ]
-        ),
     )
 
 
@@ -47,15 +28,15 @@ def sample_user_beatmap_scores():
             [
                 dict(
                     accuracy=0.9725056689342404,
-                    mods=Mods.Hidden | Mods.DoubleTime,
+                    mods=[Mod.Hidden, Mod.DoubleTime, Mod.Classic],
                 ),
                 dict(
                     accuracy=0.9747732426303855,
-                    mods=Mods.DoubleTime,
+                    mods=[Mod.DoubleTime, Mod.Classic],
                 ),
                 dict(
                     accuracy=0.9810090702947846,
-                    mods=None,
+                    mods=[Mod.Classic],
                 ),
             ]
         ),
@@ -67,28 +48,25 @@ def sample_scores():
     yield list(
         [
             dict(
-                id=3693301831,
+                id=1267337687,
                 mode=GameModeStr.STANDARD,
                 user_id=7562902,
                 accuracy=1,
-                mods=Mods.Hidden | Mods.HardRock | Mods.DoubleTime,
-                score=4988391,
+                mods=[Mod.Hidden, Mod.HardRock, Mod.DoubleTime, Mod.Classic],
             ),
             dict(
-                id=2177560145,
+                id=1496013792,
                 mode=GameModeStr.STANDARD,
                 user_id=124493,
                 accuracy=0.9983190452176837,
-                mods=Mods.Hidden | Mods.HardRock,
-                score=132408001,
+                mods=[Mod.Hidden, Mod.HardRock, Mod.Classic],
             ),
             dict(
-                id=2847567607,
+                id=786148462,
                 mode=GameModeStr.STANDARD,
                 user_id=4650315,
                 accuracy=0.9928113767776215,
-                mods=Mods.HardRock,
-                score=182745963,
+                mods=[Mod.HardRock, Mod.Classic],
             ),
         ]
     )

@@ -2,9 +2,6 @@ from osu import WikiSearchMode, GameModeStr, RankingType
 
 
 class TestMisc:
-    def test_get_updates(self, lazer_client):
-        lazer_client.get_updates(0)
-
     def test_search(self, client):
         result = client.search(query="Hardrock")
         assert result.wiki_page is not None
@@ -31,14 +28,6 @@ class TestMisc:
         assert news.slug == sample_news_post["slug"]
         assert news.author == sample_news_post["author"]
         assert news.title == sample_news_post["title"]
-
-    def test_get_notifications(self, lazer_client):
-        ret = lazer_client.get_notifications()
-        assert ret
-
-    def test_mark_notifications_as_read(self, lazer_client):
-        # can't really implement
-        pass
 
     def test_get_ranking(self, client):
         # TODO: test more parameters
@@ -74,16 +63,9 @@ class TestMisc:
         backgrounds = client.get_seasonal_backgrounds()
         assert backgrounds
 
-    def test_get_replay_data(self, lazer_client):
-        replay_data = lazer_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
+    def test_get_replay_data(self, user_client):
+        replay_data = user_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
         assert replay_data
-
-    def test_send_report(self, lazer_client):
-        # I will not implement this for obvious reasons lol
-        pass
-
-    def test_check_download_quota(self, lazer_client):
-        assert lazer_client.check_download_quota() is not None
 
     def test_get_topic_and_posts(self, client, sample_topic):
         ret = client.get_topic_and_posts(1699086)

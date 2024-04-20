@@ -61,12 +61,12 @@ class TestAsynchronousUser:
         assert target_beatmap.creator == expected_beatmap["creator"]
 
     @pytest.mark.asyncio
-    async def test_get_own_data(self, lazer_async_client):
-        me = await lazer_async_client.get_own_data()
+    async def test_get_own_data(self, async_user_client):
+        me = await async_user_client.get_own_data()
         assert me
         assert me.id
         assert me.username
 
     @pytest.mark.asyncio
-    async def test_get_friends(self, lazer_async_client):
-        await lazer_async_client.get_friends()
+    async def test_get_friends(self, async_user_client):
+        await async_user_client.get_friends()
