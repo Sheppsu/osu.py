@@ -60,6 +60,9 @@ class UserCompact:
     account_history: Optional[List[:class:`UserAccountHistory`]]
 
     active_tournament_banner: Optional[:class:`ProfileBanner`]
+        deprecated; use active_tournament_banners
+
+    active_tournament_banners: Optional[List[:class:`ProfileBanner`]]
 
     badges: Optional[List[:class:`UserBadge`]]
 
@@ -162,6 +165,7 @@ class UserCompact:
         "username",
         "account_history",
         "active_tournament_banner",
+        "active_tournament_banners",
         "badges",
         "beatmap_playcounts_count",
         "blocks",
@@ -228,6 +232,9 @@ class UserCompact:
         )
         self.active_tournament_banner: Optional[ProfileBanner] = get_optional(
             data, "active_tournament_banner", ProfileBanner
+        )
+        self.active_tournament_banners: Optional[List[ProfileBanner]] = get_optional_list(
+            data, "active_tournament_banners", ProfileBanner
         )
         self.badges: Optional[List[UserBadge]] = get_optional_list(data, "badges", UserBadge)
         self.beatmap_playcounts_count: Optional[int] = data.get("beatmap_playcounts_count")
