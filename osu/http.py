@@ -1,26 +1,31 @@
 import requests
 import time
+from typing import Optional
 
+from .auth import BaseAuthHandler
 from .exceptions import ScopeException
-from .constants import base_url, lazer_base_url
+from .constants import base_url
 
 
 class HTTPHandler:
-    def __init__(self, client, request_wait_time, limit_per_minute, use_lazer=False):
-        self.client = client
-        self.rate_limit = RateLimitHandler(request_wait_time, limit_per_minute)
-        self.use_lazer = use_lazer
+    def __init__(self, auth: Optional[BaseAuthHandler], request_wait_time: float, limit_per_minute: int, api_version: str = "20220705"):
+        self.auth: Optional[BaseAuthHandler] = auth
+        self.rate_limit: RateLimitHandler = RateLimitHandler(request_wait_time, limit_per_minute)
+        self.api_version: str = api_version
 
     def get_headers(self, path, is_files=False, **kwargs):
         headers = {
             "charset": "utf-8",
-            "x-api-version": "20220705",
+            "x-api-version": self.api_version,
             "Accept": path.accept,
         }
         if not is_files:  # otherwise let requests library handle it
             headers["Content-Type"] = path.content_type
         if path.requires_auth and "Authorization" not in headers:
-            headers["Authorization"] = f"Bearer {self.client.auth.token}"
+            token = self.auth.get_token()
+            if token is None:
+                raise ValueError("Cannot make request requiring authorization with a null token")
+            headers["Authorization"] = f"Bearer {token}"
         for key, value in kwargs.items():
             if value is not None:
                 headers[str(key)] = str(value)
@@ -34,13 +39,13 @@ class HTTPHandler:
         if data is None:
             data = {}
 
-        if path.requires_auth and self.client.auth is None:
+        if path.requires_auth and self.auth is None:
             raise ScopeException("You need to be authenticated to make this request.")
 
-        if path.requires_auth and path.scope not in self.client.auth.scope:
+        if path.requires_auth and path.scope not in self.auth.scope:
             raise ScopeException(f"You don't have the {path.scope} scope, which is required to make this request.")
 
-        if path.requires_user and not self.client.auth.has_user:
+        if path.requires_user and not self.auth.has_user():
             raise ScopeException(
                 "This request requires a user. You need either a delegate scope or "
                 "to register OAuth with Authorization Code Grant."
@@ -68,15 +73,15 @@ class HTTPHandler:
         return response.json() if not is_download else response
 
     def make_request(self, path, *args, **kwargs):
-        return self.make_request_to_endpoint(lazer_base_url if self.use_lazer else base_url, path, *args, **kwargs)
+        return self.make_request_to_endpoint(base_url, path, *args, **kwargs)
 
 
 class RateLimitHandler:
-    def __init__(self, request_wait_limit, limit_per_minute):
-        self.wait_limit = request_wait_limit
-        self.limit = limit_per_minute
-        self.last_request = time.monotonic() - self.wait_limit
-        self.requests = []
+    def __init__(self, request_wait_limit: float, limit_per_minute: int):
+        self.wait_limit: float = request_wait_limit
+        self.limit: int = limit_per_minute
+        self.last_request: float = time.monotonic() - self.wait_limit
+        self.requests: list[float] = []
 
     def request_used(self):
         self.requests.append(time.monotonic())

@@ -85,76 +85,16 @@ class Path:
         return cls("get", f"changelog/{changelog}", None)
 
     @classmethod
-    def chat_ack(cls):
-        return cls("post", "chat/ack", "lazer", True)
-
-    @classmethod
     def create_new_pm(cls):
         return cls("post", "chat/new", "chat.write", True)
-
-    @classmethod
-    def get_updates(cls):
-        return cls("get", "chat/updates", "lazer", True)
-
-    @classmethod
-    def get_channel_messages(cls, channel):
-        return cls("get", f"chat/channels/{channel}/messages", "lazer", True)
-
-    @classmethod
-    def send_message_to_channel(cls, channel):
-        return cls("post", f"chat/channels/{channel}/messages", "lazer", True)
-
-    @classmethod
-    def join_channel(cls, channel, user):
-        return cls("put", f"chat/channels/{channel}/users/{user}", "lazer", True)
-
-    @classmethod
-    def leave_channel(cls, channel, user):
-        return cls("delete", f"chat/channels/{channel}/users/{user}", "lazer", True)
-
-    @classmethod
-    def mark_channel_as_read(cls, channel, message):
-        return cls("put", f"chat/channels/{channel}/mark-as-read/{message}", "lazer", True)
-
-    @classmethod
-    def get_channel_list(cls):
-        return cls("get", "chat/channels", "lazer", True)
-
-    @classmethod
-    def create_channel(cls):
-        return cls("post", "chat/channels", "lazer", True)
-
-    @classmethod
-    def get_channel(cls, channel):
-        return cls("get", f"chat/channels/{channel}", "lazer", True)
 
     @classmethod
     def get_comments(cls):
         return cls("get", "comments", None)
 
     @classmethod
-    def post_new_comment(cls):
-        return cls("post", "comments", "lazer", True)
-
-    @classmethod
     def get_comment(cls, comment):
         return cls("get", f"comments/{comment}", None)
-
-    @classmethod
-    def edit_comment(cls, comment):
-        return cls("patch", f"comments/{comment}", "lazer", True)
-
-    @classmethod
-    def delete_comment(cls, comment):
-        return cls("delete", f"comments/{comment}", "lazer", True)
-
-    @classmethod
-    def add_comment_vote(cls, comment):
-        return cls("post", f"comments/{comment}/vote", "lazer", True)
-
-    @classmethod
-    def remove_comment_vote(cls, comment):
-        return cls("delete", f"comments/{comment}/vote", "lazer", True)
 
     @classmethod
     def reply_topic(cls, topic):
@@ -181,15 +121,6 @@ class Path:
         return cls("get", "search", "public")
 
     @classmethod
-    def get_user_high_score(cls, room, playlist, user):
-        return cls(
-            "get",
-            f"rooms/{room}/playlist/{playlist}/scores/users/{user}",
-            "lazer",
-            True,
-        )
-
-    @classmethod
     def get_scores(cls, room, playlist):
         return cls("get", f"rooms/{room}/playlist/{playlist}/scores", "public", True)
 
@@ -200,14 +131,6 @@ class Path:
     @classmethod
     def get_news_post(cls, news):
         return cls("get", f"news/{news}", None)
-
-    @classmethod
-    def get_notifications(cls):
-        return cls("get", "notifications", "lazer", True)
-
-    @classmethod
-    def mark_notifications_as_read(cls):
-        return cls("post", "notifications/mark-read", "lazer", True)
 
     @classmethod
     def revoke_current_token(cls):
@@ -258,6 +181,10 @@ class Path:
         return cls("get", f"scores/{mode}/{score}", "public")
 
     @classmethod
+    def get_score_by_id_only(cls, score):
+        return cls("get", f"scores/{score}", "public")
+
+    @classmethod
     def get_beatmapset_events(cls):
         return cls("get", "beatmapsets/events", "public")
 
@@ -294,45 +221,5 @@ class Path:
         return cls("get", "friends", "friends.read", True)
 
     @classmethod
-    def get_new_score_id(cls, beatmap_id):
-        return cls("post", f"beatmaps/{beatmap_id}/solo/scores", "lazer", True)
-
-    @classmethod
-    def submit_score(cls, beatmap_id, token):
-        return cls("put", f"beatmaps/{beatmap_id}/solo/scores/{token}", "lazer", True)
-
-    @classmethod
-    def favourite_beatmapset(cls, beatmapset_id):
-        return cls("post", f"beatmapsets/{beatmapset_id}/favourites", "lazer", True)
-
-    @classmethod
-    def get_chat_presence(cls):
-        return cls("get", "chat/presence", "lazer", True)
-
-    @classmethod
-    def join_to_room(cls, room, user):
-        return cls("put", f"rooms/{room}/users/{user}", "lazer", True)
-
-    @classmethod
-    def kick_from_room(cls, room, user):
-        return cls("delete", f"rooms/{room}/users/{user}", "lazer", True)
-
-    @classmethod
-    def send_report(cls):
-        return cls("post", "reports", "lazer", True)
-
-    @classmethod
-    def create_room(cls):
-        return cls("post", "rooms", "lazer", True)
-
-    @classmethod
-    def download_quota_check(cls):
-        return cls("get", "me/download-quota-check", "lazer", True)
-
-    @classmethod
     def beatmapset_search(cls):
         return cls("get", "beatmapsets/search", "public")
-
-    @classmethod
-    def download_beatmapset(cls, beatmapset_id):
-        return cls("get", f"beatmapsets/{beatmapset_id}/download", "lazer", True)

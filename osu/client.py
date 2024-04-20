@@ -2,25 +2,19 @@ from .http import HTTPHandler
 from .objects import *
 from .path import Path
 from .enums import *
-from .auth import AuthHandler, LazerAuthHandler
+from .auth import BaseAuthHandler, AuthHandler
 from .util import (
     parse_mods_arg,
     parse_enum_args,
     BeatmapsetSearchFilter,
     create_multipart_formdata,
-    PlaylistItemUtil,
-    IdentitiesUtil,
-    NotificationsUtil,
-    JsonUtil,
-    get_optional_list,
+    get_optional_list
 )
 from .results import *
 
 from typing import Union, Optional, Sequence, Dict, List
 from datetime import datetime
 from osrparse import Replay
-from dateutil import parser
-import json
 
 
 class Client:
@@ -33,25 +27,20 @@ class Client:
 
     **Init Parameters**
 
-    auth: :class:`AuthHandler`
+    auth: :class:`BaseAuthHandler`
         The AuthHandler object passed in when initiating the Client object
 
-    request_wait_time: Optional[:class:`float`]
+    request_wait_time: :class:`float`
         Default is 1.
 
         This defines the amount of time that the client should wait before making another request.
         It can make it easier to stay within the rate limits without using all your requests up quickly
         and then waiting forever to make another. It's most applicable in bot-type apps.
 
-    limit_per_minute: Optional[:class:`float`]
+    limit_per_minute: :class:`int`
         Default is 60 because that's the limit peppy requests that we stay under.
 
         This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
-
-    use_lazer: Optional[:class:`bool`]
-        Default is False. This changes which base api endpoint the client will use.
-
-        Uses lazer.ppy.sh when True and osu.ppy.sh when False.
 
     Make sure if you are changing the ratelimit handling that you are still following peppy's
     TOU for using the API:
@@ -66,15 +55,19 @@ class Client:
     you should probably give peppy a yell.
     """
 
+    __slots__ = ("http",)
+
     def __init__(
         self,
-        auth: Union[AuthHandler, LazerAuthHandler] = None,
-        request_wait_time: Optional[float] = 1.0,
-        limit_per_minute: Optional[float] = 60.0,
-        use_lazer: Optional[bool] = False,
+        auth: Optional[BaseAuthHandler] = None,
+        request_wait_time: float = 1.0,
+        limit_per_minute: int = 60
     ):
-        self.auth = auth
-        self.http = HTTPHandler(self, request_wait_time, limit_per_minute, use_lazer)
+        self.http = HTTPHandler(auth, request_wait_time, limit_per_minute)
+
+    @property
+    def auth(self) -> Optional[BaseAuthHandler]:
+        return self.http.auth
 
     @classmethod
     def from_client_credentials(
@@ -84,8 +77,8 @@ class Client:
         redirect_url: Optional[str],
         scope: Optional[Scope] = Scope.default(),
         code: Optional[str] = None,
-        request_wait_time: Optional[float] = 1.0,
-        limit_per_minute: Optional[float] = 60.0,
+        request_wait_time: float = 1.0,
+        limit_per_minute: int = 60,
     ) -> "Client":
         """
         Returns a :class:`Client` object from client id, client secret, redirect uri, and scope.
@@ -107,14 +100,14 @@ class Client:
         code: Optional[:class:`str`]
             If provided, is used to authorize. Read more about this under :class:`AuthHandler.get_auth_token`
 
-        request_wait_time: Optional[:class:`float`]
+        request_wait_time: :class:`float`
             Default is 1.
 
             This defines the amount of time that the client should wait before making another request.
             It can make it easier to stay within the rate limits without using all your requests up quickly
             and then waiting forever to make another. It's most applicable in bot-type apps.
 
-        limit_per_minute: Optional[:class:`float`]
+        limit_per_minute: :class:`int`
             Default is 60 because that's the limit peppy requests that we stay under.
 
             This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
@@ -127,33 +120,18 @@ class Client:
         auth.get_auth_token(code)
         return cls(auth, request_wait_time, limit_per_minute)
 
-    @classmethod
-    def from_osu_credentials(
-        cls,
-        username: str,
-        password: str,
-        request_wait_time: Optional[float] = 1.0,
-        limit_per_minute: Optional[float] = 60.0,
-    ) -> "Client":
+    def set_api_version(self, version: str) -> None:
         """
-        Returns a :class:`Client` object which will make authorize and make requests to
-        lazer.ppy.sh
+        Sets x-api-version header to use when sending requests to the api.
+        You shouldn't have to change it from the default, but if you need to
+        then the function is available.
 
-        username: :class:`str`
-            osu! username login
+        **Parameters**
 
-        password: :class:`str`
-            osu! password login
-
-        request_wait_time: Optional[:class:`float`]
-            Read under Client init parameters.
-
-        limit_per_minute: Optional[:class:`float`]
-            Read under Client init parameters.
+        version: :class:`str`
+            x-api-version header value in the format yyyymmdd
         """
-        auth = LazerAuthHandler(username, password)
-        auth.get_auth_token()
-        return cls(auth, request_wait_time, limit_per_minute, True)
+        self.http.api_version = version
 
     def lookup_beatmap(
         self,
@@ -304,47 +282,6 @@ class Client:
                 **{"mods[]": mods},
                 type=ranking_type,
             )
-        )
-
-    def get_lazer_beatmap_scores(
-        self,
-        beatmap: int,
-        mode: Optional[Union[str, GameModeStr]] = None,
-        mods: Optional[str] = None,
-        type: Optional[str] = None,
-    ) -> BeatmapScores:
-        """
-        Returns the top scores for a beatmap on the lazer client.
-
-        Requires OAuth and scope public
-
-        **Parameters**
-
-        beatmap: :class:`int`
-            ID of the beatmap
-
-        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
-            The game mode to get scores for
-
-        mods: Optional[:class:`str`]
-            Must pass one of:
-            a :class:`Mods` object,
-            a list of string mod abbreviations,
-            a list of :class:`Mods` objects,
-            a list of :classL`Mod` objects
-
-        type: Optional[:class:`str`]
-            Beatmap score ranking type. Currently doesn't do anything.
-
-        **Returns**
-
-        :class:`BeatmapScores`
-            :class:`SoloScore` object inside includes "user" and the included user includes "country" and "cover".
-        """
-        mode = parse_enum_args(mode)
-        mods = self._parse_mods_list(mods)
-        return BeatmapScores(
-            self.http.make_request(Path.lazer_beatmap_scores(beatmap), mode=mode, mods=mods, type=type)
         )
 
     def get_beatmap(self, beatmap: int) -> Beatmap:
@@ -778,30 +715,6 @@ class Client:
             )
         )
 
-    def chat_acknowledge(
-        self, history_since: Optional[int] = None, since: Optional[int] = None
-    ) -> Sequence[UserSilence]:
-        """
-        Send a chat ack.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        history_since: Optional[:class:`int`]
-            :class:`UserSilence` s after the specified id to return.
-            This field is preferred and takes precedence over since.
-
-        since: Optional[:class:`int`]
-            :class:`UserSilence` s after the specified :class:`ChatMessage`.message_id to return.
-
-        **Returns**
-
-        List[:class:`UserSilence`]
-        """
-        resp = self.http.make_request(Path.chat_ack(), history_since=history_since, since=since)
-        return list(map(UserSilence, resp["silences"]))
-
     def create_new_pm(
         self, target_id: int, message: str, is_action: bool, uuid: Optional[str] = None
     ) -> CreateNewPmResult:
@@ -837,257 +750,6 @@ class Client:
             ChatMessage(resp["message"]),
             resp["new_channel_id"],
         )
-
-    def get_updates(
-        self,
-        since: int = 0,
-        includes: Optional[Sequence[str]] = None,
-        history_since: Optional[int] = None,
-    ) -> GetUpdatesResult:
-        """
-        This endpoint returns new messages since the given message_id along with updated channel 'presence' data.
-
-        Requires OAuth, scope lazer, a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        since: :class:`int`
-            Defaults to 0. :class:`UserSilence`s after the specified `ChatMessage.message_id` to return.
-
-        includes: Optional[Sequence[:class:`str`]]
-            List of fields from `presence`, `silences` to include in the response. Uses `presences` if not specified.
-
-        history_since: Optional[:class:`int`]
-            :class:`UserSilence`s after the specified id to return.
-            This field is preferred and takes precedence over `since`.
-
-        **Returns**
-
-        :class:`GetUpdatesResult`
-        """
-        if includes is None:
-            includes = ["presence"]
-        resp = self.http.make_request(
-            Path.get_updates(),
-            since=since,
-            history_since=history_since,
-            **{"includes[]": includes},
-        )
-        if resp is None:
-            resp = {}
-        return GetUpdatesResult(
-            get_optional_list(resp, "presence", ChatChannel),
-            get_optional_list(resp, "silences", UserSilence),
-        )
-
-    def get_channel_messages(
-        self,
-        channel_id: int,
-        limit: Optional[int] = None,
-        since: Optional[int] = None,
-        until: Optional[int] = None,
-    ) -> List[ChatMessage]:
-        """
-        This endpoint returns the chat messages for a specific channel.
-        You may need to first join the channel with :func:`osu.Client.join_channel`.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameter**
-
-        channel_id: :class:`int`
-            The ID of the channel to retrieve messages for
-
-        limit: Optional[:class:`int`]
-            number of messages to return (max of 50)
-
-        since: Optional[:class:`int`]
-            messages after the specified message id will be returned
-
-        until: Optional[:class:`int`]
-            messages up to but not including the specified message id will be returned
-
-        **Returns**
-
-        List[:class:`ChatMessage`]
-        """
-        return list(
-            map(
-                ChatMessage,
-                self.http.make_request(
-                    Path.get_channel_messages(channel_id),
-                    limit=limit,
-                    since=since,
-                    until=until,
-                ),
-            )
-        )
-
-    def send_message_to_channel(self, channel_id: int, message: str, is_action: bool) -> ChatMessage:
-        """
-        This endpoint sends a message to the specified channel.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        channel: :class:`int`
-            The channel_id of the channel to send message to
-
-        message: :class:`str`
-            message to send
-
-        is_action: :class:`bool`
-            whether the message is an action
-
-        **Returns**
-
-        :class:`ChatMessage`
-        """
-        data = {"is_action": str(is_action).lower(), "message": message}
-        data = create_multipart_formdata(data)
-        return ChatMessage(self.http.make_request(Path.send_message_to_channel(channel_id), files=data))
-
-    def join_channel(self, channel: int, user: int) -> ChatChannel:
-        """
-        This endpoint allows you (or someone else) to join a public channel.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        channel: :class:`int`
-            channel id of channel to join
-
-        user: :class:`int`
-            user id of user joining
-
-        **Returns**
-
-        :class:`ChatChannel`
-        """
-        return ChatChannel(self.http.make_request(Path.join_channel(channel, user)))
-
-    def leave_channel(self, channel: int, user: int) -> None:
-        """
-        This endpoint allows you (or someone else) to leave a public channel.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        channel: :class:`int`
-            channel id of channel to leave
-
-        user: :class:`int`
-            user id of user leaving
-        """
-        self.http.make_request(Path.leave_channel(channel, user))
-
-    def mark_channel_as_read(self, channel_id: int, message_id: int) -> None:
-        """
-        This endpoint marks the channel as having being read up to the given message_id.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        channel_id: :class:`int`
-            The channel_id of the channel to mark as read
-
-        message_id: :class:`int`
-            The message_id of the message to mark as read up to
-        """
-        self.http.make_request(Path.mark_channel_as_read(channel_id, message_id))
-
-    def get_channel_list(self) -> List[ChatChannel]:
-        """
-        This endpoint returns a list of all joinable public channels.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Returns**
-
-        Sequence[:class:`ChatChannel`]
-        """
-        return list(map(ChatChannel, self.http.make_request(Path.get_channel_list())))
-
-    def create_channel(
-        self,
-        channel_type: Union[ChatChannelType, str],
-        target_id: Optional[int] = None,
-        target_ids: Optional[Sequence[int]] = None,
-        message: Optional[str] = None,
-        channel: Optional[Dict[str, str]] = None,
-    ) -> ChatChannel:
-        """
-        [This description may be outdated]
-
-        This endpoint creates a new channel if doesn't exist and joins it.
-        Currently only for rejoining existing PM channels which the user has left.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameter**
-
-        channel_type: Union[:class:`ChatChannelType`, :class:`str`]
-            channel type (currently only supports `PM` and `ANNOUNCE`)
-
-        target_id: Optional[:class:`int`]
-            target user id; required if type is PM; ignored, otherwise.
-
-        target_ids: Optional[Sequence[:class:`int`]]
-            target user ids; required if type is ANNOUNCE; ignored, otherwise.
-
-        message: Optional[:class:`str`]
-            message to send with the announcement; required if type is ANNOUNCE.
-
-        channel: Optional[Dict[str, str]]
-            channel details; required if type is ANNOUNCE.
-
-            name: :class:`str`
-                the channel name
-
-            description: :class:`str`
-                the channel description
-
-        **Returns**
-
-        :class:`ChatChannel`
-             contains recent_messages attribute (which is deprecated).
-        """
-        channel_type = parse_enum_args(channel_type)
-        if channel_type == "PM":
-            data = {"type": "PM", "target_id": target_id}
-        elif channel_type == "ANNOUNCE":
-            data = {
-                "type": channel_type,
-                "message": message,
-                "channel": json.dumps(channel),
-                "target_ids": json.dumps(target_ids),
-            }
-        else:
-            raise ValueError(
-                f"{channel_type} is not a valid channel type that can be created. " f"Check for casing (uppercase)."
-            )
-        return ChatChannel(self.http.make_request(Path.create_channel(), files=create_multipart_formdata(data)))
-
-    def get_channel(self, channel_id: int) -> GetChannelResult:
-        """
-        Gets details of a chat channel.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameter**
-
-        channel_id: :class:`int`
-
-        **Returns**
-
-        :class:`GetChannelResult`
-        """
-        resp = self.http.make_request(Path.get_channel(channel_id))
-        return GetChannelResult(ChatChannel(resp["channel"]), list(map(UserCompact, resp["users"])))
 
     def get_comments(
         self,
@@ -1145,45 +807,6 @@ class Client:
             )
         )
 
-    def post_comment(
-        self,
-        commentable_type: Optional[Union[ObjectType, str]] = None,
-        commentable_id: Optional[int] = None,
-        message: Optional[str] = None,
-        parent_id: Optional[int] = None,
-    ) -> CommentBundle:
-        """
-        Posts a new comment to a comment thread.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameter**
-
-        commentable_type: Optional[Union[:class:`ObjectType`, :class:`str`]
-            The type of resource to get comments for. Must be of the following types:
-            beatmapset, build, news_post
-
-        commentable_id: Optional[:class:`int`]
-            The id of the resource to get comments for. Id correlates with commentable_type.
-
-        message: Optional[:class:`str`]
-            Text of the comment
-
-        parent_id: Optional[:class:`int`]
-            The id of the comment to reply to, null if not a reply
-
-        **Returns**
-
-        :class:`CommentBundle`
-        """
-        data = {
-            "comment[commentable_type]": parse_enum_args(commentable_type),
-            "comment[commentable_id]": commentable_id,
-            "comment[message]": message,
-            "comment[parent_id]": parent_id,
-        }
-        return CommentBundle(self.http.make_request(Path.post_new_comment(), files=create_multipart_formdata(data)))
-
     def get_comment(self, comment: int) -> CommentBundle:
         """
         Gets a comment and its replies up to 2 levels deep.
@@ -1200,81 +823,6 @@ class Client:
         :class:`CommentBundle`
         """
         return CommentBundle(self.http.make_request(Path.get_comment(comment)))
-
-    def edit_comment(self, comment: int, message: Optional[str] = None) -> CommentBundle:
-        """
-        Edit an existing comment.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        comment: :class:`int`
-            Comment id
-
-        message: Optional[:class:`str`]
-            New text of the comment
-
-        **Returns**
-
-        :class:`CommentBundle`
-        """
-        return CommentBundle(
-            self.http.make_request(
-                Path.edit_comment(comment), files=create_multipart_formdata({"comment[message]": message})
-            )
-        )
-
-    def delete_comment(self, comment: int) -> CommentBundle:
-        """
-        Deletes the specified comment.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        comment: :class:`int`
-            Comment id
-
-        **Returns**
-
-        :class:`CommentBundle`
-        """
-        return CommentBundle(self.http.make_request(Path.delete_comment(comment)))
-
-    def add_comment_vote(self, comment: int) -> CommentBundle:
-        """
-        Upvotes a comment.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        comment: :class:`int`
-            Comment id
-
-        **Returns**
-
-        :class:`CommentBundle`
-        """
-        return CommentBundle(self.http.make_request(Path.add_comment_vote(comment)))
-
-    def remove_comment_vote(self, comment: int) -> CommentBundle:
-        """
-        Un-upvotes a comment.
-
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        comment: :class:`int`
-            Comment id
-
-        **Returns**
-
-        :class:`CommentBundle`
-        """
-        return CommentBundle(self.http.make_request(Path.remove_comment_vote(comment)))
 
     def reply_topic(self, topic: int, body: str) -> ForumPost:
         """
@@ -1503,27 +1051,6 @@ class Client:
             get_optional_list(resp.get("wiki_page", {}), "data", WikiPage),
         )
 
-    def get_user_highscore(self, room: int, playlist: int, user: int) -> MultiplayerScore:
-        """
-        Requires OAuth, scope lazer, and a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        room: :class:`int`
-            Id of the room.
-
-        playlist: :class:`int`
-            Id of the playlist item.
-
-        user: :class:`int`
-            User id.
-
-        **Returns**
-
-        :class:`MultiplayerScores`
-        """
-        return MultiplayerScore(self.http.make_request(Path.get_user_high_score(room, playlist, user)))
-
     def get_scores(
         self,
         room: int,
@@ -1618,66 +1145,6 @@ class Client:
         Returns a :class:`NewsPost` with content and navigation included.
         """
         return NewsPost(self.http.make_request(Path.get_news_post(news), key=key))
-
-    def get_notifications(self, max_id: Optional[int] = None) -> GetNotificationsResult:
-        """
-        This endpoint returns a list of the user's unread notifications. Sorted descending by id with limit of 50.
-
-        Requires OAuth, scope lazer, a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        max_id: Optional[:class:`int`]
-            Maximum id fetched. Can be used to load earlier notifications.
-            Defaults to no limit (fetch latest notifications)
-
-        **Returns**
-
-        :class:`GetNotificationsResult`
-        """
-        resp = self.http.make_request(Path.get_notifications(), max_id=max_id)
-        return GetNotificationsResult(
-            list(map(Notification, resp["notifications"])),
-            [
-                NotificationStackResult(
-                    NotificationType(category)
-                    if (category := stack["category"]).upper() in NotificationType.__members__
-                    else ObjectType(category),
-                    stack["cursor"],
-                    ObjectType(stack["object_type"]),
-                    stack["object_id"],
-                    stack["total"],
-                )
-                for stack in resp["stacks"]
-            ],
-            parser.parse(resp["timestamp"]),
-            [
-                NotificationTypeResult(t["cursor"], get_optional(t, "name", ObjectType), t["total"])
-                for t in resp["types"]
-            ],
-            resp.get("unread_count"),
-            resp["notification_endpoint"],
-        )
-
-    def mark_notifications_read(
-        self,
-        identities: Optional[Sequence[Union[IdentitiesUtil, Dict[str, Union[str, int]]]]] = None,
-        notifications: Optional[Sequence[Union[NotificationsUtil, Dict[str, str]]]] = None,
-    ) -> None:
-        """
-        This endpoint allows you to mark notifications read. Should only supply one of the arguments.
-
-        Requires OAuth, scope lazer, a user (authorization code grant, delegate scope, or password auth)
-
-        **Parameters**
-
-        identities: Optional[Sequence[Union[:class:`IdentitiesUtil`, Dict[:class:`str`, :class:`str`]]]]
-
-        notifications: Optional[Sequence[Union[:class:`NotificationsUtil`, Dict[:class:`str`, :class:`str`]]]]
-        """
-        name = "identities" if notifications is None else "notifications"
-        params = JsonUtil.list_to_labeled_dict(locals()[name], name)
-        self.http.make_request(Path.mark_notifications_as_read(), **params)
 
     def revoke_current_token(self) -> None:
         """
@@ -2175,7 +1642,7 @@ class Client:
         """
         return Room(self.http.make_request(Path.get_room(room_id)))
 
-    def get_score_by_id(self, mode, score_id) -> Union[LegacyScore, SoloScore]:
+    def get_score_by_id(self, mode: Union[str, GameModeStr], score_id) -> Union[LegacyScore, SoloScore]:
         """
         Returns a score by id.
 
@@ -2190,9 +1657,27 @@ class Client:
         **Returns**
 
         Union[:class:`SoloScore`, :class:`LegacyScore`]
+            Should be a SoloScore, unless for some strange reason it's not
         """
         mode = parse_enum_args(mode)
         return get_score_object(self.http.make_request(Path.get_score_by_id(mode, score_id)))
+
+    def get_score_by_id_only(self, score_id: int) -> Union[LegacyScore, SoloScore]:
+        """
+        Returns a score by id, not requiring a mode.
+
+        Requires OAuth and scope public.
+
+        **Parameters**
+
+        score_id: :class:`int`
+
+        **Returns**
+
+        Union[:class:`SoloScore`, :class:`LegacyScore`]
+            Should be a SoloScore, unless for some strange reason it's not
+        """
+        return get_score_object(self.http.make_request(Path.get_score_by_id_only(score_id)))
 
     def search_beatmapsets(self, filters=None, page=None) -> BeatmapsetSearchResult:
         """
@@ -2277,249 +1762,3 @@ class Client:
         List[:class:`UserCompact`]
         """
         return list(map(UserCompact, self.http.make_request(Path.get_friends())))
-
-    def favourite_beatmapset(self, beatmapset_id: int, favourite: bool) -> int:
-        """
-        Add or remove a favourite beatmapset
-
-        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
-
-        **Parameters**
-
-        beatmapset_id: :class:`int`
-
-        favourite: :class:`bool`
-            whether to favourite (true) or unfavourite (false)
-
-        **Returns**
-
-        :class:`int`
-            The number of favourites on the beatmapsets
-        """
-        resp = self.http.make_request(
-            Path.favourite_beatmapset(beatmapset_id),
-            data={"action": "favourite" if favourite else "unfavourite"},
-        )
-        return resp["favourite_count"]
-
-    def get_open_chat_channels(self) -> List[ChatChannel]:
-        """
-        Get a list of chat channels that you have open. Includes recent DMs and public chat channels.
-
-        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
-
-        **Returns**
-
-        List[:class:`ChatChannel`]
-        """
-        return list(map(ChatChannel, self.http.make_request(Path.get_chat_presence())))
-
-    def join_user_to_room(self, room: int, user: int, password: Optional[str] = None) -> None:
-        """
-        Join a user to a room.
-
-        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
-
-        **Parameters**
-
-        room: :class:`int`
-
-        user: :class:`int`
-
-        password: Optional[:class:`str`]
-        """
-        self.http.make_request(Path.join_to_room(room, user), password=password)
-
-    def kick_user_from_room(self, room: int, user: int) -> None:
-        """
-        Kick a user from a room.
-
-        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
-
-        **Parameters**
-
-        room: :class:`int`
-
-        user: :class:`int`
-        """
-        self.http.make_request(Path.kick_from_room(room, user))
-
-    def report(
-        self,
-        comments: str,
-        reason: str,
-        reportable_id: int,
-        reportable_type: Union[ObjectType, str],
-    ) -> None:
-        """
-        Send a report.
-
-        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
-
-        **Parameters**
-
-        comments: :class:`str`
-
-        reason: :class:`str`
-
-        reportable_id: :class:`id`
-
-        reportable_type: Union[:class:`str`, :class:`ObjectType`]
-        """
-        params = {
-            "comments": comments,
-            "reason": reason,
-            "reportable_id": reportable_id,
-            "reportable_type": parse_enum_args(reportable_type),
-        }
-        self.http.make_request(Path.send_report(), **params)
-
-    def create_multiplayer_room(
-        self,
-        name: str,
-        starting_map: Union[PlaylistItemUtil, dict],
-        password: Optional[str] = None,
-        queue_mode: Optional[Union[RealTimeQueueMode, str]] = RealTimeQueueMode.HOST_ONLY,
-        auto_start_duration: Optional[int] = 0,
-        room_type: Optional[Union[RoomType, str]] = RoomType.HEAD_TO_HEAD,
-        auto_skip: Optional[bool] = False,
-    ) -> Room:
-        """
-        Create a multiplayer (realtime) room.
-
-        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
-
-        **Parameters**
-
-        name: :class:`str`
-            Name of the room
-
-        starting_map: Union[:class:`PlaylistItemUtil`, dict]
-
-        password: Optional[:class:`str`]
-            Password to enter the room which is optional.
-
-        queue_mode: Optional[Union[:class:`RealTimeQueueMode`, :class:`str`]]
-            The mode for queuing maps.
-
-        auto_start_duration: Optional[:class:`int`]
-
-        room_type: Optional[Union[:class:`RoomType`, :class:`str`]]
-
-        auto_skip: Optional[:class:`bool`]
-            Whether to automatically skip intro or not.
-
-        **Returns**
-
-        :class:`Room`
-        """
-        if isinstance(starting_map, PlaylistItemUtil):
-            starting_map = starting_map.json
-        queue_mode, room_type = parse_enum_args(queue_mode, room_type)
-        data = {
-            "name": name,
-            "password": password,
-            "playlist": [starting_map],
-            "queue_mode": queue_mode,
-            "auto_start_duration": auto_start_duration,
-            "category": "realtime",
-            "type": room_type,
-            "auto_skip": auto_skip,
-        }
-        return Room(self.http.make_request(Path.create_room(), data=json.dumps(data)))
-
-    def create_playlist(
-        self,
-        name: str,
-        playlist_items: Sequence[Union[PlaylistItemUtil, dict]],
-        duration: Optional[int] = None,
-        ends_at: Optional[Union[str, datetime]] = None,
-        max_attempts: Optional[int] = None,
-        queue_mode: Optional[Union[PlaylistQueueMode, str]] = PlaylistQueueMode.HOST_ONLY,
-        auto_start_duration: Optional[int] = 0,
-    ) -> Room:
-        """
-        Create a playlist
-
-        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
-
-        **Parameters**
-
-        name: :class:`str`
-            Name of the playlist
-
-        playlist_items: Sequence[Union[:class:`PlaylistItemUtil`, :class:`dict`]]
-            List of beatmaps to put on the playlist
-
-        duration: Optional[:class:`int`]
-            Duration for the playlist to last in minutes.
-            If not specified then an end time must be specified.
-            The playlist must have a duration of at least 30 minutes.
-
-        ends_at: Optional[Union[:class:`datetime.datetime`, :class:`str`]]
-            Time for the playlist to end at. If not specified then a duration must be specified.
-            Must amount to a duration of at least 30 minutes.
-
-        max_attempts: Optional[:class:`int`]
-            Null means infinite attempts.
-
-        queue_mode: Optional[Union[:class:`PlaylistQueueMode`, :class:`str`]]
-            PlaylistQueueMode.HOST_ONLY is the only option
-
-        auto_start_duration: Optional[:class:`int`]
-
-        **Returns**
-
-        :class:`Room`
-        """
-        if duration is None and ends_at is None:
-            raise ValueError("Either duration or ends_at must be not null.")
-        if ends_at is not None and isinstance(ends_at, datetime):
-            ends_at = ends_at.isoformat()
-        playlist_items = [item.json if isinstance(item, PlaylistItemUtil) else item for item in playlist_items]
-        data = {
-            "name": name,
-            "max_attempts": max_attempts,
-            "duration": duration,
-            "ends_at": ends_at,
-            "queue_mode": parse_enum_args(queue_mode),
-            "auto_start_duration": auto_start_duration,
-            "category": "playlists",
-            "playlist": playlist_items,
-        }
-        return Room(self.http.make_request(Path.create_room(), data=json.dumps(data)))
-
-    def check_download_quota(self) -> int:
-        """
-        Get the amount of quota you've used.
-
-        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
-
-        **Returns**
-
-        :class:`int`
-        """
-        resp = self.http.make_request(Path.download_quota_check())
-        return resp["quota_used"]
-
-    def download_beatmapset(self, beatmapset_id: int, path: str, chunk_write_size: int = 4096) -> None:
-        """
-        Download a beatmapset
-
-        Requires OAuth, lazer scope, and a user (authorization code grant, delegate scope, or password auth).
-
-        **Parameters**
-
-        beatmapset_id: :class:`int`
-            Id of the beatmapset
-
-        path: :class:`str`
-            Path to write the beatmapset to
-
-        chunk_write_size: :class:`int`
-            File is written in chunks and this defines chunk size in bytes. Defaults to 4096.
-        """
-        resp = self.http.make_request(Path.download_beatmapset(beatmapset_id), is_download=True)
-        with open(path, "wb") as f:
-            for chunk in resp.iter_content(chunk_size=chunk_write_size):
-                f.write(chunk)
