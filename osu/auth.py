@@ -1,14 +1,37 @@
 import requests
+import aiohttp
 from time import monotonic
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
+from collections.abc import Awaitable
 
-from .constants import auth_url, token_url, lazer_token_url
+from .constants import auth_url, token_url
 from .objects import Scope
 from .exceptions import ScopeException
-from .util import create_multipart_formdata
 
 
-class AuthHandler:
+__all__ = (
+    "BaseAuthHandler",
+    "AuthHandler",
+    "AsynchronousAuthHandler"
+)
+
+
+class BaseAuthHandler:
+    __slots__ = ("token", )
+
+    scope: Scope
+
+    def get_token(self) -> Union[Optional[str], Awaitable[Optional[str]]]:
+        """
+        Returns the access token. If the token is expired, it will be refreshed before being returned.
+        """
+        raise NotImplementedError()
+
+    def has_user(self) -> bool:
+        raise NotImplementedError()
+
+
+class FunctionalAuthHandler(BaseAuthHandler):
     """
     Helps to go through the oauth process easily, as well as refresh
     tokens without the user needing to worry about it.
@@ -58,6 +81,34 @@ class AuthHandler:
         self.expire_time = monotonic()
         self._refresh_callback = None
 
+    def _get_data(self, grant_type, code=None):
+        data = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "grant_type": grant_type,
+        }
+
+        data.update({
+            "client_credentials": {
+                "scope": self.scope.scopes
+            },
+            "authorization_code": {
+                "code": code,
+                "redirect_uri": self.redirect_url
+            },
+            "refresh_token": {
+                "refresh_token": self.refresh_token
+            }
+        }[grant_type])
+
+        return data
+
+    def _handle_response(self, data):
+        if "refresh_token" in data:
+            self.refresh_token = data["refresh_token"]
+        self._token = data["access_token"]
+        self.expire_time = monotonic() + data["expires_in"]
+
     def get_auth_url(self, state: Optional[str] = ""):
         """
         Returns a url that a user can authorize their account at. They'll then be returned to
@@ -79,112 +130,13 @@ class AuthHandler:
             del params["state"]
         return auth_url + "?" + "&".join([f"{key}={value}" for key, value in params.items()])
 
-    def get_auth_token(self, code: Optional[str] = None):
-        """
-        `code` parameter is not required, but without a code the scopes are restricted to
-        public and delegate (more on delegation below). You can obtain a code by having
-        a user authorize themselves under a url which you can get with get_auth_url.
-        Read more about it under that function.
-
-        **Client Credentials Delegation**
-
-        Client Credentials Grant tokens may be allowed to act on behalf of the owner of the OAuth client
-        (delegation) by requesting the delegate scope, in addition to other scopes supporting delegation.
-        When using delegation, scopes that support delegation cannot be used together with scopes that do
-        not support delegation. Delegation is only available to Chat Bots. Currently, chat.write is the only
-        other scope that supports delegation.
-
-        **Parameters**
-
-        code: Optional[:class:`str`]
-            code from user authorizing at a specific url
-        """
-        data = {
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
-        }
-
-        if code is None:
-            data.update(
-                {
-                    "grant_type": "client_credentials",
-                    "scope": "public" if "delegate" not in self.scope else self.scope.scopes,
-                }
-            )
-        else:
-            data.update(
-                {
-                    "code": code,
-                    "grant_type": "authorization_code",
-                    "redirect_uri": self.redirect_url,
-                }
-            )
-
-        response = requests.post(token_url, data=data)
-        response.raise_for_status()
-        response = response.json()
-        if "refresh_token" in response:
-            self.refresh_token = response["refresh_token"]
-        self._token = response["access_token"]
-        self.expire_time = monotonic() + response["expires_in"]
-
-    def refresh_access_token(self, refresh_token: Optional[str] = None):
-        """
-        This function is usually executed by HTTPHandler, but if you have a
-        refresh token saved from the last session, then you can fill in the
-        `refresh_token` argument which this function will use to get a valid token.
-
-        **Parameters**
-
-        refresh_token: Optional[:class:`str`]
-            A refresh token used to get a new access token.
-        """
-        if refresh_token:
-            self.refresh_token = refresh_token
-        if monotonic() < self.expire_time:
-            return
-        data = {
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
-        }
-        if self.refresh_token:
-            data.update(
-                {
-                    "grant_type": "refresh_token",
-                    "refresh_token": self.refresh_token,
-                }
-            )
-        else:
-            data.update(
-                {
-                    "grant_type": "client_credentials",
-                    "scope": "public",
-                }
-            )
-        response = requests.post(token_url, data=data)
-        response.raise_for_status()
-        response = response.json()
-        if "refresh_token" in response:
-            self.refresh_token = response["refresh_token"]
-        self._token = response["access_token"]
-        self.expire_time = monotonic() + response["expires_in"]
-        if self._refresh_callback:
-            self._refresh_callback(self)
-
-    @property
-    def token(self):
-        """
-        Returns the access token. If the token is expired, it will be refreshed before being returned.
-        """
-        if self.expire_time - 5 <= monotonic():
-            self.refresh_access_token()
-        return self._token
-
-    @property
     def has_user(self):
+        """
+        Returns whether this auth has access to endpoints requiring a user
+        """
         return "delegate" in self.scope or self.refresh_token is not None
 
-    def set_refresh_callback(self, callback: Callable[["AuthHandler"], None]):
+    def set_refresh_callback(self, callback: Callable[["FunctionalAuthHandler"], None]):
         """
         Set a callback to be called everytime the access token is refreshed.
 
@@ -227,9 +179,9 @@ class AuthHandler:
         }
 
     @classmethod
-    def from_save_data(cls, save_data: dict):
+    def from_save_data(cls, save_data: dict) -> Union["FunctionalAuthHandler", Awaitable["FunctionalAuthHandler"]]:
         """
-        Create a new :class:`AuthHandler` object from save data.
+        Create a new :class:`FunctionalAuthHandler` object from save data.
         """
         save_version = save_data["save_version"]
         if save_version != cls.SAVE_VERSION:
@@ -238,6 +190,80 @@ class AuthHandler:
                 f"with the save data version of this AuthHandler object ({cls.SAVE_VERSION})."
             )
 
+        return cls._from_save_data(save_data)
+
+    @classmethod
+    def _from_save_data(cls, save_data: dict) -> Union["FunctionalAuthHandler", Awaitable["FunctionalAuthHandler"]]:
+        raise NotImplementedError()
+
+    def get_auth_token(self, code: Optional[str] = None) -> Union[None, Awaitable]:
+        """
+        `code` parameter is not required, but without a code the scopes are restricted to
+        public and delegate (more on delegation below). You can obtain a code by having
+        a user authorize themselves under a url which you can get with get_auth_url.
+        Read more about it under that function.
+
+        **Client Credentials Delegation**
+
+        Client Credentials Grant tokens may be allowed to act on behalf of the owner of the OAuth client
+        (delegation) by requesting the delegate scope, in addition to other scopes supporting delegation.
+        When using delegation, scopes that support delegation cannot be used together with scopes that do
+        not support delegation. Delegation is only available to Chat Bots. Currently, chat.write is the only
+        other scope that supports delegation.
+
+        **Parameters**
+
+        code: Optional[:class:`str`]
+            code from user authorizing at a specific url
+        """
+        raise NotImplementedError()
+
+    def refresh_access_token(self, refresh_token: Optional[str] = None) -> Union[None, Awaitable]:
+        """
+        This function is usually executed by HTTPHandler, but if you have a
+        refresh token saved from the last session, then you can fill in the
+        `refresh_token` argument which this function will use to get a valid token.
+
+        **Parameters**
+
+        refresh_token: Optional[:class:`str`]
+            A refresh token used to get a new access token.
+        """
+        raise NotImplementedError()
+
+
+class AuthHandler(FunctionalAuthHandler):
+    def get_auth_token(self, code: Optional[str] = None) -> None:
+        data = self._get_data("client_credentials" if code is None else "authorization_code")
+
+        response = requests.post(token_url, data=data)
+        response.raise_for_status()
+        response = response.json()
+
+        self._handle_response(response)
+
+    def refresh_access_token(self, refresh_token: Optional[str] = None) -> None:
+        if refresh_token:
+            self.refresh_token = refresh_token
+
+        data = self._get_data("client_credentials" if self.refresh_token is None else "refresh_token")
+
+        response = requests.post(token_url, data=data)
+        response.raise_for_status()
+        response = response.json()
+
+        self._handle_response(response)
+
+        if self._refresh_callback:
+            self._refresh_callback(self)
+
+    def get_token(self) -> Optional[str]:
+        if self.expire_time - 5 <= monotonic():
+            self.refresh_access_token()
+        return self._token
+
+    @classmethod
+    def _from_save_data(cls, save_data: dict) -> "AuthHandler":
         client_id = save_data["client_id"]
         client_secret = save_data["client_secret"]
         redirect_url = save_data["redirect_url"]
@@ -246,61 +272,82 @@ class AuthHandler:
         auth.refresh_access_token(save_data["refresh_token"])
         return auth
 
+    @classmethod
+    def from_save_data(cls, save_data: dict) -> "AuthHandler":
+        return super().from_save_data(save_data)  # type: ignore
 
-class LazerAuthHandler:
-    # https://github.com/ppy/osu/blob/master/osu.Game/Online/ProductionEndpointConfiguration.cs
-    LAZER_CLIENT_ID = 5
-    LAZER_CLIENT_SECRET = "FGc9GAtyHzeQDshWP5Ah7dega8hJACAJpQtw6OXk"
+    def as_async(self) -> "AsynchronousAuthHandler":
+        """
+        Return an asynchronous version of this auth handler
+        """
+        auth = AsynchronousAuthHandler(self.client_id, self.client_secret, self.redirect_url, self.scope)
+        auth.refresh_token = self.refresh_token
+        auth._token = self._token
+        self.expire_time = self.expire_time
+        self._refresh_callback = self._refresh_callback
+        return auth
 
-    def __init__(self, username: str, password: str):
-        self.username = username
-        self.password = password
-        self.scope = Scope("*")
 
-        self._token = None
-        self.refresh_token = None
-        self.expire_time = 0
+class AsynchronousAuthHandler(FunctionalAuthHandler):
+    async def _request(self, data, is_refresh=False):
+        async with aiohttp.ClientSession() as session:
+            async with session.request("POST", token_url, json=data) as resp:
+                try:
+                    resp.raise_for_status()
+                except Exception as e:
+                    print(data)
+                    raise e
+                json = await resp.json()
+                self._handle_response(json)
 
-    def get_auth_token(self):
-        data = {
-            "username": self.username,
-            "password": self.password,
-            "grant_type": "password",
-            "client_id": self.LAZER_CLIENT_ID,
-            "client_secret": self.LAZER_CLIENT_SECRET,
-            "scope": self.scope.scopes,
-        }
+                if is_refresh and self._refresh_callback:
+                    self._refresh_callback(self)
 
-        resp = requests.post(lazer_token_url, files=create_multipart_formdata(data))
-        resp.raise_for_status()
-        resp = resp.json()
-        self._token = resp["access_token"]
-        self.refresh_token = resp["refresh_token"]
-        self.expire_time = monotonic() + resp["expires_in"]
+    def get_auth_token(self, code: Optional[str] = None) -> Awaitable:
+        data = self._get_data("client_credentials" if code is None else "authorization_code")
+        return self._request(data)
 
-    def refresh_access_token(self):
-        if self.refresh_token is None:
-            return ValueError("refresh_token must have a value to refresh the access token (obviously)")
-        data = {
-            "client_id": self.LAZER_CLIENT_ID,
-            "client_secret": self.LAZER_CLIENT_SECRET,
-            "grant_type": "refresh_token",
-            "refresh_token": self.refresh_token,
-        }
+    def refresh_access_token(self, refresh_token: Optional[str] = None) -> Awaitable:
+        if refresh_token:
+            self.refresh_token = refresh_token
 
-        resp = requests.post(lazer_token_url, data=data)
-        resp.raise_for_status()
-        resp = resp.json()
-        self._token = resp["access_token"]
-        self.refresh_token = resp["refresh_token"]
-        self.expire_time = monotonic() + resp["expires_in"]
+        data = self._get_data("client_credentials" if self.refresh_token is None else "refresh_token")
 
-    @property
-    def token(self):
+        return self._request(data, is_refresh=True)
+
+    async def _get_token(self) -> Optional[str]:
         if self.expire_time - 5 <= monotonic():
-            self.refresh_access_token()
+            await self.refresh_access_token()
         return self._token
 
-    @property
-    def has_user(self):
-        return self._token is not None
+    def get_token(self) -> Awaitable[Optional[str]]:
+        return self._get_token()
+
+    @classmethod
+    def _from_save_data(cls, save_data: dict) -> Awaitable["AsynchronousAuthHandler"]:
+        client_id = save_data["client_id"]
+        client_secret = save_data["client_secret"]
+        redirect_url = save_data["redirect_url"]
+        scope = Scope(*save_data["scope"].split())
+        auth = cls(client_id, client_secret, redirect_url, scope)
+
+        async def refresh():
+            await auth.refresh_access_token(save_data["refresh_token"])
+            return auth
+
+        return refresh()
+
+    @classmethod
+    def from_save_data(cls, save_data: dict) -> Awaitable["AsynchronousAuthHandler"]:
+        return super().from_save_data(save_data)  # type: ignore
+
+    def as_sync(self) -> AuthHandler:
+        """
+        Return a synchronous version of this auth handler
+        """
+        auth = AuthHandler(self.client_id, self.client_secret, self.redirect_url, self.scope)
+        auth.refresh_token = self.refresh_token
+        auth._token = self._token
+        self.expire_time = self.expire_time
+        self._refresh_callback = self._refresh_callback
+        return auth
