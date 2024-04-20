@@ -35,6 +35,12 @@ class BeatmapScores:
     def __repr__(self):
         return prettify(self, "user_score", "scores")
 
+    def __len__(self):
+        return len(self.scores)
+
+    def __iter__(self):
+        return iter(self.scores)
+
 
 class LegacyScore:
     """
