@@ -28,11 +28,3 @@ def get_user_client():
     save(client.auth)
     client.auth.set_refresh_callback(save)  # auto save auth data
     return client
-
-
-def get_lazer_client(asynchronous=False):
-    with open(".env", "r") as f:
-        env = f.readlines()
-        env = dict(map(lambda k: k.replace("\n", "").split("="), env))
-
-    return (Client if not asynchronous else AsynchronousClient).from_osu_credentials(env["OSU_USERNAME"], env["OSU_PASSWORD"])
