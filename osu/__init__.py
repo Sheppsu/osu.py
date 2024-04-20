@@ -1,4 +1,4 @@
-from .auth import AuthHandler, LazerAuthHandler
+from .auth import *
 from .client import Client
 from .exceptions import *
 from .notification import NotificationWebsocket
