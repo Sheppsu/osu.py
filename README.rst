@@ -24,9 +24,7 @@ Major features/capabilties
 - Client class which carries out all api requests.
 - AsynchronousClient class which is the same as Client but all api request functions are asynchronous.
 - NotificationWebsocket class for using the notification websocket feature of osu api v2.
-- Support for Authorization Code Grant, Client Credentials Grant, and Password Grant (lazer auth).
-- Support for lazer authentication, giving access to all endpoints including those with lazer scope.
-- Currently implements most if not all endpoints including undocumented ones.
+- Support for Authorization Code Grant and Client Credentials Grant.
 - Builtin rate limit handling
 - Storage efficient objects used to contain almost all the data returned from osu.py for any given api request.
 - Refresh and access token is automatically managed.
@@ -46,8 +44,8 @@ Installation
     # Windows
     py -3 -m pip install -U osu.py
 
-    # Installing straight from github (downloads latest code which may contain bugs)
-    [python prefix used above] pip install git+https://github.com/Sheepposu/osu.py.git
+    # Installing straight from github (downloads latest code, which is not guaranteed to be stable)
+    [python prefix used above] -m pip install git+https://github.com/Sheepposu/osu.py.git
 
 Example
 -------
