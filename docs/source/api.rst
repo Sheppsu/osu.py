@@ -52,29 +52,21 @@ Some endpoints return specific responses that don't represent any specific objec
 
 .. autoclass:: osu.CreateNewPmResult
    :members:
-   
+
 
 .. autoclass:: osu.CreateTopicResult
    :members:
-   
+
 
 .. autoclass:: osu.GetBeatmapsetEventsResult
    :members:
-   
 
-.. autoclass:: osu.GetChannelResult
-   :members:
-   
 
 .. autoclass:: osu.GetMatchesResult
    :members:
    
 
 .. autoclass:: osu.GetNewsListingResult
-   :members:
-   
-
-.. autoclass:: osu.GetNotificationsResult
    :members:
    
 
@@ -86,19 +78,7 @@ Some endpoints return specific responses that don't represent any specific objec
    :members:
    
 
-.. autoclass:: osu.GetUpdatesResult
-   :members:
-   
-
 .. autoclass:: osu.NewsSidebar
-   :members:
-   
-
-.. autoclass:: osu.NotificationStackResult
-   :members:
-   
-
-.. autoclass:: osu.NotificationTypeResult
    :members:
    
 

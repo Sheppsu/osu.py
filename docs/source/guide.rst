@@ -34,7 +34,7 @@ The other way to initialise the Client class is as normally.
 	
 	client = Client(auth)
 	
-There are three optional parameters - request_wait_time, limit_per_minute, and use_lazer - which you can read about `here <api.html#osu.Client>`_.
+There are two optional parameters - request_wait_time, limit_per_minute - which you can read about `here <api.html#osu.Client>`_.
 
 The auth parameter for the client is an AuthHandler object. You can initialise it like so.
 
@@ -74,13 +74,12 @@ Here's a full code example (this code is from the examples folder on the osu.py 
 	print(user.username)
 
 If you want to learn more about what api requests you can make,
-either read about it on the `official osu!api v2 documentation <https://osu.ppy.sh/docs/index.html>`_ or
-read through the `osu.py documentation of the Client class <api.html#osu.Client>`_.
-The names of the functions are modeled very similary to the title of the request listed on the osu!api v2 documentation.
+read through the `osu.py documentation of the Client class <api.html#osu.Client>`_ or check the documentation's homepage for some specific examples.
 
 AsynchronousClient
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This class is the exact same as the Client class, but all api request functions are asynchronous. You can see it in use `here <https://github.com/Sheepposu/osu.py/blob/main/examples/asynchronous_client.py>`_ on the github.
+This class is the exact same as the Client class, but all api request functions are asynchronous and it uses AsynchronousAuthHandler.
+You can see it in use `here <https://github.com/Sheepposu/osu.py/blob/main/examples/asynchronous_client.py>`_ on the github.
 
 Scope
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
