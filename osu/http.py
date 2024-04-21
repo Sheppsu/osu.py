@@ -7,6 +7,11 @@ from .exceptions import ScopeException
 from .constants import base_url
 
 
+__all__ = (
+    "HTTPHandler",
+)
+
+
 class HTTPHandler:
     def __init__(self, auth: Optional[BaseAuthHandler], request_wait_time: float, limit_per_minute: int, api_version: str = "20220705"):
         self.auth: Optional[BaseAuthHandler] = auth
