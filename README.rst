@@ -46,6 +46,14 @@ Installation
 
     # Installing straight from github (downloads latest code, which is not guaranteed to be stable)
     [python prefix used above] -m pip install git+https://github.com/Sheepposu/osu.py.git
+	
+	# Install with features
+	[python prefix] -m pip install -U osu.py[replay,notifications]
+	
+	# Install from github with features
+	git clone https://github.com/sheppsu/osu.py
+	cd osu.py
+	[python prefix] -m pip install -U .[replay,notifications]
 
 Example
 -------
