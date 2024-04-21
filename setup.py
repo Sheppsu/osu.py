@@ -31,7 +31,7 @@ classifiers = [
     "Intended Audience :: Developers"
 ]
 
-extra_requires = {
+extra_require = {
     "replay": ["osrparse>=6.0.1,<7"],
     "notifications": ["websockets>=11,<12"],
     "tests": [
@@ -54,7 +54,7 @@ setuptools.setup(
     description="API Wrapper for osu!api v2 written in Python.",
     long_description=readme,
     install_requires=requirements,
-    extra_requires=extra_requires,
+    extra_require=extra_require,
     project_urls=project_urls,
     classifiers=classifiers,
     python_requires=">=3.8.0",
