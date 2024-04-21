@@ -234,7 +234,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
 
 class AuthHandler(FunctionalAuthHandler):
     def get_auth_token(self, code: Optional[str] = None) -> None:
-        data = self._get_data("client_credentials" if code is None else "authorization_code")
+        data = self._get_data("client_credentials" if code is None else "authorization_code", code)
 
         response = requests.post(token_url, data=data)
         response.raise_for_status()
@@ -304,7 +304,7 @@ class AsynchronousAuthHandler(FunctionalAuthHandler):
                     self._refresh_callback(self)
 
     def get_auth_token(self, code: Optional[str] = None) -> Awaitable:
-        data = self._get_data("client_credentials" if code is None else "authorization_code")
+        data = self._get_data("client_credentials" if code is None else "authorization_code", code)
         return self._request(data)
 
     def refresh_access_token(self, refresh_token: Optional[str] = None) -> Awaitable:
