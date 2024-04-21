@@ -16,20 +16,24 @@ class Bot:
     def __init__(self):
         self.ws = None
         self.running = False
+        self.client = None
         self.loop = asyncio.get_event_loop()
 
         self.commands = {
             'top': self.top_play
         }
 
-        client_id = int(os.getenv('osu_client_id'))
-        client_secret = os.getenv('osu_client_secret')
+    async def create_client(self):
+        client_id = int(os.getenv('CLIENT_ID'))
+        client_secret = os.getenv('CLIENT_SECRET')
         redirect_url = "http://127.0.0.1:8080"
-        self.client = AsynchronousClient.from_client_credentials(client_id, client_secret, redirect_url)
+        self.client = await AsynchronousClient.from_client_credentials(client_id, client_secret, redirect_url)
 
     # Fundamental
 
     async def start(self):
+        await self.create_client()
+
         async with websockets.connect(self.uri) as ws:
             self.ws = ws
             self.running = True
@@ -107,7 +111,7 @@ class Bot:
         user_id = 14895608
         mode = 'osu'
         score = (await self.client.get_user_scores(user_id, 'best', mode=mode, limit=1))[0]
-        await self.send_message(channel, f"@{user} {score.pp}pp - https://osu.ppy.sh/b/{score.beatmap.id}")
+        await self.send_message(channel, f"@{user} {score.pp}pp - https://osu.ppy.sh/b/{score.beatmap_id}")
 
 
 bot = Bot()

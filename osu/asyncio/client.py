@@ -69,7 +69,7 @@ class AsynchronousClient:
         return self.http.auth
 
     @classmethod
-    def from_client_credentials(
+    async def from_client_credentials(
         cls,
         client_id: int,
         client_secret: str,
@@ -116,7 +116,7 @@ class AsynchronousClient:
         :class:`Client`
         """
         auth = AsynchronousAuthHandler(client_id, client_secret, redirect_url, scope)
-        auth.get_auth_token(code)
+        await auth.get_auth_token(code)
         return cls(auth, request_wait_time, limit_per_minute)
 
     def set_api_version(self, version: str) -> None:
