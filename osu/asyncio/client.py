@@ -14,7 +14,12 @@ from ..results import *
 
 from typing import Union, Optional, Sequence, Dict, List
 from datetime import datetime
-from osrparse import Replay
+
+try:
+    import osrparse
+    has_osrparse = True
+except ImportError:
+    has_osrparse = False
 
 
 class AsynchronousClient:
@@ -1733,11 +1738,13 @@ class AsynchronousClient:
             list(map(UserScoreAggregate, resp["leaderboard"])), get_optional(resp, "user_score", UserScoreAggregate)
         )
 
-    async def get_replay_data(self, mode, score_id) -> Replay:
+    async def get_replay_data(self, mode, score_id) -> "osrparse.Replay":
         """
         Returns replay data for a score.
 
         Requires OAuth, scope public, and a user (authorization code grant, delegate scope, or password auth).
+
+        Requires osu.py is installed with the 'replay' feature
 
         **Parameters**
 
@@ -1749,10 +1756,16 @@ class AsynchronousClient:
 
         :class:`osrparse.Replay`
         """
+        if not has_osrparse:
+            raise RuntimeError(
+                "osrparse is required to call get_replay_data."
+                "Install osu.py with the 'replay' feature to use this function."
+            )
+
         mode = parse_enum_args(mode)
         gen = self.http.get_req_gen(Path.get_replay_data(mode, score_id))
         async for resp in gen:
-            return Replay.from_string(await resp.read())
+            return osrparse.Replay.from_string(await resp.read())
 
     async def get_friends(self) -> List[UserCompact]:
         """

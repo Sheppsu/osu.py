@@ -1,4 +1,3 @@
-import websockets
 import asyncio
 import json
 from dateutil import parser
@@ -6,9 +5,17 @@ import traceback
 
 from .objects import Notification, ChatChannel, UserCompact, ChatMessage
 
+try:
+    import websockets
+    has_websockets = True
+except ImportError:
+    has_websockets = False
+
 
 class NotificationWebsocket:
     """
+    Requires osu.py is installed with the 'notifications' feature
+
     This class allows you to receive notifications without constantly polling the server.
     To utilize it you should do either of:
     - Make a class inheriting this one and redefine the event functions (on_logout, on_new, ...).
@@ -100,6 +107,11 @@ class NotificationWebsocket:
         auth: :class:`AuthHandler`
             The same auth handler used for Client
         """
+        if not has_websockets:
+            raise RuntimeError(
+                "websockets is required to use NotificationWebsocket."
+                "Install osu.py with the 'notifications' feature to use it."
+            )
 
         self.auth = auth
         self.uri = notification_uri
