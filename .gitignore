@@ -1,5 +1,6 @@
 # Test file stuff
 auth.json
+test_venv/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
