@@ -1,31 +1,21 @@
 API Reference
-========================
+=============
 
 This page covers *everything* osu.py is capable of.
-
-
-.. note::
-    osu.py uses osu!api v2 which is still under development.
-    Some functions under Client will say they require lazer scope in which
-    case request cannot be made. Some code may stop working overnight
-    due to changes done to the osu!api v2. If
-    you run into any issues at all, please report it
-    `here <https://github.com/Sheepposu/osu.py/issues>`_. I'll try my
-    best to fix any issues as quick as possible.
 
 
 Interactive Classes
 -------------------
 
-.. autoclass:: osu.AsynchronousClient
-
 .. autoclass:: osu.Client
     :members:
+	
+.. autoclass:: osu.AsynchronousClient
 
 .. autoclass:: osu.AuthHandler
     :members:
-
-.. autoclass:: osu.LazerAuthHandler
+	
+.. autoclass:: osu.AsynchronousAuthHandler
 	:members:
 
 .. autoclass:: osu.NotificationWebsocket

@@ -78,30 +78,6 @@ either read about it on the `official osu!api v2 documentation <https://osu.ppy.
 read through the `osu.py documentation of the Client class <api.html#osu.Client>`_.
 The names of the functions are modeled very similary to the title of the request listed on the osu!api v2 documentation.
 
-Finally, you can use your osu username and password to use Password grant.
-Password grant is the only method currently of gaining access to the lazer endpoints and is also the grant that osu!lazer uses with the api.
-This also authorizes under being able to use all scopes by default and does not have an option to not do so.
-
-It's simple just like the client credential grant:
-
-.. code:: py
-
-	from osu import Client
-	
-	client = Client.from_osu_credentials(username, password)
-	
-This method also has two optional arguments: request_wait_time and limit_per_minute. 
-You can read about them under the `Client's init docs <api.html#osu.Client>`_.
-
-This method of authorization uses the LazerAuthHandler class as opposed to the AuthHandler class.
-
-.. code:: py
-
-	from osu import LazerAuthHandler
-	
-	auth = LazerAuthHandler(username, password)
-	auth.get_auth_token()
-
 AsynchronousClient
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 This class is the exact same as the Client class, but all api request functions are asynchronous. You can see it in use `here <https://github.com/Sheepposu/osu.py/blob/main/examples/asynchronous_client.py>`_ on the github.
