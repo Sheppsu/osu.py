@@ -1758,7 +1758,7 @@ class AsynchronousClient:
         """
         if not has_osrparse:
             raise RuntimeError(
-                "osrparse is required to call get_replay_data."
+                "osrparse is required to call get_replay_data. "
                 "Install osu.py with the 'replay' feature to use this function."
             )
 

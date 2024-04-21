@@ -109,7 +109,7 @@ class NotificationWebsocket:
         """
         if not has_websockets:
             raise RuntimeError(
-                "websockets is required to use NotificationWebsocket."
+                "websockets is required to use NotificationWebsocket. "
                 "Install osu.py with the 'notifications' feature to use it."
             )
 
