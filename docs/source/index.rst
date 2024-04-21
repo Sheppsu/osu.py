@@ -1,10 +1,7 @@
 Welcome to osu.py's documentation!
 ==================================
 
-Easy to use API wrapper for osu!api written in Python.
-This uses osu!api v2, which is still under development.
-So some code that was originally working may break overnight.
-However, I'll do my best to fix any issues I find as quick as possible.
+Easy to use API wrapper for osu!api v2 written in Python.
 
 Getting started
 ===============
