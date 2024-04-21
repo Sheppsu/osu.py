@@ -3,13 +3,7 @@ from .objects import *
 from .path import Path
 from .enums import *
 from .auth import BaseAuthHandler, AuthHandler
-from .util import (
-    parse_mods_arg,
-    parse_enum_args,
-    BeatmapsetSearchFilter,
-    create_multipart_formdata,
-    get_optional_list
-)
+from .util import parse_mods_arg, parse_enum_args, BeatmapsetSearchFilter, create_multipart_formdata, get_optional_list
 from .results import *
 
 from typing import Union, Optional, Sequence, Dict, List
@@ -17,6 +11,7 @@ from datetime import datetime
 
 try:
     import osrparse
+
     has_osrparse = True
 except ImportError:
     has_osrparse = False
@@ -63,10 +58,7 @@ class Client:
     __slots__ = ("http",)
 
     def __init__(
-        self,
-        auth: Optional[BaseAuthHandler] = None,
-        request_wait_time: float = 1.0,
-        limit_per_minute: int = 60
+        self, auth: Optional[BaseAuthHandler] = None, request_wait_time: float = 1.0, limit_per_minute: int = 60
     ):
         self.http = HTTPHandler(auth, request_wait_time, limit_per_minute)
 

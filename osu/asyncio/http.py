@@ -9,13 +9,17 @@ from ..exceptions import ScopeException
 from ..constants import base_url
 
 
-__all__ = (
-    "AsynchronousHTTPHandler",
-)
+__all__ = ("AsynchronousHTTPHandler",)
 
 
 class AsynchronousHTTPHandler:
-    def __init__(self, auth: Optional[BaseAuthHandler], request_wait_time: float, limit_per_minute: int, api_version: str = "20220705"):
+    def __init__(
+        self,
+        auth: Optional[BaseAuthHandler],
+        request_wait_time: float,
+        limit_per_minute: int,
+        api_version: str = "20220705",
+    ):
         if not isawaitable(awaitable := auth.get_token()):
             raise ValueError("auth passed to AsynchronousHTTPHandler must have an asynchronouos get_token method")
         awaitable.close()  # type: ignore

@@ -7,6 +7,7 @@ from .objects import Notification, ChatChannel, UserCompact, ChatMessage
 
 try:
     import websockets
+
     has_websockets = True
 except ImportError:
     has_websockets = False

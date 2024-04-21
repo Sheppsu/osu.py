@@ -9,15 +9,11 @@ from .objects import Scope
 from .exceptions import ScopeException
 
 
-__all__ = (
-    "BaseAuthHandler",
-    "AuthHandler",
-    "AsynchronousAuthHandler"
-)
+__all__ = ("BaseAuthHandler", "AuthHandler", "AsynchronousAuthHandler")
 
 
 class BaseAuthHandler:
-    __slots__ = ("token", )
+    __slots__ = ("token",)
 
     scope: Scope
 
@@ -88,18 +84,13 @@ class FunctionalAuthHandler(BaseAuthHandler):
             "grant_type": grant_type,
         }
 
-        data.update({
-            "client_credentials": {
-                "scope": self.scope.scopes
-            },
-            "authorization_code": {
-                "code": code,
-                "redirect_uri": self.redirect_url
-            },
-            "refresh_token": {
-                "refresh_token": self.refresh_token
-            }
-        }[grant_type])
+        data.update(
+            {
+                "client_credentials": {"scope": self.scope.scopes},
+                "authorization_code": {"code": code, "redirect_uri": self.redirect_url},
+                "refresh_token": {"refresh_token": self.refresh_token},
+            }[grant_type]
+        )
 
         return data
 

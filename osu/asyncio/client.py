@@ -17,6 +17,7 @@ from datetime import datetime
 
 try:
     import osrparse
+
     has_osrparse = True
 except ImportError:
     has_osrparse = False
@@ -62,10 +63,7 @@ class AsynchronousClient:
     __slots__ = ("http",)
 
     def __init__(
-        self,
-        auth: Optional[BaseAuthHandler] = None,
-        request_wait_time: float = 1.0,
-        limit_per_minute: int = 60
+        self, auth: Optional[BaseAuthHandler] = None, request_wait_time: float = 1.0, limit_per_minute: int = 60
     ):
         self.http = AsynchronousHTTPHandler(auth, request_wait_time, limit_per_minute)
 
