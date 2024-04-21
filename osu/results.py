@@ -63,16 +63,11 @@ __all__ = (
     "ChangelogListingResult",
     "CreateNewPmResult",
     "CreateTopicResult",
-    "GetUpdatesResult",
-    "GetChannelResult",
     "GetTopicAndPostsResult",
     "SearchResult",
     "SearchInfo",
     "GetNewsListingResult",
     "NewsSidebar",
-    "NotificationTypeResult",
-    "NotificationStackResult",
-    "GetNotificationsResult",
     "GetBeatmapsetEventsResult",
     "GetMatchesResult",
     "GetRoomLeaderboardResult",
@@ -266,39 +261,6 @@ class CreateNewPmResult(ResultBase):
 
 
 @dataclass
-class GetUpdatesResult(ResultBase):
-    """
-    Result of :func:`osu.Client.get_updates`
-
-    **Attributes**
-
-    presence: Optional[List[:class:`ChatChannel`]]
-
-    silences: Optional[List[:class:`UserSilence`]]
-    """
-
-    presence: Optional[List[ChatChannel]]
-    silences: Optional[List[UserSilence]]
-
-
-@dataclass
-class GetChannelResult(ResultBase):
-    """
-    Result of :func:`osu.Client.get_channel`
-
-    **Attributes**
-
-    channel: :class:`ChatChannel`
-
-    users: List[:class:`UserCompact`]
-        Users are only visible for PM channels.
-    """
-
-    channel: ChatChannel
-    users: List[UserCompact]
-
-
-@dataclass
 class CreateTopicResult(ResultBase):
     """
     Result of :func:`osu.Client.create_topic`
@@ -398,80 +360,6 @@ class GetNewsListingResult(ResultBase):
 
 
 @dataclass
-class NotificationTypeResult(ResultBase):
-    """
-    Attribute of :class:`GetNotificationsResult`
-
-    **Attributes**
-
-    cursor: Optional[Dict[:class:`str`, :class:`int`]]
-        dict that contains one key `id` if not null
-
-    name: Optional[:class:`ObjectType`]
-
-    total: :class:`int`
-    """
-
-    cursor: Optional[Dict[str, int]]
-    name: Optional[ObjectType]
-    total: int
-
-
-@dataclass
-class NotificationStackResult(ResultBase):
-    """
-    Attribute of :class:`GetNotificationsResult`
-
-    **Attributes**
-
-    category: :class:`NotificationType`
-
-    cursor: Optional[Dict[:class:`str`, :class:`int`]]
-        dict with one key `id` if not null
-
-    object_type: :class:`ObjectType`
-
-    object_id: :class:`int`
-
-    total: :class:`int`
-    """
-
-    category: Union[NotificationType, ObjectType]
-    cursor: Optional[Dict[str, int]]
-    object_type: ObjectType
-    object_id: int
-    total: int
-
-
-@dataclass
-class GetNotificationsResult(ResultBase):
-    """
-    Result of :func:`osu.Client.get_notifications`
-
-    **Attributes**
-
-    notifications: List[:class:`Notification`]
-
-    stacks: List[:class:`NotificationStackResult`]
-
-    timestamp: :class:`datetime.datetime`
-
-    types: List[:class:`NotificationTypeResult`]
-
-    unread_count: Optional[:class:`int`]
-
-    notification_endpoint: :class:`str`
-    """
-
-    notifications: List[Notification]
-    stacks: List[NotificationStackResult]
-    timestamp: datetime
-    types: List[NotificationTypeResult]
-    unread_count: Optional[int]
-    notification_endpoint: str
-
-
-@dataclass
 class GetBeatmapsetEventsResult(ResultBase):
     """
     Result of :func:`osu.Client.get_beatmapset_events`
@@ -513,7 +401,7 @@ class GetMatchesResult(ResultBase):
 @dataclass
 class BeatmapsetSearchResult(ResultBase):
     """
-    Result of :func:`osu.client.search_beatmapsets`
+    Result of :func:`osu.Client.search_beatmapsets`
 
     **Attributes**
 
@@ -541,7 +429,7 @@ class BeatmapsetSearchResult(ResultBase):
 @dataclass
 class GetRoomLeaderboardResult(ResultBase):
     """
-    Result of :func:`osu.client.get_room_leaderboard`
+    Result of :func:`osu.Client.get_room_leaderboard`
 
     **Attributes**
 
