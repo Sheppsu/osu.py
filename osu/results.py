@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Optional, List, TypeVar, Type, Union
-from datetime import datetime
+from typing import Dict, Optional, List, TypeVar, Type
 
 
 from .objects import (
@@ -18,15 +17,12 @@ from .objects import (
     ForumTopic,
     Match,
     NewsPost,
-    Notification,
     Review,
     UpdateStream,
     UserCompact,
     UserScoreAggregate,
-    UserSilence,
     WikiPage,
 )
-from .enums import ObjectType, NotificationType
 
 
 _T = TypeVar("_T")
