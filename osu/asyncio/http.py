@@ -16,8 +16,9 @@ __all__ = (
 
 class AsynchronousHTTPHandler:
     def __init__(self, auth: Optional[BaseAuthHandler], request_wait_time: float, limit_per_minute: int, api_version: str = "20220705"):
-        if not isawaitable(auth.get_token()):
+        if not isawaitable(awaitable := auth.get_token()):
             raise ValueError("auth passed to AsynchronousHTTPHandler must have an asynchronouos get_token method")
+        awaitable.close()  # type: ignore
 
         self.auth: Optional[BaseAuthHandler] = auth
         self.rate_limit: RateLimitHandler = RateLimitHandler(request_wait_time, limit_per_minute)
@@ -32,7 +33,7 @@ class AsynchronousHTTPHandler:
         if not is_files:  # otherwise let requests library handle it
             headers["Content-Type"] = path.content_type
         if path.requires_auth and "Authorization" not in headers:
-            token = await self.auth.get_token()
+            token = await self.auth.get_token()  # type: ignore
             if token is None:
                 raise ValueError("Cannot make request requiring authorization with a null token")
             headers["Authorization"] = f"Bearer {token}"

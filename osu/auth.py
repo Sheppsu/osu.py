@@ -21,7 +21,7 @@ class BaseAuthHandler:
 
     scope: Scope
 
-    def get_token(self) -> Union[Optional[str], Awaitable[Optional[str]]]:
+    def get_token(self) -> Optional[str]:
         """
         Returns the access token. If the token is expired, it will be refreshed before being returned.
         """
@@ -179,7 +179,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
         }
 
     @classmethod
-    def from_save_data(cls, save_data: dict) -> Union["FunctionalAuthHandler", Awaitable["FunctionalAuthHandler"]]:
+    def from_save_data(cls, save_data: dict) -> "FunctionalAuthHandler":
         """
         Create a new :class:`FunctionalAuthHandler` object from save data.
         """
@@ -193,10 +193,10 @@ class FunctionalAuthHandler(BaseAuthHandler):
         return cls._from_save_data(save_data)
 
     @classmethod
-    def _from_save_data(cls, save_data: dict) -> Union["FunctionalAuthHandler", Awaitable["FunctionalAuthHandler"]]:
+    def _from_save_data(cls, save_data: dict) -> "FunctionalAuthHandler":
         raise NotImplementedError()
 
-    def get_auth_token(self, code: Optional[str] = None) -> Union[None, Awaitable]:
+    def get_auth_token(self, code: Optional[str] = None) -> None:
         """
         `code` parameter is not required, but without a code the scopes are restricted to
         public and delegate (more on delegation below). You can obtain a code by having
@@ -303,43 +303,37 @@ class AsynchronousAuthHandler(FunctionalAuthHandler):
                 if is_refresh and self._refresh_callback:
                     self._refresh_callback(self)
 
-    def get_auth_token(self, code: Optional[str] = None) -> Awaitable:
+    async def get_auth_token(self, code: Optional[str] = None):
         data = self._get_data("client_credentials" if code is None else "authorization_code", code)
-        return self._request(data)
+        return await self._request(data)
 
-    def refresh_access_token(self, refresh_token: Optional[str] = None) -> Awaitable:
+    async def refresh_access_token(self, refresh_token: Optional[str] = None):
         if refresh_token:
             self.refresh_token = refresh_token
 
         data = self._get_data("client_credentials" if self.refresh_token is None else "refresh_token")
 
-        return self._request(data, is_refresh=True)
+        return await self._request(data, is_refresh=True)
 
-    async def _get_token(self) -> Optional[str]:
+    async def get_token(self) -> Optional[str]:
         if self.expire_time - 5 <= monotonic():
             await self.refresh_access_token()
         return self._token
 
-    def get_token(self) -> Awaitable[Optional[str]]:
-        return self._get_token()
-
     @classmethod
-    def _from_save_data(cls, save_data: dict) -> Awaitable["AsynchronousAuthHandler"]:
+    async def _from_save_data(cls, save_data: dict) -> "AsynchronousAuthHandler":
         client_id = save_data["client_id"]
         client_secret = save_data["client_secret"]
         redirect_url = save_data["redirect_url"]
         scope = Scope(*save_data["scope"].split())
         auth = cls(client_id, client_secret, redirect_url, scope)
-
-        async def refresh():
-            await auth.refresh_access_token(save_data["refresh_token"])
-            return auth
-
-        return refresh()
+        await auth.refresh_access_token(save_data["refresh_token"])
+        return auth
 
     @classmethod
-    def from_save_data(cls, save_data: dict) -> Awaitable["AsynchronousAuthHandler"]:
-        return super().from_save_data(save_data)  # type: ignore
+    async def from_save_data(cls, save_data: dict) -> "AsynchronousAuthHandler":
+        awaitable = super().from_save_data(save_data)
+        return await awaitable  # type: ignore
 
     def as_sync(self) -> AuthHandler:
         """
