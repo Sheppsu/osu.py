@@ -54,6 +54,7 @@ setuptools.setup(
     description="API Wrapper for osu!api v2 written in Python.",
     long_description=readme,
     install_requires=requirements,
+    extra_requires=extra_requires,
     project_urls=project_urls,
     classifiers=classifiers,
     python_requires=">=3.8.0",
