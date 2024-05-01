@@ -159,7 +159,7 @@ class CurrentUserPin:
 
     score_id: :class:`int`
 
-    score_type: :class:`ObjectType`
+    score_type: Optional[:class:`ObjectType`]
     """
 
     __slots__ = ("is_pinned", "score_id", "score_type")
@@ -167,7 +167,7 @@ class CurrentUserPin:
     def __init__(self, data):
         self.is_pinned: bool = data["is_pinned"]
         self.score_id: int = data["score_id"]
-        self.score_type: ObjectType = ObjectType(data["score_type"])
+        self.score_type: Optional[ObjectType] = get_optional(data, "score_type", ObjectType)
 
 
 class CommentableMetaAttributes:
