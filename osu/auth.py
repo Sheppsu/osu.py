@@ -286,7 +286,6 @@ class AsynchronousAuthHandler(FunctionalAuthHandler):
                 try:
                     resp.raise_for_status()
                 except Exception as e:
-                    print(data)
                     raise e
                 json = await resp.json()
                 self._handle_response(json)
