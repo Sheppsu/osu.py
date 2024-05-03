@@ -224,11 +224,22 @@ class FunctionalAuthHandler(BaseAuthHandler):
 
 
 class AuthHandler(FunctionalAuthHandler):
+    @staticmethod
+    def _raise_for_status(resp):
+        try:
+            resp.raise_for_status()
+        except Exception as exc:
+            try:
+                msg = resp.json()["error"]
+            except:
+                msg = None
+            raise type(exc)(str(exc) + ": " + msg) if msg is not None else exc from None
+
     def get_auth_token(self, code: Optional[str] = None) -> None:
         data = self._get_data("client_credentials" if code is None else "authorization_code", code)
 
         response = requests.post(token_url, data=data)
-        response.raise_for_status()
+        self._raise_for_status(response)
         response = response.json()
 
         self._handle_response(response)
@@ -240,7 +251,7 @@ class AuthHandler(FunctionalAuthHandler):
         data = self._get_data("client_credentials" if self.refresh_token is None else "refresh_token")
 
         response = requests.post(token_url, data=data)
-        response.raise_for_status()
+        self._raise_for_status(response)
         response = response.json()
 
         self._handle_response(response)
@@ -280,13 +291,21 @@ class AuthHandler(FunctionalAuthHandler):
 
 
 class AsynchronousAuthHandler(FunctionalAuthHandler):
+    @staticmethod
+    async def _raise_for_status(resp):
+        try:
+            resp.raise_for_status()
+        except Exception as exc:
+            try:
+                msg = (await resp.json())["error"]
+            except:
+                msg = None
+            raise type(exc)(str(exc) + ": " + msg) if msg is not None else exc from None
+
     async def _request(self, data, is_refresh=False):
         async with aiohttp.ClientSession() as session:
             async with session.request("POST", token_url, json=data) as resp:
-                try:
-                    resp.raise_for_status()
-                except Exception as e:
-                    raise e
+                await self._raise_for_status(resp)
                 json = await resp.json()
                 self._handle_response(json)
 
