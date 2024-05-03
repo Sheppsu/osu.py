@@ -217,6 +217,10 @@ class Path:
         return cls("get", f"scores/{mode}/{score}/download", "public", True)
 
     @classmethod
+    def get_replay_data_by_id_only(cls, score):
+        return cls("get", f"scores/{score}/download", "public", True)
+
+    @classmethod
     def get_friends(cls):
         return cls("get", "friends", "friends.read", True)
 
