@@ -1676,7 +1676,9 @@ class Client:
         """
         return get_score_object(self.http.make_request(Path.get_score_by_id_only(score_id)))
 
-    def search_beatmapsets(self, filters=None, page=None) -> BeatmapsetSearchResult:
+    def search_beatmapsets(
+        self, filters: Optional[BeatmapsetSearchFilter] = None, page: Optional[int] = None
+    ) -> BeatmapsetSearchResult:
         """
         Search for beatmapsets.
 
@@ -1727,34 +1729,71 @@ class Client:
             list(map(UserScoreAggregate, resp["leaderboard"])), get_optional(resp, "user_score", UserScoreAggregate)
         )
 
-    def get_replay_data(self, mode, score_id) -> "osrparse.Replay":
+    def get_replay_data(
+        self, mode: Optional[Union[GameModeStr, str]], score_id: int, use_osrparse: bool = True
+    ) -> Union["osrparse.Replay", bytes]:
         """
-        Returns replay data for a score.
+        Returns replay data for a score. Use :func:`Client.get_replay_data_by_id_only` for only the id, or specify
+        None to the mode attribute.
 
         Requires OAuth, scope public, and a user (authorization code grant, delegate scope, or password auth).
 
-        Requires osu.py is installed with the 'replay' feature
+        Requires osu.py is installed with the 'replay' feature if use_osrparse is true.
 
         **Parameters**
 
-        mode: Union[:class:`str`, :class:`GameModeStr`]
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
 
         score_id: :class:`int`
 
+        use_osrparse: :class:`bool`
+            If true, returns an :class:`osrparse.Replay` object. Defaults to true.
+
         **Returns**
 
-        :class:`osrparse.Replay`
+        Union[:class:`osrparse.Replay`, :class:`bytes`]
         """
-        if not has_osrparse:
+        if mode is None:
+            return self.get_replay_data_by_id_only(score_id, use_osrparse=use_osrparse)
+
+        if not has_osrparse and use_osrparse:
             raise RuntimeError(
                 "osrparse is required to call get_replay_data. "
                 "Install osu.py with the 'replay' feature to use this function."
             )
 
         mode = parse_enum_args(mode)
-        return osrparse.Replay.from_string(
-            self.http.make_request(Path.get_replay_data(mode, score_id), is_download=True).content
-        )
+        data = self.http.make_request(Path.get_replay_data(mode, score_id), is_download=True).content
+        return osrparse.Replay.from_string(data) if use_osrparse else data
+
+    def get_replay_data_by_id_only(self, score_id: int, use_osrparse: bool = True) -> Union["osrparse.Replay", bytes]:
+        """
+        Returns replay data for a score. Use :func:`Client.get_replay_data` for score ids that require
+        specifying the game mode too.
+
+        Requires OAuth, scope public, and a user (authorization code grant, delegate scope, or password auth).
+
+        Requires osu.py is installed with the 'replay' feature if use_osrparse is true.
+
+        **Parameters**
+
+        score_id: :class:`int`
+
+        use_osrparse: :class:`bool`
+            If true, returns an :class:`osrparse.Replay` object. Defaults to true.
+
+        **Returns**
+
+        Union[:class:`osrparse.Replay`, :class:`bytes`]
+        """
+        if not has_osrparse and use_osrparse:
+            raise RuntimeError(
+                "osrparse is required to call get_replay_data. "
+                "Install osu.py with the 'replay' feature to use this function."
+            )
+
+        data = self.http.make_request(Path.get_replay_data_by_id_only(score_id), is_download=True).content
+        return osrparse.Replay.from_string(data) if use_osrparse else data
 
     def get_friends(self) -> List[UserCompact]:
         """

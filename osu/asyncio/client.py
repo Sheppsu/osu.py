@@ -1685,7 +1685,9 @@ class AsynchronousClient:
         """
         return get_score_object(await self.http.make_request(Path.get_score_by_id_only(score_id)))
 
-    async def search_beatmapsets(self, filters=None, page=None) -> BeatmapsetSearchResult:
+    async def search_beatmapsets(
+        self, filters: Optional[BeatmapsetSearchFilter] = None, page: Optional[int] = None
+    ) -> BeatmapsetSearchResult:
         """
         Search for beatmapsets.
 
@@ -1736,7 +1738,9 @@ class AsynchronousClient:
             list(map(UserScoreAggregate, resp["leaderboard"])), get_optional(resp, "user_score", UserScoreAggregate)
         )
 
-    async def get_replay_data(self, mode, score_id) -> "osrparse.Replay":
+    async def get_replay_data(
+        self, mode: Optional[Union[GameModeStr, str]], score_id: int, use_osrparse: bool = True
+    ) -> Union["osrparse.Replay", bytes]:
         """
         Returns replay data for a score.
 
@@ -1746,15 +1750,21 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: Union[:class:`str`, :class:`GameModeStr`]
+        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
 
         score_id: :class:`int`
 
+        use_osrparse: :class:`bool`
+            If true, returns an :class:`osrparse.Replay` object. Defaults to true.
+
         **Returns**
 
-        :class:`osrparse.Replay`
+        Union[:class:`osrparse.Replay`, :class:`bytes`]
         """
-        if not has_osrparse:
+        if mode is None:
+            return await self.get_replay_data_by_id_only(score_id, use_osrparse=use_osrparse)
+
+        if not has_osrparse and use_osrparse:
             raise RuntimeError(
                 "osrparse is required to call get_replay_data. "
                 "Install osu.py with the 'replay' feature to use this function."
@@ -1762,8 +1772,42 @@ class AsynchronousClient:
 
         mode = parse_enum_args(mode)
         gen = self.http.get_req_gen(Path.get_replay_data(mode, score_id))
-        async for resp in gen:
-            return osrparse.Replay.from_string(await resp.read())
+        async for resp in gen:  # at most one resp, but shouldn't be zero here
+            data = await resp.read()
+            return osrparse.Replay.from_string(data) if use_osrparse else data
+
+    async def get_replay_data_by_id_only(
+        self, score_id: int, use_osrparse: bool = True
+    ) -> Union["osrparse.Replay", bytes]:
+        """
+        Returns replay data for a score. Use :func:`AsynchronousClient.get_replay_data` for score ids that require
+        specifying the game mode too.
+
+        Requires OAuth, scope public, and a user (authorization code grant, delegate scope, or password auth).
+
+        Requires osu.py is installed with the 'replay' feature if use_osrparse is true.
+
+        **Parameters**
+
+        score_id: :class:`int`
+
+        use_osrparse: :class:`bool`
+            If true, returns an :class:`osrparse.Replay` object. Defaults to true.
+
+        **Returns**
+
+        Union[:class:`osrparse.Replay`, :class:`bytes`]
+        """
+        if not has_osrparse and use_osrparse:
+            raise RuntimeError(
+                "osrparse is required to call get_replay_data. "
+                "Install osu.py with the 'replay' feature to use this function."
+            )
+
+        gen = self.http.get_req_gen(Path.get_replay_data_by_id_only(score_id))
+        async for resp in gen:  # at most one resp, but shouldn't be zero here
+            data = await resp.read()
+            return osrparse.Replay.from_string(data) if use_osrparse else data
 
     async def get_friends(self) -> List[UserCompact]:
         """
