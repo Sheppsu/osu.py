@@ -725,7 +725,7 @@ class AsynchronousClient:
         """
         This endpoint allows you to create a new PM channel.
 
-        Requires OAuth, scope chat.write, and a user (authorization code grant, delegate scope, or password auth)
+        Requires OAuth, scope chat.write, and a user (authorization code grant, delegate scope)
 
         **Parameters**
 
@@ -832,7 +832,7 @@ class AsynchronousClient:
         """
         Create a post replying to the specified topic.
 
-        Requires OAuth, scope forum.write, and a user (authorization code grant, delegate scope, or password auth)
+        Requires OAuth, scope forum.write, and a user (authorization code grant, delegate scope)
 
         **Parameters**
 
@@ -866,7 +866,7 @@ class AsynchronousClient:
         """
         Create a new topic.
 
-        Requires OAuth, scope forum.write, and a user (authorization code grant, delegate scope, or password auth)
+        Requires OAuth, scope forum.write, and a user (authorization code grant, delegate scope)
 
         **Parameters**
 
@@ -1064,7 +1064,7 @@ class AsynchronousClient:
         cursor: Optional[str] = None,
     ) -> MultiplayerScores:
         """
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope, or password auth)
+        Requires OAuth, scope public, and a user (authorization code grant, delegate scope)
 
         **Parameters**
 
@@ -1226,7 +1226,7 @@ class AsynchronousClient:
         """
         Similar to get_user but with authenticated user (token owner) as user id.
 
-        Requires OAuth, scope identify, and a user (authorization code grant, delegate scope, or password auth)
+        Requires OAuth, scope identify, and a user (authorization code grant, delegate scope)
 
         **Parameters**
 
@@ -1583,7 +1583,7 @@ class AsynchronousClient:
         """
         Returns a list of rooms.
 
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope, or password auth).
+        Requires OAuth, scope public, and a user (authorization code grant, delegate scope).
 
         **Parameters**
 
@@ -1723,7 +1723,7 @@ class AsynchronousClient:
         key contain the "user" attribute. The :class:`UserScoreAggregate` object under the "user_score" key
         contains the "user" and "position" attributes.
 
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope, or password auth).
+        Requires OAuth, scope public, and a user (authorization code grant, delegate scope).
 
         **Parameters**
 
@@ -1744,7 +1744,7 @@ class AsynchronousClient:
         """
         Returns replay data for a score.
 
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope, or password auth).
+        Requires OAuth, scope public, and a user (authorization code grant, delegate scope).
 
         Requires osu.py is installed with the 'replay' feature
 
@@ -1783,7 +1783,7 @@ class AsynchronousClient:
         Returns replay data for a score. Use :func:`AsynchronousClient.get_replay_data` for score ids that require
         specifying the game mode too.
 
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope, or password auth).
+        Requires OAuth, scope public, and a user (authorization code grant, delegate scope).
 
         Requires osu.py is installed with the 'replay' feature if use_osrparse is true.
 
@@ -1813,7 +1813,7 @@ class AsynchronousClient:
         """
         Returns a list of friends.
 
-        Requires OAuth, scope friends.read, and a user (authorization code grant, delegate scope, or password auth).
+        Requires OAuth, scope friends.read, and a user (authorization code grant, delegate scope).
 
         **Returns**
 
