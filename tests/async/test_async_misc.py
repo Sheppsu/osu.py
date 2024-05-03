@@ -80,5 +80,9 @@ class TestAsynchronousMisc:
 
     @pytest.mark.asyncio
     async def test_get_replay_data(self, async_user_client):
-        replay_data = await async_user_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
-        assert replay_data
+        assert await async_user_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
+        assert await async_user_client.get_replay_data(None, 1267337687)
+        assert await async_user_client.get_replay_data(GameModeStr.STANDARD, 3693301831, False)
+        assert await async_user_client.get_replay_data(None, 1267337687, False)
+        assert await async_user_client.get_replay_data_by_id_only(1267337687)
+        assert await async_user_client.get_replay_data_by_id_only(1267337687, False)

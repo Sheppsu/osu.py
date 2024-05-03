@@ -64,8 +64,12 @@ class TestMisc:
         assert backgrounds
 
     def test_get_replay_data(self, user_client):
-        replay_data = user_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
-        assert replay_data
+        assert user_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
+        assert user_client.get_replay_data(None, 1267337687)
+        assert user_client.get_replay_data(GameModeStr.STANDARD, 3693301831, False)
+        assert user_client.get_replay_data(None, 1267337687, False)
+        assert user_client.get_replay_data_by_id_only(1267337687)
+        assert user_client.get_replay_data_by_id_only(1267337687, False)
 
     def test_get_topic_and_posts(self, client, sample_topic):
         ret = client.get_topic_and_posts(1699086)
