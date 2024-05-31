@@ -11,8 +11,11 @@ client = Client.from_client_credentials(client_id, client_secret, redirect_url)
 # Print the top 100 players
 cursor = None
 for _ in range(2):
-    ranking = client.get_ranking(GameModeStr.STANDARD, RankingType.PERFORMANCE, cursor=cursor)
-    cursor = ranking.cursor
-    for r in ranking.ranking:
-        print(f"{r.user.username} - #{r.global_rank} ({r.pp})")
-
+    rankings = client.get_ranking(GameModeStr.STANDARD, RankingType.PERFORMANCE, cursor=cursor)
+    cursor = rankings.cursor
+    for stats in rankings.ranking:
+        rank_change = stats.rank_change_since_30_days
+        print(
+            f"[{'+' if rank_change >= 0 else ''}{rank_change}] "
+            f"{stats.user.username} - #{stats.global_rank} ({stats.pp})"
+        )
