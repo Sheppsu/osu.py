@@ -8,9 +8,6 @@ redirect_url = "http://127.0.0.1:8080"
 
 client = Client.from_client_credentials(client_id, client_secret, redirect_url)
 
-user_id = 14895608
-mode = 'osu'
-
 # Print the top 100 players
 cursor = None
 for _ in range(2):
