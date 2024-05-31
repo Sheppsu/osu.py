@@ -401,10 +401,13 @@ class Mods(IntFlag):
         return "".join(map(lambda mod: Mod[mod.name].value, sorted(self, key=lambda m: m.value)))
 
     def __iter__(self):
-        mods = str(self).split("|")
-        mods[0] = mods[0].replace("Mods.", "")
-        mods = list(map(lambda x: Mods[x], mods))
-        return iter(mods)
+        value = self.value
+        for mod in reversed(Mods.__members__.values()):
+            if value >= mod.value:
+                value -= mod.value
+                yield mod
+            if value == 0:
+                break
 
 
 class RankStatus(IntEnum):
