@@ -640,7 +640,7 @@ class UserStatistics:
         Current global rank according to pp.
 
     global_rank_exp: Optional[:class:`int`]
-        Current global rank according to experimental pp.
+        Current global rank according to experimental pp (not used anymore).
 
     grade_counts: :class:`NamedTuple`
         Below are the attributes and their meanings.
@@ -681,8 +681,10 @@ class UserStatistics:
     pp: :class:`int`
         Performance points
 
-    pp_exp: :class:`int`
-        Experimental performance points (on lazer.ppy.sh)
+    pp_exp: Optional[:class:`int`]
+        Experimental performance points (not used anymore)
+
+    rank_change_since_30_days: Optional[:class:`int`]
 
     recommended_difficulty: :class:`float`
         Recommended difficulty for a player. This value is not received from the api, but locally calculated.
@@ -734,6 +736,7 @@ class UserStatistics:
         "recommended_difficulty",
         "recommended_difficulty_exp",
         "variants",
+        "rank_change_since_30_days",
     )
 
     def __init__(self, data):
@@ -752,7 +755,7 @@ class UserStatistics:
         self.play_count: int = data["play_count"]
         self.play_time: int = data["play_time"]
         self.pp: int = data["pp"]
-        self.pp_exp: int = data.get("pp_exp")
+        self.pp_exp: Optional[int] = data.get("pp_exp")
         self.recommended_difficulty: float = math.pow(self.pp, 0.4) * 0.195
         self.recommended_difficulty_exp: float = math.pow(self.pp_exp, 0.4) * 0.195 if self.pp_exp is not None else None
         self.ranked_score: int = data["ranked_score"]
@@ -761,6 +764,7 @@ class UserStatistics:
         self.total_score: int = data["total_score"]
         self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
         self.variants: Optional[List[UserStatisticVariant]] = get_optional_list(data, "variants", UserStatisticVariant)
+        self.rank_change_since_30_days: Optional[int] = data.get("rank_change_since_30_days")
 
     def __repr__(self):
         return prettify(self, "pp", "global_rank", "user")
