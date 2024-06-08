@@ -746,7 +746,6 @@ class BeatmapsetRequirement:
     __slots__ = ("current", "required", "eligible_main_rulesets", "required_meta")
 
     def __init__(self, data):
-        print(data)
         self.current: int = data["current"]
         self.required: Optional[int] = data.get("required")
 
