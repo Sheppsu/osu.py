@@ -241,6 +241,10 @@ Objects
 
 .. autoclass:: osu.BeatmapsetRequirement
    :members:
+
+
+... autoclass:: osu.BeatmapsetRequiredNominations
+    :members:
    
 
 .. autoclass:: osu.BeatmapsetReviveEvent

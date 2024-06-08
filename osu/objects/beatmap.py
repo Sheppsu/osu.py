@@ -735,17 +735,48 @@ class BeatmapsetRequirement:
 
     current: :class:`int`
 
-    required: :class:`int`
+    required: Optional[:class:`int`]
+        If this is None, then required_meta and eligible_main_rulesets should have values
+
+    required_meta: Optional[:class:`BeatmapsetRequiredNominations`]
+
+    eligible_main_rulesets: Optional[List[:class:`GameModeStr`]]
     """
 
-    __slots__ = ("current", "required")
+    __slots__ = ("current", "required", "eligible_main_rulesets", "required_meta")
 
     def __init__(self, data):
+        print(data)
         self.current: int = data["current"]
-        self.required: int = data["required"]
+        self.required: Optional[int] = data.get("required")
+
+        self.eligible_main_rulesets: Optional[List[GameModeStr]] = get_optional_list(
+            data, "eligible_main_rulesets", GameModeStr
+        )
+        self.required_meta: Optional[BeatmapsetRequiredNominations] = get_optional(
+            data, "required_meta", BeatmapsetRequiredNominations
+        )
 
     def __repr__(self):
         return prettify(self, "current", "required")
+
+
+class BeatmapsetRequiredNominations:
+    """
+    Information of required ruleset nominations of a beatmap
+
+    **Attributes**
+
+    main_ruleset: :class:`int`
+
+    non_main_ruleset: :class:`int`
+    """
+
+    ___slots__ = ("main_ruleset", "non_main_ruleset")
+
+    def __init__(self, data):
+        self.main_ruleset = data["main_ruleset"]
+        self.non_main_ruleset = data["non_main_ruleset"]
 
 
 class BeatmapsetAvailability:
