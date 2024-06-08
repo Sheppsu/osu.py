@@ -22,10 +22,10 @@ sys.path.insert(0, path)
 
 project = 'osu.py'
 copyright = '2024, Sheppsu'
-author = 'Sheepposu'
+author = 'Sheppsu'
 
 # The full version, including alpha/beta/rc tags
-release = '2.1.1'
+release = '2.1.2'
 
 
 # -- General configuration ---------------------------------------------------
