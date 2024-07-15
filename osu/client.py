@@ -67,7 +67,7 @@ class Client:
         return self.http.auth
 
     @classmethod
-    def from_client_credentials(
+    def from_credentials(
         cls,
         client_id: int,
         client_secret: str,
@@ -76,6 +76,7 @@ class Client:
         code: Optional[str] = None,
         request_wait_time: float = 1.0,
         limit_per_minute: int = 60,
+        lazily_authenticate: bool = True
     ) -> "Client":
         """
         Returns a :class:`Client` object from client id, client secret, redirect uri, and scope.
@@ -109,13 +110,27 @@ class Client:
 
             This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
 
+        lazily_authenticate: :class:`bool`
+            If true, the :class:`AuthHandler` won't authenticate with the api until
+            a request is made which requires it.
+
         **Returns**
 
         :class:`Client`
         """
         auth = AuthHandler(client_id, client_secret, redirect_url, scope)
-        auth.get_auth_token(code)
+        if not lazily_authenticate:
+            auth.get_auth_token(code)
         return cls(auth, request_wait_time, limit_per_minute)
+
+    @classmethod
+    def from_client_credentials(cls, *args, **kwargs):
+        """
+        **DEPRECATED AS OF v2.2.0**
+
+        Use `from_credentials`
+        """
+        return cls.from_credentials(*args, **kwargs)
 
     def set_api_version(self, version: str) -> None:
         """

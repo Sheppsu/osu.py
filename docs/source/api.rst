@@ -12,6 +12,8 @@ Interactive Classes
 	
 .. autoclass:: osu.AsynchronousClient
 
+    .. automethod:: from_credentials
+
 .. autoclass:: osu.AuthHandler
     :members:
 	

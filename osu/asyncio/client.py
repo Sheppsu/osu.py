@@ -12,7 +12,7 @@ from ..util import (
 )
 from ..results import *
 
-from typing import Union, Optional, Sequence, Dict, List
+from typing import Union, Optional, Sequence, Dict, List, Awaitable
 from datetime import datetime
 
 try:
@@ -28,7 +28,9 @@ class AsynchronousClient:
     Main object for interacting with osu!api, which uses asynchronous requests.
     If you're looking for synchronous requests, use :class:`Client`.
 
-    All the functions of this class are documented under :class:`Client` and function the exact same.
+    All the functions of this class are documented under :class:`Client` and function the exact same,
+    with the exception of :func:`AsynchronousClient.from_credentials`
+
 
     **Init Parameters**
 
@@ -83,7 +85,28 @@ class AsynchronousClient:
         limit_per_minute: int = 60,
     ) -> "AsynchronousClient":
         """
-        Returns a :class:`Client` object from client id, client secret, redirect uri, and scope.
+        **DEPRECATED AS OF v2.2.0**
+
+        Use `from_credentials`
+        """
+        auth = AsynchronousAuthHandler(client_id, client_secret, redirect_url, scope)
+        await auth.get_auth_token(code)
+        return cls(auth, request_wait_time, limit_per_minute)
+
+    @classmethod
+    def from_credentials(
+        cls,
+        client_id: int,
+        client_secret: str,
+        redirect_url: Optional[str],
+        scope: Optional[Scope] = Scope.default(),
+        code: Optional[str] = None,
+        request_wait_time: float = 1.0,
+        limit_per_minute: int = 60,
+        lazily_authenticate: bool = True
+    ) -> Union["AsynchronousClient", Awaitable]:
+        """
+        Creates client from client id, client secret, redirect uri, and scope.
 
         **Parameters**
 
@@ -114,12 +137,22 @@ class AsynchronousClient:
 
             This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
 
+        lazily_authenticate: :class:`bool`
+            If true (default), the :class:`AuthHandler` won't authenticate with the api until
+            a request is made which requires it. If false, an `Awaitable` is returned.
+
         **Returns**
 
-        :class:`Client`
+        Union[:class:`AsynchronousClient`, Awaitable]
         """
         auth = AsynchronousAuthHandler(client_id, client_secret, redirect_url, scope)
-        await auth.get_auth_token(code)
+        if not lazily_authenticate:
+            async def create():
+                await auth.get_auth_token(code)
+                return cls(auth, request_wait_time, limit_per_minute)
+
+            return create()
+
         return cls(auth, request_wait_time, limit_per_minute)
 
     def set_api_version(self, version: str) -> None:
