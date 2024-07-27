@@ -1212,11 +1212,14 @@ class UserScoreType(Enum):
     FIRSTS = "firsts"
 
     RECENT = "recent"
+
+    PINNED = "pinned"
     """
 
     BEST = "best"
     FIRSTS = "firsts"
     RECENT = "recent"
+    PINNED = "pinned"
 
 
 class ForumTopicType(Enum):

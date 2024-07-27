@@ -1321,7 +1321,7 @@ class AsynchronousClient:
             Id of the user.
 
         type: Union[:class:`UserScoreType` :class:`str`]
-            Score type. Must be one of `best`, `firsts`, `recent`
+            Score type. Must be one of `best`, `firsts`, `recent`, `pinned`
 
         include_fails: Optional[:class:`bool`]
             Only for recent scores, include scores of failed plays. Defaults to False.
