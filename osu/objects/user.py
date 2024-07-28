@@ -76,6 +76,8 @@ class UserCompact:
 
     cover: Optional[:class:`UserCover`]
 
+    daily_challenge_user_stats: Optional[:class:`DailyChallengeUserStats`]
+
     favourite_beatmapset_count: Optional[:class:`int`]
 
     follow_user_mapping: Optional[List[:class:`int`]]
@@ -172,6 +174,7 @@ class UserCompact:
         "comments_count",
         "country",
         "cover",
+        "daily_challenge_user_stats",
         "favourite_beatmapset_count",
         "follow_user_mapping",
         "follower_count",
@@ -242,6 +245,9 @@ class UserCompact:
         self.comments_count: Optional[int] = data.get("comments_count")
         self.country: Optional[Country] = get_optional(data, "country", Country)
         self.cover: Optional[UserCover] = get_optional(data, "cover", UserCover)
+        self.daily_challenge_user_stats: Optional[DailyChallengeUserStats] = get_optional(
+            data, "daily_challenge_user_stats", DailyChallengeUserStats
+        )
         self.favourite_beatmapset_count: Optional[int] = data.get("favourite_beatmapset_count")
         self.follow_user_mapping: Optional[List[int]] = data.get("follower_user_mapping")
         self.follower_count: Optional[int] = data.get("follower_count")
@@ -982,3 +988,59 @@ class UserKudosu:
 
     def __repr__(self):
         return prettify(self, "total", "available")
+
+
+class DailyChallengeUserStats:
+    """
+    Daily challenge stats of a user
+
+    **Attributes**
+
+    daily_streak_best: :class:`int`
+
+    daily_streak_current: :class:`int`
+
+    last_update: Optional[:class:`datetime.datetime`]
+
+    last_weekly_streak: Optional[:class:`datetime.datetime`]
+
+    playcount: :class:`int`
+
+    top_10p_placements: :class:`int`
+
+    top_50p_placements: :class:`int`
+
+    user_id: :class:`int`
+
+    weekly_streak_best: :class:`int`
+
+    weekly_streak_current: :class:`int`
+    """
+
+    __slots__ = (
+        "daily_streak_best",
+        "daily_streak_current",
+        "last_update",
+        "last_weekly_streak",
+        "playcount",
+        "top_10p_placements",
+        "top_50p_placements",
+        "user_id",
+        "weekly_streak_best",
+        "weekly_streak_current"
+    )
+
+    def __init__(self, data):
+        self.daily_streak_best: int = data["daily_streak_best"]
+        self.daily_streak_current: int = data["daily_streak_current"]
+        self.last_update: Optional[datetime] = get_optional(data, "last_update", parser.parse)
+        self.last_weekly_streak: Optional[datetime] = get_optional(data, "last_weekly_streak", parser.parse)
+        self.playcount: int = data["playcount"]
+        self.top_10p_placements: int = data["top_10p_placements"]
+        self.top_50p_placements: int = data["top_50p_placements"]
+        self.user_id: int = data["user_id"]
+        self.weekly_streak_best: int = data["weekly_streak_best"]
+        self.weekly_streak_current: int = data["weekly_streak_current"]
+
+    def __repr__(self):
+        return prettify(self, "daily_streak_best", "daily_streak_current")
