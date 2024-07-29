@@ -14,4 +14,4 @@ from .util import (
 from .results import *
 
 
-__version__ = "2.1.2"
+__version__ = "2.2.0"
