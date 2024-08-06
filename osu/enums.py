@@ -460,8 +460,7 @@ class GameModeStr(Enum):
     CATCH = "fruits"
     MANIA = "mania"
 
-    @staticmethod
-    def get_int_equivalent(gamemode: Enum) -> IntEnum:
+    def get_int_equivalent(self: "GameModeStr") -> "GameModeInt":
         return GameModeInt[gamemode.name]
 
 
@@ -485,8 +484,7 @@ class GameModeInt(IntEnum):
     CATCH = 2
     MANIA = 3
 
-    @staticmethod
-    def get_str_equivalent(gamemode: IntEnum) -> Enum:
+    def get_str_equivalent(self: "GameModeInt") -> GameModeStr:
         return GameModeStr[gamemode.name]
 
 
