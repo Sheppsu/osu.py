@@ -1,7 +1,7 @@
 from dateutil import parser
 from typing import Optional, TYPE_CHECKING
 
-from ..util import prettify, get_optional
+from ..util import prettify, get_optional, get_required
 from ..enums import KudosuAction, ObjectType
 
 
@@ -34,13 +34,13 @@ class KudosuHistory:
     __slots__ = ("id", "action", "amount", "model", "created_at", "giver", "post")
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.action: KudosuAction = KudosuAction(data["action"])
-        self.amount: int = data["amount"]
-        self.model: ObjectType = ObjectType(data["model"])
-        self.created_at: datetime = parser.parse(data["created_at"])
+        self.id: int = get_required(data, "id")
+        self.action: KudosuAction = KudosuAction(get_required(data, "action"))
+        self.amount: int = get_required(data, "amount")
+        self.model: ObjectType = ObjectType(get_required(data, "model"))
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
         self.giver: Optional[KudosuGiver] = get_optional(data, "giver", KudosuGiver)
-        self.post: KudosuPost = KudosuPost(data["post"])
+        self.post: KudosuPost = KudosuPost(get_required(data, "post"))
 
     def __repr__(self):
         return prettify(self, "action", "amount", "giver")
@@ -60,8 +60,8 @@ class KudosuPost:
     __slots__ = ("url", "title")
 
     def __init__(self, data):
-        self.url: Optional[str] = data["url"]
-        self.title: str = data["title"]
+        self.url: Optional[str] = get_required(data, "url")
+        self.title: str = get_required(data, "title")
 
     def __repr__(self):
         return prettify(self, "title")
@@ -79,8 +79,8 @@ class KudosuGiver:
     __slots__ = ("url", "username")
 
     def __init__(self, data):
-        self.url: str = data["url"]
-        self.username: str = data["username"]
+        self.url: str = get_required(data, "url")
+        self.username: str = get_required(data, "username")
 
     def __repr__(self):
         return prettify(self, "username")

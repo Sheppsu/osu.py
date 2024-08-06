@@ -1,6 +1,6 @@
 from typing import Optional, List
 
-from ..util import prettify, get_optional, get_optional_list
+from ..util import prettify, get_optional, get_optional_list, get_required
 from ..enums import GameModeStr
 from .forum import TextFormat
 
@@ -49,13 +49,13 @@ class Group:
     )
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.identifier: str = data["identifier"]
-        self.is_probationary: bool = data["is_probationary"]
-        self.has_playmodes: bool = data["has_playmodes"]
-        self.name: str = data["name"]
-        self.short_name: str = data["short_name"]
-        self.colour: Optional[str] = data["colour"]
+        self.id: int = get_required(data, "id")
+        self.identifier: str = get_required(data, "identifier")
+        self.is_probationary: bool = get_required(data, "is_probationary")
+        self.has_playmodes: bool = get_required(data, "has_playmodes")
+        self.name: str = get_required(data, "name")
+        self.short_name: str = get_required(data, "short_name")
+        self.colour: Optional[str] = get_required(data, "colour")
         self.description: Optional[TextFormat] = get_optional(data, "description", TextFormat)
 
     def __repr__(self):

@@ -15,6 +15,7 @@ from .enums import (
     ObjectType,
 )
 from typing import Any, Sequence, Union, Optional, TypeVar, List, Callable, Dict
+import os
 
 
 _T = TypeVar("_T")
@@ -387,3 +388,13 @@ def get_optional(data: Dict[str, _V], key: str, call: Callable[[_V], _T]) -> Opt
 
 def get_optional_list(data: Dict[str, _V], key: str, obj: Callable[[_V], _T]) -> Optional[List[_T]]:
     return list(map(obj, value)) if (value := data.get(key)) is not None else None
+
+
+# if testing, raise an error for expected keys
+# otherwise return none to avoid key errors in prod
+if os.getenv("OSUPY_TEST") is None:
+    def get_required(data: Dict[str, _V], key: str):
+        return data.get(key)
+else:
+    def get_required(data: Dict[str, _V], key: str):
+        return data[key]

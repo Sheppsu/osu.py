@@ -2,8 +2,7 @@ from dateutil import parser
 from typing import TYPE_CHECKING, List
 
 from .user import UserCompact
-from ..util import prettify
-
+from ..util import prettify, get_required
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -25,8 +24,8 @@ class SeasonalBackgrounds:
     __slots__ = ("ends_at", "backgrounds")
 
     def __init__(self, data):
-        self.ends_at: datetime = parser.parse(data["ends_at"])
-        self.backgrounds: List[SeasonalBackground] = list(map(SeasonalBackground, data["backgrounds"]))
+        self.ends_at: datetime = parser.parse(get_required(data, "ends_at"))
+        self.backgrounds: List[SeasonalBackground] = list(map(SeasonalBackground, get_required(data, "backgrounds")))
 
     def __repr__(self):
         return prettify(self, "ends_at", "backgrounds")
@@ -48,8 +47,8 @@ class SeasonalBackground:
     __slots__ = ("url", "user")
 
     def __init__(self, data):
-        self.url: str = data["url"]
-        self.user: UserCompact = UserCompact(data["user"])
+        self.url: str = get_required(data, "url")
+        self.user: UserCompact = UserCompact(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "url", "user")

@@ -1,7 +1,7 @@
 from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional
+from ..util import prettify, get_optional, get_required
 from ..enums import CommentSort
 from .user import UserCompact
 from .current_user_attributes import CommentableMetaAttributes
@@ -92,24 +92,24 @@ class Comment:
     )
 
     def __init__(self, data):
-        self.commentable_id: int = data["commentable_id"]
-        self.commentable_type: str = data["commentable_type"]
-        self.created_at: datetime = parser.parse(data["created_at"])
+        self.commentable_id: int = get_required(data, "commentable_id")
+        self.commentable_type: str = get_required(data, "commentable_type")
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
         self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
         self.deleted_by_id: Optional[int] = data.get("deleted_by_id")
         self.edited_at: Optional[datetime] = get_optional(data, "edited_at", parser.parse)
-        self.edited_by_id: Optional[int] = data["edited_by_id"]
-        self.id: int = data["id"]
-        self.legacy_name: Optional[str] = data["legacy_name"]
+        self.edited_by_id: Optional[int] = get_required(data, "edited_by_id")
+        self.id: int = get_required(data, "id")
+        self.legacy_name: Optional[str] = get_required(data, "legacy_name")
         self.message: Optional[str] = data.get("message")
         self.message_html: Optional[str] = data.get("message_html")
-        self.parent_id: Optional[int] = data["parent_id"]
-        self.pinned: bool = data["pinned"]
-        self.replies_count: int = data["replies_count"]
-        self.updated_at: datetime = parser.parse(data["updated_at"])
+        self.parent_id: Optional[int] = get_required(data, "parent_id")
+        self.pinned: bool = get_required(data, "pinned")
+        self.replies_count: int = get_required(data, "replies_count")
+        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
         self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
-        self.user_id: int = data["user_id"]
-        self.votes_count: int = data["votes_count"]
+        self.user_id: int = get_required(data, "user_id")
+        self.votes_count: int = get_required(data, "votes_count")
 
     @property
     def url(self) -> str:
@@ -176,18 +176,18 @@ class CommentBundle:
     )
 
     def __init__(self, data):
-        self.commentable_meta: List[CommentableMeta] = list(map(CommentableMeta, data["commentable_meta"]))
-        self.comments: List[Comment] = list(map(Comment, data["comments"]))
-        self.has_more: bool = data["has_more"]
-        self.has_more_id: int = data["has_more_id"]
-        self.included_comments: List[Comment] = list(map(Comment, data["included_comments"]))
-        self.pinned_comments: List[Comment] = list(map(Comment, data["pinned_comments"]))
-        self.sort: CommentSort = CommentSort(data["sort"])
+        self.commentable_meta: List[CommentableMeta] = list(map(CommentableMeta, get_required(data, "commentable_meta")))
+        self.comments: List[Comment] = list(map(Comment, get_required(data, "comments")))
+        self.has_more: bool = get_required(data, "has_more")
+        self.has_more_id: int = get_required(data, "has_more_id")
+        self.included_comments: List[Comment] = list(map(Comment, get_required(data, "included_comments")))
+        self.pinned_comments: List[Comment] = list(map(Comment, get_required(data, "pinned_comments")))
+        self.sort: CommentSort = CommentSort(get_required(data, "sort"))
         self.top_level_count: Optional[int] = data.get("top_level_count")
         self.total: Optional[int] = data.get("total")
-        self.user_follow: bool = data["user_follow"]
-        self.user_votes: List[int] = data["user_votes"]
-        self.users: List[UserCompact] = list(map(UserCompact, data["users"]))
+        self.user_follow: bool = get_required(data, "user_follow")
+        self.user_votes: List[int] = get_required(data, "user_votes")
+        self.users: List[UserCompact] = list(map(UserCompact, get_required(data, "users")))
 
     def __repr__(self):
         return prettify(self, "commentable_meta", "comments", "users")

@@ -1,7 +1,7 @@
 from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_optional_list
+from ..util import prettify, get_optional, get_optional_list, get_required
 from ..enums import ChatChannelType, ChatMessageType
 from .current_user_attributes import ChatChannelUserAttributes
 from .user import UserCompact
@@ -81,12 +81,12 @@ class ChatChannel:
     )
 
     def __init__(self, data):
-        self.channel_id: int = data["channel_id"]
-        self.name: str = data["name"]
+        self.channel_id: int = get_required(data, "channel_id")
+        self.name: str = get_required(data, "name")
         self.description: Optional[str] = data.get("description")
         self.icon: Optional[str] = data.get("icon")
-        self.type: ChatChannelType = ChatChannelType(data["type"])
-        self.moderated: bool = data["moderated"]
+        self.type: ChatChannelType = ChatChannelType(get_required(data, "type"))
+        self.moderated: bool = get_required(data, "moderated")
 
         self.uuid: Optional[str] = data.get("uuid")
         self.current_user_attributes: Optional[ChatChannelUserAttributes] = get_optional(
@@ -146,13 +146,13 @@ class ChatMessage:
     )
 
     def __init__(self, data):
-        self.channel_id: int = data["channel_id"]
-        self.content: str = data["content"]
-        self.is_action: bool = data["is_action"]
-        self.message_id: int = data["message_id"]
-        self.sender_id: int = data["sender_id"]
-        self.timestamp: datetime = parser.parse(data["timestamp"])
-        self.type: ChatMessageType = ChatMessageType(data["type"])
+        self.channel_id: int = get_required(data, "channel_id")
+        self.content: str = get_required(data, "content")
+        self.is_action: bool = get_required(data, "is_action")
+        self.message_id: int = get_required(data, "message_id")
+        self.sender_id: int = get_required(data, "sender_id")
+        self.timestamp: datetime = parser.parse(get_required(data, "timestamp"))
+        self.type: ChatMessageType = ChatMessageType(get_required(data, "type"))
         self.uuid: Optional[str] = data.get("uuid")
         self.sender: Optional[UserCompact] = get_optional(data, "sender", UserCompact)
 

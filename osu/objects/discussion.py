@@ -1,7 +1,7 @@
 from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING, Union
 
-from ..util import prettify, get_optional, get_optional_list
+from ..util import prettify, get_optional, get_optional_list, get_required
 from ..enums import MessageType
 from .current_user_attributes import BeatmapsetDiscussionPermissions
 from .beatmap import BeatmapCompact, BeatmapsetCompact
@@ -88,22 +88,22 @@ class BeatmapsetDiscussion:
     )
 
     def __init__(self, data):
-        self.beatmap_id: Optional[int] = data["beatmap_id"]
-        self.beatmapset_id: int = data["beatmapset_id"]
-        self.can_be_resolved: bool = data["can_be_resolved"]
-        self.can_grant_kudosu: bool = data["can_grant_kudosu"]
-        self.created_at: datetime = parser.parse(data["created_at"])
+        self.beatmap_id: Optional[int] = get_required(data, "beatmap_id")
+        self.beatmapset_id: int = get_required(data, "beatmapset_id")
+        self.can_be_resolved: bool = get_required(data, "can_be_resolved")
+        self.can_grant_kudosu: bool = get_required(data, "can_grant_kudosu")
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
         self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
-        self.deleted_by_id: Optional[int] = data["deleted_by_id"]
-        self.id: int = data["id"]
-        self.kudosu_denied: bool = data["kudosu_denied"]
-        self.last_post_at: datetime = parser.parse(data["last_post_at"])
-        self.message_type: MessageType = MessageType(data["message_type"])
-        self.parent_id: Optional[int] = data["parent_id"]
-        self.resolved: bool = data["resolved"]
+        self.deleted_by_id: Optional[int] = get_required(data, "deleted_by_id")
+        self.id: int = get_required(data, "id")
+        self.kudosu_denied: bool = get_required(data, "kudosu_denied")
+        self.last_post_at: datetime = parser.parse(get_required(data, "last_post_at"))
+        self.message_type: MessageType = MessageType(get_required(data, "message_type"))
+        self.parent_id: Optional[int] = get_required(data, "parent_id")
+        self.resolved: bool = get_required(data, "resolved")
         self.timestamp: Optional[int] = data.get("timestamp")
-        self.updated_at: datetime = parser.parse(data["updated_at"])
-        self.user_id: int = data["user_id"]
+        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.user_id: int = get_required(data, "user_id")
 
         self.beatmap: Optional[BeatmapCompact] = get_optional(data, "beatmap", BeatmapCompact)
         self.beatmapset: Optional[BeatmapsetCompact] = get_optional(data, "beatmapset", BeatmapsetCompact)
@@ -141,9 +141,9 @@ class VotesSummary:
     __slots__ = ("down", "up", "voters")
 
     def __init__(self, data):
-        self.down: int = data["down"]
-        self.up: int = data["up"]
-        self.voters: VotersSummary = VotersSummary(data["voters"])
+        self.down: int = get_required(data, "down")
+        self.up: int = get_required(data, "up")
+        self.voters: VotersSummary = VotersSummary(get_required(data, "voters"))
 
 
 class VotersSummary:
@@ -162,8 +162,8 @@ class VotersSummary:
     __slots__ = ("down", "up")
 
     def __init__(self, data):
-        self.down: List[int] = data["down"]
-        self.up: List[int] = data["up"]
+        self.down: List[int] = get_required(data, "down")
+        self.up: List[int] = get_required(data, "up")
 
 
 class BeatmapsetDiscussionPost:
@@ -211,18 +211,18 @@ class BeatmapsetDiscussionPost:
     )
 
     def __init__(self, data):
-        self.beatmapset_discussion_id: int = data["beatmapset_discussion_id"]
-        self.created_at: datetime = parser.parse(data["created_at"])
+        self.beatmapset_discussion_id: int = get_required(data, "beatmapset_discussion_id")
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
         self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
         self.deleted_by_id: Optional[int] = data.get("deleted_by_id")
-        self.id: int = data["id"]
+        self.id: int = get_required(data, "id")
         self.last_editor_id: Optional[int] = data.get("last_editor_id")
-        self.updated_at: datetime = parser.parse(data["updated_at"])
-        self.user_id: int = data["user_id"]
+        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.user_id: int = get_required(data, "user_id")
 
-        self.system: bool = data["system"]
+        self.system: bool = get_required(data, "system")
         self.message: Union[str, SystemDiscussionPostMessage] = (
-            SystemDiscussionPostMessage(data["message"]) if self.system else data["message"]
+            SystemDiscussionPostMessage(get_required(data, "message")) if self.system else get_required(data, "message")
         )
 
         self.beatmap_discussion: Optional[BeatmapsetDiscussion] = get_optional(
@@ -247,8 +247,8 @@ class SystemDiscussionPostMessage:
     __slots__ = ("type", "value")
 
     def __init__(self, data):
-        self.type: str = data["type"]
-        self.value: bool = data["value"]
+        self.type: str = get_required(data, "type")
+        self.value: bool = get_required(data, "value")
 
 
 class BeatmapsetDiscussionVote:
@@ -280,12 +280,12 @@ class BeatmapsetDiscussionVote:
     )
 
     def __init__(self, data):
-        self.beatmapset_discussion_id: int = data["beatmapset_discussion_id"]
-        self.created_at: datetime = parser.parse(data["created_at"])
-        self.id: int = data["id"]
-        self.score: int = data["score"]
-        self.updated_at: datetime = parser.parse(data["updated_at"])
-        self.user_id: int = data["user_id"]
+        self.beatmapset_discussion_id: int = get_required(data, "beatmapset_discussion_id")
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.id: int = get_required(data, "id")
+        self.score: int = get_required(data, "score")
+        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.user_id: int = get_required(data, "user_id")
 
     def __repr__(self):
         return prettify(self, "user_id", "score")
@@ -301,4 +301,4 @@ class Review:
     __slots__ = ("max_blocks",)
 
     def __init__(self, data):
-        self.max_blocks: int = data["max_blocks"]
+        self.max_blocks: int = get_required(data, "max_blocks")

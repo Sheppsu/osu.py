@@ -1,7 +1,7 @@
 from dateutil import parser
 from typing import Optional, TYPE_CHECKING, Union
 
-from ..util import prettify
+from ..util import prettify, get_required
 from ..enums import GameModeStr, RankStatus
 from .achievement import Achievement
 
@@ -25,8 +25,8 @@ class Event:
     """
 
     def __init__(self, data):
-        self.created_at: datetime = parser.parse(data["created_at"])
-        self.id: int = data["id"]
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.id: int = get_required(data, "id")
 
 
 class AchievementEvent(Event):
@@ -42,8 +42,8 @@ class AchievementEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.achievement: Achievement = Achievement(data["achievement"])
-        self.user: EventUser = EventUser(data["user"])
+        self.achievement: Achievement = Achievement(get_required(data, "achievement"))
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "achievement", "user")
@@ -62,8 +62,8 @@ class BeatmapPlaycountEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.beatmap: EventBeatmap = EventBeatmap(data["beatmap"])
-        self.count: int = data["count"]
+        self.beatmap: EventBeatmap = EventBeatmap(get_required(data, "beatmap"))
+        self.count: int = get_required(data, "count")
 
     def __repr__(self):
         return prettify(self, "beatmap", "count")
@@ -84,9 +84,9 @@ class BeatmapsetApproveEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.approval: RankStatus = RankStatus[data["approval"].upper()]
-        self.beatmapset: EventBeatmapset = EventBeatmapset(data["beatmapset"])
-        self.user: EventUser = EventUser(data["user"])
+        self.approval: RankStatus = RankStatus[get_required(data, "approval").upper()]
+        self.beatmapset: EventBeatmapset = EventBeatmapset(get_required(data, "beatmapset"))
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "beatmapset", "approval")
@@ -103,7 +103,7 @@ class BeatmapsetDeleteEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.beatmapset: EventBeatmapset = EventBeatmapset(data["beatmapset"])
+        self.beatmapset: EventBeatmapset = EventBeatmapset(get_required(data, "beatmapset"))
 
     def __repr__(self):
         return prettify(self, "beatmapset")
@@ -122,8 +122,8 @@ class BeatmapsetReviveEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.beatmapset: EventBeatmapset = EventBeatmapset(data["beatmapset"])
-        self.user: EventUser = EventUser(data["user"])
+        self.beatmapset: EventBeatmapset = EventBeatmapset(get_required(data, "beatmapset"))
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "beatmapset", "user")
@@ -142,8 +142,8 @@ class BeatmapsetUpdateEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.beatmapset: EventBeatmapset = EventBeatmapset(data["beatmapset"])
-        self.user: EventUser = EventUser(data["user"])
+        self.beatmapset: EventBeatmapset = EventBeatmapset(get_required(data, "beatmapset"))
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "beatmapset", "user")
@@ -162,8 +162,8 @@ class BeatmapsetUploadEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.beatmapset: EventBeatmapset = EventBeatmapset(data["beatmapset"])
-        self.user: EventUser = EventUser(data["user"])
+        self.beatmapset: EventBeatmapset = EventBeatmapset(get_required(data, "beatmapset"))
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "beatmapset", "user")
@@ -188,11 +188,11 @@ class RankEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.score_rank: str = data["scoreRank"]
-        self.rank: int = data["rank"]
-        self.mode: GameModeStr = GameModeStr(data["mode"])
-        self.beatmap: EventBeatmap = EventBeatmap(data["beatmap"])
-        self.user: EventUser = EventUser(data["user"])
+        self.score_rank: str = get_required(data, "scoreRank")
+        self.rank: int = get_required(data, "rank")
+        self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
+        self.beatmap: EventBeatmap = EventBeatmap(get_required(data, "beatmap"))
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "rank", "beatmap")
@@ -213,9 +213,9 @@ class RankLostEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.mode: GameModeStr = GameModeStr(data["mode"])
-        self.beatmap: EventBeatmap = EventBeatmap(data["beatmap"])
-        self.user: EventUser = EventUser(data["user"])
+        self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
+        self.beatmap: EventBeatmap = EventBeatmap(get_required(data, "beatmap"))
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "beatmap", "user")
@@ -232,7 +232,7 @@ class UserSupportAgain(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.user: EventUser = EventUser(data["user"])
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "user")
@@ -249,7 +249,7 @@ class UserSupportFirst(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.user: EventUser = EventUser(data["user"])
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "user")
@@ -266,7 +266,7 @@ class UserSupportGift(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.user: EventUser = EventUser(data["user"])
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "user")
@@ -283,7 +283,7 @@ class UsernameChangeEvent(Event):
 
     def __init__(self, data):
         super().__init__(data)
-        self.user: EventUser = EventUser(data["user"])
+        self.user: EventUser = EventUser(get_required(data, "user"))
 
     def __repr__(self):
         return prettify(self, "user")
@@ -304,8 +304,8 @@ class EventUser:
     __slots__ = ("username", "url", "previous_username")
 
     def __init__(self, data):
-        self.username: str = data["username"]
-        self.url: str = data["url"]
+        self.username: str = get_required(data, "username")
+        self.url: str = get_required(data, "url")
         self.previous_username: Optional[str] = data.get("previousUsername")
 
     def __repr__(self):
@@ -324,8 +324,8 @@ class EventBeatmap:
     __slots__ = ("title", "url")
 
     def __init__(self, data):
-        self.title: str = data["title"]
-        self.url: str = data["url"]
+        self.title: str = get_required(data, "title")
+        self.url: str = get_required(data, "url")
 
     def __repr__(self):
         return prettify(self, "title")
@@ -343,8 +343,8 @@ class EventBeatmapset:
     __slots__ = ("title", "url")
 
     def __init__(self, data):
-        self.title: str = data["title"]
-        self.url: str = data["url"]
+        self.title: str = get_required(data, "title")
+        self.url: str = get_required(data, "url")
 
     def __repr__(self):
         return prettify(self, "title")
@@ -368,6 +368,6 @@ EVENT_TYPE = Union[
 
 
 def get_event_object(data) -> EVENT_TYPE:
-    t = data["type"]
+    t = get_required(data, "type")
     cls = globals()[t[0].upper() + t[1:] + "Event"]
     return cls(data)

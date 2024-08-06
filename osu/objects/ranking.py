@@ -3,8 +3,7 @@ from typing import Dict, Optional, List, TYPE_CHECKING
 
 from .beatmap import Beatmapset
 from .user import UserStatistics
-from ..util import prettify, get_optional, get_optional_list
-
+from ..util import prettify, get_optional, get_optional_list, get_required
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -34,9 +33,9 @@ class Rankings:
     __slots__ = ("beatmapsets", "cursor", "ranking", "spotlight", "total")
 
     def __init__(self, data):
-        self.cursor: Dict = data["cursor"]
-        self.ranking: List[UserStatistics] = list(map(UserStatistics, data["ranking"]))
-        self.total: int = data["total"]
+        self.cursor: Dict = get_required(data, "cursor")
+        self.ranking: List[UserStatistics] = list(map(UserStatistics, get_required(data, "ranking")))
+        self.total: int = get_required(data, "total")
         self.spotlight: Optional[Spotlight] = get_optional(data, "spotlight", Spotlight)
         self.beatmapsets: Optional[List[Beatmapset]] = get_optional_list(data, "beatmapsets", Beatmapset)
 
@@ -83,13 +82,13 @@ class Spotlight:
     )
 
     def __init__(self, data):
-        self.end_date: datetime = parser.parse(data["end_date"])
-        self.id: int = data["id"]
-        self.mode_specific: bool = data["mode_specific"]
+        self.end_date: datetime = parser.parse(get_required(data, "end_date"))
+        self.id: int = get_required(data, "id")
+        self.mode_specific: bool = get_required(data, "mode_specific")
         self.participant_count: Optional[int] = data.get("participant_count")
-        self.name: str = data["name"]
-        self.start_date: datetime = parser.parse(data["start_date"])
-        self.type: str = data["type"]
+        self.name: str = get_required(data, "name")
+        self.start_date: datetime = parser.parse(get_required(data, "start_date"))
+        self.type: str = get_required(data, "type")
 
     def __repr__(self):
         return prettify(self, "name")
@@ -105,7 +104,7 @@ class Spotlights:
     __slots__ = ("spotlights",)
 
     def __init__(self, data):
-        self.spotlights: List[Spotlight] = list(map(Spotlight, data["spotlights"]))
+        self.spotlights: List[Spotlight] = list(map(Spotlight, get_required(data, "spotlights")))
 
     def __repr__(self):
         return prettify(self, "spotlights")

@@ -1,7 +1,7 @@
 from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional
+from ..util import prettify, get_optional, get_required
 from ..enums import ForumTopicType
 
 
@@ -45,14 +45,14 @@ class ForumPost:
     )
 
     def __init__(self, data):
-        self.created_at: datetime = parser.parse(data["created_at"])
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
         self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
         self.edited_at: Optional[datetime] = get_optional(data, "edited_at", parser.parse)
         self.edited_by_id: Optional[int] = data.get("edited_by_id")
-        self.forum_id: int = data["forum_id"]
-        self.id: int = data["id"]
-        self.topic_id: int = data["topic_id"]
-        self.user_id: int = data["user_id"]
+        self.forum_id: int = get_required(data, "forum_id")
+        self.id: int = get_required(data, "id")
+        self.topic_id: int = get_required(data, "topic_id")
+        self.user_id: int = get_required(data, "user_id")
         self.body: Optional[TextFormat] = get_optional(data, "body", TextFormat)
 
     def __repr__(self):
@@ -73,7 +73,7 @@ class TextFormat:
     __slots__ = ("html", "raw")
 
     def __init__(self, data):
-        self.html: str = data["html"]
+        self.html: str = get_required(data, "html")
         for attr in ("raw", "bbcode", "markdown"):
             if attr in data:
                 self.raw: str = data[attr]
@@ -133,19 +133,19 @@ class ForumTopic:
     )
 
     def __init__(self, data):
-        self.created_at: datetime = parser.parse(data["created_at"])
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
         self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
-        self.first_post_id: int = data["first_post_id"]
-        self.forum_id: int = data["forum_id"]
-        self.id: int = data["id"]
-        self.is_locked: bool = data["is_locked"]
-        self.last_post_id: int = data["last_post_id"]
+        self.first_post_id: int = get_required(data, "first_post_id")
+        self.forum_id: int = get_required(data, "forum_id")
+        self.id: int = get_required(data, "id")
+        self.is_locked: bool = get_required(data, "is_locked")
+        self.last_post_id: int = get_required(data, "last_post_id")
         self.poll: Optional[Poll] = get_optional(data, "poll", Poll)
-        self.post_count: int = data["post_count"]
-        self.title: str = data["title"]
-        self.type: ForumTopicType = ForumTopicType(data["type"])
-        self.updated_at: datetime = parser.parse(data["updated_at"])
-        self.user_id: int = data["user_id"]
+        self.post_count: int = get_required(data, "post_count")
+        self.title: str = get_required(data, "title")
+        self.type: ForumTopicType = ForumTopicType(get_required(data, "type"))
+        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.user_id: int = get_required(data, "user_id")
 
     def __repr__(self):
         return prettify(self, "user_id", "title")
@@ -187,15 +187,15 @@ class Poll:
     )
 
     def __init__(self, data):
-        self.allow_vote_change: bool = data["allow_vote_change"]
+        self.allow_vote_change: bool = get_required(data, "allow_vote_change")
         self.ended_at: Optional[datetime] = get_optional(data, "ended_at", parser.parse)
-        self.hide_incomplete_results: bool = data["hide_incomplete_results"]
+        self.hide_incomplete_results: bool = get_required(data, "hide_incomplete_results")
         self.last_vote_at: Optional[datetime] = get_optional(data, "last_vote_at", parser.parse)
-        self.max_votes: int = data["max_votes"]
-        self.options: List[PollOption] = list(map(PollOption, data["options"]))
-        self.started_at: datetime = parser.parse(data["started_at"])
-        self.title: TextFormat = TextFormat(data["title"])
-        self.total_vote_count: int = data["total_vote_count"]
+        self.max_votes: int = get_required(data, "max_votes")
+        self.options: List[PollOption] = list(map(PollOption, get_required(data, "options")))
+        self.started_at: datetime = parser.parse(get_required(data, "started_at"))
+        self.title: TextFormat = TextFormat(get_required(data, "title"))
+        self.total_vote_count: int = get_required(data, "total_vote_count")
 
     def __repr__(self):
         return prettify(self, "title", "options")
@@ -216,9 +216,9 @@ class PollOption:
     __slots__ = ("id", "text", "vote_count")
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.text: TextFormat = TextFormat(data["text"])
-        self.vote_count: Optional[int] = data["vote_count"]
+        self.id: int = get_required(data, "id")
+        self.text: TextFormat = TextFormat(get_required(data, "text"))
+        self.vote_count: Optional[int] = get_required(data, "vote_count")
 
     def __repr__(self):
         return prettify(self, "text", "vote_count")

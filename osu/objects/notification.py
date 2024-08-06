@@ -1,7 +1,7 @@
 from dateutil import parser
 from typing import Optional, TYPE_CHECKING, Union
 
-from ..util import prettify, get_optional
+from ..util import prettify, get_optional, get_required
 from ..enums import (
     NotificationCategory,
     ObjectType,
@@ -121,14 +121,14 @@ class Notification:
     )
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.name: NotificationType = NotificationType(data["name"])
-        self.created_at: datetime = parser.parse(data["created_at"])
-        self.object_type: ObjectType = ObjectType(data["object_type"])
-        self.object_id: int = data["object_id"]
+        self.id: int = get_required(data, "id")
+        self.name: NotificationType = NotificationType(get_required(data, "name"))
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.object_type: ObjectType = ObjectType(get_required(data, "object_type"))
+        self.object_id: int = get_required(data, "object_id")
         self.source_user_id: Optional[int] = data.get("source_user_id")
-        self.is_read: bool = data["is_read"]
-        self.details: _DETAILS_TYPE = _get_details_object(data["details"], self.name)
+        self.is_read: bool = get_required(data, "is_read")
+        self.details: _DETAILS_TYPE = _get_details_object(get_required(data, "details"), self.name)
 
     def __repr__(self):
         return prettify(self, "name", "details")
@@ -152,10 +152,10 @@ class ReadNotification:
     __slots__ = ("category", "id", "object_id", "object_type")
 
     def __init__(self, data):
-        self.category: NotificationCategory = NotificationCategory(data["category"])
-        self.id: int = data["id"]
-        self.object_id: int = data["object_id"]
-        self.object_type: ObjectType = ObjectType(data["object_type"])
+        self.category: NotificationCategory = NotificationCategory(get_required(data, "category"))
+        self.id: int = get_required(data, "id")
+        self.object_id: int = get_required(data, "object_id")
+        self.object_type: ObjectType = ObjectType(get_required(data, "object_type"))
 
     def __repr__(self):
         return prettify(self, "id")
@@ -173,7 +173,7 @@ class NotificationsDetailsBase:
     __slots__ = ("username",)
 
     def __init__(self, data):
-        self.username: str = data["username"]
+        self.username: str = get_required(data, "username")
 
     def __repr__(self):
         # all the subclasses have a title attribute
@@ -203,11 +203,11 @@ class BeatmapOwnerChangeDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.beatmap_id: int = data["beatmap_id"]
-        self.cover_url: str = data["cover_url"]
-        self.title: str = data["title"]
-        self.title_unicode: str = data["title_unicode"]
-        self.version: str = data["version"]
+        self.beatmap_id: int = get_required(data, "beatmap_id")
+        self.cover_url: str = get_required(data, "cover_url")
+        self.title: str = get_required(data, "title")
+        self.title_unicode: str = get_required(data, "title_unicode")
+        self.version: str = get_required(data, "version")
 
 
 class BeatmapsetNotificationDetails(NotificationsDetailsBase):
@@ -229,9 +229,9 @@ class BeatmapsetNotificationDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.title: str = data["title"]
-        self.title_unicode: str = data["title_unicode"]
-        self.cover_url: str = data["cover_url"]
+        self.title: str = get_required(data, "title")
+        self.title_unicode: str = get_required(data, "title_unicode")
+        self.cover_url: str = get_required(data, "cover_url")
 
 
 class BeatmapsetDiscussionPostNotificationDetails(NotificationsDetailsBase):
@@ -269,13 +269,13 @@ class BeatmapsetDiscussionPostNotificationDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.content: str = data["content"]
-        self.title: str = data["title"]
-        self.title_unicode: str = data["title_unicode"]
-        self.post_id: int = data["post_id"]
-        self.discussion_id: int = data["discussion_id"]
-        self.beatmap_id: int = data["beatmap_id"]
-        self.cover_url: str = data["cover_url"]
+        self.content: str = get_required(data, "content")
+        self.title: str = get_required(data, "title")
+        self.title_unicode: str = get_required(data, "title_unicode")
+        self.post_id: int = get_required(data, "post_id")
+        self.discussion_id: int = get_required(data, "discussion_id")
+        self.beatmap_id: int = get_required(data, "beatmap_id")
+        self.cover_url: str = get_required(data, "cover_url")
 
 
 class ReviewStats:
@@ -292,9 +292,9 @@ class ReviewStats:
     __slots__ = ("praises", "suggestions", "problems")
 
     def __init__(self, data):
-        self.praises = data["praises"]
-        self.suggestions = data["suggestions"]
-        self.problems = data["problems"]
+        self.praises = get_required(data, "praises")
+        self.suggestions = get_required(data, "suggestions")
+        self.problems = get_required(data, "problems")
 
 
 class BeatmapsetDiscussionReviewNewDetails(NotificationsDetailsBase):
@@ -332,13 +332,13 @@ class BeatmapsetDiscussionReviewNewDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.title: str = data["title"]
-        self.title_unicode: str = data["title_unicode"]
-        self.post_id: int = data["post_id"]
-        self.discussion_id: int = data["discussion_id"]
-        self.beatmap_id: int = data["beatmap_id"]
-        self.cover_url: str = data["cover_url"]
-        self.embeds: ReviewStats = ReviewStats(data["embeds"])
+        self.title: str = get_required(data, "title")
+        self.title_unicode: str = get_required(data, "title_unicode")
+        self.post_id: int = get_required(data, "post_id")
+        self.discussion_id: int = get_required(data, "discussion_id")
+        self.beatmap_id: int = get_required(data, "beatmap_id")
+        self.cover_url: str = get_required(data, "cover_url")
+        self.embeds: ReviewStats = ReviewStats(get_required(data, "embeds"))
 
 
 class ChannelAnnouncementDetails(NotificationsDetailsBase):
@@ -364,11 +364,11 @@ class ChannelAnnouncementDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.channel_id: int = data["channel_id"]
-        self.name: str = data["name"]
-        self.title: str = data["title"]
-        self.type: ChatChannelType = ChatChannelType(data["type"].upper())
-        self.cover_url: str = data["cover_url"]
+        self.channel_id: int = get_required(data, "channel_id")
+        self.name: str = get_required(data, "name")
+        self.title: str = get_required(data, "title")
+        self.type: ChatChannelType = ChatChannelType(get_required(data, "type").upper())
+        self.cover_url: str = get_required(data, "cover_url")
 
 
 class ChannelMessageDetails(NotificationsDetailsBase):
@@ -390,9 +390,9 @@ class ChannelMessageDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.title: str = data["title"]
-        self.type: ChatChannelType = ChatChannelType(data["type"].upper())
-        self.cover_url: str = data["cover_url"]
+        self.title: str = get_required(data, "title")
+        self.type: ChatChannelType = ChatChannelType(get_required(data, "type").upper())
+        self.cover_url: str = get_required(data, "cover_url")
 
 
 class CommentNewDetails(NotificationsDetailsBase):
@@ -416,10 +416,10 @@ class CommentNewDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.comment_id: int = data["comment_id"]
-        self.title: str = data["title"]
-        self.content: str = data["content"]
-        self.cover_url: str = data["cover_url"]
+        self.comment_id: int = get_required(data, "comment_id")
+        self.title: str = get_required(data, "title")
+        self.content: str = get_required(data, "content")
+        self.cover_url: str = get_required(data, "cover_url")
 
 
 class ForumTopicReplyDetails(NotificationsDetailsBase):
@@ -441,9 +441,9 @@ class ForumTopicReplyDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.title: str = data["title"]
-        self.post_id: int = data["post_id"]
-        self.cover_url: str = data["cover_url"]
+        self.title: str = get_required(data, "title")
+        self.post_id: int = get_required(data, "post_id")
+        self.cover_url: str = get_required(data, "cover_url")
 
 
 class UserAchievementUnlockDetails(NotificationsDetailsBase):
@@ -478,12 +478,12 @@ class UserAchievementUnlockDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.achievement_id: int = data["achievement_id"]
+        self.achievement_id: int = get_required(data, "achievement_id")
         self.achievement_mode: Optional[GameModeStr] = get_optional(data, "achievement_mode", GameModeStr)
-        self.cover_url: str = data["cover_url"]
-        self.slug: str = data["slug"]
-        self.title: str = data["title"]
-        self.user_id: int = data["user_id"]
+        self.cover_url: str = get_required(data, "cover_url")
+        self.slug: str = get_required(data, "slug")
+        self.title: str = get_required(data, "title")
+        self.user_id: int = get_required(data, "user_id")
 
 
 class UserBeatmapsetNewDetails(NotificationsDetailsBase):
@@ -507,10 +507,10 @@ class UserBeatmapsetNewDetails(NotificationsDetailsBase):
 
     def __init__(self, data):
         super().__init__(data)
-        self.beatmapset_id: int = data["beatmapset_id"]
-        self.title: str = data["title"]
-        self.title_unicode: str = data["title_unicode"]
-        self.cover_url: str = data["cover_url"]
+        self.beatmapset_id: int = get_required(data, "beatmapset_id")
+        self.title: str = get_required(data, "title")
+        self.title_unicode: str = get_required(data, "title_unicode")
+        self.cover_url: str = get_required(data, "cover_url")
 
 
 class BeatmapsetDiscussionLockDetails(BeatmapsetNotificationDetails):

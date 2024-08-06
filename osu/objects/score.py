@@ -5,8 +5,7 @@ from .beatmap import BeatmapCompact, BeatmapsetCompact
 from .user import UserCompact
 from .current_user_attributes import ScoreUserAttributes
 from ..enums import GameModeStr, GameModeInt, Mods, Mod, ObjectType, ScoreRank
-from ..util import prettify, get_optional_list, get_optional
-
+from ..util import prettify, get_optional, get_required
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -28,7 +27,7 @@ class BeatmapScores:
     __slots__ = ("scores", "user_score")
 
     def __init__(self, data):
-        self.scores: List[Union[LegacyScore, SoloScore]] = list(map(get_score_object, data["scores"]))
+        self.scores: List[Union[LegacyScore, SoloScore]] = list(map(get_score_object, get_required(data, "scores")))
         var_name = "userScore" if "userScore" in data else "user_score"
         self.user_score: Optional[BeatmapUserScore] = get_optional(data, var_name, BeatmapUserScore)
 
@@ -127,23 +126,23 @@ class LegacyScore:
     )
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.best_id: int = data["best_id"]
-        self.user_id: int = data["user_id"]
-        self.accuracy: float = data["accuracy"]
-        self.mods: Mods = Mods.parse_any_list(data["mods"])
-        self.score: int = data["score"]
-        self.max_combo: int = data["max_combo"]
-        self.perfect: bool = data["perfect"]
-        self.statistics: ScoreStatistics = ScoreStatistics(data["statistics"])
-        self.passed: bool = data["passed"]
-        self.pp: float = data["pp"]
-        self.rank: ScoreRank = ScoreRank(data["rank"])
-        self.created_at: datetime = parser.parse(data["created_at"])
-        self.mode: GameModeStr = GameModeStr(data["mode"])
-        self.mode_int: GameModeInt = GameModeInt(data["mode_int"])
-        self.has_replay: bool = data["replay"]
-        self.type: ObjectType = ObjectType(data["type"])
+        self.id: int = get_required(data, "id")
+        self.best_id: int = get_required(data, "best_id")
+        self.user_id: int = get_required(data, "user_id")
+        self.accuracy: float = get_required(data, "accuracy")
+        self.mods: Mods = Mods.parse_any_list(get_required(data, "mods"))
+        self.score: int = get_required(data, "score")
+        self.max_combo: int = get_required(data, "max_combo")
+        self.perfect: bool = get_required(data, "perfect")
+        self.statistics: ScoreStatistics = ScoreStatistics(get_required(data, "statistics"))
+        self.passed: bool = get_required(data, "passed")
+        self.pp: float = get_required(data, "pp")
+        self.rank: ScoreRank = ScoreRank(get_required(data, "rank"))
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
+        self.mode_int: GameModeInt = GameModeInt(get_required(data, "mode_int"))
+        self.has_replay: bool = get_required(data, "replay")
+        self.type: ObjectType = ObjectType(get_required(data, "type"))
 
         from .match import MatchGameScoreInfo
 
@@ -253,24 +252,24 @@ class SoloScore:
     )
 
     def __init__(self, data):
-        self.accuracy: float = data["accuracy"]
-        self.beatmap_id: int = data["beatmap_id"]
-        self.ended_at: datetime = parser.parse(data["ended_at"])
-        self.max_combo: int = data["max_combo"]
-        self.maximum_statistics: ScoreDataStatistics = ScoreDataStatistics(data["maximum_statistics"])
-        self.mods: List[LazerMod] = list(map(LazerMod, data["mods"]))
-        self.passed: bool = data["passed"]
-        self.rank: ScoreRank = ScoreRank(data["rank"])
-        self.ruleset_id: int = data["ruleset_id"]
-        self.statistics: ScoreDataStatistics = ScoreDataStatistics(data["statistics"])
-        self.total_score: int = data["total_score"]
-        self.user_id: int = data["user_id"]
-        self.best_id: Optional[int] = data["best_id"]
-        self.id: int = data["id"]
-        self.legacy_perfect: Optional[bool] = data["legacy_perfect"]
-        self.pp: Optional[float] = data["pp"]
-        self.replay: bool = data["replay"]
-        self.type: ObjectType = ObjectType(data["type"])
+        self.accuracy: float = get_required(data, "accuracy")
+        self.beatmap_id: int = get_required(data, "beatmap_id")
+        self.ended_at: datetime = parser.parse(get_required(data, "ended_at"))
+        self.max_combo: int = get_required(data, "max_combo")
+        self.maximum_statistics: ScoreDataStatistics = ScoreDataStatistics(get_required(data, "maximum_statistics"))
+        self.mods: List[LazerMod] = list(map(LazerMod, get_required(data, "mods")))
+        self.passed: bool = get_required(data, "passed")
+        self.rank: ScoreRank = ScoreRank(get_required(data, "rank"))
+        self.ruleset_id: int = get_required(data, "ruleset_id")
+        self.statistics: ScoreDataStatistics = ScoreDataStatistics(get_required(data, "statistics"))
+        self.total_score: int = get_required(data, "total_score")
+        self.user_id: int = get_required(data, "user_id")
+        self.best_id: Optional[int] = get_required(data, "best_id")
+        self.id: int = get_required(data, "id")
+        self.legacy_perfect: Optional[bool] = get_required(data, "legacy_perfect")
+        self.pp: Optional[float] = get_required(data, "pp")
+        self.replay: bool = get_required(data, "replay")
+        self.type: ObjectType = ObjectType(get_required(data, "type"))
 
         self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
         self.build_id: Optional[int] = data.get("build_id")
@@ -302,8 +301,8 @@ class PpWeight:
     __slots__ = ("percentage", "pp")
 
     def __init__(self, data):
-        self.percentage: float = data["percentage"]
-        self.pp: float = data["pp"]
+        self.percentage: float = get_required(data, "percentage")
+        self.pp: float = get_required(data, "pp")
 
 
 def get_score_object(data) -> Union[SoloScore, LegacyScore]:
@@ -341,12 +340,12 @@ class ScoreStatistics:
     )
 
     def __init__(self, data):
-        self.count_50: int = data["count_50"]
-        self.count_100: int = data["count_100"]
-        self.count_300: int = data["count_300"]
-        self.count_geki: int = data["count_geki"]
-        self.count_katu: int = data["count_katu"]
-        self.count_miss: int = data["count_miss"]
+        self.count_50: int = get_required(data, "count_50")
+        self.count_100: int = get_required(data, "count_100")
+        self.count_300: int = get_required(data, "count_300")
+        self.count_geki: int = get_required(data, "count_geki")
+        self.count_katu: int = get_required(data, "count_katu")
+        self.count_miss: int = get_required(data, "count_miss")
 
     def __repr__(self):
         return prettify(self, "count_300", "count_miss")
@@ -443,9 +442,9 @@ class LazerMod:
 
     def __init__(self, data):
         try:
-            self.mod = Mod(data["acronym"])
+            self.mod = Mod(get_required(data, "acronym"))
         except ValueError:
-            self.mod = data["acronym"]
+            self.mod = get_required(data, "acronym")
         self.settings: Optional[Dict] = data.get("settings")
 
     def __repr__(self):
@@ -466,8 +465,8 @@ class BeatmapUserScore:
     __slots__ = ("position", "score")
 
     def __init__(self, data):
-        self.position: int = data["position"]
-        self.score: Union[LegacyScore, SoloScore] = get_score_object(data["score"])
+        self.position: int = get_required(data, "position")
+        self.score: Union[LegacyScore, SoloScore] = get_score_object(get_required(data, "score"))
 
     def __repr__(self):
         return prettify(self, "position")

@@ -8,7 +8,7 @@ from ..enums import (
     RoomCategory,
     RoomType,
 )
-from ..util import prettify, get_optional, get_optional_list
+from ..util import prettify, get_optional, get_optional_list, get_required
 from .user import UserCompact
 from .beatmap import BeatmapCompact
 from .score import ScoreDataStatistics, LazerMod
@@ -75,18 +75,18 @@ class MultiplayerScore:
     )
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.user_id: int = data["user_id"]
-        self.room_id: int = data["room_id"]
-        self.playlist_item_id: int = data["playlist_item_id"]
-        self.beatmap_id: int = data["beatmap_id"]
-        self.rank: str = data["rank"]
-        self.total_score: int = data["total_score"]
-        self.accuracy: float = data["accuracy"]
-        self.max_combo: int = data["max_combo"]
+        self.id: int = get_required(data, "id")
+        self.user_id: int = get_required(data, "user_id")
+        self.room_id: int = get_required(data, "room_id")
+        self.playlist_item_id: int = get_required(data, "playlist_item_id")
+        self.beatmap_id: int = get_required(data, "beatmap_id")
+        self.rank: str = get_required(data, "rank")
+        self.total_score: int = get_required(data, "total_score")
+        self.accuracy: float = get_required(data, "accuracy")
+        self.max_combo: int = get_required(data, "max_combo")
         self.mods: Optional[List[LazerMod]] = get_optional_list(data, "mods", LazerMod)
-        self.statistics: ScoreDataStatistics = ScoreDataStatistics(data["statistics"])
-        self.passed: bool = data["passed"]
+        self.statistics: ScoreDataStatistics = ScoreDataStatistics(get_required(data, "statistics"))
+        self.passed: bool = get_required(data, "passed")
         self.position: Optional[int] = data.get("position")
         self.scores_around: Optional[MultiplayerScoresAround] = get_optional(
             data, "scores_around", MultiplayerScoresAround
@@ -121,9 +121,9 @@ class MultiplayerScores:
     __slots__ = ("cursor", "params", "scores", "total", "user_score")
 
     def __init__(self, data):
-        self.cursor: str = data["cursor"]
-        self.params: Dict = data["params"]
-        self.scores: List[MultiplayerScore] = list(map(MultiplayerScore, data["scores"]))
+        self.cursor: str = get_required(data, "cursor")
+        self.params: Dict = get_required(data, "params")
+        self.scores: List[MultiplayerScore] = list(map(MultiplayerScore, get_required(data, "scores")))
         self.total: Optional[int] = data.get("total")
         self.user_score: Optional[MultiplayerScore] = get_optional(data, "user_score", MultiplayerScore)
 
@@ -143,8 +143,8 @@ class MultiplayerScoresAround:
     __slots__ = ("higher", "lower")
 
     def __init__(self, data):
-        self.higher: MultiplayerScores = MultiplayerScores(data["higher"])
-        self.lower: MultiplayerScores = MultiplayerScores(data["lower"])
+        self.higher: MultiplayerScores = MultiplayerScores(get_required(data, "higher"))
+        self.lower: MultiplayerScores = MultiplayerScores(get_required(data, "lower"))
 
     def __repr__(self):
         return prettify(self, "higher", "lower")
@@ -233,21 +233,21 @@ class Room:
     )
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.name: str = data["name"]
-        self.category: RoomCategory = RoomCategory(data["category"])
-        self.type: RoomType = RoomType(data["type"])
-        self.user_id: int = data["user_id"]
-        self.starts_at: datetime = parser.parse(data["starts_at"])
+        self.id: int = get_required(data, "id")
+        self.name: str = get_required(data, "name")
+        self.category: RoomCategory = RoomCategory(get_required(data, "category"))
+        self.type: RoomType = RoomType(get_required(data, "type"))
+        self.user_id: int = get_required(data, "user_id")
+        self.starts_at: datetime = parser.parse(get_required(data, "starts_at"))
         self.ends_at: Optional[datetime] = get_optional(data, "ends_at", parser.parse)
-        self.max_attempts: Optional[int] = data["max_attempts"]
-        self.participant_count: int = data["participant_count"]
-        self.channel_id: Optional[int] = data["channel_id"]
-        self.active: bool = data["active"]
-        self.has_password: bool = data["has_password"]
+        self.max_attempts: Optional[int] = get_required(data, "max_attempts")
+        self.participant_count: int = get_required(data, "participant_count")
+        self.channel_id: Optional[int] = get_required(data, "channel_id")
+        self.active: bool = get_required(data, "active")
+        self.has_password: bool = get_required(data, "has_password")
         self.queue_mode: Union[RealTimeQueueMode, PlaylistQueueMode] = (
             RealTimeQueueMode if self.type != RoomType.PLAYLISTS else PlaylistQueueMode
-        )(data["queue_mode"])
+        )(get_required(data, "queue_mode"))
 
         self.current_playlist_item: Optional[PlaylistItem] = get_optional(data, "current_playlist_item", PlaylistItem)
         self.current_user_score: Optional[UserScoreAggregate] = get_optional(
@@ -309,13 +309,13 @@ class UserScoreAggregate:
     )
 
     def __init__(self, data):
-        self.accuracy: float = data["accuracy"]
-        self.attempts: int = data["attempts"]
-        self.completed: int = data["completed"]
-        self.pp: float = data["pp"]
-        self.room_id: int = data["room_id"]
-        self.total_score: int = data["total_score"]
-        self.user_id: int = data["user_id"]
+        self.accuracy: float = get_required(data, "accuracy")
+        self.attempts: int = get_required(data, "attempts")
+        self.completed: int = get_required(data, "completed")
+        self.pp: float = get_required(data, "pp")
+        self.room_id: int = get_required(data, "room_id")
+        self.total_score: int = get_required(data, "total_score")
+        self.user_id: int = get_required(data, "user_id")
         self.playlist_item_attempts: Optional[Dict[str, int]] = data.get(
             "playlist_item_attempts"
         )  # {attempts: int, id: int}
@@ -341,9 +341,9 @@ class PlaylistItemStats:
     __slots__ = ("count_active", "count_total", "ruleset_ids")
 
     def __init__(self, data):
-        self.count_active: int = data["count_active"]
-        self.count_total: int = data["count_total"]
-        self.ruleset_ids: List[GameModeInt] = list(map(GameModeInt, data["ruleset_ids"]))
+        self.count_active: int = get_required(data, "count_active")
+        self.count_total: int = get_required(data, "count_total")
+        self.ruleset_ids: List[GameModeInt] = list(map(GameModeInt, get_required(data, "ruleset_ids")))
 
     def __repr__(self):
         return prettify(self, "count_active", "count_total")
@@ -391,15 +391,15 @@ class PlaylistItem:
     )
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.room_id: int = data["room_id"]
-        self.beatmap_id: int = data["beatmap_id"]
-        self.ruleset_id: int = GameModeInt(data["ruleset_id"])
-        self.allowed_mods: List[LazerMod] = list(map(LazerMod, data["allowed_mods"]))
-        self.required_mods: List[LazerMod] = list(map(LazerMod, data["required_mods"]))
-        self.expired: bool = data["expired"]
-        self.owner_id: int = data["owner_id"]
-        self.playlist_order: Optional[int] = data["playlist_order"]
+        self.id: int = get_required(data, "id")
+        self.room_id: int = get_required(data, "room_id")
+        self.beatmap_id: int = get_required(data, "beatmap_id")
+        self.ruleset_id: int = GameModeInt(get_required(data, "ruleset_id"))
+        self.allowed_mods: List[LazerMod] = list(map(LazerMod, get_required(data, "allowed_mods")))
+        self.required_mods: List[LazerMod] = list(map(LazerMod, get_required(data, "required_mods")))
+        self.expired: bool = get_required(data, "expired")
+        self.owner_id: int = get_required(data, "owner_id")
+        self.playlist_order: Optional[int] = get_required(data, "playlist_order")
         self.played_at: Optional[datetime] = get_optional(data, "played_at", parser.parse)
         self.beatmap: Optional[BeatmapCompact] = get_optional(data, "beatmap", BeatmapCompact)
 

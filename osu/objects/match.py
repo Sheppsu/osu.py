@@ -9,7 +9,7 @@ from ..enums import (
     TeamType,
     Mods,
 )
-from ..util import prettify, get_optional
+from ..util import prettify, get_optional, get_required
 from .user import UserCompact
 from .beatmap import BeatmapCompact
 from .score import LegacyScore
@@ -37,8 +37,8 @@ class Match:
     __slots__ = ("id", "start_time", "end_time", "name")
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.name: str = data["name"]
+        self.id: int = get_required(data, "id")
+        self.name: str = get_required(data, "name")
         self.start_time: Optional[datetime] = get_optional(data, "start_time", parser.parse)
         self.end_time: Optional[datetime] = get_optional(data, "end_time", parser.parse)
 
@@ -73,12 +73,12 @@ class MatchExtended(Match):
     )
 
     def __init__(self, data):
-        super().__init__(data["match"])
-        self.events: List[MatchEvent] = list(map(MatchEvent, data["events"]))
-        self.users: List[UserCompact] = list(map(UserCompact, data["users"]))
-        self.first_event_id: int = data["first_event_id"]
-        self.latest_event_id: int = data["latest_event_id"]
-        self.current_game_id: int = data["current_game_id"]
+        super().__init__(get_required(data, "match"))
+        self.events: List[MatchEvent] = list(map(MatchEvent, get_required(data, "events")))
+        self.users: List[UserCompact] = list(map(UserCompact, get_required(data, "users")))
+        self.first_event_id: int = get_required(data, "first_event_id")
+        self.latest_event_id: int = get_required(data, "latest_event_id")
+        self.current_game_id: int = get_required(data, "current_game_id")
 
 
 class MatchEvent:
@@ -105,11 +105,11 @@ class MatchEvent:
     __slots__ = ("id", "timestamp", "user_id", "type", "text", "game")
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.timestamp: datetime = parser.parse(data["timestamp"])
-        self.user_id: int = data["user_id"]
-        self.type: MatchEventType = MatchEventType(data["detail"]["type"])
-        self.text: Optional[str] = data["detail"]["text"] if "text" in data["detail"] else None
+        self.id: int = get_required(data, "id")
+        self.timestamp: datetime = parser.parse(get_required(data, "timestamp"))
+        self.user_id: int = get_required(data, "user_id")
+        self.type: MatchEventType = MatchEventType(get_required(data, "detail")["type"])
+        self.text: Optional[str] = get_required(data, "detail")["text"] if "text" in get_required(data, "detail") else None
         self.game: Optional[MatchGame] = get_optional(data, "game", MatchGame)
 
     def __repr__(self):
@@ -161,17 +161,17 @@ class MatchGame:
     )
 
     def __init__(self, data):
-        self.beatmap_id: int = data["beatmap_id"]
-        self.id: int = data["id"]
-        self.start_time: datetime = parser.parse(data["start_time"])
+        self.beatmap_id: int = get_required(data, "beatmap_id")
+        self.id: int = get_required(data, "id")
+        self.start_time: datetime = parser.parse(get_required(data, "start_time"))
         self.end_time: Optional[datetime] = get_optional(data, "end_time", parser.parse)
-        self.mode: GameModeStr = GameModeStr(data["mode"])
-        self.mode_int: GameModeInt = GameModeInt(data["mode_int"])
-        self.scoring_type: ScoringType = ScoringType(data["scoring_type"])
-        self.team_type: TeamType = TeamType(data["team_type"])
-        self.mods: Mods = Mods.parse_any_list(data["mods"])
+        self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
+        self.mode_int: GameModeInt = GameModeInt(get_required(data, "mode_int"))
+        self.scoring_type: ScoringType = ScoringType(get_required(data, "scoring_type"))
+        self.team_type: TeamType = TeamType(get_required(data, "team_type"))
+        self.mods: Mods = Mods.parse_any_list(get_required(data, "mods"))
         self.beatmap: Optional[BeatmapCompact] = get_optional(data, "beatmap", BeatmapCompact)
-        self.scores: List[LegacyScore] = list(map(LegacyScore, data["scores"]))
+        self.scores: List[LegacyScore] = list(map(LegacyScore, get_required(data, "scores")))
 
     def __repr__(self):
         return prettify(self, "beatmap", "scores")
@@ -193,9 +193,9 @@ class MatchGameScoreInfo:
     __slots__ = ("slot", "team", "passed")
 
     def __init__(self, data):
-        self.slot: int = data["slot"]
-        self.team: str = data["team"]
-        self.passed: bool = data["pass"]
+        self.slot: int = get_required(data, "slot")
+        self.team: str = get_required(data, "team")
+        self.passed: bool = get_required(data, "pass")
 
     def __repr__(self):
         return prettify(self, "slot", "team")

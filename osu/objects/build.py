@@ -1,8 +1,7 @@
 from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_optional_list
-
+from ..util import prettify, get_optional, get_optional_list, get_required
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -42,12 +41,12 @@ class Build:
     )
 
     def __init__(self, data):
-        self.created_at: datetime = parser.parse(data["created_at"])
-        self.display_version: str = data["display_version"]
-        self.id: int = data["id"]
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.display_version: str = get_required(data, "display_version")
+        self.id: int = get_required(data, "id")
         self.update_stream: Optional[UpdateStream] = get_optional(data, "update_stream", UpdateStream)
-        self.users: int = data["users"]
-        self.version: Optional[str] = data["version"]
+        self.users: int = get_required(data, "users")
+        self.version: Optional[str] = get_required(data, "version")
         self.changelog_entries: Optional[List[ChangelogEntry]] = get_optional_list(
             data, "changelog_entries", ChangelogEntry
         )
@@ -106,10 +105,10 @@ class UpdateStream:
     )
 
     def __init__(self, data):
-        self.display_name: Optional[str] = data["display_name"]
-        self.id: int = data["id"]
-        self.is_featured: bool = data["is_featured"]
-        self.name: str = data["name"]
+        self.display_name: Optional[str] = get_required(data, "display_name")
+        self.id: int = get_required(data, "id")
+        self.is_featured: bool = get_required(data, "is_featured")
+        self.name: str = get_required(data, "name")
         self.latest_build: Optional[Build] = get_optional(data, "latest_build", Build)
         self.user_count: Optional[int] = data.get("user_count")
 
@@ -168,16 +167,16 @@ class ChangelogEntry:
     )
 
     def __init__(self, data):
-        self.category: str = data["category"]
+        self.category: str = get_required(data, "category")
         self.created_at: Optional[datetime] = get_optional(data, "created_at", parser.parse)
-        self.github_pull_request_id: Optional[int] = data["github_pull_request_id"]
-        self.github_url: Optional[str] = data["github_url"]
-        self.id: Optional[int] = data["id"]
-        self.major: bool = data["major"]
-        self.repository: Optional[str] = data["repository"]
-        self.title: Optional[str] = data["title"]
-        self.type: str = data["type"]
-        self.url: Optional[str] = data["url"]
+        self.github_pull_request_id: Optional[int] = get_required(data, "github_pull_request_id")
+        self.github_url: Optional[str] = get_required(data, "github_url")
+        self.id: Optional[int] = get_required(data, "id")
+        self.major: bool = get_required(data, "major")
+        self.repository: Optional[str] = get_required(data, "repository")
+        self.title: Optional[str] = get_required(data, "title")
+        self.type: str = get_required(data, "type")
+        self.url: Optional[str] = get_required(data, "url")
 
         self.github_user: Optional[GithubUser] = get_optional(data, "github_user", GithubUser)
         self.message: Optional[str] = data.get("message")
@@ -214,12 +213,12 @@ class GithubUser:
     )
 
     def __init__(self, data):
-        self.display_name: str = data["display_name"]
-        self.github_url: Optional[str] = data["github_url"]
-        self.id: Optional[int] = data["id"]
-        self.osu_username: Optional[str] = data["osu_username"]
-        self.user_id: Optional[int] = data["user_id"]
-        self.user_url: Optional[str] = data["user_url"]
+        self.display_name: str = get_required(data, "display_name")
+        self.github_url: Optional[str] = get_required(data, "github_url")
+        self.id: Optional[int] = get_required(data, "id")
+        self.osu_username: Optional[str] = get_required(data, "osu_username")
+        self.user_id: Optional[int] = get_required(data, "user_id")
+        self.user_url: Optional[str] = get_required(data, "user_url")
 
     def __repr__(self):
         return prettify(self, "display_name")

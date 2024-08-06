@@ -2,7 +2,7 @@ from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
 from ..enums import GameModeStr, BeatmapsetEventType
-from ..util import prettify
+from ..util import prettify, get_required
 from .discussion import BeatmapsetDiscussion
 from .beatmap import BeatmapsetCompact
 
@@ -78,18 +78,18 @@ class BeatmapsetEvent:
     )
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.type: BeatmapsetEventType = BeatmapsetEventType(data["type"])
-        self.comment: Optional[BeatmapsetEventComment] = data["comment"]
+        self.id: int = get_required(data, "id")
+        self.type: BeatmapsetEventType = BeatmapsetEventType(get_required(data, "type"))
+        self.comment: Optional[BeatmapsetEventComment] = get_required(data, "comment")
         if self.comment is not None:
             self.comment = BeatmapsetEventComment(self.comment, self.type)  # type: ignore
-        self.created_at: datetime = parser.parse(data["created_at"])
+        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
         self.user_id: Optional[int] = data.get("user_id")
         self.beatmapset: Optional[BeatmapsetCompact] = (
-            BeatmapsetCompact(data["beatmapset"]) if data.get("beatmapset") is not None else None
+            BeatmapsetCompact(get_required(data, "beatmapset")) if data.get("beatmapset") is not None else None
         )
         self.discussion: Optional[BeatmapsetDiscussion] = (
-            BeatmapsetDiscussion(data["discussion"]) if data.get("discussion") is not None else None
+            BeatmapsetDiscussion(get_required(data, "discussion")) if data.get("discussion") is not None else None
         )
 
     def __repr__(self):
@@ -106,7 +106,7 @@ class BeatmapsetEventNominate:
     __slots__ = ("modes",)
 
     def __init__(self, data):
-        self.modes: List[GameModeStr] = list(map(GameModeStr, data["modes"]))
+        self.modes: List[GameModeStr] = list(map(GameModeStr, get_required(data, "modes")))
 
     def __repr__(self):
         return prettify(self, "modes")
@@ -122,7 +122,7 @@ class BeatmapsetEventRemoveFromLoved:
     __slots__ = ("reason",)
 
     def __init__(self, data):
-        self.reason: str = data["reason"]
+        self.reason: str = get_required(data, "reason")
 
     def __repr__(self):
         return prettify(self, "reason")
@@ -138,7 +138,7 @@ class BeatmapsetEventDisqualify:
     __slots__ = ("nominator_ids",)
 
     def __init__(self, data):
-        self.nominator_ids: List[int] = data["nominator_ids"]
+        self.nominator_ids: List[int] = get_required(data, "nominator_ids")
 
     def __repr__(self):
         return prettify(self, "nominator_ids")
@@ -156,8 +156,8 @@ class BeatmapsetEventVote:
     __slots__ = ("user_id", "score")
 
     def __init__(self, data):
-        self.user_id: int = data["user_id"]
-        self.score: int = data["score"]
+        self.user_id: int = get_required(data, "user_id")
+        self.score: int = get_required(data, "score")
 
     def __repr__(self):
         return prettify(self, "user_id", "score")
@@ -176,10 +176,10 @@ class BeatmapsetEventKudosuChange:
 
     def __init__(self, data):
         self.new_votes: Optional[BeatmapsetEventVote] = (
-            BeatmapsetEventVote(data["new_votes"]) if data.get("new_votes") is not None else None
+            BeatmapsetEventVote(get_required(data, "new_votes")) if data.get("new_votes") is not None else None
         )
         self.votes: Optional[List[BeatmapsetEventVote]] = (
-            list(map(BeatmapsetEventVote, data["votes"])) if data.get("votes") is not None else None
+            list(map(BeatmapsetEventVote, get_required(data, "votes"))) if data.get("votes") is not None else None
         )
 
     def __repr__(self):
@@ -205,7 +205,7 @@ class BeatmapsetEventKudosuRecalculate:
 
     def __init__(self, data):
         self.new_votes: Optional[BeatmapsetEventVote] = (
-            BeatmapsetEventVote(data["new_votes"]) if data.get("new_votes") is not None else None
+            BeatmapsetEventVote(get_required(data, "new_votes")) if data.get("new_votes") is not None else None
         )
 
     def __repr__(self):
@@ -222,7 +222,7 @@ class BeatmapsetEventDiscussionLock:
     __slots__ = ("reason",)
 
     def __init__(self, data):
-        self.reason: str = data["reason"]
+        self.reason: str = get_required(data, "reason")
 
     def __repr__(self):
         return prettify(self, "reason")
@@ -238,7 +238,7 @@ class BeatmapsetEventNominationReset:
     __slots__ = ("nominator_ids",)
 
     def __init__(self, data):
-        self.nominator_ids: List[int] = data["nominator_ids"]
+        self.nominator_ids: List[int] = get_required(data, "nominator_ids")
 
     def __repr__(self):
         return prettify(self, "nominator_ids")
@@ -256,8 +256,8 @@ class BeatmapsetEventNominationResetReceived:
     __slots__ = ("source_user_id", "source_user_username")
 
     def __init__(self, data):
-        self.source_user_id: int = data["source_user_id"]
-        self.source_user_username: str = data["source_user_username"]
+        self.source_user_id: int = get_required(data, "source_user_id")
+        self.source_user_username: str = get_required(data, "source_user_username")
 
     def __repr__(self):
         return prettify(self, "source_user_id", "source_user_username")
@@ -275,8 +275,8 @@ class BeatmapsetEventEdit:
     __slots__ = ("old", "new")
 
     def __init__(self, data):
-        self.old: str = data["old"]
-        self.new: str = data["new"]
+        self.old: str = get_required(data, "old")
+        self.new: str = get_required(data, "new")
 
     def __repr__(self):
         return prettify(self, "old", "new")
@@ -314,10 +314,10 @@ class BeatmapsetEventBeatmapOwnerChange:
     __slots__ = ("beatmap_id", "beatmap_version", "new_user_id", "new_user_username")
 
     def __init__(self, data):
-        self.beatmap_id: int = data["beatmap_id"]
-        self.beatmap_version: str = data["beatmap_version"]
-        self.new_user_id: int = data["new_user_id"]
-        self.new_user_username: str = data["new_user_username"]
+        self.beatmap_id: int = get_required(data, "beatmap_id")
+        self.beatmap_version: str = get_required(data, "beatmap_version")
+        self.new_user_id: int = get_required(data, "new_user_id")
+        self.new_user_username: str = get_required(data, "new_user_username")
 
     def __repr__(self):
         return prettify(self, "beatmap_id", "new_user_username")

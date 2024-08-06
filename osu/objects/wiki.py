@@ -1,7 +1,6 @@
 from typing import List, Optional, Union, TYPE_CHECKING
 
-from ..util import prettify
-
+from ..util import prettify, get_required
 
 if TYPE_CHECKING:
     from .user import UserCompact
@@ -50,14 +49,14 @@ class WikiPage:
     )
 
     def __init__(self, data):
-        self.available_locales: List[str] = data["available_locales"]
-        self.layout: str = data["layout"]
-        self.locale: str = data["locale"]
-        self.markdown: str = data["markdown"]
-        self.path: str = data["path"]
-        self.subtitle: Optional[str] = data["subtitle"]
-        self.tags: List[str] = data["tags"]
-        self.title: str = data["title"]
+        self.available_locales: List[str] = get_required(data, "available_locales")
+        self.layout: str = get_required(data, "layout")
+        self.locale: str = get_required(data, "locale")
+        self.markdown: str = get_required(data, "markdown")
+        self.path: str = get_required(data, "path")
+        self.subtitle: Optional[str] = get_required(data, "subtitle")
+        self.tags: List[str] = get_required(data, "tags")
+        self.title: str = get_required(data, "title")
 
     def __repr__(self):
         return prettify(self, "title")
@@ -78,8 +77,8 @@ class SearchResults:
     __slots__ = ("results", "total")
 
     def __init__(self, data, data_type):
-        self.results: List[Union[UserCompact, WikiPage]] = list(map(data_type, data["data"]))
-        self.total: int = data["total"]
+        self.results: List[Union[UserCompact, WikiPage]] = list(map(data_type, get_required(data, "data")))
+        self.total: int = get_required(data, "total")
 
     def __repr__(self):
         return prettify(self, "results", "total")

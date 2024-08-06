@@ -2,7 +2,7 @@ from dateutil import parser
 from typing import Dict, Optional, List, Union, TYPE_CHECKING
 
 from ..enums import RankStatus, GameModeStr, GameModeInt
-from ..util import prettify, get_optional, get_optional_list
+from ..util import prettify, get_optional, get_optional_list, get_required
 from .user import UserCompact
 from .current_user_attributes import BeatmapsetPermissions
 
@@ -138,25 +138,25 @@ class BeatmapsetCompact:
         from .discussion import BeatmapsetDiscussion
         from .beatmapset_event import BeatmapsetEvent
 
-        self.artist: str = data["artist"]
-        self.artist_unicode: str = data["artist_unicode"]
-        self.covers: Covers = Covers(data["covers"])
-        self.creator: str = data["creator"]
-        self.favourite_count: int = data["favourite_count"]
+        self.artist: str = get_required(data, "artist")
+        self.artist_unicode: str = get_required(data, "artist_unicode")
+        self.covers: Covers = Covers(get_required(data, "covers"))
+        self.creator: str = get_required(data, "creator")
+        self.favourite_count: int = get_required(data, "favourite_count")
         self.hype: Optional[BeatmapsetRequirement] = get_optional(data, "hype", BeatmapsetRequirement)
-        self.id: int = data["id"]
-        self.nsfw: bool = data["nsfw"]
-        self.offset: int = data["offset"]
-        self.play_count: int = data["play_count"]
-        self.preview_url: str = data["preview_url"]
-        self.source: str = data["source"]
-        self.spotlight: bool = data["spotlight"]
-        self.status: RankStatus = RankStatus[data["status"].upper()]
-        self.title: str = data["title"]
-        self.title_unicode: str = data["title_unicode"]
-        self.track_id: Optional[int] = data["track_id"]
-        self.user_id: int = data["user_id"]
-        self.video: bool = data["video"]
+        self.id: int = get_required(data, "id")
+        self.nsfw: bool = get_required(data, "nsfw")
+        self.offset: int = get_required(data, "offset")
+        self.play_count: int = get_required(data, "play_count")
+        self.preview_url: str = get_required(data, "preview_url")
+        self.source: str = get_required(data, "source")
+        self.spotlight: bool = get_required(data, "spotlight")
+        self.status: RankStatus = RankStatus[get_required(data, "status").upper()]
+        self.title: str = get_required(data, "title")
+        self.title_unicode: str = get_required(data, "title_unicode")
+        self.track_id: Optional[int] = get_required(data, "track_id")
+        self.user_id: int = get_required(data, "user_id")
+        self.video: bool = get_required(data, "video")
 
         self.background_url: str = f"https://assets.ppy.sh/beatmaps/{self.id}/covers/raw.jpg"
 
@@ -251,22 +251,22 @@ class Beatmapset(BeatmapsetCompact):
     def __init__(self, data):
         super().__init__(data)
 
-        self.availability: BeatmapsetAvailability = BeatmapsetAvailability(data["availability"])
+        self.availability: BeatmapsetAvailability = BeatmapsetAvailability(get_required(data, "availability"))
         self.beatmaps: Optional[List[Beatmap]] = get_optional_list(data, "beatmaps", Beatmap)
-        self.bpm: float = data["bpm"]
-        self.can_be_hyped: bool = data["can_be_hyped"]
+        self.bpm: float = get_required(data, "bpm")
+        self.can_be_hyped: bool = get_required(data, "can_be_hyped")
         self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
         self.discussion_enabled: bool = True  # Deprecated, all beatmapset discussions are enabled
-        self.discussion_locked: bool = data["discussion_locked"]
-        self.is_scoreable: bool = data["is_scoreable"]
+        self.discussion_locked: bool = get_required(data, "discussion_locked")
+        self.is_scoreable: bool = get_required(data, "is_scoreable")
         self.last_updated: Optional[datetime] = get_optional(data, "last_updated", parser.parse)
-        self.legacy_thread_url: Optional[str] = data["legacy_thread_url"]
-        self.nominations_summary: BeatmapsetRequirement = BeatmapsetRequirement(data["nominations_summary"])
-        self.ranked: RankStatus = RankStatus(data["ranked"])
+        self.legacy_thread_url: Optional[str] = get_required(data, "legacy_thread_url")
+        self.nominations_summary: BeatmapsetRequirement = BeatmapsetRequirement(get_required(data, "nominations_summary"))
+        self.ranked: RankStatus = RankStatus(get_required(data, "ranked"))
         self.ranked_date: Optional[datetime] = get_optional(data, "ranked_date", parser.parse)
-        self.storyboard: bool = data["storyboard"]
+        self.storyboard: bool = get_required(data, "storyboard")
         self.submitted_date: Optional[datetime] = get_optional(data, "submitted_date", parser.parse)
-        self.tags: str = data["tags"]
+        self.tags: str = get_required(data, "tags")
 
 
 class BeatmapCompact:
@@ -319,14 +319,14 @@ class BeatmapCompact:
     )
 
     def __init__(self, data):
-        self.beatmapset_id: int = data["beatmapset_id"]
-        self.difficulty_rating: float = data["difficulty_rating"]
-        self.id: int = data["id"]
-        self.mode: GameModeStr = GameModeStr(data["mode"])
-        self.status: RankStatus = RankStatus[data["status"].upper()]
-        self.total_length: int = data["total_length"]
-        self.user_id: int = data["user_id"]
-        self.version: str = data["version"]
+        self.beatmapset_id: int = get_required(data, "beatmapset_id")
+        self.difficulty_rating: float = get_required(data, "difficulty_rating")
+        self.id: int = get_required(data, "id")
+        self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
+        self.status: RankStatus = RankStatus[get_required(data, "status").upper()]
+        self.total_length: int = get_required(data, "total_length")
+        self.user_id: int = get_required(data, "user_id")
+        self.version: str = get_required(data, "version")
 
         self.beatmapset: Optional[BeatmapsetCompact] = get_optional(data, "beatmapset", BeatmapsetCompact)
         self.checksum: Optional[str] = data.get("checksum")
@@ -412,25 +412,25 @@ class Beatmap(BeatmapCompact):
     def __init__(self, data):
         super().__init__(data)
 
-        self.accuracy: float = data["accuracy"]
-        self.ar: float = data["ar"]
+        self.accuracy: float = get_required(data, "accuracy")
+        self.ar: float = get_required(data, "ar")
         self.beatmapset: Optional[Beatmapset] = get_optional(data, "beatmapset", Beatmapset)
-        self.bpm: float = data["bpm"]
-        self.convert: Optional[bool] = data["convert"]
-        self.count_circles: int = data["count_circles"]
-        self.count_sliders: int = data["count_sliders"]
-        self.count_spinners: int = data["count_spinners"]
-        self.cs: float = data["cs"]
+        self.bpm: float = get_required(data, "bpm")
+        self.convert: Optional[bool] = get_required(data, "convert")
+        self.count_circles: int = get_required(data, "count_circles")
+        self.count_sliders: int = get_required(data, "count_sliders")
+        self.count_spinners: int = get_required(data, "count_spinners")
+        self.cs: float = get_required(data, "cs")
         self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
-        self.drain: float = data["drain"]
-        self.hit_length: int = data["hit_length"]
-        self.is_scoreable: bool = data["is_scoreable"]
-        self.last_updated: datetime = parser.parse(data["last_updated"])
-        self.mode_int: GameModeInt = GameModeInt(data["mode_int"])
-        self.passcount: int = data["passcount"]
-        self.playcount: int = data["playcount"]
-        self.ranked: RankStatus = RankStatus(data["ranked"])
-        self.url: str = data["url"]
+        self.drain: float = get_required(data, "drain")
+        self.hit_length: int = get_required(data, "hit_length")
+        self.is_scoreable: bool = get_required(data, "is_scoreable")
+        self.last_updated: datetime = parser.parse(get_required(data, "last_updated"))
+        self.mode_int: GameModeInt = GameModeInt(get_required(data, "mode_int"))
+        self.passcount: int = get_required(data, "passcount")
+        self.playcount: int = get_required(data, "playcount")
+        self.ranked: RankStatus = RankStatus(get_required(data, "ranked"))
+        self.url: str = get_required(data, "url")
 
 
 class MetadataAttribute:
@@ -447,8 +447,8 @@ class MetadataAttribute:
     __slots__ = ("id", "name")
 
     def __init__(self, data):
-        self.id: Optional[int] = data["id"]
-        self.name: str = data["name"]
+        self.id: Optional[int] = get_required(data, "id")
+        self.name: str = get_required(data, "name")
 
 
 class OsuBeatmapDifficultyAttributes:
@@ -484,13 +484,13 @@ class OsuBeatmapDifficultyAttributes:
     )
 
     def __init__(self, data):
-        self.aim_difficulty: float = data["aim_difficulty"]
-        self.approach_rate: float = data["approach_rate"]
-        self.flashlight_difficulty: float = data["flashlight_difficulty"]
-        self.overall_difficulty: float = data["overall_difficulty"]
-        self.slider_factor: float = data["slider_factor"]
-        self.speed_difficulty: float = data["speed_difficulty"]
-        self.speed_note_count: float = data["speed_note_count"]
+        self.aim_difficulty: float = get_required(data, "aim_difficulty")
+        self.approach_rate: float = get_required(data, "approach_rate")
+        self.flashlight_difficulty: float = get_required(data, "flashlight_difficulty")
+        self.overall_difficulty: float = get_required(data, "overall_difficulty")
+        self.slider_factor: float = get_required(data, "slider_factor")
+        self.speed_difficulty: float = get_required(data, "speed_difficulty")
+        self.speed_note_count: float = get_required(data, "speed_note_count")
 
     def __repr__(self):
         return prettify(self, "aim_difficulty", "speed_difficulty")
@@ -523,11 +523,11 @@ class TaikoBeatmapDifficultyAttributes:
     )
 
     def __init__(self, data):
-        self.stamina_difficulty: float = data["stamina_difficulty"]
-        self.rhythm_difficulty: float = data["rhythm_difficulty"]
-        self.colour_difficulty: float = data["colour_difficulty"]
-        self.great_hit_window: float = data["great_hit_window"]
-        self.peak_difficulty: float = data["peak_difficulty"]
+        self.stamina_difficulty: float = get_required(data, "stamina_difficulty")
+        self.rhythm_difficulty: float = get_required(data, "rhythm_difficulty")
+        self.colour_difficulty: float = get_required(data, "colour_difficulty")
+        self.great_hit_window: float = get_required(data, "great_hit_window")
+        self.peak_difficulty: float = get_required(data, "peak_difficulty")
 
     def __repr__(self):
         return prettify(self, "stamina_difficulty")
@@ -546,7 +546,7 @@ class FruitsBeatmapDifficultyAttributes:
     __slots__ = "approach_rate"
 
     def __init__(self, data):
-        self.approach_rate: float = data["approach_rate"]
+        self.approach_rate: float = get_required(data, "approach_rate")
 
     def __repr__(self):
         return prettify(self, "approach_rate")
@@ -567,8 +567,8 @@ class ManiaBeatmapDifficultyAttributes:
     __slots__ = ("great_hit_window", "score_multiplier")
 
     def __init__(self, data):
-        self.great_hit_window: float = data["great_hit_window"]
-        self.score_multiplier: float = data["score_multiplier"]
+        self.great_hit_window: float = get_required(data, "great_hit_window")
+        self.score_multiplier: float = get_required(data, "score_multiplier")
 
     def __repr__(self):
         return prettify(self, "great_hit_window")
@@ -607,9 +607,9 @@ class BeatmapDifficultyAttributes:
         ]
 
     def __init__(self, data):
-        data = data["attributes"]
-        self.max_combo: int = data["max_combo"]
-        self.star_rating: float = data["star_rating"]
+        data = get_required(data, "attributes")
+        self.max_combo: int = get_required(data, "max_combo")
+        self.star_rating: float = get_required(data, "star_rating")
         if "aim_difficulty" in data:
             self.type = GameModeStr.STANDARD
             self.mode_attributes = OsuBeatmapDifficultyAttributes(data)
@@ -687,13 +687,13 @@ class Covers:
     )
 
     def __init__(self, data):
-        self.cover: str = data["cover"]
+        self.cover: str = get_required(data, "cover")
         self.cover_2x: str = data["cover@2x"]
-        self.card: str = data["card"]
+        self.card: str = get_required(data, "card")
         self.card_2x: str = data["card@2x"]
-        self.list: str = data["list"]
+        self.list: str = get_required(data, "list")
         self.list_2x: str = data["list@2x"]
-        self.slimcover: str = data["slimcover"]
+        self.slimcover: str = get_required(data, "slimcover")
         self.slimcover_2x: str = data["slimcover@2x"]
 
     def __repr__(self):
@@ -718,10 +718,10 @@ class BeatmapPlaycount:
     __slots__ = ("beatmap_id", "beatmap", "beatmapset", "count")
 
     def __init__(self, data):
-        self.beatmap_id: int = data["beatmap_id"]
+        self.beatmap_id: int = get_required(data, "beatmap_id")
         self.beatmap: Optional[BeatmapCompact] = get_optional(data, "beatmap", BeatmapCompact)
         self.beatmapset: Optional[BeatmapsetCompact] = get_optional(data, "beatmapset", BeatmapsetCompact)
-        self.count: int = data["count"]
+        self.count: int = get_required(data, "count")
 
     def __repr__(self):
         return prettify(self, "beatmap_id", "count")
@@ -746,7 +746,7 @@ class BeatmapsetRequirement:
     __slots__ = ("current", "required", "eligible_main_rulesets", "required_meta")
 
     def __init__(self, data):
-        self.current: int = data["current"]
+        self.current: int = get_required(data, "current")
         self.required: Optional[int] = data.get("required")
 
         self.eligible_main_rulesets: Optional[List[GameModeStr]] = get_optional_list(
@@ -774,8 +774,8 @@ class BeatmapsetRequiredNominations:
     ___slots__ = ("main_ruleset", "non_main_ruleset")
 
     def __init__(self, data):
-        self.main_ruleset = data["main_ruleset"]
-        self.non_main_ruleset = data["non_main_ruleset"]
+        self.main_ruleset = get_required(data, "main_ruleset")
+        self.non_main_ruleset = get_required(data, "non_main_ruleset")
 
 
 class BeatmapsetAvailability:
@@ -792,7 +792,7 @@ class BeatmapsetAvailability:
     __slots__ = ("download_disabled", "more_information")
 
     def __init__(self, data):
-        self.download_disabled: bool = data["download_disabled"]
+        self.download_disabled: bool = get_required(data, "download_disabled")
         self.more_information: Optional[str] = data.get("more_information")
 
     def __repr__(self):
@@ -835,7 +835,7 @@ class BaseNominations:
         self.nomination_reset: Optional[BeatmapsetEvent] = get_optional(data, "nomination_reset", BeatmapsetEvent)
         self.ranking_eta: Optional[str] = data.get("ranking_eta")
         self.ranking_queue_position: Optional[int] = data.get("ranking_queue_position")
-        self.required_hype: int = data["required_hype"]
+        self.required_hype: int = get_required(data, "required_hype")
 
     def __repr__(self):
         return prettify(self, "nominated")
@@ -860,8 +860,8 @@ class LegacyNominations(BaseNominations):
 
     def __init__(self, data):
         super().__init__(data)
-        self.current: int = data["current"]
-        self.required: int = data["required"]
+        self.current: int = get_required(data, "current")
+        self.required: int = get_required(data, "required")
 
     def __repr__(self):
         return prettify("current", "required")
@@ -887,11 +887,11 @@ class Nominations(BaseNominations):
     def __init__(self, data):
         super().__init__(data)
         self.current: Dict[GameModeStr, int] = dict(
-            zip(map(GameModeStr, (current := data["current"]).keys()), current.values())
+            zip(map(GameModeStr, (current := get_required(data, "current")).keys()), current.values())
         )
         self.required: Dict[GameModeStr, int] = dict(
             zip(
-                map(GameModeStr, (required := data["required"]).keys()),
+                map(GameModeStr, (required := get_required(data, "required")).keys()),
                 required.values(),
             )
         )
@@ -916,10 +916,10 @@ class CurrentNomination:
     """
 
     def __init__(self, data):
-        self.beatmapset_id: int = data["beatmapset_id"]
+        self.beatmapset_id: int = get_required(data, "beatmapset_id")
         self.rulesets: Optional[List[GameModeStr]] = get_optional_list(data, "rulesets", GameModeStr)
-        self.reset: bool = data["reset"]
-        self.user_id: int = data["user_id"]
+        self.reset: bool = get_required(data, "reset")
+        self.user_id: int = get_required(data, "user_id")
 
     def __repr__(self):
         return prettify(self, "beatmapset_id", "user_id")

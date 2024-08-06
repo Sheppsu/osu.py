@@ -1,6 +1,6 @@
 from typing import Optional
 
-from ..util import prettify, get_optional
+from ..util import prettify, get_optional, get_required
 from ..enums import GameModeStr
 
 
@@ -40,15 +40,15 @@ class Achievement:
     )
 
     def __init__(self, data):
-        self.icon_url: str = data["icon_url"]
-        self.id: int = data["id"]
-        self.name: str = data["name"]
-        self.grouping: str = data["grouping"]
-        self.ordering: int = data["ordering"]
-        self.slug: str = data["slug"]
-        self.description: str = data["description"]
+        self.icon_url: str = get_required(data, "icon_url")
+        self.id: int = get_required(data, "id")
+        self.name: str = get_required(data, "name")
+        self.grouping: str = get_required(data, "grouping")
+        self.ordering: int = get_required(data, "ordering")
+        self.slug: str = get_required(data, "slug")
+        self.description: str = get_required(data, "description")
         self.mode: GameModeStr = get_optional(data, "mode", GameModeStr)
-        self.instructions: Optional[str] = data["instructions"]
+        self.instructions: Optional[str] = get_required(data, "instructions")
 
     def __repr__(self):
         return prettify(self, "name", "description")

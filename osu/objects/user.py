@@ -5,7 +5,7 @@ from collections import namedtuple
 
 from .group import UserGroup
 from .forum import TextFormat
-from ..util import prettify, get_optional, get_optional_list
+from ..util import prettify, get_optional, get_optional_list, get_required
 from ..enums import GameModeStr, UserAccountHistoryType, UserRelationType
 
 
@@ -215,19 +215,19 @@ class UserCompact:
     )
 
     def __init__(self, data):
-        self.avatar_url: str = data["avatar_url"]
-        self.country_code: str = data["country_code"]
-        self.default_group: str = data["default_group"]
-        self.id: int = data["id"]
-        self.is_active: bool = data["is_active"]
-        self.is_bot: bool = data["is_bot"]
-        self.is_deleted: bool = data["is_deleted"]
-        self.is_online: bool = data["is_online"]
-        self.is_supporter: bool = data["is_supporter"]
+        self.avatar_url: str = get_required(data, "avatar_url")
+        self.country_code: str = get_required(data, "country_code")
+        self.default_group: str = get_required(data, "default_group")
+        self.id: int = get_required(data, "id")
+        self.is_active: bool = get_required(data, "is_active")
+        self.is_bot: bool = get_required(data, "is_bot")
+        self.is_deleted: bool = get_required(data, "is_deleted")
+        self.is_online: bool = get_required(data, "is_online")
+        self.is_supporter: bool = get_required(data, "is_supporter")
         self.last_visit: Optional[datetime] = get_optional(data, "last_visit", parser.parse)
-        self.pm_friends_only: bool = data["pm_friends_only"]
-        self.profile_colour: Optional[str] = data["profile_colour"]
-        self.username: str = data["username"]
+        self.pm_friends_only: bool = get_required(data, "pm_friends_only")
+        self.profile_colour: Optional[str] = get_required(data, "profile_colour")
+        self.username: str = get_required(data, "username")
 
         # Optional attributes
         self.account_history: Optional[List[UserAccountHistory]] = get_optional_list(
@@ -369,29 +369,29 @@ class User(UserCompact):
         "title",
         "title_url",
         "twitter",
-        "website",
+        "website"
     )
 
     def __init__(self, data):
         super().__init__(data)
         self.cover_url: str = data.get("cover_url")
-        self.discord: Optional[str] = data["discord"]
-        self.has_supported: bool = data["has_supported"]
-        self.interests: Optional[str] = data["interests"]
-        self.join_date: datetime = parser.parse(data["join_date"])
-        self.kudosu: UserKudosu = UserKudosu(data["kudosu"])
-        self.location: Optional[str] = data["location"]
-        self.max_blocks: int = data["max_blocks"]
-        self.max_friends: int = data["max_friends"]
-        self.occupation: Optional[str] = data["occupation"]
-        self.playmode: GameModeStr = GameModeStr(data["playmode"])
-        self.playstyle: List[str] = data["playstyle"]
-        self.post_count: int = data["post_count"]
-        self.profile_order: List[str] = data["profile_order"]
-        self.title: Optional[str] = data["title"]
-        self.title_url: Optional[str] = data["title_url"]
-        self.twitter: Optional[str] = data["twitter"]
-        self.website: Optional[str] = data["website"]
+        self.discord: Optional[str] = get_required(data, "discord")
+        self.has_supported: bool = get_required(data, "has_supported")
+        self.interests: Optional[str] = get_required(data, "interests")
+        self.join_date: datetime = parser.parse(get_required(data, "join_date"))
+        self.kudosu: UserKudosu = UserKudosu(get_required(data, "kudosu"))
+        self.location: Optional[str] = get_required(data, "location")
+        self.max_blocks: int = get_required(data, "max_blocks")
+        self.max_friends: int = get_required(data, "max_friends")
+        self.occupation: Optional[str] = get_required(data, "occupation")
+        self.playmode: GameModeStr = GameModeStr(get_required(data, "playmode"))
+        self.playstyle: List[str] = get_required(data, "playstyle")
+        self.post_count: int = get_required(data, "post_count")
+        self.profile_order: List[str] = get_required(data, "profile_order")
+        self.title: Optional[str] = get_required(data, "title")
+        self.title_url: Optional[str] = get_required(data, "title_url")
+        self.twitter: Optional[str] = get_required(data, "twitter")
+        self.website: Optional[str] = get_required(data, "website")
 
 
 class UserPreferences:
@@ -447,19 +447,19 @@ class UserPreferences:
     )
 
     def __init__(self, data):
-        self.audio_autoplay: bool = data["audio_autoplay"]
-        self.audio_muted: bool = data["audio_muted"]
-        self.audio_volume: float = data["audio_volume"]
-        self.beatmapset_card_size: str = data["beatmapset_card_size"]
-        self.beatmapset_download: str = data["beatmapset_download"]
-        self.beatmapset_show_nsfw: bool = data["beatmapset_show_nsfw"]
-        self.beatmapset_title_show_original: bool = data["beatmapset_title_show_original"]
-        self.comments_show_deleted: bool = data["comments_show_deleted"]
-        self.forum_posts_show_deleted: bool = data["forum_posts_show_deleted"]
-        self.profile_cover_expanded: bool = data["profile_cover_expanded"]
-        self.user_list_filter: str = data["user_list_filter"]
-        self.user_list_sort: str = data["user_list_sort"]
-        self.user_list_view: str = data["user_list_view"]
+        self.audio_autoplay: bool = get_required(data, "audio_autoplay")
+        self.audio_muted: bool = get_required(data, "audio_muted")
+        self.audio_volume: float = get_required(data, "audio_volume")
+        self.beatmapset_card_size: str = get_required(data, "beatmapset_card_size")
+        self.beatmapset_download: str = get_required(data, "beatmapset_download")
+        self.beatmapset_show_nsfw: bool = get_required(data, "beatmapset_show_nsfw")
+        self.beatmapset_title_show_original: bool = get_required(data, "beatmapset_title_show_original")
+        self.comments_show_deleted: bool = get_required(data, "comments_show_deleted")
+        self.forum_posts_show_deleted: bool = get_required(data, "forum_posts_show_deleted")
+        self.profile_cover_expanded: bool = get_required(data, "profile_cover_expanded")
+        self.user_list_filter: str = get_required(data, "user_list_filter")
+        self.user_list_sort: str = get_required(data, "user_list_sort")
+        self.user_list_view: str = get_required(data, "user_list_view")
 
 
 class UserRelations:
@@ -479,9 +479,9 @@ class UserRelations:
     __slots__ = ("target_id", "relation_type", "mutual")
 
     def __init__(self, data):
-        self.target_id: int = data["target_id"]
-        self.relation_type: UserRelationType = UserRelationType(data["relation_type"])
-        self.mutual: bool = data["mutual"]
+        self.target_id: int = get_required(data, "target_id")
+        self.relation_type: UserRelationType = UserRelationType(get_required(data, "relation_type"))
+        self.mutual: bool = get_required(data, "mutual")
 
 
 class ProfileBanner:
@@ -500,9 +500,9 @@ class ProfileBanner:
     __slots__ = ("id", "tournament_id", "image", "image2x")
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.tournament_id: int = data["tournament_id"]
-        self.image: Optional[str] = data["image"]
+        self.id: int = get_required(data, "id")
+        self.tournament_id: int = get_required(data, "tournament_id")
+        self.image: Optional[str] = get_required(data, "image")
         self.image2x: Optional[str] = data["image@2x"]
 
     def __repr__(self):
@@ -523,8 +523,8 @@ class UserSilence:
     __slots__ = ("id", "user_id")
 
     def __init__(self, data):
-        self.id: int = data["id"]
-        self.user_id: int = data["user_id"]
+        self.id: int = get_required(data, "id")
+        self.user_id: int = get_required(data, "user_id")
 
     def __repr__(self):
         return prettify(self, "user_id")
@@ -564,13 +564,13 @@ class UserAccountHistory:
 
     def __init__(self, data):
         self.actor: Optional[UserCompact] = get_optional(data, "actor", UserCompact)
-        self.description: str = data["description"]
-        self.id: int = data["id"]
-        self.length: int = data["length"]
-        self.permanent: bool = data["permanent"]
+        self.description: str = get_required(data, "description")
+        self.id: int = get_required(data, "id")
+        self.length: int = get_required(data, "length")
+        self.permanent: bool = get_required(data, "permanent")
         self.supporting_url: Optional[str] = data.get("supporting_url")
-        self.timestamp: datetime = parser.parse(data["timestamp"])
-        self.type: UserAccountHistoryType = UserAccountHistoryType(data["type"])
+        self.timestamp: datetime = parser.parse(get_required(data, "timestamp"))
+        self.type: UserAccountHistoryType = UserAccountHistoryType(get_required(data, "type"))
 
     def __repr__(self):
         return prettify(self, "type", "length")
@@ -594,11 +594,11 @@ class UserBadge:
     __slots__ = ("awarded_at", "description", "image_url", "image_2x_url", "url")
 
     def __init__(self, data):
-        self.awarded_at: datetime = parser.parse(data["awarded_at"])
-        self.description: str = data["description"]
-        self.image_url: str = data["image_url"]
+        self.awarded_at: datetime = parser.parse(get_required(data, "awarded_at"))
+        self.description: str = get_required(data, "description")
+        self.image_url: str = get_required(data, "image_url")
         self.image_2x_url = data["image@2x_url"]
-        self.url: str = data["url"]
+        self.url: str = get_required(data, "url")
 
     def __repr__(self):
         return prettify(self, "awarded_at")
@@ -618,8 +618,8 @@ class UserMonthlyPlaycount:
     __slots__ = ("start_date", "count")
 
     def __init__(self, data):
-        self.start_date: date = parser.parse(data["start_date"]).date()
-        self.count: int = data["count"]
+        self.start_date: date = parser.parse(get_required(data, "start_date")).date()
+        self.count: int = get_required(data, "count")
 
     def __repr__(self):
         return prettify(self, "start_date", "count")
@@ -746,28 +746,28 @@ class UserStatistics:
     )
 
     def __init__(self, data):
-        self.count_100: int = data["count_100"]
-        self.count_300: int = data["count_300"]
-        self.count_50: int = data["count_50"]
-        self.count_miss: int = data["count_miss"]
+        self.count_100: int = get_required(data, "count_100")
+        self.count_300: int = get_required(data, "count_300")
+        self.count_50: int = get_required(data, "count_50")
+        self.count_miss: int = get_required(data, "count_miss")
         self.country_rank: Optional[int] = data.get("country_rank")
-        self.global_rank: Optional[int] = data["global_rank"]
+        self.global_rank: Optional[int] = get_required(data, "global_rank")
         self.global_rank_exp: Optional[int] = data.get("global_rank_exp")
-        self.grade_counts: NamedTuple = namedtuple("GradeCounts", ("ssh", "ss", "sh", "s", "a"))(**data["grade_counts"])
-        self.level: NamedTuple = namedtuple("Level", ("current", "progress"))(**data["level"])
-        self.hit_accuracy: float = data["hit_accuracy"]
-        self.is_ranked: bool = data["is_ranked"]
-        self.maximum_combo: int = data["maximum_combo"]
-        self.play_count: int = data["play_count"]
-        self.play_time: int = data["play_time"]
-        self.pp: int = data["pp"]
+        self.grade_counts: NamedTuple = namedtuple("GradeCounts", ("ssh", "ss", "sh", "s", "a"))(**get_required(data, "grade_counts"))
+        self.level: NamedTuple = namedtuple("Level", ("current", "progress"))(**get_required(data, "level"))
+        self.hit_accuracy: float = get_required(data, "hit_accuracy")
+        self.is_ranked: bool = get_required(data, "is_ranked")
+        self.maximum_combo: int = get_required(data, "maximum_combo")
+        self.play_count: int = get_required(data, "play_count")
+        self.play_time: int = get_required(data, "play_time")
+        self.pp: int = get_required(data, "pp")
         self.pp_exp: Optional[int] = data.get("pp_exp")
         self.recommended_difficulty: float = math.pow(self.pp, 0.4) * 0.195
         self.recommended_difficulty_exp: float = math.pow(self.pp_exp, 0.4) * 0.195 if self.pp_exp is not None else None
-        self.ranked_score: int = data["ranked_score"]
-        self.replays_watched_by_others: int = data["replays_watched_by_others"]
-        self.total_hits: int = data["total_hits"]
-        self.total_score: int = data["total_score"]
+        self.ranked_score: int = get_required(data, "ranked_score")
+        self.replays_watched_by_others: int = get_required(data, "replays_watched_by_others")
+        self.total_hits: int = get_required(data, "total_hits")
+        self.total_score: int = get_required(data, "total_score")
         self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
         self.variants: Optional[List[UserStatisticVariant]] = get_optional_list(data, "variants", UserStatisticVariant)
         self.rank_change_since_30_days: Optional[int] = data.get("rank_change_since_30_days")
@@ -797,11 +797,11 @@ class UserStatisticVariant:
     __slots__ = ("country_rank", "global_rank", "mode", "pp", "variant")
 
     def __init__(self, data):
-        self.country_rank: Optional[int] = data["country_rank"]
-        self.global_rank: Optional[int] = data["global_rank"]
-        self.mode: GameModeStr = GameModeStr(data["mode"])
-        self.pp: int = data["pp"]
-        self.variant: str = data["variant"]
+        self.country_rank: Optional[int] = get_required(data, "country_rank")
+        self.global_rank: Optional[int] = get_required(data, "global_rank")
+        self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
+        self.pp: int = get_required(data, "pp")
+        self.variant: str = get_required(data, "variant")
 
 
 class UserStatisticsRulesets:
@@ -850,8 +850,8 @@ class RankHighest:
     __slots__ = ("rank", "updated_at")
 
     def __init__(self, data):
-        self.rank: int = data["rank"]
-        self.updated_at: datetime = parser.parse(data["updated_at"])
+        self.rank: int = get_required(data, "rank")
+        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
 
     def __repr__(self):
         return prettify(self, "rank", "updated_at")
@@ -871,8 +871,8 @@ class UserAchievement:
     __slots__ = ("achieved_at", "achievement_id")
 
     def __init__(self, data):
-        self.achieved_at: datetime = parser.parse(data["achieved_at"])
-        self.achievement_id: int = data["achievement_id"]
+        self.achieved_at: datetime = parser.parse(get_required(data, "achieved_at"))
+        self.achievement_id: int = get_required(data, "achievement_id")
 
     def __repr__(self):
         return prettify(self, "achievement_id", "achieved_at")
@@ -892,8 +892,8 @@ class UserReplaysWatchedCount:
     __slots__ = ("start_date", "count")
 
     def __init__(self, data):
-        self.start_date: datetime = parser.parse(data["start_date"])
-        self.count: int = data["count"]
+        self.start_date: datetime = parser.parse(get_required(data, "start_date"))
+        self.count: int = get_required(data, "count")
 
     def __repr__(self):
         return prettify(self, "count", "start_date")
@@ -914,8 +914,8 @@ class RankHistory:
     __slots__ = ("mode", "data")
 
     def __init__(self, data):
-        self.mode: GameModeStr = GameModeStr(data["mode"])
-        self.data: List[int] = data["data"]
+        self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
+        self.data: List[int] = get_required(data, "data")
 
     def __repr__(self):
         return prettify(self, "mode", "data")
@@ -937,8 +937,8 @@ class UserCover:
     __slots__ = ("custom_url", "url", "id")
 
     def __init__(self, data):
-        self.custom_url: Optional[str] = data["custom_url"]
-        self.url: Optional[str] = data["url"]
+        self.custom_url: Optional[str] = get_required(data, "custom_url")
+        self.url: Optional[str] = get_required(data, "url")
         self.id: Optional[int] = data.get("id")
 
     def __repr__(self):
@@ -961,8 +961,8 @@ class Country:
     __slots__ = ("code", "name", "display")
 
     def __init__(self, data):
-        self.code: str = data["code"]
-        self.name: str = data["name"]
+        self.code: str = get_required(data, "code")
+        self.name: str = get_required(data, "name")
         self.display: Optional[int] = data.get("display")
 
     def __repr__(self):
@@ -983,8 +983,8 @@ class UserKudosu:
     __slots__ = ("total", "available")
 
     def __init__(self, data):
-        self.total: int = data["total"]
-        self.available: int = data["available"]
+        self.total: int = get_required(data, "total")
+        self.available: int = get_required(data, "available")
 
     def __repr__(self):
         return prettify(self, "total", "available")
@@ -1031,16 +1031,16 @@ class DailyChallengeUserStats:
     )
 
     def __init__(self, data):
-        self.daily_streak_best: int = data["daily_streak_best"]
-        self.daily_streak_current: int = data["daily_streak_current"]
+        self.daily_streak_best: int = get_required(data, "daily_streak_best")
+        self.daily_streak_current: int = get_required(data, "daily_streak_current")
         self.last_update: Optional[datetime] = get_optional(data, "last_update", parser.parse)
         self.last_weekly_streak: Optional[datetime] = get_optional(data, "last_weekly_streak", parser.parse)
-        self.playcount: int = data["playcount"]
-        self.top_10p_placements: int = data["top_10p_placements"]
-        self.top_50p_placements: int = data["top_50p_placements"]
-        self.user_id: int = data["user_id"]
-        self.weekly_streak_best: int = data["weekly_streak_best"]
-        self.weekly_streak_current: int = data["weekly_streak_current"]
+        self.playcount: int = get_required(data, "playcount")
+        self.top_10p_placements: int = get_required(data, "top_10p_placements")
+        self.top_50p_placements: int = get_required(data, "top_50p_placements")
+        self.user_id: int = get_required(data, "user_id")
+        self.weekly_streak_best: int = get_required(data, "weekly_streak_best")
+        self.weekly_streak_current: int = get_required(data, "weekly_streak_current")
 
     def __repr__(self):
         return prettify(self, "daily_streak_best", "daily_streak_current")
