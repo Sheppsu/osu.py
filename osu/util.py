@@ -126,13 +126,16 @@ class BeatmapsetSearchFilter:
         self._filters["query"] = query
         return self
 
-    def set_sort(self, sort: Union[BeatmapsetSearchSort, str]) -> "BeatmapsetSearchFilter":
+    def set_sort(self, sort: Union[BeatmapsetSearchSort, str], order: str = "desc") -> "BeatmapsetSearchFilter":
         """
         Set the sort order of the search.
 
         sort: Union[:class:`BeatmapsetSearchSort`, :class:`str`]
+
+        order: :class:`str`
+            "desc" or "asc"
         """
-        self._filters["sort"] = sort.value if isinstance(sort, BeatmapsetSearchSort) else sort
+        self._filters["sort"] = (sort.value if isinstance(sort, BeatmapsetSearchSort) else sort) + "_" + order
         return self
 
     def set_nsfw(self, nsfw: bool) -> "BeatmapsetSearchFilter":
