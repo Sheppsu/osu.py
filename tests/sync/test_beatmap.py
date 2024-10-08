@@ -4,6 +4,7 @@ from osu import (
     GameModeStr,
     BeatmapsetSearchStatus,
     BeatmapsetSearchExtra,
+    BeatmapsetSearchSort,
     RankStatus,
     GameModeInt,
 )
@@ -47,6 +48,11 @@ class TestBeatmap:
             assert any([beatmap.mode == GameModeStr.MANIA for beatmap in beatmapset.beatmaps])
             assert beatmapset.status == RankStatus.LOVED
             assert beatmapset.video
+
+        reversed_filters = filters.set_sort(BeatmapsetSearchSort.ARTIST, "asc")
+        results = client.search_beatmapsets(reversed_filters)
+
+        assert results["beatmapsets"][0].id != beatmapsets[0].id
 
     def test_get_beatmapset_discussion_posts(self, client, sample_beatmapset_discussion_post):
         data = client.get_beatmapset_discussion_posts(beatmapset_discussion_id=sample_beatmapset_discussion_post["id"])

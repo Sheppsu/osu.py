@@ -3,12 +3,17 @@ from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType, SoloScore
 
 class TestUser:
     def test_get_user(self, client, sample_user):
-        user = client.get_user(sample_user["id"])
-        assert user
-        assert user.statistics
-        assert user.id == sample_user["id"]
-        assert user.username == sample_user["username"]
-        assert user.has_supported == sample_user["has_supported"]
+        def check_user(user):
+            assert user
+            assert user.statistics
+            assert user.id == sample_user["id"]
+            assert user.username == sample_user["username"]
+            assert user.has_supported == sample_user["has_supported"]
+
+        check_user(client.get_user(sample_user["id"]))
+        check_user(client.get_user("@" + sample_user["username"]))
+        # deprecated usage
+        check_user(client.get_user(sample_user["username"], key="username"))
 
     def test_get_users(self, client, sample_users):
         user_ids = [user["id"] for user in sample_users]

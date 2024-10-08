@@ -6,12 +6,17 @@ from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType, SoloScore
 class TestAsynchronousUser:
     @pytest.mark.asyncio
     async def test_get_user(self, async_client, sample_user):
-        user = await async_client.get_user(6943941)
-        assert user
-        assert user.statistics
-        assert user.id == sample_user["id"]
-        assert user.username == sample_user["username"]
-        assert user.has_supported == sample_user["has_supported"]
+        def check_user(user):
+            assert user
+            assert user.statistics
+            assert user.id == sample_user["id"]
+            assert user.username == sample_user["username"]
+            assert user.has_supported == sample_user["has_supported"]
+
+        check_user(await async_client.get_user(sample_user["id"]))
+        check_user(await async_client.get_user("@" + sample_user["username"]))
+        # deprecated usage
+        check_user(await async_client.get_user(sample_user["username"], key="username"))
 
     @pytest.mark.asyncio
     async def test_get_users(self, async_client, sample_users):

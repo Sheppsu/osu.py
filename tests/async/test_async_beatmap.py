@@ -7,6 +7,7 @@ from osu import (
     GameModeStr,
     BeatmapsetSearchStatus,
     BeatmapsetSearchExtra,
+    BeatmapsetSearchSort,
     RankStatus,
     GameModeInt,
 )
@@ -55,6 +56,11 @@ class TestAsynchronousBeatmap:
             assert any([beatmap.mode == GameModeStr.MANIA for beatmap in beatmapset.beatmaps])
             assert beatmapset.status == RankStatus.LOVED
             assert beatmapset.video
+
+        reversed_filters = filters.set_sort(BeatmapsetSearchSort.ARTIST, "asc")
+        results = await async_client.search_beatmapsets(reversed_filters)
+
+        assert results["beatmapsets"][0].id != beatmapsets[0].id
 
     @pytest.mark.asyncio
     async def test_get_beatmapset_discussion_posts(self, async_client, sample_beatmapset_discussion_post):
