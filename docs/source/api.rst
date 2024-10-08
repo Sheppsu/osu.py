@@ -761,6 +761,26 @@ Enums
 
 .. autoclass:: osu.BeatmapsetLanguage
    :members:
+
+
+.. autoclass:: osu.BeatmapsetSearchExtra
+   :members:
+
+
+.. autoclass:: osu.BeatmapsetSearchGeneral
+   :members:
+
+
+.. autoclass:: osu.BeatmapsetSearchPlayed
+   :members:
+
+
+.. autoclass:: osu.BeatmapsetSearchSort
+   :members:
+
+
+.. autoclass:: osu.BeatmapsetSearchStatus
+   :members:
    
 
 .. autoclass:: osu.ChatChannelType
