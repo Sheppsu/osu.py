@@ -1424,6 +1424,9 @@ class Client:
             User default mode will be used if not specified.
 
         key: Optional[:class:`str`]
+            **DEPRECATED**
+            It's recommended to prefix usernames with @ instead of setting key
+
             Type of user passed in url parameter. Can be either `id` or `username`
             to limit lookup by their respective type. Passing empty or invalid
             value will result in id lookup followed by username lookup if not found.
@@ -1441,7 +1444,8 @@ class Client:
             `user_achievements`.
         """
         mode = parse_enum_args(mode)
-        return User(self.http.make_request(Path.get_user(user, mode), key=key))
+        user = f"@{user}" if key is not None and key.lower() == "username" else user
+        return User(self.http.make_request(Path.get_user(user, mode)))
 
     def get_users(self, ids: Sequence[int]) -> List[UserCompact]:
         """
@@ -1461,6 +1465,9 @@ class Client:
             Includes attributes: country, cover, groups, statistics_rulesets.
         """
         res = self.http.make_request(Path.get_users(), **{"ids[]": ids})
+        import json
+        with open("users.json", "w", encoding="utf-8") as f:
+            json.dump(res["users"], f)
         return list(map(UserCompact, res["users"]))
 
     def get_wiki_page(self, locale: str, path: str) -> WikiPage:
