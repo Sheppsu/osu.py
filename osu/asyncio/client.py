@@ -1505,7 +1505,7 @@ class AsynchronousClient:
 
         Sequence[:class:`UserCompact`]
         """
-        res = await self.http.make_request(Path.get_users(), **{"ids[]": users})
+        res = await self.http.make_request(Path.lookup_users(), **{"ids[]": users})
         return list(map(UserCompact, res["users"]))
 
     async def get_wiki_page(self, locale: str, path: str) -> WikiPage:

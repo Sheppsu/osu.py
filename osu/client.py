@@ -1481,7 +1481,7 @@ class Client:
 
         Sequence[:class:`UserCompact`]
         """
-        res = self.http.make_request(Path.get_users(), **{"ids[]": users})
+        res = self.http.make_request(Path.lookup_users(), **{"ids[]": users})
         return list(map(UserCompact, res["users"]))
 
     def get_wiki_page(self, locale: str, path: str) -> WikiPage:
