@@ -1450,6 +1450,7 @@ class Client:
     def get_users(self, ids: Sequence[int]) -> List[UserCompact]:
         """
         Returns list of users.
+        Can get maximum 50 at a time.
 
         Requires OAuth and scope public
 
@@ -1465,9 +1466,6 @@ class Client:
             Includes attributes: country, cover, groups, statistics_rulesets.
         """
         res = self.http.make_request(Path.get_users(), **{"ids[]": ids})
-        import json
-        with open("users.json", "w", encoding="utf-8") as f:
-            json.dump(res["users"], f)
         return list(map(UserCompact, res["users"]))
 
     def get_wiki_page(self, locale: str, path: str) -> WikiPage:
