@@ -1,7 +1,7 @@
 from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING, Union, Dict
 
-from .beatmap import BeatmapCompact, BeatmapsetCompact
+from .beatmap import BeatmapCompact, BeatmapsetCompact, Beatmap
 from .user import UserCompact
 from .current_user_attributes import ScoreUserAttributes
 from ..enums import GameModeStr, GameModeInt, Mods, Mod, ObjectType, ScoreRank
@@ -176,6 +176,10 @@ class SoloScore:
 
     beatmap_id: Optional[:class:`int`]
 
+    beatmap: Optional[:class:`Beatmap`]
+
+    beatmapset: Optional[:class:`BeatmapsetCompact`]
+
     ended_at: :class:`datetime.datetime`
 
     max_combo: :class:`int`
@@ -249,6 +253,8 @@ class SoloScore:
         "user",
         "current_user_attributes",
         "weight",
+        "beatmap",
+        "beatmapset"
     )
 
     def __init__(self, data):
@@ -280,6 +286,8 @@ class SoloScore:
             data, "current_user_attributes", ScoreUserAttributes
         )
         self.weight: Optional[PpWeight] = get_optional(data, "weight", PpWeight)
+        self.beatmap: Optional[Beatmap] = get_optional(data, "beatmap", Beatmap)
+        self.beatmapset: Optional[BeatmapsetCompact] = get_optional(data, "beatmapset", BeatmapsetCompact)
 
     def __repr__(self):
         return prettify(self, "beatmap_id", "statistics")
@@ -306,11 +314,10 @@ class PpWeight:
 
 
 def get_score_object(data) -> Union[SoloScore, LegacyScore]:
-    # EAFP cuz type attribute is not reliable
-    try:
+    if data["type"] == "solo_score":
         return SoloScore(data)
-    except KeyError:
-        return LegacyScore(data)
+
+    return LegacyScore(data)
 
 
 class ScoreStatistics:
