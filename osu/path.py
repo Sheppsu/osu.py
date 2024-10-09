@@ -173,6 +173,10 @@ class Path:
         return cls("get", "users", "public")
 
     @classmethod
+    def lookup_users(cls):
+        return cls("get", "users/lookup", "public")
+
+    @classmethod
     def get_wiki_page(cls, locale, path):
         return cls("get", f"wiki/{locale}/{path}", None)
 
