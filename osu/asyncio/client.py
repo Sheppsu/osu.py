@@ -1492,6 +1492,22 @@ class AsynchronousClient:
         res = await self.http.make_request(Path.get_users(), **{"ids[]": ids})
         return list(map(UserCompact, res["users"]))
 
+    async def lookup_users(self, users: list[int, str]):
+        """
+        Lookup users by a mix of user ids and usernames.
+        Can lookup maximum 50 at a time.
+
+        ids: Sequence[Union[:class:`int`, :class:`str`]]
+            Can be a list of user ids and usernames.
+            Usernames should be prefixed with "@" to make sure they're interpreted as usernames by the api.
+
+        **Returns**
+
+        Sequence[:class:`UserCompact`]
+        """
+        res = await self.http.make_request(Path.get_users(), **{"ids[]": users})
+        return list(map(UserCompact, res["users"]))
+
     async def get_wiki_page(self, locale: str, path: str) -> WikiPage:
         """
         The wiki article or image data.
