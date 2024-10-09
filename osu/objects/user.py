@@ -338,6 +338,9 @@ class User(UserCompact):
     post_count: :class:`int`
         number of forum posts
 
+    profile_hue: Optional[:class:`int`]
+        Custom color hue in HSL degrees (0-359).
+
     profile_order: List[:class:`str`]
         Ordered list of sections in user profile page. Sections consist of:
         me, recent_activity, beatmaps, historical, kudosu, top_ranks, medals
@@ -365,6 +368,7 @@ class User(UserCompact):
         "playmode",
         "playstyle",
         "post_count",
+        "profile_hue",
         "profile_order",
         "title",
         "title_url",
@@ -387,6 +391,7 @@ class User(UserCompact):
         self.playmode: GameModeStr = GameModeStr(get_required(data, "playmode"))
         self.playstyle: List[str] = get_required(data, "playstyle")
         self.post_count: int = get_required(data, "post_count")
+        self.profile_hue: Optional[int] = get_required(data, "profile_hue")
         self.profile_order: List[str] = get_required(data, "profile_order")
         self.title: Optional[str] = get_required(data, "title")
         self.title_url: Optional[str] = get_required(data, "title_url")
