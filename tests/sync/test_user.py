@@ -23,6 +23,14 @@ class TestUser:
             assert user.id == sample_user["id"]
             assert user.username == sample_user["username"]
 
+    def test_lookup_users(self, client, sample_users):
+        users = [sample_users[0]["id"], "@"+sample_users[1]["username"]]
+        users = client.lookup_users(users)
+        for user, sample_user in zip(users, sample_users[:2]):
+            assert user
+            assert user.id == sample_user["id"]
+            assert user.username == sample_user["username"]
+
     def test_get_user_kudosu(self, client):
         kudosu_list = client.get_user_kudosu(user=2)
         assert kudosu_list
