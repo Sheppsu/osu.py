@@ -1,4 +1,4 @@
-from osu import Client
+from osu import Client, GameModeStr
 import os
 
 
@@ -8,7 +8,7 @@ redirect_url = None
 
 client = Client.from_client_credentials(client_id, client_secret, redirect_url)
 
-user_id = 5182050
-mode = 'osu'
-user = client.get_user(user_id, mode)
+user = client.get_user(5182050)
+print(user)
+user = client.get_user("@dressurf", mode=GameModeStr.MANIA)
 print(user)
