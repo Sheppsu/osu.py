@@ -373,7 +373,7 @@ class User(UserCompact):
         "title",
         "title_url",
         "twitter",
-        "website"
+        "website",
     )
 
     def __init__(self, data):
@@ -758,7 +758,9 @@ class UserStatistics:
         self.country_rank: Optional[int] = data.get("country_rank")
         self.global_rank: Optional[int] = get_required(data, "global_rank")
         self.global_rank_exp: Optional[int] = data.get("global_rank_exp")
-        self.grade_counts: NamedTuple = namedtuple("GradeCounts", ("ssh", "ss", "sh", "s", "a"))(**get_required(data, "grade_counts"))
+        self.grade_counts: NamedTuple = namedtuple("GradeCounts", ("ssh", "ss", "sh", "s", "a"))(
+            **get_required(data, "grade_counts")
+        )
         self.level: NamedTuple = namedtuple("Level", ("current", "progress"))(**get_required(data, "level"))
         self.hit_accuracy: float = get_required(data, "hit_accuracy")
         self.is_ranked: bool = get_required(data, "is_ranked")
@@ -1032,7 +1034,7 @@ class DailyChallengeUserStats:
         "top_50p_placements",
         "user_id",
         "weekly_streak_best",
-        "weekly_streak_current"
+        "weekly_streak_current",
     )
 
     def __init__(self, data):

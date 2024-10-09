@@ -109,7 +109,9 @@ class MatchEvent:
         self.timestamp: datetime = parser.parse(get_required(data, "timestamp"))
         self.user_id: int = get_required(data, "user_id")
         self.type: MatchEventType = MatchEventType(get_required(data, "detail")["type"])
-        self.text: Optional[str] = get_required(data, "detail")["text"] if "text" in get_required(data, "detail") else None
+        self.text: Optional[str] = (
+            get_required(data, "detail")["text"] if "text" in get_required(data, "detail") else None
+        )
         self.game: Optional[MatchGame] = get_optional(data, "game", MatchGame)
 
     def __repr__(self):

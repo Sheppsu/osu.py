@@ -396,8 +396,11 @@ def get_optional_list(data: Dict[str, _V], key: str, obj: Callable[[_V], _T]) ->
 # if testing, raise an error for expected keys
 # otherwise return none to avoid key errors in prod
 if os.getenv("OSUPY_TEST") is None:
+
     def get_required(data: Dict[str, _V], key: str):
         return data.get(key)
+
 else:
+
     def get_required(data: Dict[str, _V], key: str):
         return data[key]

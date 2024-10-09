@@ -176,7 +176,9 @@ class CommentBundle:
     )
 
     def __init__(self, data):
-        self.commentable_meta: List[CommentableMeta] = list(map(CommentableMeta, get_required(data, "commentable_meta")))
+        self.commentable_meta: List[CommentableMeta] = list(
+            map(CommentableMeta, get_required(data, "commentable_meta"))
+        )
         self.comments: List[Comment] = list(map(Comment, get_required(data, "comments")))
         self.has_more: bool = get_required(data, "has_more")
         self.has_more_id: int = get_required(data, "has_more_id")

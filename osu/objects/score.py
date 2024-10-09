@@ -254,7 +254,7 @@ class SoloScore:
         "current_user_attributes",
         "weight",
         "beatmap",
-        "beatmapset"
+        "beatmapset",
     )
 
     def __init__(self, data):

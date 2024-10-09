@@ -103,7 +103,7 @@ class AsynchronousClient:
         code: Optional[str] = None,
         request_wait_time: float = 1.0,
         limit_per_minute: int = 60,
-        lazily_authenticate: bool = True
+        lazily_authenticate: bool = True,
     ) -> Union["AsynchronousClient", Awaitable]:
         """
         Creates client from client id, client secret, redirect uri, and scope.
@@ -147,6 +147,7 @@ class AsynchronousClient:
         """
         auth = AsynchronousAuthHandler(client_id, client_secret, redirect_url, scope)
         if not lazily_authenticate:
+
             async def create():
                 await auth.get_auth_token(code)
                 return cls(auth, request_wait_time, limit_per_minute)
@@ -268,9 +269,9 @@ class AsynchronousClient:
             return
         return list(
             map(
-                lambda mod: (Mod[mod.name].value if not isinstance(mod, Mod) else mod.value)
-                if type(mod) != str
-                else mod,
+                lambda mod: (
+                    (Mod[mod.name].value if not isinstance(mod, Mod) else mod.value) if type(mod) != str else mod
+                ),
                 mods,
             )
         )

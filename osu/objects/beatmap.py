@@ -261,7 +261,9 @@ class Beatmapset(BeatmapsetCompact):
         self.is_scoreable: bool = get_required(data, "is_scoreable")
         self.last_updated: Optional[datetime] = get_optional(data, "last_updated", parser.parse)
         self.legacy_thread_url: Optional[str] = get_required(data, "legacy_thread_url")
-        self.nominations_summary: BeatmapsetRequirement = BeatmapsetRequirement(get_required(data, "nominations_summary"))
+        self.nominations_summary: BeatmapsetRequirement = BeatmapsetRequirement(
+            get_required(data, "nominations_summary")
+        )
         self.ranked: RankStatus = RankStatus(get_required(data, "ranked"))
         self.ranked_date: Optional[datetime] = get_optional(data, "ranked_date", parser.parse)
         self.storyboard: bool = get_required(data, "storyboard")

@@ -76,7 +76,7 @@ class Client:
         code: Optional[str] = None,
         request_wait_time: float = 1.0,
         limit_per_minute: int = 60,
-        lazily_authenticate: bool = True
+        lazily_authenticate: bool = True,
     ) -> "Client":
         """
         Returns a :class:`Client` object from client id, client secret, redirect uri, and scope.
@@ -243,9 +243,9 @@ class Client:
             return
         return list(
             map(
-                lambda mod: (Mod[mod.name].value if not isinstance(mod, Mod) else mod.value)
-                if type(mod) != str
-                else mod,
+                lambda mod: (
+                    (Mod[mod.name].value if not isinstance(mod, Mod) else mod.value) if type(mod) != str else mod
+                ),
                 mods,
             )
         )
