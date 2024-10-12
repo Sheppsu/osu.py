@@ -27,25 +27,6 @@ class ChatChannel:
         display icon for the channel
 
     type: :class:`ChatChannelType`
-        Below are the channel types and their permission checks for joining/messaging:
-        PUBLIC
-            None
-        PRIVATE
-            is player in the allowed groups? (channel.allowed_groups)
-        MULTIPLAYER
-            is player currently in the mp game?
-        SPECTATOR
-            None
-        TEMPORARY
-            deprecated
-        PM
-            For PMs, two factors are taken into account:
-            Is either user blocking the other? If so, deny.
-            Does the target only accept PMs from friends? Is the current user a friend? If not, deny.
-        GROUP
-            is player in channel? (user_channels)
-        ANNOUNCE
-            is user in the announce group?
 
     moderated: :class:`bool`
         user can't send message when the value is `True`

@@ -27,6 +27,7 @@ class BeatmapsetEventComment:
     :class:`BeatmapsetEventNominationReset`, :class:`BeatmapsetEventNominationResetReceived`,
     :class:`BeatmapsetEventGenreEdit`, :class:`BeatmapsetEventLanguageEdit`, :class:`BeatmapsetEventNsfwToggle`,
     :class:`BeatmapsetEventOffsetEdit`, :class:`BeatmapsetEventBeatmapOwnerChange`]
+
         The type of this attribute depends on the type of the BeatmapsetEvent object.
     """
 

@@ -49,6 +49,7 @@ class Notification:
     :class:`ForumTopicReplyDetails`, :class:`UserAchievementUnlockDetails`,
     :class:`UserBeatmapsetNewDetails`, :class:`UserBeatmapsetReviveDetails`
     ]
+
         Details of the notification.
 
     **Documented event names and their attribute meanings**

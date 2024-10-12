@@ -591,6 +591,7 @@ class BeatmapDifficultyAttributes:
 
     mode_attributes: Optional[Union[:class:`OsuBeatmapDifficultyAttributes`, :class:`TaikoBeatmapDifficultyAttributes`,
     :class:`FruitsBeatmapDifficultyAttributes`, :class:`ManiaBeatmapDifficultyAttributes`]]
+
         Can be none for some beatmaps that are bugged and have no difficulty attributes.
 
     type: Optional[:class:`GameModeStr`]
