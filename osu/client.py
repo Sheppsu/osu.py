@@ -1468,7 +1468,7 @@ class Client:
         res = self.http.make_request(Path.get_users(), **{"ids[]": ids})
         return list(map(UserCompact, res["users"]))
 
-    def lookup_users(self, users: List[int, str]):
+    def lookup_users(self, users: List[Union[int, str]]):
         """
         Lookup users by a mix of user ids and usernames.
         Can lookup maximum 50 at a time.
