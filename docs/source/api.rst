@@ -245,7 +245,7 @@ Objects
    :members:
 
 
-... autoclass:: osu.BeatmapsetRequiredNominations
+.. autoclass:: osu.BeatmapsetRequiredNominations
     :members:
    
 
