@@ -516,9 +516,13 @@ class UserBeatmapType(Enum):
 
     GRAVEYARD = 'graveyard'
 
+    GUEST = 'guest'
+
     LOVED = 'loved'
 
     MOST_PLAYED = 'most_played'
+
+    NOMINATED = 'nominated'
 
     PENDING = 'pending'
 
@@ -527,8 +531,10 @@ class UserBeatmapType(Enum):
 
     FAVOURITE = "favourite"
     GRAVEYARD = "graveyard"
+    GUEST = "guest"
     LOVED = "loved"
     MOST_PLAYED = "most_played"
+    NOMINATED = "nominated"
     PENDING = "pending"
     RANKED = "ranked"
 

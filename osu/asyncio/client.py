@@ -1373,7 +1373,7 @@ class AsynchronousClient:
             Id of the user.
 
         type: Union[:class:`str`, :class:`UserBeatmapType`]
-            Beatmap type. Can be one of `favourite`, `graveyard`, `loved`, `most_played`, `pending`, `ranked`.
+            Beatmap type. Can be one of `favourite`, `graveyard`, `guest`, `loved`, `most_played`, `nominated`, `pending`, `ranked`.
 
         limit: Optional[:class:`int`]
             Maximum number of results.
