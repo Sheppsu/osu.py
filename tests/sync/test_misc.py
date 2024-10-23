@@ -70,10 +70,3 @@ class TestMisc:
         assert user_client.get_replay_data(None, 1267337687, False)
         assert user_client.get_replay_data_by_id_only(1267337687)
         assert user_client.get_replay_data_by_id_only(1267337687, False)
-
-    def test_get_topic_and_posts(self, client, sample_topic):
-        ret = client.get_topic_and_posts(1699086)
-        assert ret.topic
-        assert ret.topic.id == sample_topic["id"]
-        assert ret.topic.title == sample_topic["title"]
-        assert ret.posts

@@ -3,7 +3,8 @@ import asyncio
 import json
 import os
 
-from osu import AsynchronousClient, Client, AuthHandler, AsynchronousAuthHandler, Scope
+from osu import AsynchronousClient, Client, AuthHandler
+from osu.constants import auth_url, token_url, base_url
 from tests.constants import CLIENT_SECRET, REDIRECT_URI, CLIENT_ID
 
 
@@ -13,12 +14,12 @@ def event_loop():
 
 
 @fixture(scope="session")
-def client():
+def client() -> Client:
     yield Client.from_client_credentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
 
 
 @fixture(scope="session")
-def async_client(client):
+def async_client(client) -> AsynchronousClient:
     def update(auth):
         client.http.auth = auth.as_sync()  # update auth
 
@@ -27,18 +28,20 @@ def async_client(client):
     yield AsynchronousClient(auth)
 
 
-def get_user_client():
+def get_user_client(dev=False) -> Client:
+    file = "auth.json" if not dev else "dev-auth.json"
+
     def save(auth):
-        with open("auth.json", "w") as f:
+        with open(file, "w") as f:
             json.dump(auth.get_save_data(), f)
 
-    if not os.path.exists("auth.json"):
-        raise RuntimeError("Run auth.py to populate auth.json")
+    if not os.path.exists(file):
+        raise RuntimeError(f"Run auth.py to populate {file}")
 
-    with open("auth.json", "r") as f:
+    with open(file, "r") as f:
         auth_data = json.load(f)
         if not auth_data:
-            raise RuntimeError("Run auth.py to populate auth.json")
+            raise RuntimeError(f"Run auth.py to populate {file}")
 
     client = Client(AuthHandler.from_save_data(auth_data))
     save(client.auth)
@@ -47,12 +50,12 @@ def get_user_client():
 
 
 @fixture(scope="session")
-def user_client():
+def user_client() -> Client:
     yield get_user_client()
 
 
 @fixture(scope="session")
-def async_user_client(user_client):
+def async_user_client(user_client) -> AsynchronousClient:
     def update(auth):
         refresh_callback = user_client.http.auth._refresh_callback
         user_client.http.auth = auth.as_sync()  # update auth
@@ -65,5 +68,29 @@ def async_user_client(user_client):
 
 
 @fixture(scope="session")
+def dev_user_client(async_user_client) -> Client:
+    yield get_user_client(dev=True)
+
+
+@fixture(scope="session")
+def dev_async_user_client(dev_user_client) -> AsynchronousClient:
+    def update(auth):
+        refresh_callback = dev_user_client.http.auth._refresh_callback
+        dev_user_client.http.auth = auth.as_sync()  # update auth
+        dev_user_client.http.auth._refresh_callback = refresh_callback
+        refresh_callback(dev_user_client.http.auth)  # since the auth data was just updated
+
+    auth = dev_user_client.auth.as_async()
+    auth.set_refresh_callback(update)
+    client = AsynchronousClient(auth)
+    return client
+
+
+@fixture(scope="session")
 def own_data(user_client):
     yield user_client.get_own_data()
+
+
+@fixture(scope="session")
+def dev_own_data(dev_user_client):
+    yield dev_user_client.get_own_data()

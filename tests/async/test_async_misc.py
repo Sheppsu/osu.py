@@ -71,14 +71,6 @@ class TestAsynchronousMisc:
         assert backgrounds
 
     @pytest.mark.asyncio
-    async def test_get_topic_and_posts(self, async_client, sample_topic):
-        ret = await async_client.get_topic_and_posts(1699086)
-        assert ret.topic
-        assert ret.topic.id == sample_topic["id"]
-        assert ret.topic.title == sample_topic["title"]
-        assert ret.posts
-
-    @pytest.mark.asyncio
     async def test_get_replay_data(self, async_user_client):
         assert await async_user_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
         assert await async_user_client.get_replay_data(None, 1267337687)

@@ -1,9 +1,14 @@
 from pytest import fixture
 
+from osu import ChatChannelType
 
-SAMPLE_CHANNEL = {"id": 5, "name": "#osu"}
 
-
-@fixture
+@fixture(scope='module')
 def sample_channel():
-    yield dict(SAMPLE_CHANNEL)
+    yield dict(
+        id=5,
+        name="#osu",
+        type=ChatChannelType.PUBLIC
+    )
+
+
