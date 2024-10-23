@@ -1859,7 +1859,9 @@ class AsynchronousClient:
         """
         return list(map(UserCompact, await self.http.make_request(Path.get_friends())))
 
-    async def chat_keepalive(self, history_since: Optional[int] = None, since: Optional[int] = None) -> List[UserSilence]:
+    async def chat_keepalive(
+        self, history_since: Optional[int] = None, since: Optional[int] = None
+    ) -> List[UserSilence]:
         """
         Request periodically to reset chat activity timeout. Also returns an updated list of recent silences.
 
@@ -1881,7 +1883,9 @@ class AsynchronousClient:
         return list(
             map(
                 UserSilence,
-                (await self.http.make_request(Path.chat_keepalive(), history_since=history_since, since=since))["silences"],
+                (await self.http.make_request(Path.chat_keepalive(), history_since=history_since, since=since))[
+                    "silences"
+                ],
             )
         )
 
@@ -1950,7 +1954,9 @@ class AsynchronousClient:
         return list(
             map(
                 ChatMessage,
-                await self.http.make_request(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until),
+                await self.http.make_request(
+                    Path.get_channel_messages(channel_id), limit=limit, since=since, until=until
+                ),
             )
         )
 

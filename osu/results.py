@@ -66,7 +66,7 @@ __all__ = (
     "GetBeatmapsetEventsResult",
     "GetMatchesResult",
     "GetRoomLeaderboardResult",
-    "GetChannelResult"
+    "GetChannelResult",
 )
 
 

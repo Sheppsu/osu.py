@@ -20,12 +20,7 @@ import os
 import re
 
 
-__all__ = (
-    "BeatmapsetSearchFilter",
-    "PlaylistItemUtil",
-    "NotificationsUtil",
-    "IdentitiesUtil"
-)
+__all__ = ("BeatmapsetSearchFilter", "PlaylistItemUtil", "NotificationsUtil", "IdentitiesUtil")
 
 
 _T = TypeVar("_T")
@@ -436,7 +431,7 @@ def fromisoformat(timestamp: str) -> datetime:
             hour=int(hour),
             minute=int(minute),
             second=int(second),
-            tzinfo=timezone.utc
+            tzinfo=timezone.utc,
         )
 
     # just in case

@@ -188,7 +188,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
             "redirect_url": self.redirect_url,
             "scope": self.scope.scopes,
             "refresh_token": self.refresh_token,
-            "domain": self.domain
+            "domain": self.domain,
         }
 
     @classmethod

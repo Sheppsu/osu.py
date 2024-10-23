@@ -33,7 +33,7 @@ class AsynchronousHTTPHandler:
 
         if not has_aiohttp:
             raise RuntimeError(
-                'Missing aiohttp package, which is required to use asynchronous features.'
+                "Missing aiohttp package, which is required to use asynchronous features."
                 'Install osu.py with the async feature: "pip install osu.py[async]"'
             )
 
