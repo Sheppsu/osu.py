@@ -461,7 +461,7 @@ class GameModeStr(Enum):
     MANIA = "mania"
 
     def get_int_equivalent(self: "GameModeStr") -> "GameModeInt":
-        return GameModeInt[gamemode.name]
+        return GameModeInt[self.name]
 
 
 class GameModeInt(IntEnum):
@@ -485,7 +485,7 @@ class GameModeInt(IntEnum):
     MANIA = 3
 
     def get_str_equivalent(self: "GameModeInt") -> GameModeStr:
-        return GameModeStr[gamemode.name]
+        return GameModeStr[self.name]
 
 
 class WikiSearchMode(Enum):
@@ -780,11 +780,14 @@ class RoomCategory(Enum):
     SPOTLIGHT = 'spotlight'
 
     FEATURED_ARTIST = 'featured_artist'
+
+    DAILY_CHALLENGE = 'daily_challenge'
     """
 
     NORMAL = "normal"
     SPOTLIGHT = "spotlight"
     FEATURED_ARTIST = "featured_artist"
+    DAILY_CHALLENGE = "daily_challenge"
 
 
 class RoomType(Enum):
