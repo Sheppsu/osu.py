@@ -1,6 +1,5 @@
 from dataclasses import dataclass
-from typing import Dict, Optional, List, TypeVar, Type
-
+from typing import Dict, Optional, List, TypeVar, Type, TYPE_CHECKING
 
 from .objects import (
     Beatmap,
@@ -24,7 +23,6 @@ from .objects import (
     WikiPage,
 )
 
-
 _T = TypeVar("_T")
 
 
@@ -44,10 +42,11 @@ def result_dataclass(cls: Type[_T]) -> Type[_T]:
     return type(cls)(cls.__name__, cls.__bases__, cls_dict)
 
 
-# trick my IDE into seeing results_dataclass as dataclass
-globals()["dataclass"] = result_dataclass
-del result_dataclass
-
+# "trick" type checkers into seeing the classes as dataclasses
+# the type checkers can't tell that they are otherwise
+if not TYPE_CHECKING:
+    dataclass = result_dataclass
+    del result_dataclass
 
 __all__ = (
     "BeatmapsetSearchResult",
@@ -67,15 +66,18 @@ __all__ = (
     "GetBeatmapsetEventsResult",
     "GetMatchesResult",
     "GetRoomLeaderboardResult",
+    "GetChannelResult"
 )
 
 
 class ResultBase:
+    __slots__ = ()
+
     # For backwards compatibility
     def __getitem__(self, item):
-        if type(item) == str:
+        if isinstance(item, str):
             return getattr(self, item)
-        elif type(item) == int:
+        elif isinstance(item, int):
             return self.__slots__[item], getattr(self, self.__slots__[item], None)
         raise AttributeError(f"Could not fetch attribute of {self.__class__.__name__} " f"from item value {item!r}")
 
@@ -436,3 +438,19 @@ class GetRoomLeaderboardResult(ResultBase):
 
     leaderboard: List[UserScoreAggregate]
     user_score: Optional[UserScoreAggregate]
+
+
+@dataclass
+class GetChannelResult(ResultBase):
+    """
+    Result of :func:`osu.Client.get_channel`
+
+    **Attributes**
+
+    channel: :class:`ChatChannel`
+
+    users: List[:class:`UserCompact`]
+    """
+
+    channel: ChatChannel
+    users: List[UserCompact]
