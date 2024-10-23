@@ -3,6 +3,7 @@ auth.json
 dev-auth.json
 test_venv/
 test.py
+upload
 
 changelog.txt
 
