@@ -49,7 +49,7 @@ packages = [
 ]
 
 setuptools.setup(
-    name="osu.pytest",
+    name="osu.py",
     version=version,
     packages=packages,
     author="Sheepposu",
