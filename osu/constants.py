@@ -1,7 +1,13 @@
-base_url = "https://osu.ppy.sh/api/v2/"
-auth_url = "https://osu.ppy.sh/oauth/authorize/"
-token_url = "https://osu.ppy.sh/oauth/token/"
+import os
 
+base_url = lambda domain: f"https://{domain}/api/v2/"
+auth_url = lambda domain: f"https://{domain}/oauth/authorize/"
+token_url = lambda domain: f"https://{domain}/oauth/token/"
+
+DEFAULT_DOMAIN = os.getenv("OSUPY_DEFAULT_DOMAIN") or "osu.ppy.sh"
+DEFAULT_BASE_URL = base_url(DEFAULT_DOMAIN)
+DEFAULT_AUTH_URL = auth_url(DEFAULT_DOMAIN)
+DEFAULT_TOKEN_URL = token_url(DEFAULT_DOMAIN)
 
 # Info gathered from https://github.com/ppy/osu-web/blob/973315aded8a5762fc00a9f245337802c27bd213/database/mods.json
 incompatible_mods = {
