@@ -17,17 +17,18 @@ osu.py
 Easy to use API wrapper for osu!api v2 written in Python.
 Has a high-level interface while still allowing ways to do more complex things.
 
-Major features/capabilties
+Major features/capabilities
 --------------------------
-- Client class which carries out all api requests.
-- AsynchronousClient class which is the same as Client but all api request functions are asynchronous.
-- NotificationWebsocket class for using the notification websocket feature of osu api v2.
-- Support for Authorization Code Grant and Client Credentials Grant.
-- Builtin rate limit handling
-- Storage efficient objects used to contain almost all the data returned from osu.py for any given api request.
-- Refresh and access token is automatically managed.
-- Utility functions and classes that make your life easier.
-- Documentation that covers everything osu.py is capable of.
+- Compatible with Python 3.8+
+- Client class which carries out all api requests
+- AsynchronousClient class for asynchronous requests (install with async feature)
+- NotificationWebsocket class for using the notification websocket feature of osu api v2
+- Support for Authorization Code Grant, Client Credentials Grant, and all scopes (except lazer)
+- Builtin rate limit handling and ability to tweak
+- Uses storage efficient objects
+- Refresh and access token is automatically managed
+- Utility functions and classes that make your life easier
+- Documentation that covers everything osu.py is capable of
 
 Installation
 ------------
@@ -43,15 +44,17 @@ Installation
     py -3 -m pip install -U osu.py
 
     # Installing straight from github (downloads latest code, which is not guaranteed to be stable)
-    [python prefix used above] -m pip install git+https://github.com/Sheepposu/osu.py.git
+    py -m pip install git+https://github.com/Sheepposu/osu.py.git
 	
-	# Install with features
-	[python prefix] -m pip install -U osu.py[replay,notifications]
+	# Install with asynchronous client
+    py -m pip install -U osu.py[async]
+    # Install with all features
+	py -m pip install -U osu.py[async,replay,notifications]
 	
 	# Install from github with features
 	git clone https://github.com/sheppsu/osu.py
 	cd osu.py
-	[python prefix] -m pip install -U .[replay,notifications]
+	py -m pip install -U .[async,replay,notifications]
 
 Example
 -------
@@ -67,10 +70,10 @@ Example
 Links
 -----
 
-- `Issues <https://github.com/Sheepposu/osu.py/issues>`_
-- `Contribute <https://github.com/Sheepposu/osu.py/pulls>`_
-- `Discussion <https://github.com/Sheepposu/osu.py/discussions>`_
+- `Issues <https://github.com/Sheppsu/osu.py/issues>`_
+- `Contribute <https://github.com/Sheppsu/osu.py/pulls>`_
+- `Discussion <https://github.com/Sheppsu/osu.py/discussions>`_
 - `Discord server <https://discord.gg/Z2J6SSRPcE>`_
-- `Example code <https://github.com/Sheepposu/osu.py/tree/main/examples>`_
+- `Example code <https://github.com/Sheppsu/osu.py/tree/main/examples>`_
 - `Getting started guide <https://osupy.readthedocs.io/en/latest/guide.html>`_
 - `Documentation <https://osupy.readthedocs.io>`_

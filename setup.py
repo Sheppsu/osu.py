@@ -32,11 +32,13 @@ classifiers = [
 ]
 
 extra_require = {
-    "replay": ["osrparse>=6.0.1,<7"],
-    "notifications": ["websockets>=11,<12"],
+    "async": ["aiohttp>=3.9.2,<4"],
+    "replay": ["osrparse>=7.0.1,<8"],
+    "notifications": ["websockets>=13.1,<14"],
     "tests": [
-        "pytest",
-        "pytest-asyncio"
+        "pytest>=8.3.3,<9",
+        "pytest-asyncio>=0.24.0,<1",
+        "pytest-dependency>=0.6.0,<1"
     ]
 }
 
