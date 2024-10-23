@@ -1,26 +1,33 @@
 import requests
 import time
-from typing import Optional
+from datetime import datetime, timezone
+from typing import Optional, List
 
 from .auth import BaseAuthHandler
 from .exceptions import ScopeException
-from .constants import base_url
+from .constants import DEFAULT_BASE_URL, base_url
 
 
 __all__ = ("HTTPHandler",)
 
 
 class HTTPHandler:
+    __slots__ = ("auth", "rate_limit", "api_version", "base_url")
+
     def __init__(
         self,
         auth: Optional[BaseAuthHandler],
         request_wait_time: float,
         limit_per_minute: int,
-        api_version: str = "20220705",
+        api_version: Optional[str] = None,
     ):
         self.auth: Optional[BaseAuthHandler] = auth
         self.rate_limit: RateLimitHandler = RateLimitHandler(request_wait_time, limit_per_minute)
-        self.api_version: str = api_version
+        self.api_version: str = api_version or datetime.now(tz=timezone.utc).strftime("%Y%m%d")
+        self.base_url = DEFAULT_BASE_URL
+
+    def set_domain(self, domain: str) -> None:
+        self.base_url = base_url(domain)
 
     def get_headers(self, path, is_files=False, **kwargs):
         headers = {
@@ -76,21 +83,28 @@ class HTTPHandler:
                 err = response.json()["error"]
             except:
                 err = None
-            raise type(e)(str(e) + ": " + err) if err is not None else e from None
+
+            if err:
+                raise RuntimeError(err) from e
+
+            raise e
+
         if response.content == b"":
             return
         return response.json() if not is_download else response
 
     def make_request(self, path, *args, **kwargs):
-        return self.make_request_to_endpoint(base_url, path, *args, **kwargs)
+        return self.make_request_to_endpoint(self.base_url, path, *args, **kwargs)
 
 
 class RateLimitHandler:
+    __slots__ = ("wait_limit", "limit", "last_request", "requests")
+
     def __init__(self, request_wait_limit: float, limit_per_minute: int):
         self.wait_limit: float = request_wait_limit
         self.limit: int = limit_per_minute
         self.last_request: float = time.monotonic() - self.wait_limit
-        self.requests: list[float] = []
+        self.requests: List[float] = []
 
     def request_used(self):
         self.requests.append(time.monotonic())

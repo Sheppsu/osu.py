@@ -1,12 +1,20 @@
 import time
 import asyncio
-import aiohttp
-from typing import Optional
+from typing import Optional, List
 from inspect import isawaitable
+from datetime import datetime, timezone
+
+try:
+    import aiohttp
+    from aiohttp.client_exceptions import ContentTypeError
+
+    has_aiohttp = True
+except ImportError:
+    has_aiohttp = False
 
 from ..auth import BaseAuthHandler
 from ..exceptions import ScopeException
-from ..constants import base_url
+from ..constants import DEFAULT_BASE_URL, base_url
 
 
 __all__ = ("AsynchronousHTTPHandler",)
@@ -18,15 +26,26 @@ class AsynchronousHTTPHandler:
         auth: Optional[BaseAuthHandler],
         request_wait_time: float,
         limit_per_minute: int,
-        api_version: str = "20220705",
+        api_version: Optional[str] = None,
     ):
         if not isawaitable(awaitable := auth.get_token()):
-            raise ValueError("auth passed to AsynchronousHTTPHandler must have an asynchronouos get_token method")
+            raise ValueError("auth passed to AsynchronousHTTPHandler must have an asynchronous get_token method")
+
+        if not has_aiohttp:
+            raise RuntimeError(
+                'Missing aiohttp package, which is required to use asynchronous features.'
+                'Install osu.py with the async feature: "pip install osu.py[async]"'
+            )
+
         awaitable.close()  # type: ignore
 
         self.auth: Optional[BaseAuthHandler] = auth
         self.rate_limit: RateLimitHandler = RateLimitHandler(request_wait_time, limit_per_minute)
-        self.api_version: str = api_version
+        self.api_version: str = api_version or datetime.now(tz=timezone.utc).strftime("%Y%m%d")
+        self.base_url = DEFAULT_BASE_URL
+
+    def set_domain(self, domain: str) -> None:
+        self.base_url = base_url(domain)
 
     async def get_headers(self, path, is_files=False, **kwargs):
         headers = {
@@ -89,25 +108,35 @@ class AsynchronousHTTPHandler:
                         err = (await resp.json())["error"]
                     except:
                         err = None
-                    raise type(e)(str(e) + ": " + err) if err is not None else e from None
+
+                    if err:
+                        raise RuntimeError(err) from e
+
+                    raise e
+
                 if resp.content_length == 0:
                     return
                 yield resp
 
     def get_req_gen(self, path, *args, **kwargs):
-        return self.make_request_to_endpoint(base_url, path, *args, **kwargs)
+        return self.make_request_to_endpoint(self.base_url, path, *args, **kwargs)
 
     async def make_request(self, path, *args, **kwargs):
         gen = self.get_req_gen(path, *args, **kwargs)
         async for resp in gen:
-            return await resp.json()
+            try:
+                return await resp.json()
+            except ContentTypeError:
+                return
 
 
 class RateLimitHandler:
+    __slots__ = ("wait_limit", "limit", "requests", "_lock")
+
     def __init__(self, request_wait_limit: float, limit_per_minute: int):
         self.wait_limit: float = request_wait_limit
         self.limit: int = limit_per_minute
-        self.requests: list[float] = []
+        self.requests: List[float] = []
         self._lock: asyncio.Lock = asyncio.Lock()
 
     def request_used(self):
