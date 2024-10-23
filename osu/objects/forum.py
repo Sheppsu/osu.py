@@ -1,7 +1,6 @@
-from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_required
+from ..util import prettify, get_optional, get_required, fromisoformat
 from ..enums import ForumTopicType
 
 
@@ -45,9 +44,9 @@ class ForumPost:
     )
 
     def __init__(self, data):
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
-        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
-        self.edited_at: Optional[datetime] = get_optional(data, "edited_at", parser.parse)
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
+        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", fromisoformat)
+        self.edited_at: Optional[datetime] = get_optional(data, "edited_at", fromisoformat)
         self.edited_by_id: Optional[int] = data.get("edited_by_id")
         self.forum_id: int = get_required(data, "forum_id")
         self.id: int = get_required(data, "id")
@@ -133,8 +132,8 @@ class ForumTopic:
     )
 
     def __init__(self, data):
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
-        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
+        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", fromisoformat)
         self.first_post_id: int = get_required(data, "first_post_id")
         self.forum_id: int = get_required(data, "forum_id")
         self.id: int = get_required(data, "id")
@@ -144,7 +143,7 @@ class ForumTopic:
         self.post_count: int = get_required(data, "post_count")
         self.title: str = get_required(data, "title")
         self.type: ForumTopicType = ForumTopicType(get_required(data, "type"))
-        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.updated_at: datetime = fromisoformat(get_required(data, "updated_at"))
         self.user_id: int = get_required(data, "user_id")
 
     def __repr__(self):
@@ -188,12 +187,12 @@ class Poll:
 
     def __init__(self, data):
         self.allow_vote_change: bool = get_required(data, "allow_vote_change")
-        self.ended_at: Optional[datetime] = get_optional(data, "ended_at", parser.parse)
+        self.ended_at: Optional[datetime] = get_optional(data, "ended_at", fromisoformat)
         self.hide_incomplete_results: bool = get_required(data, "hide_incomplete_results")
-        self.last_vote_at: Optional[datetime] = get_optional(data, "last_vote_at", parser.parse)
+        self.last_vote_at: Optional[datetime] = get_optional(data, "last_vote_at", fromisoformat)
         self.max_votes: int = get_required(data, "max_votes")
         self.options: List[PollOption] = list(map(PollOption, get_required(data, "options")))
-        self.started_at: datetime = parser.parse(get_required(data, "started_at"))
+        self.started_at: datetime = fromisoformat(get_required(data, "started_at"))
         self.title: TextFormat = TextFormat(get_required(data, "title"))
         self.total_vote_count: int = get_required(data, "total_vote_count")
 

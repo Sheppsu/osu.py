@@ -1,7 +1,6 @@
-from dateutil import parser
 from typing import Optional, TYPE_CHECKING, Union
 
-from ..util import prettify, get_optional, get_required
+from ..util import prettify, get_optional, get_required, fromisoformat
 from ..enums import (
     NotificationCategory,
     ObjectType,
@@ -124,7 +123,7 @@ class Notification:
     def __init__(self, data):
         self.id: int = get_required(data, "id")
         self.name: NotificationType = NotificationType(get_required(data, "name"))
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
         self.object_type: ObjectType = ObjectType(get_required(data, "object_type"))
         self.object_id: int = get_required(data, "object_id")
         self.source_user_id: Optional[int] = data.get("source_user_id")

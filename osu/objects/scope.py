@@ -20,7 +20,9 @@ class Scope:
 
     __slots__ = ("scopes", "scopes_list")
     valid_scopes = [
+        "chat.read",
         "chat.write",
+        "chat.write_manage",
         "delegate",
         "forum.write",
         "friends.read",

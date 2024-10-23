@@ -1,8 +1,7 @@
-from dateutil import parser
 from typing import TYPE_CHECKING, List
 
 from .user import UserCompact
-from ..util import prettify, get_required
+from ..util import prettify, get_required, fromisoformat
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -24,7 +23,7 @@ class SeasonalBackgrounds:
     __slots__ = ("ends_at", "backgrounds")
 
     def __init__(self, data):
-        self.ends_at: datetime = parser.parse(get_required(data, "ends_at"))
+        self.ends_at: datetime = fromisoformat(get_required(data, "ends_at"))
         self.backgrounds: List[SeasonalBackground] = list(map(SeasonalBackground, get_required(data, "backgrounds")))
 
     def __repr__(self):

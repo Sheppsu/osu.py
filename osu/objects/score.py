@@ -1,11 +1,10 @@
-from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING, Union, Dict
 
 from .beatmap import BeatmapCompact, BeatmapsetCompact, Beatmap
 from .user import UserCompact
 from .current_user_attributes import ScoreUserAttributes
 from ..enums import GameModeStr, GameModeInt, Mods, Mod, ObjectType, ScoreRank
-from ..util import prettify, get_optional, get_required
+from ..util import prettify, get_optional, get_required, fromisoformat
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -138,7 +137,7 @@ class LegacyScore:
         self.passed: bool = get_required(data, "passed")
         self.pp: float = get_required(data, "pp")
         self.rank: ScoreRank = ScoreRank(get_required(data, "rank"))
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
         self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
         self.mode_int: GameModeInt = GameModeInt(get_required(data, "mode_int"))
         self.has_replay: bool = get_required(data, "replay")
@@ -260,7 +259,7 @@ class SoloScore:
     def __init__(self, data):
         self.accuracy: float = get_required(data, "accuracy")
         self.beatmap_id: int = get_required(data, "beatmap_id")
-        self.ended_at: datetime = parser.parse(get_required(data, "ended_at"))
+        self.ended_at: datetime = fromisoformat(get_required(data, "ended_at"))
         self.max_combo: int = get_required(data, "max_combo")
         self.maximum_statistics: ScoreDataStatistics = ScoreDataStatistics(get_required(data, "maximum_statistics"))
         self.mods: List[LazerMod] = list(map(LazerMod, get_required(data, "mods")))
@@ -281,7 +280,7 @@ class SoloScore:
         self.build_id: Optional[int] = data.get("build_id")
         self.legacy_score_id: Optional[int] = data.get("legacy_score_id")
         self.legacy_total_score: Optional[int] = data.get("legacy_total_score")
-        self.started_at: Optional[datetime] = get_optional(data, "started_at", parser.parse)
+        self.started_at: Optional[datetime] = get_optional(data, "started_at", fromisoformat)
         self.current_user_attributes: Optional[ScoreUserAttributes] = get_optional(
             data, "current_user_attributes", ScoreUserAttributes
         )

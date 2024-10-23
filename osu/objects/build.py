@@ -1,7 +1,6 @@
-from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_optional_list, get_required
+from ..util import prettify, get_optional, get_optional_list, get_required, fromisoformat
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -41,7 +40,7 @@ class Build:
     )
 
     def __init__(self, data):
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
         self.display_version: str = get_required(data, "display_version")
         self.id: int = get_required(data, "id")
         self.update_stream: Optional[UpdateStream] = get_optional(data, "update_stream", UpdateStream)
@@ -168,7 +167,7 @@ class ChangelogEntry:
 
     def __init__(self, data):
         self.category: str = get_required(data, "category")
-        self.created_at: Optional[datetime] = get_optional(data, "created_at", parser.parse)
+        self.created_at: Optional[datetime] = get_optional(data, "created_at", fromisoformat)
         self.github_pull_request_id: Optional[int] = get_required(data, "github_pull_request_id")
         self.github_url: Optional[str] = get_required(data, "github_url")
         self.id: Optional[int] = get_required(data, "id")

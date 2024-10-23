@@ -1,11 +1,10 @@
-from dateutil import parser
 from typing import TYPE_CHECKING, List, Optional, NamedTuple
 import math
 from collections import namedtuple
 
 from .group import UserGroup
 from .forum import TextFormat
-from ..util import prettify, get_optional, get_optional_list, get_required
+from ..util import prettify, get_optional, get_optional_list, get_required, fromisoformat
 from ..enums import GameModeStr, UserAccountHistoryType, UserRelationType
 
 
@@ -224,7 +223,7 @@ class UserCompact:
         self.is_deleted: bool = get_required(data, "is_deleted")
         self.is_online: bool = get_required(data, "is_online")
         self.is_supporter: bool = get_required(data, "is_supporter")
-        self.last_visit: Optional[datetime] = get_optional(data, "last_visit", parser.parse)
+        self.last_visit: Optional[datetime] = get_optional(data, "last_visit", fromisoformat)
         self.pm_friends_only: bool = get_required(data, "pm_friends_only")
         self.profile_colour: Optional[str] = get_required(data, "profile_colour")
         self.username: str = get_required(data, "username")
@@ -382,7 +381,7 @@ class User(UserCompact):
         self.discord: Optional[str] = get_required(data, "discord")
         self.has_supported: bool = get_required(data, "has_supported")
         self.interests: Optional[str] = get_required(data, "interests")
-        self.join_date: datetime = parser.parse(get_required(data, "join_date"))
+        self.join_date: datetime = fromisoformat(get_required(data, "join_date"))
         self.kudosu: UserKudosu = UserKudosu(get_required(data, "kudosu"))
         self.location: Optional[str] = get_required(data, "location")
         self.max_blocks: int = get_required(data, "max_blocks")
@@ -516,6 +515,8 @@ class ProfileBanner:
 
 class UserSilence:
     """
+    A record indicating a :class:`User` was silenced.
+
     **Attributes**
 
     id: :class:`int`
@@ -574,7 +575,7 @@ class UserAccountHistory:
         self.length: int = get_required(data, "length")
         self.permanent: bool = get_required(data, "permanent")
         self.supporting_url: Optional[str] = data.get("supporting_url")
-        self.timestamp: datetime = parser.parse(get_required(data, "timestamp"))
+        self.timestamp: datetime = fromisoformat(get_required(data, "timestamp"))
         self.type: UserAccountHistoryType = UserAccountHistoryType(get_required(data, "type"))
 
     def __repr__(self):
@@ -599,7 +600,7 @@ class UserBadge:
     __slots__ = ("awarded_at", "description", "image_url", "image_2x_url", "url")
 
     def __init__(self, data):
-        self.awarded_at: datetime = parser.parse(get_required(data, "awarded_at"))
+        self.awarded_at: datetime = fromisoformat(get_required(data, "awarded_at"))
         self.description: str = get_required(data, "description")
         self.image_url: str = get_required(data, "image_url")
         self.image_2x_url = data["image@2x_url"]
@@ -623,7 +624,7 @@ class UserMonthlyPlaycount:
     __slots__ = ("start_date", "count")
 
     def __init__(self, data):
-        self.start_date: date = parser.parse(get_required(data, "start_date")).date()
+        self.start_date: date = fromisoformat(get_required(data, "start_date")).date()
         self.count: int = get_required(data, "count")
 
     def __repr__(self):
@@ -858,7 +859,7 @@ class RankHighest:
 
     def __init__(self, data):
         self.rank: int = get_required(data, "rank")
-        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.updated_at: datetime = fromisoformat(get_required(data, "updated_at"))
 
     def __repr__(self):
         return prettify(self, "rank", "updated_at")
@@ -878,7 +879,7 @@ class UserAchievement:
     __slots__ = ("achieved_at", "achievement_id")
 
     def __init__(self, data):
-        self.achieved_at: datetime = parser.parse(get_required(data, "achieved_at"))
+        self.achieved_at: datetime = fromisoformat(get_required(data, "achieved_at"))
         self.achievement_id: int = get_required(data, "achievement_id")
 
     def __repr__(self):
@@ -899,7 +900,7 @@ class UserReplaysWatchedCount:
     __slots__ = ("start_date", "count")
 
     def __init__(self, data):
-        self.start_date: datetime = parser.parse(get_required(data, "start_date"))
+        self.start_date: datetime = fromisoformat(get_required(data, "start_date"))
         self.count: int = get_required(data, "count")
 
     def __repr__(self):
@@ -1040,8 +1041,8 @@ class DailyChallengeUserStats:
     def __init__(self, data):
         self.daily_streak_best: int = get_required(data, "daily_streak_best")
         self.daily_streak_current: int = get_required(data, "daily_streak_current")
-        self.last_update: Optional[datetime] = get_optional(data, "last_update", parser.parse)
-        self.last_weekly_streak: Optional[datetime] = get_optional(data, "last_weekly_streak", parser.parse)
+        self.last_update: Optional[datetime] = get_optional(data, "last_update", fromisoformat)
+        self.last_weekly_streak: Optional[datetime] = get_optional(data, "last_weekly_streak", fromisoformat)
         self.playcount: int = get_required(data, "playcount")
         self.top_10p_placements: int = get_required(data, "top_10p_placements")
         self.top_50p_placements: int = get_required(data, "top_50p_placements")

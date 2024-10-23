@@ -1,8 +1,7 @@
-from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
 from ..enums import GameModeStr, BeatmapsetEventType
-from ..util import prettify, get_required
+from ..util import prettify, get_required, fromisoformat
 from .discussion import BeatmapsetDiscussion
 from .beatmap import BeatmapsetCompact
 
@@ -84,7 +83,7 @@ class BeatmapsetEvent:
         self.comment: Optional[BeatmapsetEventComment] = get_required(data, "comment")
         if self.comment is not None:
             self.comment = BeatmapsetEventComment(self.comment, self.type)  # type: ignore
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
         self.user_id: Optional[int] = data.get("user_id")
         self.beatmapset: Optional[BeatmapsetCompact] = (
             BeatmapsetCompact(get_required(data, "beatmapset")) if data.get("beatmapset") is not None else None

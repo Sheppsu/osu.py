@@ -1,7 +1,6 @@
-from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_optional_list, get_required
+from ..util import prettify, get_optional, get_optional_list, get_required, fromisoformat
 from ..enums import ChatChannelType, ChatMessageType
 from .current_user_attributes import ChatChannelUserAttributes
 from .user import UserCompact
@@ -132,7 +131,7 @@ class ChatMessage:
         self.is_action: bool = get_required(data, "is_action")
         self.message_id: int = get_required(data, "message_id")
         self.sender_id: int = get_required(data, "sender_id")
-        self.timestamp: datetime = parser.parse(get_required(data, "timestamp"))
+        self.timestamp: datetime = fromisoformat(get_required(data, "timestamp"))
         self.type: ChatMessageType = ChatMessageType(get_required(data, "type"))
         self.uuid: Optional[str] = data.get("uuid")
         self.sender: Optional[UserCompact] = get_optional(data, "sender", UserCompact)

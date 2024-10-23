@@ -1,9 +1,8 @@
-from dateutil import parser
 from typing import Dict, Optional, List, TYPE_CHECKING
 
 from .beatmap import Beatmapset
 from .user import UserStatistics
-from ..util import prettify, get_optional, get_optional_list, get_required
+from ..util import prettify, get_optional, get_optional_list, get_required, fromisoformat
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -82,12 +81,12 @@ class Spotlight:
     )
 
     def __init__(self, data):
-        self.end_date: datetime = parser.parse(get_required(data, "end_date"))
+        self.end_date: datetime = fromisoformat(get_required(data, "end_date"))
         self.id: int = get_required(data, "id")
         self.mode_specific: bool = get_required(data, "mode_specific")
         self.participant_count: Optional[int] = data.get("participant_count")
         self.name: str = get_required(data, "name")
-        self.start_date: datetime = parser.parse(get_required(data, "start_date"))
+        self.start_date: datetime = fromisoformat(get_required(data, "start_date"))
         self.type: str = get_required(data, "type")
 
     def __repr__(self):

@@ -15,7 +15,17 @@ from .enums import (
     ObjectType,
 )
 from typing import Any, Sequence, Union, Optional, TypeVar, List, Callable, Dict
+from datetime import datetime, timezone
 import os
+import re
+
+
+__all__ = (
+    "BeatmapsetSearchFilter",
+    "PlaylistItemUtil",
+    "NotificationsUtil",
+    "IdentitiesUtil"
+)
 
 
 _T = TypeVar("_T")
@@ -404,3 +414,31 @@ else:
 
     def get_required(data: Dict[str, _V], key: str):
         return data[key]
+
+
+ISO_RE = re.compile(r"(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})Z")
+
+
+def fromisoformat(timestamp: str) -> datetime:
+    if timestamp is None:
+        raise TypeError("timestamp cannot be None")
+
+    try:
+        match = ISO_RE.match(timestamp)
+        if match is None:
+            return datetime.fromisoformat(timestamp)
+
+        year, month, day, hour, minute, second = match.groups()
+        return datetime(
+            year=int(year),
+            month=int(month),
+            day=int(day),
+            hour=int(hour),
+            minute=int(minute),
+            second=int(second),
+            tzinfo=timezone.utc
+        )
+
+    # just in case
+    except ValueError:
+        return datetime.fromisoformat(timestamp)

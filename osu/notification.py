@@ -1,6 +1,6 @@
 import asyncio
 import json
-from dateutil import parser
+
 import traceback
 
 from .objects import Notification, ChatChannel, UserCompact, ChatMessage
@@ -198,7 +198,7 @@ class NotificationWebsocket:
         if hasattr(self, "on_read"):
             data = event["data"]
             notifications = list(map(lambda notification: notification["id"], data["notifications"]))
-            timestamp = parser.parse(data["timestamp"])
+            timestamp = fromisoformat(data["timestamp"])
             await self.on_read(notifications, timestamp)
 
     async def _on_chat_channel_join(self, event):

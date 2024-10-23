@@ -1,7 +1,6 @@
-from dateutil import parser
 from typing import Optional, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_required
+from ..util import prettify, get_optional, get_required, fromisoformat
 from ..enums import KudosuAction, ObjectType
 
 
@@ -38,7 +37,7 @@ class KudosuHistory:
         self.action: KudosuAction = KudosuAction(get_required(data, "action"))
         self.amount: int = get_required(data, "amount")
         self.model: ObjectType = ObjectType(get_required(data, "model"))
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
         self.giver: Optional[KudosuGiver] = get_optional(data, "giver", KudosuGiver)
         self.post: KudosuPost = KudosuPost(get_required(data, "post"))
 

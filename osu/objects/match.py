@@ -1,4 +1,3 @@
-from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
 from ..enums import (
@@ -9,7 +8,7 @@ from ..enums import (
     TeamType,
     Mods,
 )
-from ..util import prettify, get_optional, get_required
+from ..util import prettify, get_optional, get_required, fromisoformat
 from .user import UserCompact
 from .beatmap import BeatmapCompact
 from .score import LegacyScore
@@ -39,8 +38,8 @@ class Match:
     def __init__(self, data):
         self.id: int = get_required(data, "id")
         self.name: str = get_required(data, "name")
-        self.start_time: Optional[datetime] = get_optional(data, "start_time", parser.parse)
-        self.end_time: Optional[datetime] = get_optional(data, "end_time", parser.parse)
+        self.start_time: Optional[datetime] = get_optional(data, "start_time", fromisoformat)
+        self.end_time: Optional[datetime] = get_optional(data, "end_time", fromisoformat)
 
     def __repr__(self):
         return prettify(self, "name", "start_time")
@@ -106,7 +105,7 @@ class MatchEvent:
 
     def __init__(self, data):
         self.id: int = get_required(data, "id")
-        self.timestamp: datetime = parser.parse(get_required(data, "timestamp"))
+        self.timestamp: datetime = fromisoformat(get_required(data, "timestamp"))
         self.user_id: int = get_required(data, "user_id")
         self.type: MatchEventType = MatchEventType(get_required(data, "detail")["type"])
         self.text: Optional[str] = (
@@ -165,8 +164,8 @@ class MatchGame:
     def __init__(self, data):
         self.beatmap_id: int = get_required(data, "beatmap_id")
         self.id: int = get_required(data, "id")
-        self.start_time: datetime = parser.parse(get_required(data, "start_time"))
-        self.end_time: Optional[datetime] = get_optional(data, "end_time", parser.parse)
+        self.start_time: datetime = fromisoformat(get_required(data, "start_time"))
+        self.end_time: Optional[datetime] = get_optional(data, "end_time", fromisoformat)
         self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
         self.mode_int: GameModeInt = GameModeInt(get_required(data, "mode_int"))
         self.scoring_type: ScoringType = ScoringType(get_required(data, "scoring_type"))

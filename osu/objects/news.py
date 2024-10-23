@@ -1,7 +1,6 @@
-from dateutil import parser
 from typing import Optional, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_required
+from ..util import prettify, get_optional, get_required, fromisoformat
 
 if TYPE_CHECKING:
     from datetime import datetime
@@ -59,10 +58,10 @@ class NewsPost:
         self.edit_url: str = get_required(data, "edit_url")
         self.first_image: Optional[str] = get_required(data, "first_image")
         self.id: int = get_required(data, "id")
-        self.published_at: datetime = parser.parse(get_required(data, "published_at"))
+        self.published_at: datetime = fromisoformat(get_required(data, "published_at"))
         self.slug: str = get_required(data, "slug")
         self.title: str = get_required(data, "title")
-        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.updated_at: datetime = fromisoformat(get_required(data, "updated_at"))
         self.content: Optional[str] = data.get("content")
         self.navigation: Optional[Navigation] = get_optional(data, "navigation", Navigation)
         self.preview: Optional[str] = data.get("preview")

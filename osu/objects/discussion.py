@@ -1,7 +1,6 @@
-from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING, Union
 
-from ..util import prettify, get_optional, get_optional_list, get_required
+from ..util import prettify, get_optional, get_optional_list, get_required, fromisoformat
 from ..enums import MessageType
 from .current_user_attributes import BeatmapsetDiscussionPermissions
 from .beatmap import BeatmapCompact, BeatmapsetCompact
@@ -92,17 +91,17 @@ class BeatmapsetDiscussion:
         self.beatmapset_id: int = get_required(data, "beatmapset_id")
         self.can_be_resolved: bool = get_required(data, "can_be_resolved")
         self.can_grant_kudosu: bool = get_required(data, "can_grant_kudosu")
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
-        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
+        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", fromisoformat)
         self.deleted_by_id: Optional[int] = get_required(data, "deleted_by_id")
         self.id: int = get_required(data, "id")
         self.kudosu_denied: bool = get_required(data, "kudosu_denied")
-        self.last_post_at: datetime = parser.parse(get_required(data, "last_post_at"))
+        self.last_post_at: datetime = fromisoformat(get_required(data, "last_post_at"))
         self.message_type: MessageType = MessageType(get_required(data, "message_type"))
         self.parent_id: Optional[int] = get_required(data, "parent_id")
         self.resolved: bool = get_required(data, "resolved")
         self.timestamp: Optional[int] = data.get("timestamp")
-        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.updated_at: datetime = fromisoformat(get_required(data, "updated_at"))
         self.user_id: int = get_required(data, "user_id")
 
         self.beatmap: Optional[BeatmapCompact] = get_optional(data, "beatmap", BeatmapCompact)
@@ -212,12 +211,12 @@ class BeatmapsetDiscussionPost:
 
     def __init__(self, data):
         self.beatmapset_discussion_id: int = get_required(data, "beatmapset_discussion_id")
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
-        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
+        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", fromisoformat)
         self.deleted_by_id: Optional[int] = data.get("deleted_by_id")
         self.id: int = get_required(data, "id")
         self.last_editor_id: Optional[int] = data.get("last_editor_id")
-        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.updated_at: datetime = fromisoformat(get_required(data, "updated_at"))
         self.user_id: int = get_required(data, "user_id")
 
         self.system: bool = get_required(data, "system")
@@ -281,10 +280,10 @@ class BeatmapsetDiscussionVote:
 
     def __init__(self, data):
         self.beatmapset_discussion_id: int = get_required(data, "beatmapset_discussion_id")
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
         self.id: int = get_required(data, "id")
         self.score: int = get_required(data, "score")
-        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.updated_at: datetime = fromisoformat(get_required(data, "updated_at"))
         self.user_id: int = get_required(data, "user_id")
 
     def __repr__(self):

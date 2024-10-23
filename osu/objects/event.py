@@ -1,7 +1,6 @@
-from dateutil import parser
 from typing import Optional, TYPE_CHECKING, Union
 
-from ..util import prettify, get_required
+from ..util import prettify, get_required, fromisoformat
 from ..enums import GameModeStr, RankStatus
 from .achievement import Achievement
 
@@ -25,7 +24,7 @@ class Event:
     """
 
     def __init__(self, data):
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
         self.id: int = get_required(data, "id")
 
 

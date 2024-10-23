@@ -1,7 +1,6 @@
-from dateutil import parser
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_required
+from ..util import prettify, get_optional, get_required, fromisoformat
 from ..enums import CommentSort
 from .user import UserCompact
 from .current_user_attributes import CommentableMetaAttributes
@@ -94,10 +93,10 @@ class Comment:
     def __init__(self, data):
         self.commentable_id: int = get_required(data, "commentable_id")
         self.commentable_type: str = get_required(data, "commentable_type")
-        self.created_at: datetime = parser.parse(get_required(data, "created_at"))
-        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
+        self.created_at: datetime = fromisoformat(get_required(data, "created_at"))
+        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", fromisoformat)
         self.deleted_by_id: Optional[int] = data.get("deleted_by_id")
-        self.edited_at: Optional[datetime] = get_optional(data, "edited_at", parser.parse)
+        self.edited_at: Optional[datetime] = get_optional(data, "edited_at", fromisoformat)
         self.edited_by_id: Optional[int] = get_required(data, "edited_by_id")
         self.id: int = get_required(data, "id")
         self.legacy_name: Optional[str] = get_required(data, "legacy_name")
@@ -106,7 +105,7 @@ class Comment:
         self.parent_id: Optional[int] = get_required(data, "parent_id")
         self.pinned: bool = get_required(data, "pinned")
         self.replies_count: int = get_required(data, "replies_count")
-        self.updated_at: datetime = parser.parse(get_required(data, "updated_at"))
+        self.updated_at: datetime = fromisoformat(get_required(data, "updated_at"))
         self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
         self.user_id: int = get_required(data, "user_id")
         self.votes_count: int = get_required(data, "votes_count")

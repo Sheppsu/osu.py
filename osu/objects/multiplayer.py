@@ -1,4 +1,3 @@
-from dateutil import parser
 from typing import Dict, Optional, List, TYPE_CHECKING, Union
 
 from ..enums import (
@@ -8,7 +7,7 @@ from ..enums import (
     RoomCategory,
     RoomType,
 )
-from ..util import prettify, get_optional, get_optional_list, get_required
+from ..util import prettify, get_optional, get_optional_list, get_required, fromisoformat
 from .user import UserCompact
 from .beatmap import BeatmapCompact
 from .score import ScoreDataStatistics, LazerMod
@@ -238,8 +237,8 @@ class Room:
         self.category: RoomCategory = RoomCategory(get_required(data, "category"))
         self.type: RoomType = RoomType(get_required(data, "type"))
         self.user_id: int = get_required(data, "user_id")
-        self.starts_at: datetime = parser.parse(get_required(data, "starts_at"))
-        self.ends_at: Optional[datetime] = get_optional(data, "ends_at", parser.parse)
+        self.starts_at: datetime = fromisoformat(get_required(data, "starts_at"))
+        self.ends_at: Optional[datetime] = get_optional(data, "ends_at", fromisoformat)
         self.max_attempts: Optional[int] = get_required(data, "max_attempts")
         self.participant_count: int = get_required(data, "participant_count")
         self.channel_id: Optional[int] = get_required(data, "channel_id")
@@ -400,7 +399,7 @@ class PlaylistItem:
         self.expired: bool = get_required(data, "expired")
         self.owner_id: int = get_required(data, "owner_id")
         self.playlist_order: Optional[int] = get_required(data, "playlist_order")
-        self.played_at: Optional[datetime] = get_optional(data, "played_at", parser.parse)
+        self.played_at: Optional[datetime] = get_optional(data, "played_at", fromisoformat)
         self.beatmap: Optional[BeatmapCompact] = get_optional(data, "beatmap", BeatmapCompact)
 
     def __repr__(self):

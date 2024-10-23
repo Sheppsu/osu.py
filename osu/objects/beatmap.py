@@ -1,8 +1,7 @@
-from dateutil import parser
 from typing import Dict, Optional, List, Union, TYPE_CHECKING
 
 from ..enums import RankStatus, GameModeStr, GameModeInt
-from ..util import prettify, get_optional, get_optional_list, get_required
+from ..util import prettify, get_optional, get_optional_list, get_required, fromisoformat
 from .user import UserCompact
 from .current_user_attributes import BeatmapsetPermissions
 
@@ -255,19 +254,19 @@ class Beatmapset(BeatmapsetCompact):
         self.beatmaps: Optional[List[Beatmap]] = get_optional_list(data, "beatmaps", Beatmap)
         self.bpm: float = get_required(data, "bpm")
         self.can_be_hyped: bool = get_required(data, "can_be_hyped")
-        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
+        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", fromisoformat)
         self.discussion_enabled: bool = True  # Deprecated, all beatmapset discussions are enabled
         self.discussion_locked: bool = get_required(data, "discussion_locked")
         self.is_scoreable: bool = get_required(data, "is_scoreable")
-        self.last_updated: Optional[datetime] = get_optional(data, "last_updated", parser.parse)
+        self.last_updated: Optional[datetime] = get_optional(data, "last_updated", fromisoformat)
         self.legacy_thread_url: Optional[str] = get_required(data, "legacy_thread_url")
         self.nominations_summary: BeatmapsetRequirement = BeatmapsetRequirement(
             get_required(data, "nominations_summary")
         )
         self.ranked: RankStatus = RankStatus(get_required(data, "ranked"))
-        self.ranked_date: Optional[datetime] = get_optional(data, "ranked_date", parser.parse)
+        self.ranked_date: Optional[datetime] = get_optional(data, "ranked_date", fromisoformat)
         self.storyboard: bool = get_required(data, "storyboard")
-        self.submitted_date: Optional[datetime] = get_optional(data, "submitted_date", parser.parse)
+        self.submitted_date: Optional[datetime] = get_optional(data, "submitted_date", fromisoformat)
         self.tags: str = get_required(data, "tags")
 
 
@@ -423,11 +422,11 @@ class Beatmap(BeatmapCompact):
         self.count_sliders: int = get_required(data, "count_sliders")
         self.count_spinners: int = get_required(data, "count_spinners")
         self.cs: float = get_required(data, "cs")
-        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", parser.parse)
+        self.deleted_at: Optional[datetime] = get_optional(data, "deleted_at", fromisoformat)
         self.drain: float = get_required(data, "drain")
         self.hit_length: int = get_required(data, "hit_length")
         self.is_scoreable: bool = get_required(data, "is_scoreable")
-        self.last_updated: datetime = parser.parse(get_required(data, "last_updated"))
+        self.last_updated: datetime = fromisoformat(get_required(data, "last_updated"))
         self.mode_int: GameModeInt = GameModeInt(get_required(data, "mode_int"))
         self.passcount: int = get_required(data, "passcount")
         self.playcount: int = get_required(data, "playcount")
