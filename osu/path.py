@@ -85,10 +85,6 @@ class Path:
         return cls("get", f"changelog/{changelog}", None)
 
     @classmethod
-    def create_new_pm(cls):
-        return cls("post", "chat/new", "chat.write", True)
-
-    @classmethod
     def get_comments(cls):
         return cls("get", "comments", None)
 
@@ -231,3 +227,43 @@ class Path:
     @classmethod
     def beatmapset_search(cls):
         return cls("get", "beatmapsets/search", "public")
+
+    @classmethod
+    def chat_keepalive(cls):
+        return cls("post", "chat/ack", "chat.read", True)
+
+    @classmethod
+    def create_new_pm(cls):
+        return cls("post", "chat/new", "chat.write", True)
+
+    @classmethod
+    def get_channel_messages(cls, channel_id):
+        return cls("get", f"chat/channels/{channel_id}/messages", "chat.read", True)
+
+    @classmethod
+    def send_message_to_channel(cls, channel_id):
+        return cls("post", f"chat/channels/{channel_id}/messages", "chat.write", True)
+
+    @classmethod
+    def join_channel(cls, channel_id, user_id):
+        return cls("put", f"chat/channels/{channel_id}/users/{user_id}", "chat.write_manage", True)
+
+    @classmethod
+    def leave_channel(cls, channel_id, user_id):
+        return cls("delete", f"chat/channels/{channel_id}/users/{user_id}", "chat.write_manage", True)
+
+    @classmethod
+    def mark_channel_read(cls, channel_id, message_id):
+        return cls("put", f"chat/channels/{channel_id}/mark-as-read/{message_id}", "chat.read", True)
+
+    @classmethod
+    def get_channel_list(cls):
+        return cls("get", "chat/channels", "chat.read", True)
+
+    @classmethod
+    def create_channel(cls):
+        return cls("post", "chat/channels", "chat.write_manage", True)
+
+    @classmethod
+    def get_channel(cls, channel_id):
+        return cls("get", f"chat/channels/{channel_id}", "chat.read", True)
