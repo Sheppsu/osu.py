@@ -1,5 +1,6 @@
 # Test file stuff
 auth.json
+dev-auth.json
 test_venv/
 test.py
 
