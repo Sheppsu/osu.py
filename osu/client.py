@@ -42,6 +42,10 @@ class Client:
 
         This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
 
+    api_version: Optional[:class:`str`]
+        This parameter is here purely to expose the option.
+        You likely don't need to mess with this.
+
     Make sure if you are changing the ratelimit handling that you are still following peppy's
     TOU for using the API:
 
@@ -58,9 +62,14 @@ class Client:
     __slots__ = ("http",)
 
     def __init__(
-        self, auth: Optional[BaseAuthHandler] = None, request_wait_time: float = 1.0, limit_per_minute: int = 60
+        self,
+        auth: Optional[BaseAuthHandler] = None,
+        request_wait_time: float = 1.0,
+        limit_per_minute: int = 60,
+        api_version: Optional[str] = None,
     ):
-        self.http = HTTPHandler(auth, request_wait_time, limit_per_minute)
+        self.http = HTTPHandler(auth, request_wait_time, limit_per_minute, api_version)
+        self.set_domain(auth.domain)
 
     @property
     def auth(self) -> Optional[BaseAuthHandler]:
@@ -144,6 +153,16 @@ class Client:
             x-api-version header value in the format yyyymmdd
         """
         self.http.api_version = version
+
+    def set_domain(self, domain: str) -> None:
+        """
+        Set domain to use for requests, such as "dev.ppy.sh"
+
+        **Parameters**
+
+        domain: :class:`str`
+        """
+        self.http.set_domain(domain)
 
     def lookup_beatmap(
         self,
@@ -727,42 +746,6 @@ class Client:
             )
         )
 
-    def create_new_pm(
-        self, target_id: int, message: str, is_action: bool, uuid: Optional[str] = None
-    ) -> CreateNewPmResult:
-        """
-        This endpoint allows you to create a new PM channel.
-
-        Requires OAuth, scope chat.write, and a user (authorization code grant, delegate scope)
-
-        **Parameters**
-
-        target_id: :class:`int`
-            user_id of user to start PM with
-
-        message: :class:`str`
-            message to send
-
-        is_action: :class:`bool`
-            whether the message is an action
-
-        uuid: Optional[:class:`str`]
-            client-side message identifier which will be sent back in response and websocket json.
-
-        **Returns**
-
-        :class:`CreateNewPmResult`
-        """
-        data = {"target_id": target_id, "message": message, "is_action": is_action}
-        if uuid is not None:
-            data["uuid"] = uuid
-        resp = self.http.make_request(Path.create_new_pm(), files=create_multipart_formdata(data))
-        return CreateNewPmResult(
-            ChatChannel(resp["channel"]),
-            ChatMessage(resp["message"]),
-            resp["new_channel_id"],
-        )
-
     def get_comments(
         self,
         commentable_type: Optional[Union[ObjectType, str]] = None,
@@ -840,7 +823,7 @@ class Client:
         """
         Create a post replying to the specified topic.
 
-        Requires OAuth, scope forum.write, and a user (authorization code grant, delegate scope)
+        Requires OAuth, scope forum.write, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -867,14 +850,14 @@ class Client:
         hide_results: Optional[bool] = None,
         length_days: Optional[int] = None,
         max_options: Optional[int] = None,
-        poll_options: Optional[str] = None,
+        poll_options: Optional[List[str]] = None,
         poll_title: Optional[str] = None,
         vote_change: Optional[bool] = None,
     ) -> CreateTopicResult:
         """
         Create a new topic.
 
-        Requires OAuth, scope forum.write, and a user (authorization code grant, delegate scope)
+        Requires OAuth, scope forum.write, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -900,8 +883,8 @@ class Client:
         max_options: Optional[:class:`int`]
             Maximum number of votes each user can cast (default: 1).
 
-        poll_options: Optional[:class:`str`]
-            Newline-separated list of voting options. BBCode is supported.
+        poll_options: Optional[List[:class:`str`]]
+            List of voting options. BBCode is supported.
 
         poll_title: Optional[:class:`str`]
             Title of the poll.
@@ -922,16 +905,17 @@ class Client:
         if with_poll:
             if poll_options is None or poll_title is None:
                 raise TypeError("poll_options and poll_title are required since the topic has a poll.")
-            data.update(
-                {
-                    "forum_topic_poll[hide_results]": hide_results,
-                    "forum_topic_poll[length_days]": length_days,
-                    "forum_topic_poll[max_options]": max_options,
-                    "forum_topic_poll[poll_options]": poll_options,
-                    "forum_topic_poll[poll_title]": poll_title,
-                    "forum_topic_poll[vote_change]": vote_change,
-                }
-            )
+            for k, v in {
+                "forum_topic_poll[hide_results]": hide_results,
+                "forum_topic_poll[length_days]": length_days,
+                "forum_topic_poll[max_options]": max_options,
+                "forum_topic_poll[poll_options]": "\n".join(poll_options) if poll_options is not None else None,
+                "forum_topic_poll[poll_title]": poll_title,
+                "forum_topic_poll[vote_change]": vote_change,
+            }.items():
+                if v is not None:
+                    data[k] = v
+
         resp = self.http.make_request(Path.create_topic(), files=create_multipart_formdata(data))
         return CreateTopicResult(ForumTopic(resp["topic"]), ForumPost(resp["post"]))
 
@@ -1072,7 +1056,7 @@ class Client:
         cursor: Optional[str] = None,
     ) -> MultiplayerScores:
         """
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope)
+        Requires OAuth, scope public, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -1234,7 +1218,7 @@ class Client:
         """
         Similar to get_user but with authenticated user (token owner) as user id.
 
-        Requires OAuth, scope identify, and a user (authorization code grant, delegate scope)
+        Requires OAuth, scope identify, and a user (authorization code grant or delegate scope)
 
         **Parameters**
 
@@ -1610,7 +1594,7 @@ class Client:
         """
         Returns a list of rooms.
 
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope).
+        Requires OAuth, scope public, and a user (authorization code grant or delegate scope).
 
         **Parameters**
 
@@ -1750,7 +1734,7 @@ class Client:
         key contain the "user" attribute. The :class:`UserScoreAggregate` object under the "user_score" key
         contains the "user" and "position" attributes.
 
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope).
+        Requires OAuth, scope public, and a user (authorization code grant or delegate scope).
 
         **Parameters**
 
@@ -1772,7 +1756,7 @@ class Client:
         Returns replay data for a score. Use :func:`Client.get_replay_data_by_id_only` for only the id, or specify
         None to the mode attribute.
 
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope).
+        Requires OAuth, scope public, and a user (authorization code grant or delegate scope).
 
         Requires osu.py is installed with the 'replay' feature if use_osrparse is true.
 
@@ -1807,7 +1791,7 @@ class Client:
         Returns replay data for a score. Use :func:`Client.get_replay_data` for score ids that require
         specifying the game mode too.
 
-        Requires OAuth, scope public, and a user (authorization code grant, delegate scope).
+        Requires OAuth, scope public, and a user (authorization code grant or delegate scope).
 
         Requires osu.py is installed with the 'replay' feature if use_osrparse is true.
 
@@ -1835,10 +1819,272 @@ class Client:
         """
         Returns a list of friends.
 
-        Requires OAuth, scope friends.read, and a user (authorization code grant, delegate scope).
+        Requires OAuth, scope friends.read, and a user (authorization code grant or delegate scope).
 
         **Returns**
 
         List[:class:`UserCompact`]
         """
         return list(map(UserCompact, self.http.make_request(Path.get_friends())))
+
+    def chat_keepalive(self, history_since: Optional[int] = None, since: Optional[int] = None) -> List[UserSilence]:
+        """
+        Request periodically to reset chat activity timeout. Also returns an updated list of recent silences.
+
+        Requires OAuth, scope chat.read, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        history_since: Optional[:class:`int`]
+            :class:`UserSilence`s after the specified id to return.
+            This field is preferred and takes precedence over `since`.
+
+        since: Optional[:class:`int`]
+            :class:`UserSilence`s after the specified :class:`ChatMessage`.message_id to return.
+
+        **Returns**
+
+        List[:class:`UserSilence`]
+        """
+        return list(
+            map(
+                UserSilence,
+                self.http.make_request(Path.chat_keepalive(), history_since=history_since, since=since)["silences"],
+            )
+        )
+
+    def create_new_pm(
+        self, target_id: int, message: str, is_action: bool, uuid: Optional[str] = None
+    ) -> CreateNewPmResult:
+        """
+        This endpoint allows you to create a new PM channel.
+
+        Requires OAuth, scope chat.write, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        target_id: :class:`int`
+            user_id of user to start PM with
+
+        message: :class:`str`
+            message to send
+
+        is_action: :class:`bool`
+            whether the message is an action
+
+        uuid: Optional[:class:`str`]
+            client-side message identifier which will be sent back in response and websocket json.
+
+        **Returns**
+
+        :class:`CreateNewPmResult`
+        """
+        data = {"target_id": target_id, "message": message, "is_action": is_action}
+        if uuid is not None:
+            data["uuid"] = uuid
+        resp = self.http.make_request(Path.create_new_pm(), files=create_multipart_formdata(data))
+        return CreateNewPmResult(
+            ChatChannel(resp["channel"]),
+            ChatMessage(resp["message"]),
+            resp.get("new_channel_id"),
+        )
+
+    def get_channel_messages(
+        self, channel_id: int, limit: Optional[int] = None, since: Optional[int] = None, until: Optional[int] = None
+    ) -> List[ChatMessage]:
+        """
+        This endpoint returns the chat messages for a specific channel.
+
+        Requires OAuth, scope chat.read, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        channel_id: :class:`int`
+            The ID of the channel to retrieve messages for
+
+        limit: Optional[:class:`int`]
+            number of messages to return (max of 50)
+
+        since: Optional[:class:`int`]
+            messages after the specified message id will be returned
+
+        until: Optional[:class:`int`]
+            messages up to but not including the specified message id will be returned
+
+        **Returns**
+
+        List[:class:`ChatMessage`]
+        """
+        return list(
+            map(
+                ChatMessage,
+                self.http.make_request(Path.get_channel_messages(channel_id), limit=limit, since=since, until=until),
+            )
+        )
+
+    def send_message_to_channel(self, channel_id: int, message: str, is_action: bool) -> ChatMessage:
+        """
+        This endpoint sends and returns a chat messages for a specific channel.
+
+        Requires OAuth, scope chat.write, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        channel_id: :class:`int`
+            The id of the channel to send message to
+
+        message: class:`str`
+            message to send
+
+        is_action: :class:`bool`
+            whether the message is an action
+        """
+        return ChatMessage(
+            self.http.make_request(
+                Path.send_message_to_channel(channel_id),
+                files=create_multipart_formdata({"message": message, "is_action": is_action}),
+            )
+        )
+
+    def join_channel(self, channel_id: int, user_id: int) -> ChatChannel:
+        """
+        This endpoint allows you to join a public or multiplayer channel.
+
+        Requires OAuth, scope chat.write_manage, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        channel_id: :class:`int`
+            The id of the channel to join
+
+        user_id: :class:`int`
+            The id of the user to be joined
+
+        **Returns**
+
+        :class:`ChatChannel`
+        """
+        return ChatChannel(self.http.make_request(Path.join_channel(channel_id, user_id)))
+
+    def leave_channel(self, channel_id: int, user_id: int) -> None:
+        """
+        This endpoint allows you to leave a public channel.
+
+        Requires OAuth, scope chat.write_manage, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        channel_id: :class:`int`
+            The id of the channel to join
+
+        user_id: :class:`int`
+            The id of the user to be joined
+        """
+        self.http.make_request(Path.leave_channel(channel_id, user_id))
+
+    def mark_channel_as_read(self, channel_id: int, message_id: int) -> None:
+        """
+        This endpoint marks the channel as having being read up to the given `message_id`.
+
+        Requires OAuth, scope chat.read, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        channel_id: :class:`int`
+            id of the channel to mark as read
+
+        message_id: :class:`int`
+            most recent message to mark as read up to
+        """
+        self.http.make_request(Path.mark_channel_read(channel_id, message_id))
+
+    def get_channel_list(self) -> List[ChatChannel]:
+        """
+        This endpoint returns a list of all joinable public channels.
+
+        Requires OAuth, scope chat.read, and a user (authorization code grant or delegate scope)
+
+        **Returns**
+
+        List[:class:`ChatChannel`]
+        """
+        return list(map(ChatChannel, self.http.make_request(Path.get_channel_list())))
+
+    def create_pm_channel(self, user_id: int) -> ChatChannel:
+        """
+        Create PM channel with another user. Rejoins if it already exists.
+
+        Requires OAuth, scope chat.write_manage, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        user_id: :class:`int`
+            id of the user to open a PM channel with
+
+        **Returns**
+
+        :class:`ChatChannel` with `recent_message`
+        """
+        return ChatChannel(
+            self.http.make_request(
+                Path.create_channel(),
+                files=create_multipart_formdata({"target_id": user_id, "type": ChatChannelType.PM.value}),
+            )
+        )
+
+    def create_announcement_channel(
+        self, user_ids: List[int], message: str, name: str, description: str
+    ) -> ChatChannel:
+        """
+        Creates a new announcement channel.
+
+        Requires OAuth, scope chat.write_manage, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        target_ids: :class:`List[int]`
+            users to include in the channel
+
+        message: :class:`str`
+            message to send with the announcement
+
+        name: :class:`str`
+            the channel name
+
+        description: :class:`str`
+            the channel description
+
+        **Returns**
+
+        :class:`ChatChannel` with `recent_message`
+        """
+        return ChatChannel(
+            self.http.make_request(
+                Path.create_channel(),
+                files=create_multipart_formdata(
+                    {
+                        "target_ids": user_ids,
+                        "message": message,
+                        "channel": {"name": name, "description": description},
+                    }
+                ),
+            )
+        )
+
+    def get_channel(self, channel_id: int) -> GetChannelResult:
+        """
+        Get a channel by id
+
+        Requires OAuth, scope chat.read, and a user (authorization code grant or delegate scope)
+
+        **Parameters**
+
+        channel_id: :class:`int`
+            id of the channel to get
+
+        **Returns**
+
+        :class:`GetChannelResult`
+        """
+        ret = self.http.make_request(Path.get_channel(channel_id))
+        return GetChannelResult(ChatChannel(ret["channel"]), list(map(UserCompact, ret["users"])))
