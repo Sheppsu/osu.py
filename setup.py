@@ -49,12 +49,13 @@ packages = [
 ]
 
 setuptools.setup(
-    name="osu.py",
+    name="osu.pytest",
     version=version,
     packages=packages,
     author="Sheepposu",
     description="API Wrapper for osu!api v2 written in Python.",
     long_description=readme,
+    long_description_content_type="text/x-rst",
     install_requires=requirements,
     extras_require=extra_require,
     project_urls=project_urls,
