@@ -4,7 +4,7 @@ from time import monotonic
 from typing import Callable, Optional, Union
 from collections.abc import Awaitable
 
-from .constants import auth_url, token_url
+from .constants import DEFAULT_AUTH_URL, DEFAULT_TOKEN_URL, DEFAULT_DOMAIN, auth_url, token_url
 from .objects import Scope
 from .exceptions import ScopeException
 
@@ -13,9 +13,26 @@ __all__ = ("BaseAuthHandler", "AuthHandler", "AsynchronousAuthHandler")
 
 
 class BaseAuthHandler:
-    __slots__ = ("token",)
+    __slots__ = ("token", "domain", "auth_url", "token_url")
 
     scope: Scope
+
+    def __init__(self):
+        self.domain = DEFAULT_DOMAIN
+        self.auth_url = DEFAULT_AUTH_URL
+        self.token_url = DEFAULT_TOKEN_URL
+
+    def set_domain(self, domain: str) -> None:
+        """
+        Set domain to use for requests, such as "dev.ppy.sh"
+
+        **Parameters**
+
+        domain: :class:`str`
+        """
+        self.domain = domain
+        self.auth_url = auth_url(domain)
+        self.token_url = token_url(domain)
 
     def get_token(self) -> Optional[str]:
         """
@@ -56,7 +73,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
         and can't make with your scope. Default is 'public' (Scope.default())
     """
 
-    SAVE_VERSION = 1
+    SAVE_VERSION = 2
 
     def __init__(
         self,
@@ -65,6 +82,8 @@ class FunctionalAuthHandler(BaseAuthHandler):
         redirect_url: str,
         scope: Optional[Scope] = Scope.default(),
     ):
+        super().__init__()
+
         if scope == "lazer":
             raise ScopeException("The lazer scope signifies that an endpoint only meant for use by the lazer client.")
         self.client_id = client_id
@@ -119,7 +138,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
         }
         if not params["state"]:
             del params["state"]
-        return auth_url + "?" + "&".join([f"{key}={value}" for key, value in params.items()])
+        return self.auth_url + "?" + "&".join([f"{key}={value}" for key, value in params.items()])
 
     def has_user(self):
         """
@@ -158,6 +177,8 @@ class FunctionalAuthHandler(BaseAuthHandler):
 
         'refresh_token': :class:`str`,
 
+        'domain': :class:`str`,
+
         }
         """
         return {
@@ -167,6 +188,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
             "redirect_url": self.redirect_url,
             "scope": self.scope.scopes,
             "refresh_token": self.refresh_token,
+            "domain": self.domain
         }
 
     @classmethod
@@ -238,7 +260,7 @@ class AuthHandler(FunctionalAuthHandler):
     def get_auth_token(self, code: Optional[str] = None) -> None:
         data = self._get_data("client_credentials" if code is None else "authorization_code", code)
 
-        response = requests.post(token_url, data=data)
+        response = requests.post(self.token_url, data=data)
         self._raise_for_status(response)
         response = response.json()
 
@@ -250,7 +272,7 @@ class AuthHandler(FunctionalAuthHandler):
 
         data = self._get_data("client_credentials" if self.refresh_token is None else "refresh_token")
 
-        response = requests.post(token_url, data=data)
+        response = requests.post(self.token_url, data=data)
         self._raise_for_status(response)
         response = response.json()
 
@@ -271,6 +293,7 @@ class AuthHandler(FunctionalAuthHandler):
         redirect_url = save_data["redirect_url"]
         scope = Scope(*save_data["scope"].split())
         auth = cls(client_id, client_secret, redirect_url, scope)
+        auth.set_domain(save_data["domain"])
         auth.refresh_access_token(save_data["refresh_token"])
         return auth
 
@@ -285,8 +308,9 @@ class AuthHandler(FunctionalAuthHandler):
         auth = AsynchronousAuthHandler(self.client_id, self.client_secret, self.redirect_url, self.scope)
         auth.refresh_token = self.refresh_token
         auth._token = self._token
-        self.expire_time = self.expire_time
-        self._refresh_callback = self._refresh_callback
+        auth.expire_time = self.expire_time
+        auth._refresh_callback = self._refresh_callback
+        auth.set_domain(self.domain)
         return auth
 
 
@@ -304,7 +328,7 @@ class AsynchronousAuthHandler(FunctionalAuthHandler):
 
     async def _request(self, data, is_refresh=False):
         async with aiohttp.ClientSession() as session:
-            async with session.request("POST", token_url, json=data) as resp:
+            async with session.request("POST", self.token_url, json=data) as resp:
                 await self._raise_for_status(resp)
                 json = await resp.json()
                 self._handle_response(json)
@@ -336,6 +360,7 @@ class AsynchronousAuthHandler(FunctionalAuthHandler):
         redirect_url = save_data["redirect_url"]
         scope = Scope(*save_data["scope"].split())
         auth = cls(client_id, client_secret, redirect_url, scope)
+        auth.set_domain(save_data["domain"])
         await auth.refresh_access_token(save_data["refresh_token"])
         return auth
 
@@ -351,6 +376,7 @@ class AsynchronousAuthHandler(FunctionalAuthHandler):
         auth = AuthHandler(self.client_id, self.client_secret, self.redirect_url, self.scope)
         auth.refresh_token = self.refresh_token
         auth._token = self._token
-        self.expire_time = self.expire_time
-        self._refresh_callback = self._refresh_callback
+        auth.expire_time = self.expire_time
+        auth._refresh_callback = self._refresh_callback
+        auth.set_domain(self.domain)
         return auth
