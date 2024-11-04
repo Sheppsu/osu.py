@@ -15,6 +15,7 @@ except ImportError:
 from ..auth import BaseAuthHandler
 from ..exceptions import ScopeException
 from ..constants import DEFAULT_BASE_URL, base_url
+from ..util import raise_aiohttp_error
 
 
 __all__ = ("AsynchronousHTTPHandler",)
@@ -32,10 +33,7 @@ class AsynchronousHTTPHandler:
             raise ValueError("auth passed to AsynchronousHTTPHandler must have an asynchronous get_token method")
 
         if not has_aiohttp:
-            raise RuntimeError(
-                "Missing aiohttp package, which is required to use asynchronous features."
-                'Install osu.py with the async feature: "pip install osu.py[async]"'
-            )
+            raise_aiohttp_error()
 
         awaitable.close()  # type: ignore
 

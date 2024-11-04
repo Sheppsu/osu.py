@@ -1,5 +1,4 @@
 import requests
-import aiohttp
 from time import monotonic
 from typing import Callable, Optional, Union
 from collections.abc import Awaitable
@@ -7,6 +6,14 @@ from collections.abc import Awaitable
 from .constants import DEFAULT_AUTH_URL, DEFAULT_TOKEN_URL, DEFAULT_DOMAIN, auth_url, token_url
 from .objects import Scope
 from .exceptions import ScopeException
+from .util import raise_aiohttp_error
+
+try:
+    import aiohttp
+
+    has_aiohttp = True
+except ImportError:
+    has_aiohttp = False
 
 
 __all__ = ("BaseAuthHandler", "AuthHandler", "AsynchronousAuthHandler")
@@ -315,6 +322,12 @@ class AuthHandler(FunctionalAuthHandler):
 
 
 class AsynchronousAuthHandler(FunctionalAuthHandler):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        if not has_aiohttp:
+            raise_aiohttp_error()
+
     @staticmethod
     async def _raise_for_status(resp):
         try:

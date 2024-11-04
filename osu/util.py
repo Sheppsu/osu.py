@@ -20,7 +20,7 @@ import os
 import re
 
 
-__all__ = ("BeatmapsetSearchFilter", "PlaylistItemUtil", "NotificationsUtil", "IdentitiesUtil")
+__all__ = ("BeatmapsetSearchFilter", "PlaylistItemUtil", "NotificationsUtil", "IdentitiesUtil", "raise_aiohttp_error")
 
 
 _T = TypeVar("_T")
@@ -437,3 +437,10 @@ def fromisoformat(timestamp: str) -> datetime:
     # just in case
     except ValueError:
         return datetime.fromisoformat(timestamp)
+
+
+def raise_aiohttp_error():
+    raise RuntimeError(
+        "Missing aiohttp package, which is required to use asynchronous features."
+        'Install osu.py with the async feature: "pip install osu.py[async]"'
+    )
