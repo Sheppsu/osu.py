@@ -573,7 +573,7 @@ Objects
    :members:
    
 
-.. autoclass:: osu.UserRelations
+.. autoclass:: osu.UserRelation
    :members:
    
 

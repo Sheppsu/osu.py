@@ -83,7 +83,7 @@ class UserCompact:
 
     follower_count: Optional[:class:`int`]
 
-    friends: Optional[List[UserRelations]]
+    friends: Optional[List[:class:`UserRelation`]]
 
     graveyard_beatmapset_count: Optional[:class:`int`]
 
@@ -240,7 +240,7 @@ class UserCompact:
         )
         self.badges: Optional[List[UserBadge]] = get_optional_list(data, "badges", UserBadge)
         self.beatmap_playcounts_count: Optional[int] = data.get("beatmap_playcounts_count")
-        self.blocks: Optional[List[UserRelations]] = get_optional_list(data, "blocks", UserRelations)
+        self.blocks: Optional[List[UserRelation]] = get_optional_list(data, "blocks", UserRelation)
         self.comments_count: Optional[int] = data.get("comments_count")
         self.country: Optional[Country] = get_optional(data, "country", Country)
         self.cover: Optional[UserCover] = get_optional(data, "cover", UserCover)
@@ -250,7 +250,7 @@ class UserCompact:
         self.favourite_beatmapset_count: Optional[int] = data.get("favourite_beatmapset_count")
         self.follow_user_mapping: Optional[List[int]] = data.get("follower_user_mapping")
         self.follower_count: Optional[int] = data.get("follower_count")
-        self.friends: Optional[List[UserRelations]] = get_optional_list(data, "friends", UserRelations)
+        self.friends: Optional[List[UserRelation]] = get_optional_list(data, "friends", UserRelation)
         self.graveyard_beatmapset_count: Optional[int] = data.get("graveyard_beatmapset_count")
         self.groups: Optional[List[UserGroup]] = get_optional_list(data, "groups", UserGroup)
         self.guest_beatmapset_count: Optional[int] = data.get("guest_beatmapset_count")
@@ -465,8 +465,11 @@ class UserPreferences:
         self.user_list_sort: str = get_required(data, "user_list_sort")
         self.user_list_view: str = get_required(data, "user_list_view")
 
+    def __repr__(self):
+        return prettify(self)
 
-class UserRelations:
+
+class UserRelation:
     """
     Info about relationship to a user
 
@@ -478,14 +481,24 @@ class UserRelations:
     relation_type: :class:`UserRelationType`
 
     mutual: :class:`bool`
+
+    target: Optional[:class:`UserCompact`]
     """
 
-    __slots__ = ("target_id", "relation_type", "mutual")
+    __slots__ = ("target_id", "relation_type", "mutual", "target")
 
     def __init__(self, data):
         self.target_id: int = get_required(data, "target_id")
         self.relation_type: UserRelationType = UserRelationType(get_required(data, "relation_type"))
         self.mutual: bool = get_required(data, "mutual")
+        self.target: Optional[UserCompact] = get_optional(data, "target", UserCompact)
+
+    def __repr__(self):
+        return prettify(self, "target_id" if self.target is None else "target", "mutual")
+
+
+# legacy support for the old name of the class
+UserRelations = UserRelation
 
 
 class ProfileBanner:

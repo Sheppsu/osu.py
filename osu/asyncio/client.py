@@ -1847,7 +1847,7 @@ class AsynchronousClient:
             data = await resp.read()
             return osrparse.Replay.from_string(data) if use_osrparse else data
 
-    async def get_friends(self) -> List[UserCompact]:
+    async def get_friends(self) -> List[UserRelation]:
         """
         Returns a list of friends.
 
@@ -1857,7 +1857,7 @@ class AsynchronousClient:
 
         List[:class:`UserCompact`]
         """
-        return list(map(UserCompact, await self.http.make_request(Path.get_friends())))
+        return list(map(UserRelation, await self.http.make_request(Path.get_friends())))
 
     async def chat_keepalive(
         self, history_since: Optional[int] = None, since: Optional[int] = None

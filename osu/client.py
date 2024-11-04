@@ -1815,7 +1815,7 @@ class Client:
         data = self.http.make_request(Path.get_replay_data_by_id_only(score_id), is_download=True).content
         return osrparse.Replay.from_string(data) if use_osrparse else data
 
-    def get_friends(self) -> List[UserCompact]:
+    def get_friends(self) -> List[UserRelation]:
         """
         Returns a list of friends.
 
@@ -1825,7 +1825,7 @@ class Client:
 
         List[:class:`UserCompact`]
         """
-        return list(map(UserCompact, self.http.make_request(Path.get_friends())))
+        return list(map(UserRelation, self.http.make_request(Path.get_friends())))
 
     def chat_keepalive(self, history_since: Optional[int] = None, since: Optional[int] = None) -> List[UserSilence]:
         """
