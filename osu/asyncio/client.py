@@ -1847,7 +1847,7 @@ class AsynchronousClient:
             data = await resp.read()
             return osrparse.Replay.from_string(data) if use_osrparse else data
 
-    async def get_friends(self) -> List[UserRelation]:
+    async def get_friends(self) -> Union[List[UserRelation], List[UserCompact]]:
         """
         Returns a list of friends.
 
@@ -1855,9 +1855,14 @@ class AsynchronousClient:
 
         **Returns**
 
-        List[:class:`UserCompact`]
+        Union[List[:class:`UserCompact`], List[:class:`UserRelation`]]
+            will be UserRelation objects if using default api version header
         """
-        return list(map(UserRelation, await self.http.make_request(Path.get_friends())))
+        ret = await self.http.make_request(Path.get_friends())
+        if len(ret) == 0:
+            return []
+
+        return list(map(UserRelation if "target_id" in ret[0] else UserCompact, ret))
 
     async def chat_keepalive(
         self, history_since: Optional[int] = None, since: Optional[int] = None

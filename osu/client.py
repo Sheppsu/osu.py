@@ -1815,7 +1815,7 @@ class Client:
         data = self.http.make_request(Path.get_replay_data_by_id_only(score_id), is_download=True).content
         return osrparse.Replay.from_string(data) if use_osrparse else data
 
-    def get_friends(self) -> List[UserRelation]:
+    def get_friends(self) -> Union[List[UserRelation], List[UserCompact]]:
         """
         Returns a list of friends.
 
@@ -1823,9 +1823,14 @@ class Client:
 
         **Returns**
 
-        List[:class:`UserCompact`]
+        Union[List[:class:`UserCompact`], List[:class:`UserRelation`]]
+            will be UserRelation objects if using default api version header
         """
-        return list(map(UserRelation, self.http.make_request(Path.get_friends())))
+        ret = self.http.make_request(Path.get_friends())
+        if len(ret) == 0:
+            return []
+
+        return list(map(UserRelation if "target_id" in ret[0] else UserCompact, ret))
 
     def chat_keepalive(self, history_since: Optional[int] = None, since: Optional[int] = None) -> List[UserSilence]:
         """
