@@ -18,6 +18,9 @@ class NewsPost:
     first_image: Optional[:class:`str`]
         Link to the first image in the document.
 
+    first_image_2x: Optional[:class:`str`]
+        2x version of `first_image`. Will be `None` if `first_image` is `None` and vice-versa.
+
     id: :class:`int`
 
     published_at: :class:`datetime.datetime`
@@ -43,6 +46,7 @@ class NewsPost:
         "author",
         "edit_url",
         "first_image",
+        "first_image_2x",
         "id",
         "published_at",
         "slug",
@@ -57,6 +61,7 @@ class NewsPost:
         self.author: str = get_required(data, "author")
         self.edit_url: str = get_required(data, "edit_url")
         self.first_image: Optional[str] = get_required(data, "first_image")
+        self.first_image_2x: Optional[str] = get_required(data, "first_image@2x")
         self.id: int = get_required(data, "id")
         self.published_at: datetime = fromisoformat(get_required(data, "published_at"))
         self.slug: str = get_required(data, "slug")
