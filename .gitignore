@@ -5,7 +5,7 @@ test_venv/
 test.py
 upload
 
-changelog.txt
+changelog.md
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
