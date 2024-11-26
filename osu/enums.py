@@ -190,6 +190,10 @@ class Mod(Enum):
     ConstantSpeed = "CS"
     HoldOff = "HO"
     AccuracyChallenge = "AC"
+    Bloom = "BM"
+    NoRelease = "NR"
+    Depth = "DP"
+    Cover = "CO"
 
 
 class Mods(IntFlag):
