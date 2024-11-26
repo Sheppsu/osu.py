@@ -63,10 +63,10 @@ class TestMisc:
         backgrounds = client.get_seasonal_backgrounds()
         assert backgrounds
 
-    def test_get_replay_data(self, user_client):
-        assert user_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
-        assert user_client.get_replay_data(None, 1267337687)
-        assert user_client.get_replay_data(GameModeStr.STANDARD, 3693301831, False)
-        assert user_client.get_replay_data(None, 1267337687, False)
-        assert user_client.get_replay_data_by_id_only(1267337687)
-        assert user_client.get_replay_data_by_id_only(1267337687, False)
+    def test_get_replay_data(self, client):
+        assert client.get_replay_data(GameModeStr.STANDARD, 3693301831)
+        assert client.get_replay_data(None, 1267337687)
+        assert client.get_replay_data(GameModeStr.STANDARD, 3693301831, False)
+        assert client.get_replay_data(None, 1267337687, False)
+        assert client.get_replay_data_by_id_only(1267337687)
+        assert client.get_replay_data_by_id_only(1267337687, False)
