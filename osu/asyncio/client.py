@@ -1411,7 +1411,7 @@ class AsynchronousClient:
 
     async def get_user(
         self,
-        user: int,
+        user: Union[int, str],
         mode: Optional[Union[str, GameModeStr]] = "",
         key: Optional[str] = None,
     ) -> User:
