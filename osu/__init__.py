@@ -9,4 +9,4 @@ from .util import *
 from .results import *
 
 
-__version__ = "3.0.2"
+__version__ = "3.1.0"
