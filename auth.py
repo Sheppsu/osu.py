@@ -26,7 +26,7 @@ auth = AuthHandler(
     DEV_CLIENT_ID,
     DEV_CLIENT_SECRET,
     DEV_REDIRECT_URI,
-    Scope("public", "identify", "friends.read", "forum.write", "chat.read", "chat.write", "chat.write_manage")
+    Scope("public", "identify", "friends.read", "forum.write", "chat.read")
 )
 auth.set_domain("dev.ppy.sh")
 auth.get_auth_token(input(f"{auth.get_auth_url()}\nCode: "))
