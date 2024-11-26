@@ -6,7 +6,7 @@ client_id = int(os.getenv('osu_client_id'))
 client_secret = os.getenv('osu_client_secret')
 redirect_url = "http://127.0.0.1:8080"
 
-client = Client.from_client_credentials(client_id, client_secret, redirect_url)
+client = Client.from_credentials(client_id, client_secret, redirect_url)
 
 bm_id = 3149839
 HDHR = Mods.get_from_abbreviation("HD") | Mods.HardRock  # This is a valid argument for mods

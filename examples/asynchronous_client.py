@@ -6,7 +6,7 @@ import asyncio
 
 client_id = int(getenv("osu_client_id"))
 client_secret = getenv("osu_client_secret")
-client = AsynchronousClient.from_client_credentials(client_id, client_secret, "http://127.0.0.1:8080", request_wait_time=0)
+client = AsynchronousClient.from_credentials(client_id, client_secret, "http://127.0.0.1:8080", request_wait_time=0)
 
 
 async def make_requests(mode, rank_type):

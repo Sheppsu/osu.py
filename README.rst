@@ -63,7 +63,7 @@ Example
 
     from osu import Client, GameModeStr
 
-    client = Client.from_client_credentials(0, "*****", None)
+    client = Client.from_credentials(0, "*****", None)
     user = client.get_user(14895608, GameModeStr.STANDARD)
     print(user)
 

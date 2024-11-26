@@ -6,7 +6,7 @@ client_id = int(os.getenv('CLIENT_ID'))
 client_secret = os.getenv('CLIENT_SECRET')
 redirect_url = "http://127.0.0.1:8080"
 
-client = Client.from_client_credentials(client_id, client_secret, redirect_url)
+client = Client.from_credentials(client_id, client_secret, redirect_url)
 
 
 def readable_mod(mods):

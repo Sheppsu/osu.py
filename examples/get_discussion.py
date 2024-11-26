@@ -6,7 +6,7 @@ client_id = int(os.getenv('osu_client_id'))
 client_secret = os.getenv('osu_client_secret')
 redirect_url = "http://127.0.0.1:8080"
 
-client = Client.from_client_credentials(client_id, client_secret, redirect_url)
+client = Client.from_credentials(client_id, client_secret, redirect_url)
 
 bm_id = 1031991  # PepeLaugh
 result = client.get_beatmapset_discussions(beatmapset_id=1145452, message_types=[MessageType.PROBLEM, MessageType.REVIEW, MessageType.SUGGESTION])

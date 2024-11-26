@@ -6,7 +6,7 @@ client_id = int(os.getenv('osu_client_id'))
 client_secret = os.getenv('osu_client_secret')
 redirect_url = "http://127.0.0.1:8080"
 
-client = Client.from_client_credentials(client_id, client_secret, redirect_url)
+client = Client.from_credentials(client_id, client_secret, redirect_url)
 
 user_id = 7562902
 recent_score = client.get_user_scores(user_id, UserScoreType.RECENT, limit=1)
