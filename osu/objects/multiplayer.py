@@ -6,6 +6,7 @@ from ..enums import (
     RealTimeQueueMode,
     RoomCategory,
     RoomType,
+    RoomStatus,
 )
 from ..util import prettify, get_optional, get_optional_list, get_required, fromisoformat
 from .user import UserCompact
@@ -164,6 +165,8 @@ class Room:
 
     category: :class:`RoomCategory`
 
+    status: :class:`RoomStatus`
+
     type: :class:`RoomType`
 
     realtime_type: :class:`RealTimeType`
@@ -211,6 +214,7 @@ class Room:
         "id",
         "name",
         "category",
+        "status",
         "type",
         "user_id",
         "starts_at",
@@ -235,6 +239,7 @@ class Room:
         self.id: int = get_required(data, "id")
         self.name: str = get_required(data, "name")
         self.category: RoomCategory = RoomCategory(get_required(data, "category"))
+        self.status: RoomStatus = RoomStatus(get_required(data, "status"))
         self.type: RoomType = RoomType(get_required(data, "type"))
         self.user_id: int = get_required(data, "user_id")
         self.starts_at: datetime = fromisoformat(get_required(data, "starts_at"))
