@@ -2093,3 +2093,25 @@ class Client:
         """
         ret = self.http.make_request(Path.get_channel(channel_id))
         return GetChannelResult(ChatChannel(ret["channel"]), list(map(UserCompact, ret["users"])))
+
+    def get_all_scores(
+        self, ruleset: Optional[Union[GameModeStr, str]] = None, cursor: Optional[str] = None
+    ) -> GetAllScoresResult:
+        """
+        Returns all scores (that are passes), up to 1000. Result is sorted oldest to recent.
+        Can use the cursor in the response in the next call to this function.
+
+        **Parameters**
+
+        ruleset: Optional[Union[:class:`GameModeStr`, :class:`str`]]
+
+        cursor: Optional[:class:`str`]
+
+        **Returns**
+
+        List[:class:`SoloScore`]
+        """
+        ruleset = parse_enum_args(ruleset)
+
+        ret = self.http.make_request(Path.get_all_scores(), ruleset=ruleset, cursor_string=cursor)
+        return GetAllScoresResult(list(map(get_score_object, ret["scores"])), ret["cursor_string"])

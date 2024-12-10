@@ -43,3 +43,11 @@ class TestScore:
             assert score
             assert score.id == sample_score["id"]
             assert score.user_id == sample_score["user_id"]
+
+    def test_get_all_scores(self, client):
+        ret = client.get_all_scores()
+        assert ret
+
+        new_ret = client.get_all_scores(cursor=ret.cursor)
+        assert new_ret
+        assert new_ret.scores[0].id != ret.scores[0].id

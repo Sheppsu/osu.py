@@ -49,3 +49,12 @@ class TestAsynchronousScore:
             assert score
             assert score.id == sample_score["id"]
             assert score.user_id == sample_score["user_id"]
+
+    @pytest.mark.asyncio
+    async def test_get_all_scores(self, async_client):
+        ret = await async_client.get_all_scores()
+        assert ret
+
+        new_ret = await async_client.get_all_scores(cursor=ret.cursor)
+        assert new_ret
+        assert new_ret.scores[0].id != ret.scores[0].id

@@ -17,6 +17,7 @@ from .objects import (
     Match,
     NewsPost,
     Review,
+    SoloScore,
     UpdateStream,
     UserCompact,
     UserScoreAggregate,
@@ -67,6 +68,7 @@ __all__ = (
     "GetMatchesResult",
     "GetRoomLeaderboardResult",
     "GetChannelResult",
+    "GetAllScoresResult",
 )
 
 
@@ -454,3 +456,19 @@ class GetChannelResult(ResultBase):
 
     channel: ChatChannel
     users: List[UserCompact]
+
+
+@dataclass
+class GetAllScoresResult(ResultBase):
+    """
+    Result of :func:`osu.Client.get_all_scores`
+
+    **Attributes**
+
+    scores: List[:class:`SoloScore`]
+
+    cursor: :class:`str`
+    """
+
+    scores: List[SoloScore]
+    cursor: str

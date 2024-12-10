@@ -267,3 +267,7 @@ class Path:
     @classmethod
     def get_channel(cls, channel_id):
         return cls("get", f"chat/channels/{channel_id}", "chat.read", True)
+
+    @classmethod
+    def get_all_scores(cls):
+        return cls("get", "scores", "public")
