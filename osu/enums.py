@@ -1,9 +1,37 @@
-from enum import IntFlag, IntEnum, Enum
+from enum import IntFlag, IntEnum, Enum, EnumMeta
 from typing import Sequence, Union
+
 from .constants import incompatible_mods
 
 
-class Mod(Enum):
+class PartialEnum:
+    __slots__ = ("value",)
+
+    def __init__(self, value):
+        self.value = value
+
+    def __repr__(self):
+        return f"PartialEnum({repr(self.value)})"
+
+
+class FallbackEnum(EnumMeta):
+    def __new__(cls, name, bases, attrs):
+        enum = EnumMeta.__new__(cls, name, bases, attrs)
+
+        old__new__ = getattr(enum, "enum__new__", Enum.__new__)
+
+        def fallback__new__(cls, value, *args, **kwargs):
+            try:
+                return old__new__(cls, value, *args, **kwargs)
+            except ValueError:
+                return PartialEnum(value)
+
+        enum.__new__ = fallback__new__
+
+        return enum
+
+
+class Mod(Enum, metaclass=FallbackEnum):
     """
     Enum of all mods, score submittable or not.
 
@@ -414,7 +442,7 @@ class Mods(IntFlag):
                 break
 
 
-class RankStatus(IntEnum):
+class RankStatus(IntEnum, metaclass=FallbackEnum):
     """
     IntEnum enum for rank status of a beatmap.
 
@@ -444,7 +472,7 @@ class RankStatus(IntEnum):
     LOVED = 4
 
 
-class GameModeStr(Enum):
+class GameModeStr(Enum, metaclass=FallbackEnum):
     """
     Enum for GameModes using their string names.
 
@@ -468,7 +496,7 @@ class GameModeStr(Enum):
         return GameModeInt[self.name]
 
 
-class GameModeInt(IntEnum):
+class GameModeInt(IntEnum, metaclass=FallbackEnum):
     """
     Enums for GameModes using their int values.
 
@@ -492,7 +520,7 @@ class GameModeInt(IntEnum):
         return GameModeStr[self.name]
 
 
-class WikiSearchMode(Enum):
+class WikiSearchMode(Enum, metaclass=FallbackEnum):
     """
     Enum for wiki search modes. Relevant to :func:`osu.Client.search`.
 
@@ -508,7 +536,7 @@ class WikiSearchMode(Enum):
     WIKI = "wiki_page"
 
 
-class UserBeatmapType(Enum):
+class UserBeatmapType(Enum, metaclass=FallbackEnum):
     """
     User beatmap types. Relavent to :func:`osu.Client.get_user_beatmaps`.
 
@@ -543,7 +571,7 @@ class UserBeatmapType(Enum):
     RANKED = "ranked"
 
 
-class RankingType(Enum):
+class RankingType(Enum, metaclass=FallbackEnum):
     """
     Ranking types to sort by for :func:`osu.Client.get_ranking`.
 
@@ -564,7 +592,7 @@ class RankingType(Enum):
     SCORE = "score"
 
 
-class CommentSort(Enum):
+class CommentSort(Enum, metaclass=FallbackEnum):
     """
     Type to sort comments by. Relevant to :func:`osu.Client.get_comments`.
 
@@ -582,7 +610,7 @@ class CommentSort(Enum):
     TOP = "top"
 
 
-class MultiplayerScoresSort(Enum):
+class MultiplayerScoresSort(Enum, metaclass=FallbackEnum):
     """
     Sort option for multiplayer scores index. Relevant to :func:`osu.Client.get_scores`.
 
@@ -597,7 +625,7 @@ class MultiplayerScoresSort(Enum):
     DESC = "score_desc"
 
 
-class BeatmapsetEventType(Enum):
+class BeatmapsetEventType(Enum, metaclass=FallbackEnum):
     """
     Enum for beatmapset event types. Relevant to :func:`osu.Client.get_beatmapset_events`.
 
@@ -695,7 +723,7 @@ class BeatmapsetEventType(Enum):
     BEATMAP_OWNER_CHANGE = "beatmap_owner_change"
 
 
-class BeatmapsetEventSort(Enum):
+class BeatmapsetEventSort(Enum, metaclass=FallbackEnum):
     """
     Sort option for beatmapset events. Relevant to :func:`osu.Client.get_beatmapset_events`.
 
@@ -710,7 +738,7 @@ class BeatmapsetEventSort(Enum):
     DESC = "id_desc"
 
 
-class MatchSort(Enum):
+class MatchSort(Enum, metaclass=FallbackEnum):
     """
     Sort options for matches. Relevant to :func:`osu.Client.get_matches`.
 
@@ -728,7 +756,7 @@ class MatchSort(Enum):
     NEWEST = "id_desc"
 
 
-class MatchEventType(Enum):
+class MatchEventType(Enum, metaclass=FallbackEnum):
     """
     Enum for match event types.
 
@@ -758,7 +786,7 @@ class MatchEventType(Enum):
     OTHER = "other"
 
 
-class RoomSort(Enum):
+class RoomSort(Enum, metaclass=FallbackEnum):
     """
     Sort options for rooms. Relevant to :func:`osu.Client.get_rooms`.
 
@@ -773,7 +801,7 @@ class RoomSort(Enum):
     CREATED = "created"
 
 
-class RoomCategory(Enum):
+class RoomCategory(Enum, metaclass=FallbackEnum):
     """
     Enum for room categories.
 
@@ -794,7 +822,7 @@ class RoomCategory(Enum):
     DAILY_CHALLENGE = "daily_challenge"
 
 
-class RoomType(Enum):
+class RoomType(Enum, metaclass=FallbackEnum):
     """
     Enum for room types.
 
@@ -812,7 +840,7 @@ class RoomType(Enum):
     TEAM_VERSUS = "team_versus"
 
 
-class RoomFilterMode(Enum):
+class RoomFilterMode(Enum, metaclass=FallbackEnum):
     """
     Enum for different filtering modes of rooms.
 
@@ -833,7 +861,7 @@ class RoomFilterMode(Enum):
     ACTIVE = "active"
 
 
-class RealTimeQueueMode(Enum):
+class RealTimeQueueMode(Enum, metaclass=FallbackEnum):
     """
     Enum for realtime queue modes.
 
@@ -851,7 +879,7 @@ class RealTimeQueueMode(Enum):
     ALL_PLAYERS_ROUND_ROBIN = "all_players_round_robin"
 
 
-class PlaylistQueueMode(Enum):
+class PlaylistQueueMode(Enum, metaclass=FallbackEnum):
     """
     Enum for playlist queue modes.
 
@@ -863,7 +891,7 @@ class PlaylistQueueMode(Enum):
     HOST_ONLY = "host_only"
 
 
-class BeatmapsetSearchSort(Enum):
+class BeatmapsetSearchSort(Enum, metaclass=FallbackEnum):
     """
     Sort options for beatmapset searches. Relevant to :func:`osu.Client.search_beatmapsets`.
 
@@ -905,7 +933,7 @@ class BeatmapsetSearchSort(Enum):
     UPDATED = "updated"
 
 
-class BeatmapsetSearchStatus(Enum):
+class BeatmapsetSearchStatus(Enum, metaclass=FallbackEnum):
     """
     Status options for beatmapset filtering. Relevant to :func:`osu.Client.search_beatmapsets`.
 
@@ -944,7 +972,7 @@ class BeatmapsetSearchStatus(Enum):
     MY_MAPS = "mine"
 
 
-class BeatmapsetSearchExtra(Enum):
+class BeatmapsetSearchExtra(Enum, metaclass=FallbackEnum):
     """
     Extra options for beatmapset filtering. Relevant to :func:`osu.Client.search_beatmapsets`.
 
@@ -959,7 +987,7 @@ class BeatmapsetSearchExtra(Enum):
     STORYBOARD = "storyboard"
 
 
-class BeatmapsetSearchGeneral(Enum):
+class BeatmapsetSearchGeneral(Enum, metaclass=FallbackEnum):
     """
     General options for beatmapset filtering. Relevant to :func:`osu.Client.search_beatmapsets`.
 
@@ -983,7 +1011,7 @@ class BeatmapsetSearchGeneral(Enum):
     FEATURED_ARTISTS = "featured_artists"
 
 
-class BeatmapsetSearchPlayed(Enum):
+class BeatmapsetSearchPlayed(Enum, metaclass=FallbackEnum):
     """
     Played options for beatmapset filtering. Relevant to :func:`osu.Client.search_beatmapsets`.
 
@@ -1001,7 +1029,7 @@ class BeatmapsetSearchPlayed(Enum):
     UNPLAYED = "unplayed"
 
 
-class BeatmapsetLanguage(IntEnum):
+class BeatmapsetLanguage(IntEnum, metaclass=FallbackEnum):
     """
     Language of a beatmapset
 
@@ -1052,7 +1080,7 @@ class BeatmapsetLanguage(IntEnum):
     OTHER = 14
 
 
-class BeatmapsetGenre(IntEnum):
+class BeatmapsetGenre(IntEnum, metaclass=FallbackEnum):
     """
     Genre of a beatmapsets
 
@@ -1100,7 +1128,7 @@ class BeatmapsetGenre(IntEnum):
     JAZZ = 14
 
 
-class ScoreRank(Enum):
+class ScoreRank(Enum, metaclass=FallbackEnum):
     """
     Enum for score ranks.
 
@@ -1136,7 +1164,7 @@ class ScoreRank(Enum):
     F = "F"
 
 
-class ObjectType(Enum):
+class ObjectType(Enum, metaclass=FallbackEnum):
     """
     Enum for different object types. Score types are most relevant.
 
@@ -1183,6 +1211,13 @@ class ObjectType(Enum):
     User = "user"
     """
 
+    @staticmethod
+    def enum__new__(cls, value):
+        if value == "beatmap_discussion":
+            return super().__new__(cls, "beatmapset_discussion")
+
+        return super().__new__(cls, value)
+
     BeatmapDiscussion = "beatmapset_discussion"
     BeatmapDiscussionPost = "beatmapset_discussion_post"
     Beatmapset = "beatmapset"
@@ -1205,14 +1240,7 @@ class ObjectType(Enum):
     User = "user"
 
 
-ObjectType.__new__ = lambda cls, value: (
-    super(ObjectType, cls).__new__(cls, "beatmapset_discussion")
-    if value == "beatmap_discussion"
-    else super(ObjectType, cls).__new__(cls, value)
-)
-
-
-class UserScoreType(Enum):
+class UserScoreType(Enum, metaclass=FallbackEnum):
     """
     Enum for the get_user_scores endpoint that specifies score type.
 
@@ -1233,7 +1261,7 @@ class UserScoreType(Enum):
     PINNED = "pinned"
 
 
-class ForumTopicType(Enum):
+class ForumTopicType(Enum, metaclass=FallbackEnum):
     """
     Enum for :class:`ForumTopic` type attribute.
 
@@ -1251,7 +1279,7 @@ class ForumTopicType(Enum):
     ANNOUNCEMENT = "announcement"
 
 
-class ChatChannelType(Enum):
+class ChatChannelType(Enum, metaclass=FallbackEnum):
     """
     Enum for type of :class:`ChatChannel`
 
@@ -1284,7 +1312,7 @@ class ChatChannelType(Enum):
     ANNOUNCE = "ANNOUNCE"
 
 
-class NotificationType(Enum):
+class NotificationType(Enum, metaclass=FallbackEnum):
     """
     Types of notifications that can be received.
 
@@ -1356,7 +1384,7 @@ class NotificationType(Enum):
         return NotificationCategory[self.name]
 
 
-class NotificationCategory(Enum):
+class NotificationCategory(Enum, metaclass=FallbackEnum):
     """
     Enum for notification categories.
 
@@ -1425,7 +1453,7 @@ class NotificationCategory(Enum):
     USER_BEATMAPSET_REVIVE = "user_beatmapset_new"
 
 
-class UserAccountHistoryType(Enum):
+class UserAccountHistoryType(Enum, metaclass=FallbackEnum):
     """
     Type of account history object
 
@@ -1446,7 +1474,7 @@ class UserAccountHistoryType(Enum):
     TOURNAMENT_BAN = "tournament_ban"
 
 
-class MessageType(Enum):
+class MessageType(Enum, metaclass=FallbackEnum):
     """
     A type of message in beatmapset discussion
 
@@ -1473,7 +1501,7 @@ class MessageType(Enum):
     SUGGESTION = "suggestion"
 
 
-class KudosuAction(Enum):
+class KudosuAction(Enum, metaclass=FallbackEnum):
     """
     A type of action related to kudosu
 
@@ -1504,7 +1532,7 @@ class KudosuAction(Enum):
     DENY_KUDOSU_RESET = "deny_kudosu.reset"
 
 
-class ScoringType(Enum):
+class ScoringType(Enum, metaclass=FallbackEnum):
     """
     Scoring type used for a legacy multiplayer match
 
@@ -1525,7 +1553,7 @@ class ScoringType(Enum):
     SCOREV2 = "scorev2"
 
 
-class TeamType(Enum):
+class TeamType(Enum, metaclass=FallbackEnum):
     """
     The team type used for a legacy multiplayer match
 
@@ -1546,7 +1574,7 @@ class TeamType(Enum):
     TAG_TEAM_VS = "tag-team-vs"
 
 
-class UserRelationType(Enum):
+class UserRelationType(Enum, metaclass=FallbackEnum):
     """
     The type of relation to a user
 
@@ -1561,7 +1589,7 @@ class UserRelationType(Enum):
     BLOCK = "block"
 
 
-class ChatMessageType(Enum):
+class ChatMessageType(Enum, metaclass=FallbackEnum):
     """
     The type of a :class:`ChatMessage`
 
@@ -1577,3 +1605,18 @@ class ChatMessageType(Enum):
     ACTION = "action"
     MARKDOWN = "markdown"
     PLAIN = "plain"
+
+
+class RoomStatus(Enum, metaclass=FallbackEnum):
+    """
+    Possible statuses for a :class:`Room`
+
+    **Room statuses**
+
+    IDLE = "idle"
+
+    PLAYING = "playing"
+    """
+
+    IDLE = "idle"
+    PLAYING = "playing"
