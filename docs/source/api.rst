@@ -861,6 +861,10 @@ Enums
 
 .. autoclass:: osu.RoomSort
    :members:
+
+
+.. autoclass:: osu.RoomStatus
+   :members:
    
 
 .. autoclass:: osu.RoomType
