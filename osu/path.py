@@ -1,7 +1,40 @@
 from typing import Optional
 
 
+__all__ = ("Path",)
+
+
 class Path:
+    """
+    An object that defines an endpoint and various attributes of it.
+    Used by :class:`Client` and passed to :class:`osu.http.HTTPHandler`
+    or the async equivalent classes.
+
+    Attributes and init parameters
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    **Attributes**
+
+    method: str
+        The http method to use (e.g. get, post, put, delete).
+
+    path: str
+        The path to the endpoint (e.g. beatmaps/727/scores)
+
+    scope: Optional[str]
+        The scope required to make this request (e.g. public, forum.write).
+        None if a scope is not required.
+
+    requires_user: bool
+        True if the endpoint requires a form of user authentication. Defaults to false.
+
+    content_type: str
+        Content-Type header to use in the request. Defaults to ``application/json``.
+
+    accept: str
+        Accept header to use in the request. Defaults to ``application/json``.
+    """
+
     __slots__ = ("method", "path", "scope", "requires_user", "content_type", "accept")
 
     def __init__(
@@ -271,3 +304,15 @@ class Path:
     @classmethod
     def get_all_scores(cls):
         return cls("get", "scores", "public")
+
+    @classmethod
+    def get_forums(cls):
+        return cls("get", "forums", "public")
+
+    @classmethod
+    def get_forum(cls, forum_id):
+        return cls("get", f"forums/{forum_id}", "public")
+
+    @classmethod
+    def get_forum_topics(cls):
+        return cls("get", f"forums/topics", "public")

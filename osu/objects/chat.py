@@ -10,39 +10,42 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = ("ChatChannel", "ChatMessage")
+
+
 class ChatChannel:
     """
     Represents an individual chat "channel" in the game.
 
     **Attributes**
 
-    channel_id: :class:`int`
+    channel_id: int
 
-    name: :class:`str`
+    name: str
 
-    description: Optional[:class:`str`]
+    description: Optional[str]
 
-    icon: Optional[:class:`str`]
+    icon: Optional[str]
         display icon for the channel
 
     type: :class:`ChatChannelType`
 
-    moderated: :class:`bool`
+    moderated: bool
         user can't send message when the value is `True`
 
-    uuid: Optional[:class:`str`]
+    uuid: Optional[str]
         value from requests that is relayed back to the sender.
 
     current_user_attributes: Optional[:class:`ChatChannelUserAttributes`]
         only present on some responses
 
-    last_message_id: Optional[:class:`int`]
+    last_message_id: Optional[int]
         message_id of last known message (only returned in presence responses)
 
     recent_messages: Optional[List[:class:`ChatMessage`]]
         [DEPRECATED] up to 50 most recent messages
 
-    users: Optional[List[:class:`int`]]
+    users: Optional[List[int]]
         list of user ids that are in the channel (not included for PUBLIC channels).
     """
 
@@ -86,27 +89,27 @@ class ChatMessage:
 
     **Attributes**
 
-    channel_id: :class:`int`
+    channel_id: int
         channel_id of where the message was sent
 
-    content: :class:`str`
+    content: str
         message content
 
-    is_action: :class:`bool`
+    is_action: bool
         was this an action? i.e. /me dances
 
-    message_id: :class:`int`
+    message_id: int
         unique identifier for message
 
-    sender_id: :class:`int`
+    sender_id: int
         user_id of the sender
 
-    timestamp: :class:`datetime.datetime`
+    timestamp: :py:class:`datetime.datetime`
         when the message was sent
 
     type: :class:`ChatMessageType`
 
-    uuid: Optional[:class:`str`]
+    uuid: Optional[str]
         message identifier originally sent by client
 
     sender: Optional[:class:`UserCompact`]

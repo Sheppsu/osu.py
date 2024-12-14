@@ -6,39 +6,42 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = ("NewsPost", "Navigation")
+
+
 class NewsPost:
     """
     **Attributes**
 
-    author: :class:`str`
+    author: str
 
-    edit_url: :class:`str`
+    edit_url: str
         Link to the file view on GitHub.
 
-    first_image: Optional[:class:`str`]
+    first_image: Optional[str]
         Link to the first image in the document.
 
-    first_image_2x: Optional[:class:`str`]
+    first_image_2x: Optional[str]
         2x version of `first_image`. Will be `None` if `first_image` is `None` and vice-versa.
 
-    id: :class:`int`
+    id: int
 
-    published_at: :class:`datetime.datetime`
+    published_at: :py:class:`datetime.datetime`
 
-    slug: :class:`str`
+    slug: str
         Filename without the extension, used in URLs.
 
-    title: :class:`str`
+    title: str
 
-    updated_at: :class:`datetime.datetime`
+    updated_at: :py:class:`datetime.datetime`
 
-    content: Optional[:class:`str`]
+    content: Optional[str]
         HTML post content.
 
     navigation: Optional[:class:`Navigation`]
         Navigation metadata.
 
-    preview: Optional[:class:`str`]
+    preview: Optional[str]
         First paragraph of content with HTML markup stripped.
     """
 

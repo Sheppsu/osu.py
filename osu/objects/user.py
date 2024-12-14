@@ -12,48 +12,72 @@ if TYPE_CHECKING:
     from datetime import datetime, date
 
 
+__all__ = (
+    "UserCompact",
+    "User",
+    "UserPreferences",
+    "UserRelation",
+    "ProfileBanner",
+    "UserSilence",
+    "UserAccountHistory",
+    "UserBadge",
+    "UserMonthlyPlaycount",
+    "UserStatistics",
+    "UserStatisticVariant",
+    "UserStatisticsRulesets",
+    "RankHighest",
+    "UserAchievement",
+    "UserReplaysWatchedCount",
+    "RankHistory",
+    "UserCover",
+    "Country",
+    "UserKudosu",
+    "DailyChallengeUserStats",
+)
+
+
 class UserCompact:
     """
     Mainly used for embedding in certain responses to save additional api lookups.
 
     **Attributes**
 
-    avatar_url: :class:`str`
+    avatar_url: str
         url of user's avatar
 
-    country_code: :class:`str`
+    country_code: str
         two-letter code representing user's country
 
-    default_group: :class:`str`
+    default_group: str
         Identifier of the default Group the user belongs to.
 
-    id: :class:`int`
+    id: int
         unique identifier for user
 
-    is_active: :class:`bool`
+    is_active: bool
         has this account been active in the last x months?
 
-    is_bot: :class:`bool`
+    is_bot: bool
         is this a bot account?
 
-    is_deleted: :class:`bool`
+    is_deleted: bool
 
-    is_online: :class:`bool`
+    is_online: bool
         is the user currently online? (either on lazer or the new website)
 
-    is_supporter: :class:`bool`
+    is_supporter: bool
         does this user have supporter?
 
-    last_visit: Optional[:class:`datetime.datetime`]
+    last_visit: Optional[:py:class:`datetime.datetime`]
         null if the user hides online presence
 
-    pm_friends_only: :class:`bool`
+    pm_friends_only: bool
         whether or not the user allows PM from other than friends
 
-    profile_colour: Optional[:class:`str`]
+    profile_colour: Optional[str]
         colour of username/profile highlight, hex code (e.g. #333333)
 
-    username: :class:`str`
+    username: str
         user's display name
 
     account_history: Optional[List[:class:`UserAccountHistory`]]
@@ -65,11 +89,11 @@ class UserCompact:
 
     badges: Optional[List[:class:`UserBadge`]]
 
-    beatmap_playcounts_count: Optional[:class:`int`]
+    beatmap_playcounts_count: Optional[int]
 
     blocks: Optional[List[:class:`UserRelations`]]
 
-    comments_count: Optional[:class:`int`]
+    comments_count: Optional[int]
 
     country: Optional[:class:`Country`]
 
@@ -77,73 +101,73 @@ class UserCompact:
 
     daily_challenge_user_stats: Optional[:class:`DailyChallengeUserStats`]
 
-    favourite_beatmapset_count: Optional[:class:`int`]
+    favourite_beatmapset_count: Optional[int]
 
-    follow_user_mapping: Optional[List[:class:`int`]]
+    follow_user_mapping: Optional[List[int]]
 
-    follower_count: Optional[:class:`int`]
+    follower_count: Optional[int]
 
     friends: Optional[List[:class:`UserRelation`]]
 
-    graveyard_beatmapset_count: Optional[:class:`int`]
+    graveyard_beatmapset_count: Optional[int]
 
     groups: Optional[List[:class:`UserGroup`]]
 
-    guest_beatmapset_count: Optional[:class:`int`]
+    guest_beatmapset_count: Optional[int]
 
-    is_admin: Optional[:class:`bool`]
+    is_admin: Optional[bool]
 
-    is_bng: Optional[:class:`bool`]
+    is_bng: Optional[bool]
 
-    is_gmt: Optional[:class:`bool`]
+    is_gmt: Optional[bool]
 
-    is_limited_bn: Optional[:class:`bool`]
+    is_limited_bn: Optional[bool]
 
-    is_moderator: Optional[:class:`bool`]
+    is_moderator: Optional[bool]
 
-    is_nat: Optional[:class:`bool`]
+    is_nat: Optional[bool]
 
-    is_restricted: Optional[:class:`bool`]
+    is_restricted: Optional[bool]
 
-    is_silenced: Optional[:class:`bool`]
+    is_silenced: Optional[bool]
 
-    loved_beatmapset_count: Optional[:class:`int`]
+    loved_beatmapset_count: Optional[int]
 
-    mapping_follower_count: Optional[:class:`int`]
+    mapping_follower_count: Optional[int]
 
     monthly_playcounts: Optional[List[:class:`UserMonthlyPlaycount`]]
 
-    nominated_beatmapset_count: Optional[:class:`int`]
+    nominated_beatmapset_count: Optional[int]
 
     page: Optional[:class:`TextFormat`]
 
-    pending_beatmapset_count: Optional[:class:`int`]
+    pending_beatmapset_count: Optional[int]
 
-    previous_usernames: Optional[List[:class:`str`]]
+    previous_usernames: Optional[List[str]]
 
     rank_highest: Optional[:class:`RankHighest`]
 
     rank_history: Optional[:class:`RankHistory`]
 
-    ranked_beatmapset_count: Optional[:class:`int`]
+    ranked_beatmapset_count: Optional[int]
 
     replays_watched_counts: Optional[List[:class:`UserReplaysWatchedCount`]]
 
-    scores_best_count: Optional[:class:`int`]
+    scores_best_count: Optional[int]
 
-    scores_first_count: Optional[:class:`int`]
+    scores_first_count: Optional[int]
 
-    scores_pinned_count: Optional[:class:`int`]
+    scores_pinned_count: Optional[int]
 
-    scores_recent_count: Optional[:class:`int`]
+    scores_recent_count: Optional[int]
 
     statistics: Optional[:class:`UserStatistics`]
 
     statistics_rulesets: Optional[:class:`UserStatisticsRulesets`]
 
-    support_level: Optional[:class:`int`]
+    support_level: Optional[int]
 
-    unread_pm_count: Optional[:class:`int`]
+    unread_pm_count: Optional[int]
 
     user_achievements: Optional[List[:class:`UserAchievement`]]
 
@@ -305,53 +329,53 @@ class User(UserCompact):
 
     **Attributes**
 
-    cover_url: :class:`str`
+    cover_url: str
         url of profile cover. Deprecated, use cover.url instead.
 
-    discord: Optional[:class:`str`]
+    discord: Optional[str]
 
-    has_supported: :class:`bool`
+    has_supported: bool
         Has been a supporter in the past
 
-    interests: Optional[:class:`str`]
+    interests: Optional[str]
 
-    join_date: :class:`datetime.datetime`
+    join_date: :py:class:`datetime.datetime`
 
     kudosu: :class:`UserKudosu`
 
-    location: Optional[:class:`str`]
+    location: Optional[str]
 
-    max_blocks: :class:`int`
+    max_blocks: int
         maximum number of users allowed to be blocked
 
-    max_friends: :class:`int`
+    max_friends: int
         maximum number of friends allowed to be added
 
-    occupation: Optional[:class:`str`]
+    occupation: Optional[str]
 
     playmode: :class:`GameModeStr`
 
-    playstyle: List[:class:`str`]
+    playstyle: List[str]
         Device choices of the user.
 
-    post_count: :class:`int`
+    post_count: int
         number of forum posts
 
-    profile_hue: Optional[:class:`int`]
+    profile_hue: Optional[int]
         Custom color hue in HSL degrees (0-359).
 
-    profile_order: List[:class:`str`]
+    profile_order: List[str]
         Ordered list of sections in user profile page. Sections consist of:
         me, recent_activity, beatmaps, historical, kudosu, top_ranks, medals
 
-    title: Optional[:class:`str`]
+    title: Optional[str]
         user-specific title
 
-    title_url:  Optional[:class:`str`]
+    title_url:  Optional[str]
 
-    twitter:  Optional[:class:`str`]
+    twitter:  Optional[str]
 
-    website:  Optional[:class:`str`]
+    website:  Optional[str]
     """
     __slots__ = (
         "cover_url",
@@ -403,35 +427,35 @@ class UserPreferences:
     """
     The settings preferences of a user
 
-    audio_autoplay: :class:`bool`
+    audio_autoplay: bool
 
-    audio_muted: :class:`bool`
+    audio_muted: bool
 
-    audio_volume: :class:`float`
+    audio_volume: float
 
-    beatmapset_card_size: :class:`str`
+    beatmapset_card_size: str
         normal or extra
 
-    beatmapset_download: :class:`str`
+    beatmapset_download: str
         all, no_video, or direct
 
-    beatmapset_show_nsfw: :class:`bool`
+    beatmapset_show_nsfw: bool
 
-    beatmapset_title_show_original: :class:`bool`
+    beatmapset_title_show_original: bool
 
-    comments_show_deleted: :class:`bool`
+    comments_show_deleted: bool
 
-    forum_posts_show_deleted: :class:`bool`
+    forum_posts_show_deleted: bool
 
-    profile_cover_expanded: :class:`bool`
+    profile_cover_expanded: bool
 
-    user_list_filter: :class:`str`
+    user_list_filter: str
         all, online, or offline
 
-    user_list_sort: :class:`str`
+    user_list_sort: str
         last_visit, rank, or username
 
-    user_list_view: :class:`str`
+    user_list_view: str
         brick, card, or list
     """
     __slots__ = (
@@ -475,12 +499,12 @@ class UserRelation:
 
     **Attributes**
 
-    target_id: :class:`int`
+    target_id: int
         zebra id
 
     relation_type: :class:`UserRelationType`
 
-    mutual: :class:`bool`
+    mutual: bool
 
     target: Optional[:class:`UserCompact`]
     """
@@ -505,13 +529,13 @@ class ProfileBanner:
     """
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
-    tournament_id: :class:`int`
+    tournament_id: int
 
-    image: Optional[:class:`str`]
+    image: Optional[str]
 
-    image2x: Optional[:class:`str`]
+    image2x: Optional[str]
     """
 
     __slots__ = ("id", "tournament_id", "image", "image2x")
@@ -532,10 +556,10 @@ class UserSilence:
 
     **Attributes**
 
-    id: :class:`int`
+    id: int
         id of this object.
 
-    user_id: :class:`int`
+    user_id: int
         id of the User that was silenced
     """
 
@@ -555,17 +579,17 @@ class UserAccountHistory:
 
     actor: Optional[:class:`UserCompact`]
 
-    description: :class:`str`
+    description: str
 
-    id: :class:`int`
+    id: int
 
-    length: :class:`int`
+    length: int
 
-    permanent: :class:`bool`
+    permanent: bool
 
-    supporting_url: Optional[:class:`str`]
+    supporting_url: Optional[str]
 
-    timestamp: :class:`datetime.datetime`
+    timestamp: :py:class:`datetime.datetime`
 
     type: :class:`UserAccountHistoryType`
     """
@@ -599,15 +623,15 @@ class UserBadge:
     """
     **Attributes**
 
-    awarded_at: :class:`datetime.datetime`
+    awarded_at: :py:class:`datetime.datetime`
 
-    description: :class:`str`
+    description: str
 
-    image_url: :class:`str`
+    image_url: str
 
-    image_2x_url: :class:`str`
+    image_2x_url: str
 
-    url: :class:`str`
+    url: str
     """
 
     __slots__ = ("awarded_at", "description", "image_url", "image_2x_url", "url")
@@ -650,84 +674,84 @@ class UserStatistics:
 
     **Attributes**
 
-    count_300: :class:`int`
+    count_300: int
 
-    count_100: :class:`int`
+    count_100: int
 
-    count_50: :class:`int`
+    count_50: int
 
-    count_miss: :class:`int`
+    count_miss: int
 
-    country_rank: Optional[:class:`int`]
+    country_rank: Optional[int]
         Current country rank according to pp.
 
-     global_rank: Optional[:class:`int`]
+     global_rank: Optional[int]
         Current global rank according to pp.
 
-    global_rank_exp: Optional[:class:`int`]
+    global_rank_exp: Optional[int]
         Current global rank according to experimental pp (not used anymore).
 
     grade_counts: :class:`NamedTuple`
         Below are the attributes and their meanings.
 
-        a: :class:`int`
+        a: int
             Number of A ranked scores.
 
-        s: :class:`int`
+        s: int
             Number of S ranked scores.
 
-        sh: :class:`int`
+        sh: int
             Number of Silver S ranked scores.
 
-        ss: :class:`int`
+        ss: int
             Number of SS ranked scores.
 
-        ssh: :class:`int`
+        ssh: int
             Number of Silver SS ranked scores.
 
-    hit_accuracy: :class:`float`
+    hit_accuracy: float
         Hit accuracy percentage
 
-    is_ranked: :class:`bool`
+    is_ranked: bool
         Does the player have a rank
 
     level: :class:`NamedTuple`
         Has attributes 'current' (current level) and 'progress' (progress to next level).
 
-    maximum_combo: :class:`int`
+    maximum_combo: int
         Highest maximum combo.
 
-    play_count: :class:`int`
+    play_count: int
         Number of maps played.
 
-    play_time: :class:`int`
+    play_time: int
         Cumulative time played.
 
-    pp: :class:`int`
+    pp: int
         Performance points
 
-    pp_exp: Optional[:class:`int`]
+    pp_exp: Optional[int]
         Experimental performance points (not used anymore)
 
-    rank_change_since_30_days: Optional[:class:`int`]
+    rank_change_since_30_days: Optional[int]
 
-    recommended_difficulty: :class:`float`
+    recommended_difficulty: float
         Recommended difficulty for a player. This value is not received from the api, but locally calculated.
         The formula is pp^0.4 * 0.195
 
-    recommended_difficulty_exp: :class:`float`
+    recommended_difficulty_exp: float
         Recommended difficulty based on the pp_exp value.
 
-    ranked_score: :class:`int`
+    ranked_score: int
         Current ranked score.
 
-    replays_watched_by_others: :class:`int`
+    replays_watched_by_others: int
         Number of replays watched by other users.
 
-    total_hits: :class:`int`
+    total_hits: int
         Total number of hits.
 
-    total_score: :class:`int`
+    total_score: int
         Total score.
 
     user: Optional[:class:`UserCompact`]
@@ -803,15 +827,15 @@ class UserStatisticVariant:
 
     **Attributes**
 
-    country_rank: Optional[:class:`int`]
+    country_rank: Optional[int]
 
-    global_rank: Optional[:class:`int`]
+    global_rank: Optional[int]
 
     mode: :class:`GameModeStr`
 
-    pp: :class:`int`
+    pp: int
 
-    variant: :class:`str`
+    variant: str
         4k or 7k
     """
 
@@ -863,9 +887,9 @@ class RankHighest:
 
     **Attributes**
 
-    rank: :class:`int`
+    rank: int
 
-    updated_at: :class:`datetime.datetime`
+    updated_at: :py:class:`datetime.datetime`
     """
 
     __slots__ = ("rank", "updated_at")
@@ -884,9 +908,9 @@ class UserAchievement:
 
     **Attributes**
 
-    achieved_at: :class:`datetime.datetime`
+    achieved_at: :py:class:`datetime.datetime`
 
-    achievement_id: :class:`int`
+    achievement_id: int
     """
 
     __slots__ = ("achieved_at", "achievement_id")
@@ -905,9 +929,9 @@ class UserReplaysWatchedCount:
 
     **Attributes**
 
-    start_date: :class:`datetime.datetime`
+    start_date: :py:class:`datetime.datetime`
 
-    count: :class:`int`
+    count: int
     """
 
     __slots__ = ("start_date", "count")
@@ -928,7 +952,7 @@ class RankHistory:
 
     mode: :class:`GameModeStr`
 
-    data: List[:class:`int`]
+    data: List[int]
         List of ranks from oldest to newest
     """
 
@@ -948,11 +972,11 @@ class UserCover:
 
     **Attributes**
 
-    custom_url: Optional[:class:`str`]
+    custom_url: Optional[str]
 
-    url: Optional[:class:`str`]
+    url: Optional[str]
 
-    id: Optional[:class:`int`]
+    id: Optional[int]
     """
 
     __slots__ = ("custom_url", "url", "id")
@@ -972,11 +996,11 @@ class Country:
 
     **Attributes**
 
-    code: :class:`str`
+    code: str
 
-    name: :class:`str`
+    name: str
 
-    display: Optional[:class:`int`]
+    display: Optional[int]
     """
 
     __slots__ = ("code", "name", "display")
@@ -996,9 +1020,9 @@ class UserKudosu:
 
     **Attributes**
 
-    total: :class:`int`
+    total: int
 
-    available: :class:`int`
+    available: int
     """
 
     __slots__ = ("total", "available")
@@ -1017,25 +1041,25 @@ class DailyChallengeUserStats:
 
     **Attributes**
 
-    daily_streak_best: :class:`int`
+    daily_streak_best: int
 
-    daily_streak_current: :class:`int`
+    daily_streak_current: int
 
-    last_update: Optional[:class:`datetime.datetime`]
+    last_update: Optional[:py:class:`datetime.datetime`]
 
-    last_weekly_streak: Optional[:class:`datetime.datetime`]
+    last_weekly_streak: Optional[:py:class:`datetime.datetime`]
 
-    playcount: :class:`int`
+    playcount: int
 
-    top_10p_placements: :class:`int`
+    top_10p_placements: int
 
-    top_50p_placements: :class:`int`
+    top_50p_placements: int
 
-    user_id: :class:`int`
+    user_id: int
 
-    weekly_streak_best: :class:`int`
+    weekly_streak_best: int
 
-    weekly_streak_current: :class:`int`
+    weekly_streak_current: int
     """
 
     __slots__ = (

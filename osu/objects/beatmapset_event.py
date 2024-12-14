@@ -10,15 +10,38 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = (
+    "BeatmapsetEventComment",
+    "BeatmapsetEvent",
+    "BeatmapsetEventNominate",
+    "BeatmapsetEventRemoveFromLoved",
+    "BeatmapsetEventDisqualify",
+    "BeatmapsetEventVote",
+    "BeatmapsetEventKudosuChange",
+    "BeatmapsetEventKudosuGain",
+    "BeatmapsetEventKudosuLost",
+    "BeatmapsetEventKudosuRecalculate",
+    "BeatmapsetEventDiscussionLock",
+    "BeatmapsetEventNominationReset",
+    "BeatmapsetEventNominationResetReceived",
+    "BeatmapsetEventEdit",
+    "BeatmapsetEventGenreEdit",
+    "BeatmapsetEventLanguageEdit",
+    "BeatmapsetEventNsfwToggle",
+    "BeatmapsetEventOffsetEdit",
+    "BeatmapsetEventBeatmapOwnerChange",
+)
+
+
 class BeatmapsetEventComment:
     """
     This object holds some extra information of the event.
 
     **Attributes**
 
-    beatmap_discussion_id: Optional[:class:`int`]
+    beatmap_discussion_id: Optional[int]
 
-    beatmap_discussion_post_id: Optional[:class:`int`]
+    beatmap_discussion_post_id: Optional[int]
 
     event_data: Union[:class:`BeatmapsetEventNominate`, :class:`BeatmapsetEventRemoveFromLoved`,
     :class:`BeatmapsetEventDisqualify`, :class:`BeatmapsetEventKudosuGain`, :class:`BeatmapsetEventKudosuLost`,
@@ -47,7 +70,7 @@ class BeatmapsetEvent:
 
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
     type: :class:`BeatmapsetEventType`
 
@@ -58,9 +81,9 @@ class BeatmapsetEvent:
         - :class:`BeatmapsetEventType`.APPROVE
         - :class:`BeatmapsetEventType`.RANK
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
-    user_id: Optional[:class:`int`]
+    user_id: Optional[int]
 
     beatmapset: Optional[:class:`BeatmapsetCompact`]
 
@@ -116,7 +139,7 @@ class BeatmapsetEventRemoveFromLoved:
     """
     **Attributes**
 
-    reason: :class:`str`
+    reason: str
     """
 
     __slots__ = ("reason",)
@@ -132,7 +155,7 @@ class BeatmapsetEventDisqualify:
     """
     **Attributes**
 
-    nominator_ids: List[:class:`int`]
+    nominator_ids: List[int]
     """
 
     __slots__ = ("nominator_ids",)
@@ -148,9 +171,9 @@ class BeatmapsetEventVote:
     """
     **Attributes**
 
-    user_id: :class:`int`
+    user_id: int
 
-    score: :class:`int`
+    score: int
     """
 
     __slots__ = ("user_id", "score")
@@ -216,7 +239,7 @@ class BeatmapsetEventDiscussionLock:
     """
     **Attributes**
 
-    reason: :class:`str`
+    reason: str
     """
 
     __slots__ = ("reason",)
@@ -232,7 +255,7 @@ class BeatmapsetEventNominationReset:
     """
     **Attributes**
 
-    nominator_ids: List[:class:`int`]
+    nominator_ids: List[int]
     """
 
     __slots__ = ("nominator_ids",)
@@ -248,9 +271,9 @@ class BeatmapsetEventNominationResetReceived:
     """
     **Attributes**
 
-    source_user_id: :class:`int`
+    source_user_id: int
 
-    source_user_name: :class:`str`
+    source_user_name: str
     """
 
     __slots__ = ("source_user_id", "source_user_username")
@@ -267,9 +290,9 @@ class BeatmapsetEventEdit:
     """
     **Attributes**
 
-    old: :class:`str`
+    old: str
 
-    new: :class:`str`
+    new: str
     """
 
     __slots__ = ("old", "new")
@@ -302,13 +325,13 @@ class BeatmapsetEventBeatmapOwnerChange:
     """
     **Attributes**
 
-    beatmap_id: :class:`int`
+    beatmap_id: int
 
-    beatmap_version: :class:`str`
+    beatmap_version: str
 
-    new_user_id: :class:`int`
+    new_user_id: int
 
-    new_user_username: :class:`str`
+    new_user_username: str
     """
 
     __slots__ = ("beatmap_id", "beatmap_version", "new_user_id", "new_user_username")

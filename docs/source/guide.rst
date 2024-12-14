@@ -1,98 +1,95 @@
+============================
 Getting started  with osu.py
 ============================
 
-Structure of osu.py
-^^^^^^^^^^^^^^^^^^^
-There are five major classes responsible for making and assisting with api requests/authentication:
-Client, Path, HTTPHandler, RateLimitHandler, and AuthHandler.
- - Client contains all functions that contain the logic for making a request to an endpoint. These functions use the Path and HTTPHandler classes to make the actual request. The function creates a Path object and passes it to HTTPHandler.make_request.
- - Path is a class that contains information about how to make a request and to where. It's instantiated using classmethods and passed to HTTPHandler when making a request.
- - HTTPHandler contains the logic for making any request based on the information given to it. The Path object tells it the endpoint and auth requirements and all other request-specific details specified by the function calling make_request. The required authentication information is provided by an AuthHandler object and HTTPHandler relies on RateLimitHandler to stay within the specified rate limit.
- - RateLimitHandler keeps track of all requests performed and helps the HTTPHandler not go over the rate limit.
- - AuthHandler contains all the logic for authorizing with the api, managing the auth token and also automatically refreshing it when necessary.
-
 Client and AuthHandler
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 The simplest way to initialise the client class using client credential grant is like so.
 
 .. code:: py
 
-	from osu import Client
-	
-	client = Client.from_client_credentials(client_id, client_secret, redirect_uri)
-	
-If you're unsure of where to obtain a client id and secret, read `here <https://osu.ppy.sh/docs/index.html#managing-oauth-applications>`_.
-	
-There are also four more optional arguments you can use: scope, code, request_wait_time, and limit_per_minute.
-You can read more about them `here <api.html#osu.Client.from_client_credentials>`_.
+    from osu import Client
 
-The other way to initialise the Client class is as normally.
+    client = Client.from_credentials(client_id, client_secret, redirect_uri)
 
-.. code:: py
+If you're unsure of where to obtain a client id and secret, read `osu's managing oauth applications <https://osu.ppy.sh/docs/index.html#managing-oauth-applications>`_.
 
-	from osu import Client
-	
-	client = Client(auth)
-	
-There are two optional parameters - request_wait_time, limit_per_minute - which you can read about `here <api.html#osu.Client>`_.
+There are also five optional parameters you can specify: ``scope``, ``code``, ``request_wait_time``, ``limit_per_minute``, and ``lazily_authenticate``.
+You can read more about them at `Client.from_client_credentials <api.html#osu.Client.from_client_credentials>`_.
 
-The auth parameter for the client is an AuthHandler object. You can initialise it like so.
+The other way to initialise the Client class is directly passing an auth handler.
 
 .. code:: py
 
-	from osu import AuthHandler
-	
-	auth = AuthHandler(client_id, client_secret, redirect_uri)
-	auth.get_auth_token()
-	
-AuthHandler also has an optional parameter scope, which is a Scope object. You can read more about it `here <api.html#osu.AuthHandler>`_.
+    from osu import Client
 
-All those involved client credential grant, but you can also use authorization code grant.
-Here's a full code example (this code is from the examples folder on the osu.py repo `here <https://github.com/Sheepposu/osu.py/blob/main/examples/auth_url.py>`_)
+    client = Client(auth)
+
+There are three optional parameters - ``request_wait_time``, ``limit_per_minute``, and ``api_version`` - which you can read about at `Client <api.html#osu.Client>`_.
+
+The auth parameter for the client is an `AuthHandler <api.html#AuthHandler>`_ object. You can initialise it like so.
+The `AuthHandler.get_auth_token <api.html#AuthHandler.get_auth_token>`_ call is optional and will be lazily
+performed if using client credentials grant.
 
 .. code:: py
 
-	from osu import Client, AuthHandler, Scope
-	import os
+    from osu import AuthHandler
+
+    auth = AuthHandler(client_id, client_secret, redirect_uri)
+    auth.get_auth_token()
+
+`AuthHandler`_ also has an optional parameter ``scope``, which is a Scope object. You can read more about it at `AuthHandler`_.
+
+All those examples involved client credential grant, but you can also use authorization code grant.
+Here's a full code example (this code is from the examples folder on the osu.py repo: `auth_url.py <https://github.com/Sheepposu/osu.py/blob/main/examples/auth_url.py>`_)
+
+.. code:: py
+
+    from osu import Client, AuthHandler, Scope
+    import os
 
 
-	client_id = int(os.getenv('osu_client_id'))
-	client_secret = os.getenv('osu_client_secret')
-	redirect_url = "http://127.0.0.1:8080"
+    client_id = int(os.getenv('osu_client_id'))
+    client_secret = os.getenv('osu_client_secret')
+    redirect_url = "http://127.0.0.1:8080"
 
-	# Usually you would redirect a user on your site
-	# to the authorize url with the redirect being back
-	# to your site where you can grab the code and get
-	# an access token.
-	auth = AuthHandler(client_id, client_secret, redirect_url, Scope.identify())
-	print(auth.get_auth_url())
-	auth.get_auth_token(input("Code: "))  # The code is found in the redirect url (Ex. http://127.0.0.1:8080/?code=***********)
-	client = Client(auth)
-	
-	mode = 'osu'
-	user = client.get_own_data(mode)
-	print(user.username)
+    # Usually you would redirect a user on your site
+    # to the authorize url with the redirect_url being back
+    # to your site where you can grab the code and get
+    # an access token.
+    # For this example, you are redirected to localhost with a code,
+    # which you can copy paste from the url
+    auth = AuthHandler(client_id, client_secret, redirect_url, Scope.identify())
+    print(auth.get_auth_url())
+    auth.get_auth_token(input("Code: "))  # The code is found in the redirect url (Ex. http://127.0.0.1:8080/?code=***********)
+    client = Client(auth)
 
-If you want to learn more about what api requests you can make,
-read through the `osu.py documentation of the Client class <api.html#osu.Client>`_ or check the documentation's homepage for some specific examples.
+    mode = 'osu'
+    user = client.get_own_data(mode)
+    print(user.username)
+
+If you want to learn more about available api requests, read through the `Client`_'s documentation or
+check the `homepage <index.html>`_ for some specific examples.
 
 AsynchronousClient
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-This class is the exact same as the Client class, but all api request functions are asynchronous and it uses AsynchronousAuthHandler.
-You can see it in use `here <https://github.com/Sheepposu/osu.py/blob/main/examples/asynchronous_client.py>`_ on the github.
+------------------
+This class is the exact same as the Client class, but all api request functions are asynchronous and it uses `AsynchronousAuthHandler <api.html#AsynchronousAuthHandler>`_.
+You can see it in use in the `asynchronous_client.py <https://github.com/Sheepposu/osu.py/blob/main/examples/asynchronous_client.py>`_ example on the github.
 
 Scope
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----
 The purpose of the scope class is to authorize under the desired scopes and to check the client scope against the scope required for a specific request.
 
 You can create a Scope object in any of the ways shown below.
 
 .. code:: py
 
-	scope = Scope.default()  # public
-	scope = Scope.identify() # public, identify
-	scope = Scope("pubic", "identify", "friends.read")
-	
-You can see a list of all valid scopes and their descriptions either on the `official osu!api v2 documentation <https://osu.ppy.sh/docs/index.html#scopes>`_ or on the `osu.py documentation of the Scope class <api.html#osu.Scope>`_.
+    Scope.default()  # public
+    Scope.identify() # public, identify
+    Scope("public", "identify", "friends.read")
 
-You can look at more code examples `here <https://github.com/Sheepposu/osu.py/tree/main/examples>`_.
+You can see a list of all valid scopes and their descriptions at `Scope <api.html#osu.Scope>`_.
+
+Further reading
+---------------
+You can check out the `advanced guide <advanced.html>`_ and/or look at more code examples at `osu.py/examples <https://github.com/Sheepposu/osu.py/tree/main/examples>`_.

@@ -18,19 +18,22 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = ("Match", "MatchExtended", "MatchEvent", "MatchGame", "MatchGameScoreInfo")
+
+
 class Match:
     """
     Info of a match, relevant at :func:`osu.Client.get_matches`.
 
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
-    name: :class:`str`
+    name: str
 
-    start_time: Optional[:class:`datetime.datetime`]
+    start_time: Optional[:py:class:`datetime.datetime`]
 
-    end_time: Optional[:class:`datetime.datetime`]
+    end_time: Optional[:py:class:`datetime.datetime`]
     """
 
     __slots__ = ("id", "start_time", "end_time", "name")
@@ -56,11 +59,11 @@ class MatchExtended(Match):
 
     users: List[:class:`UserCompact`]
 
-    first_event_id: :class:`int`
+    first_event_id: int
 
-    latest_event_id: :class:`int`
+    latest_event_id: int
 
-    current_game_id: :class:`int`
+    current_game_id: int
     """
 
     __slots__ = (
@@ -86,15 +89,15 @@ class MatchEvent:
 
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
-    timestamp: :class:`datetime.datetime`
+    timestamp: :py:class:`datetime.datetime`
 
-    user_id: :class:`int`
+    user_id: int
 
     type: :class:`MatchEventType`
 
-    text: Optional[:class:`str`]
+    text: Optional[str]
         None unless the event type is :class:`MatchEventType`.OTHER
 
     game: Optional[:class:`MatchGame`]
@@ -124,13 +127,13 @@ class MatchGame:
 
     **Attributes**
 
-    beatmap_id: :class:`int`
+    beatmap_id: int
 
-    id: :class:`int`
+    id: int
 
-    start_time: Optional[:class:`datetime.datetime`]
+    start_time: Optional[:py:class:`datetime.datetime`]
 
-    end_time: Optional[:class:`datetime.datetime`]
+    end_time: Optional[:py:class:`datetime.datetime`]
 
     mode: :class:`GameModeStr`
 
@@ -184,11 +187,11 @@ class MatchGameScoreInfo:
 
     **Attributes**
 
-    slot: :class:`int`
+    slot: int
 
-    team: :class:`str`
+    team: str
 
-    passed: :class:`bool`
+    passed: bool
     """
 
     __slots__ = ("slot", "team", "passed")

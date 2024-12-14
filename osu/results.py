@@ -12,6 +12,7 @@ from .objects import (
     Build,
     ChatChannel,
     ChatMessage,
+    Forum,
     ForumPost,
     ForumTopic,
     Match,
@@ -69,6 +70,9 @@ __all__ = (
     "GetRoomLeaderboardResult",
     "GetChannelResult",
     "GetAllScoresResult",
+    "GetForumResult",
+    "GetForumsResult",
+    "GetForumTopicsResult",
 )
 
 
@@ -91,13 +95,13 @@ class SearchInfo(ResultBase):
 
     **Attributes**
 
-    sort: :class:`str`
+    sort: str
 
-    limit: :class:`int`
+    limit: int
 
-    start: Optional[:class:`str`]
+    start: Optional[str]
 
-    end: Optional[:class:`str`]
+    end: Optional[str]
     """
 
     sort: str
@@ -119,7 +123,7 @@ class BeatmapsetDiscussionPostsResult(ResultBase):
 
     users: List[:class:`UserCompact`]
 
-    cursor: Dict[:class:`str`, :class:`int`]
+    cursor: Dict[str, int]
     """
 
     beatmapsets: List[BeatmapsetCompact]
@@ -141,7 +145,7 @@ class BeatmapsetDiscussionVotesResult(ResultBase):
 
     users: List[:class:`UserCompact`]
 
-    cursor: Dict[:class:`str`, :class:`int`]
+    cursor: Dict[str, int]
     """
 
     discussions: List[BeatmapsetDiscussion]
@@ -157,7 +161,7 @@ class ReviewsConfig(ResultBase):
 
     **Attributes**
 
-    max_blocks: :class:`int`
+    max_blocks: int
     """
 
     max_blocks: int
@@ -180,7 +184,7 @@ class BeatmapsetDiscussionsResult(ResultBase):
 
     reviews_config: :class:`ReviewsConfig`
 
-    cursor: :class:`str`
+    cursor: str
     """
 
     beatmaps: List[Beatmap]
@@ -198,19 +202,19 @@ class ChangelogListingSearch(ResultBase):
 
     **Attributes**
 
-    start: Optional[:class:`str`]
+    start: Optional[str]
         `start` input
 
-    end: Optional[:class:`str`]
+    end: Optional[str]
         `end` input
 
-    limit: :class:`int`
+    limit: int
         Always 21
 
-    max_id: Optional[:class:`int`]
+    max_id: Optional[int]
         `max_id` input
 
-    stream: Optional[:class:`str`]
+    stream: Optional[str]
         `stream` input
     """
 
@@ -251,7 +255,7 @@ class CreateNewPmResult(ResultBase):
 
     message: :class:`ChatMessage`
 
-    new_channel_id: :class:`int`
+    new_channel_id: int
         [DEPRECATED] channel id of newly created :class:`ChatChannel`
     """
 
@@ -284,7 +288,7 @@ class GetTopicAndPostsResult(ResultBase):
 
     **Attributes**
 
-    cursor_string: :class:`str`
+    cursor_string: str
 
     search: :class:`GetTopicAndPostsSearch`
         Parameters used for current request excluding cursor.
@@ -325,11 +329,11 @@ class NewsSidebar(ResultBase):
 
     **Attributes**
 
-    current_year: :class:`int`
+    current_year: int
 
     news_post: List[:class:`NewsPost`]
 
-    years: List[:class:`int`]
+    years: List[int]
     """
 
     current_year: int
@@ -344,7 +348,7 @@ class GetNewsListingResult(ResultBase):
 
     **Attributes**
 
-    cursor: :class:`str`
+    cursor: str
 
     news_posts: List[:class:`NewsPost`]
 
@@ -411,11 +415,11 @@ class BeatmapsetSearchResult(ResultBase):
 
     search: :class:`SearchInfo`
 
-    recommended_difficulty: Optional[:class:`int`]
+    recommended_difficulty: Optional[int]
 
-    error: Optional[:class:`str`]
+    error: Optional[str]
 
-    total: :class:`int`
+    total: int
     """
 
     beatmapsets: List[Beatmapset]
@@ -467,8 +471,29 @@ class GetAllScoresResult(ResultBase):
 
     scores: List[:class:`SoloScore`]
 
-    cursor: :class:`str`
+    cursor: str
     """
 
     scores: List[SoloScore]
     cursor: str
+
+
+@dataclass
+class GetForumsResult(ResultBase):
+    forums: List[Forum]
+    last_topics: List[ForumTopic]
+
+
+@dataclass
+class GetForumResult(ResultBase):
+    forum: Forum
+    last_topics: List[ForumTopic]
+    topics: List[ForumTopic]
+    pinned_topics: List[ForumTopic]
+
+
+@dataclass
+class GetForumTopicsResult(ResultBase):
+    topics: List[ForumTopic]
+    # params: dict
+    cursor: Optional[str]

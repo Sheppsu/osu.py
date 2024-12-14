@@ -4,21 +4,31 @@ from ..util import prettify, get_optional, get_required
 from ..enums import ObjectType, GameModeStr
 
 
+__all__ = (
+    "BeatmapsetDiscussionPermissions",
+    "BeatmapsetPermissions",
+    "ChatChannelUserAttributes",
+    "ScoreUserAttributes",
+    "CurrentUserPin",
+    "CommentableMetaAttributes",
+)
+
+
 class BeatmapsetDiscussionPermissions:
     """
     A user's permissions in a beatmapset discussion
 
     **Attributes**
 
-    can_destroy: :class:`bool`
+    can_destroy: bool
 
-    can_reopen: :class:`bool`
+    can_reopen: bool
 
-    can_moderate_kudosu: :class:`bool`
+    can_moderate_kudosu: bool
 
-    can_resolve: :class:`bool`
+    can_resolve: bool
 
-    vote_score: :class:`int`
+    vote_score: int
     """
 
     __slots__ = (
@@ -46,32 +56,32 @@ class BeatmapsetPermissions:
 
     **Attributes**
 
-    can_beatmap_update_owner: :class:`bool`
+    can_beatmap_update_owner: bool
 
-    can_delete: :class:`bool`
+    can_delete: bool
 
-    can_edit_metadata: :class:`bool`
+    can_edit_metadata: bool
 
-    can_edit_offset: :class:`bool`
+    can_edit_offset: bool
 
-    can_edit_tags: :class:`bool`
+    can_edit_tags: bool
 
-    can_hype: :class:`bool`
+    can_hype: bool
 
-    can_hype_reason: :class:`str`
+    can_hype_reason: str
 
-    can_love: :class:`bool`
+    can_love: bool
 
-    can_remove_from_loved: :class:`bool`
+    can_remove_from_loved: bool
 
-    is_watching: :class:`bool`
+    is_watching: bool
 
-    new_hype_time: Optional[:class:`str`]
+    new_hype_time: Optional[str]
 
-    nomination_modes: Dict[:class:`GameModeStr`, :class:`str`]
+    nomination_modes: Dict[:class:`GameModeStr`, str]
         Values are either "full" or "limited".
 
-    remaining_hype: :class:`int`
+    remaining_hype: int
     """
 
     __slots__ = (
@@ -116,11 +126,11 @@ class ChatChannelUserAttributes:
 
     **Attributes**
 
-    can_message: :class:`bool`
+    can_message: bool
 
-    can_message_error: Optional[:class:`str`]
+    can_message_error: Optional[str]
 
-    last_read_id: Optional[:class:`int`]
+    last_read_id: Optional[int]
     """
 
     __slots__ = ("can_message", "can_message_error", "last_read_id")
@@ -140,7 +150,7 @@ class ScoreUserAttributes:
 
     **Attributes**
 
-    Optional[:class:`CurrentUserPin`]
+    pin: Optional[:class:`CurrentUserPin`]
     """
 
     __slots__ = ("pin",)
@@ -155,9 +165,9 @@ class CurrentUserPin:
 
     **Attributes**
 
-    is_pinned: :class:`bool`
+    is_pinned: bool
 
-    score_id: :class:`int`
+    score_id: int
 
     score_type: Optional[:class:`ObjectType`]
     """
@@ -176,7 +186,7 @@ class CommentableMetaAttributes:
 
     **Attributes**
 
-    can_new_comment_reason: Optional[:class:`str`]
+    can_new_comment_reason: Optional[str]
     """
 
     __slots__ = ("can_new_comment_reason",)

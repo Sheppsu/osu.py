@@ -6,34 +6,37 @@ if TYPE_CHECKING:
     from .user import UserCompact
 
 
+__all__ = ("WikiPage", "SearchResults")
+
+
 class WikiPage:
     """
     Represents a wiki article
 
     **Attributes**
 
-    available_locales: List[:class:`str`]
+    available_locales: List[str]
         All available locales for the article.
 
-    layout: :class:`str`
+    layout: str
         The layout type for the page.
 
-    locale: :class:`str`
+    locale: str
         All lowercase BCP 47 language tag.
 
-    markdown: :class:`str`
+    markdown: str
         Markdown content.
 
-    path: :class:`str`
+    path: str
         Path of the article.
 
-    subtitle: Optional[:class:`str`]
+    subtitle: Optional[str]
         The article's subtitle.
 
-    tags: List[:class:`str`]
+    tags: List[str]
         Associated tags for the article.
 
-    title: :class:`str`
+    title: str
         The article's title.
     """
 
@@ -71,7 +74,7 @@ class SearchResults:
     results: List[Union[:class:`UserCompact`, :class:`WikiPage`]]
         type depends on search type
 
-    total: :class:`int`
+    total: int
     """
 
     __slots__ = ("results", "total")

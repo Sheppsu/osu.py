@@ -18,37 +18,48 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = (
+    "MultiplayerScore",
+    "MultiplayerScores",
+    "MultiplayerScoresAround",
+    "Room",
+    "UserScoreAggregate",
+    "PlaylistItemStats",
+    "PlaylistItem",
+)
+
+
 class MultiplayerScore:
     """
     Score data.
 
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
-    user_id: :class:`int`
+    user_id: int
 
-    room_id: :class:`int`
+    room_id: int
 
-    playlist_item_id: :class:`int`
+    playlist_item_id: int
 
-    beatmap_id: :class:`int`
+    beatmap_id: int
 
-    rank: :class:`str`
+    rank: str
 
-    total_score: :class:`int`
+    total_score: int
 
-    accuracy: :class:`float`
+    accuracy: float
 
-    max_combo: :class:`int`
+    max_combo: int
 
     mods: List[:class:`LazerMod`]
 
     statistics: :class:`ScoreDataStatistics`
 
-    passed: :class:`bool`
+    passed: bool
 
-    position: Optional[:class:`int`]
+    position: Optional[int]
 
     scores_around: Optional[:class:`MultiplayerScoresAround`]
         Scores around the specified score.
@@ -103,7 +114,7 @@ class MultiplayerScores:
 
     **Attributes**
 
-    cursor: :class:`str`
+    cursor: str
         To be used to fetch the next page.
 
     params: :class:`dict`
@@ -111,7 +122,7 @@ class MultiplayerScores:
 
     scores: List[:class:`MultiplayerScore`]
 
-    total: Optional[:class:`int`]
+    total: Optional[int]
         Index only. Total scores of the specified playlist item.
 
     user_score: Optional[:class:`MultiplayerScore`]
@@ -159,9 +170,9 @@ class Room:
 
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
-    name: :class:`str`
+    name: str
 
     category: :class:`RoomCategory`
 
@@ -172,21 +183,21 @@ class Room:
     realtime_type: :class:`RealTimeType`
         Only applicable when type is RoomType.REALTIME
 
-    user_id: :class:`int`
+    user_id: int
 
-    starts_at: Optional[:class:`datetime.datetime`]
+    starts_at: Optional[:py:class:`datetime.datetime`]
 
-    ends_at: Optional[:class:`datetime.datetime`]
+    ends_at: Optional[:py:class:`datetime.datetime`]
 
-    max_attempts: :class:`int`
+    max_attempts: int
 
-    participant_count: :class:`int`
+    participant_count: int
 
-    channel_id: :class:`int`
+    channel_id: int
 
-    active: :class:`bool`
+    active: bool
 
-    has_password: :class:`bool`
+    has_password: bool
 
     queue_mode: Union[:class:`RealTimeQueueMode`, :class:`PlaylistQueueMode`]
         Type depends on the room type. :class:`PlaylistQueueMode` for type :class:`RoomType`.PLAYLIST
@@ -196,7 +207,7 @@ class Room:
 
     current_user_score: Optional[:class:`UserScoreAggregate`]
 
-    difficulty_range: Optional[Dict[:class:`str`, :class:`int`]]
+    difficulty_range: Optional[Dict[str, int]]
         When not none, is a dictionary containing keys "max" and "min"
 
     host: Optional[:class:`UserCompact`]
@@ -276,24 +287,24 @@ class UserScoreAggregate:
     """
     **Attributes**
 
-    accuracy: :class:`float`
+    accuracy: float
 
-    attempts: :class:`int`
+    attempts: int
 
-    completed: :class:`int`
+    completed: int
 
-    pp: :class:`float`
+    pp: float
 
-    room_id: :class:`int`
+    room_id: int
 
-    total_score: :class:`int`
+    total_score: int
 
-    user_id: :class:`int`
+    user_id: int
 
-    playlist_item_attempts: Optional[Dict[:class:`str`, :class:`int`]]
+    playlist_item_attempts: Optional[Dict[str, int]]
         contains keys "attempts" and "id".
 
-    position: Optional[:class:`int`]
+    position: Optional[int]
         user rank
 
     user: Optional[:class:`UserCompact`]
@@ -335,9 +346,9 @@ class PlaylistItemStats:
     """
     **Attributes**
 
-    count_active: :class:`int`
+    count_active: int
 
-    count_total: :class:`int`
+    count_total: int
 
     ruleset_ids: List[:class:`GameModeInt`]
     """
@@ -357,11 +368,11 @@ class PlaylistItem:
     """
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
-    room_id: :class:`int`
+    room_id: int
 
-    beatmap_id: :class:`int`
+    beatmap_id: int
 
     ruleset_id: :class:`GameModeInt`
 
@@ -369,13 +380,13 @@ class PlaylistItem:
 
     required_mods: List[:class:`LazerMod`]
 
-    expired: :class:`bool`
+    expired: bool
 
-    owner_id: :class:`int`
+    owner_id: int
 
-    playlist_order: Optional[:class:`int`]
+    playlist_order: Optional[int]
 
-    played_at: Optional[:class:`datetime.datetime`]
+    played_at: Optional[:py:class:`datetime.datetime`]
 
     beatmap: Optional[:class:`BeatmapCompact`]
     """

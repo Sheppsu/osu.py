@@ -1,4 +1,3 @@
-from .scope import *
 from .beatmap import *
 from .score import *
 from .discussion import *

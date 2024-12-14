@@ -9,8 +9,10 @@ from ..util import (
     BeatmapsetSearchFilter,
     create_multipart_formdata,
     get_optional_list,
+    get_optional
 )
 from ..results import *
+from ..scope import Scope
 
 from typing import Union, Optional, Sequence, Dict, List, Awaitable
 from datetime import datetime
@@ -23,47 +25,16 @@ except ImportError:
     has_osrparse = False
 
 
+__all__ = ("AsynchronousClient",)
+
+
 class AsynchronousClient:
     """
     Main object for interacting with osu!api, which uses asynchronous requests.
     If you're looking for synchronous requests, use :class:`Client`.
 
-    All the functions of this class are documented under :class:`Client` and function the exact same,
-    with the exception of :func:`AsynchronousClient.from_credentials`
-
-
-    **Init Parameters**
-
-    auth: :class:`AuthHandler`
-        The AuthHandler object passed in when initiating the Client object
-
-    request_wait_time: Optional[:class:`float`]
-        Default is 1.
-
-        This defines the amount of time that the client should wait before making another request.
-        It can make it easier to stay within the rate limits without using all your requests up quickly
-        and then waiting forever to make another. It's most applicable in bot-type apps.
-
-    limit_per_minute: Optional[:class:`float`]
-        Default is 60 because that's the limit peppy requests that we stay under.
-
-        This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
-
-    api_version: Optional[:class:`str`]
-        This parameter is here purely to expose the option.
-        You likely don't need to mess with this.
-
-    Make sure if you are changing the ratelimit handling that you are still following peppy's
-    TOU for using the API:
-
-    Use the API for good. Don't overdo it. If in doubt, ask before (ab)using :).
-    this section may expand as necessary.
-
-    Current rate limit is set at an insanely high 1200 requests per minute,
-    with burst capability of up to 200 beyond that.
-    If you require more, you probably fall into the above category of abuse.
-    If you are doing more than 60 requests a minute,
-    you should probably give peppy a yell.
+    All the functions of this class are documented under :class:`Client` and work the same
+    except :func:`AsynchronousClient.from_credentials`
     """
 
     __slots__ = ("http",)
@@ -94,9 +65,8 @@ class AsynchronousClient:
         limit_per_minute: int = 60,
     ) -> "AsynchronousClient":
         """
-        **DEPRECATED AS OF v2.2.0**
-
-        Use `from_credentials`
+        .. deprecated:: 2.2.0
+            Use :func:`from_credentials`
         """
         auth = AsynchronousAuthHandler(client_id, client_secret, redirect_url, scope)
         await auth.get_auth_token(code)
@@ -115,44 +85,36 @@ class AsynchronousClient:
         lazily_authenticate: bool = True,
     ) -> Union["AsynchronousClient", Awaitable]:
         """
-        Creates client from client id, client secret, redirect uri, and scope.
+        Creates an :class:`AsynchronousClient` from client id, client secret, redirect uri, and scope.
 
-        **Parameters**
+        :param client_id: API client ID
+        :type client_id: int
 
-        client_id: :class:`int`
-            API Client id
+        :param client_secret: API client secret
+        :type client_secret: str
 
-        client_secret: :class:`int`
-            API Client secret
+        :param redirect_uri: API redirect uri
+        :type redirect_uri: Optional[str]
 
-        redirect_uri: Optional[:class:`str`]
-            API redirect uri
+        :param scope:
+            Scopes to authenticate under. Default is :func:`Scope.default`, which is just the ``public`` scope.
+        :type scope: Optional[:class:`Scope`]
 
-        scope: Optional[:class:`Scope`]
-            Scopes to use. Default is Scope.default() which is just the public scope.
+        :param request_wait_time: (Default 1.0)
+            Read :class:`Client` for details.
+        :type request_wait_time: float
 
-        code: Optional[:class:`str`]
-            If provided, is used to authorize. Read more about this under :class:`AuthHandler.get_auth_token`
+        :param limit_per_minute: (Default 60)
+            Do not change default before reading details in :class:`Client`.
+        :type limit_per_minute: int
 
-        request_wait_time: Optional[:class:`float`]
-            Default is 1.
+        :param lazily_authenticate: (Default True)
+            If true, the :class:`AuthHandler` won't authenticate with the api until
+            a request is made that requires it. Otherwise, an ``Awaitable`` is returned.
+        :type lazily_authenticate: bool
 
-            This defines the amount of time that the client should wait before making another request.
-            It can make it easier to stay within the rate limits without using all your requests up quickly
-            and then waiting forever to make another. It's most applicable in bot-type apps.
-
-        limit_per_minute: Optional[:class:`float`]
-            Default is 60 because that's the limit peppy requests that we stay under.
-
-            This sets a cap on the number of requests the client is allowed to make within 1 minute of time.
-
-        lazily_authenticate: :class:`bool`
-            If true (default), the :class:`AuthHandler` won't authenticate with the api until
-            a request is made which requires it. If false, an `Awaitable` is returned.
-
-        **Returns**
-
-        Union[:class:`AsynchronousClient`, Awaitable]
+        :return: Union[:class:`AsynchronousClient`, Awaitable[:class:`AsynchronousClient`]]
+            Awaitable if ``lazily_authenticate`` is false.
         """
         auth = AsynchronousAuthHandler(client_id, client_secret, redirect_url, scope)
         if not lazily_authenticate:
@@ -173,7 +135,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        version: :class:`str`
+        version: str
             x-api-version header value in the format yyyymmdd
         """
         self.http.api_version = version
@@ -184,7 +146,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        domain: :class:`str`
+        domain: str
         """
         self.http.set_domain(domain)
 
@@ -201,13 +163,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        checksum: Optional[:class:`str`]
+        checksum: Optional[str]
             A beatmap checksum.
 
-        filename: Optional[:class:`str`]
+        filename: Optional[str]
             A filename to lookup
 
-        id: Optional[:class:`int`]
+        id: Optional[int]
             A beatmap ID to lookup
 
         **Returns**
@@ -230,16 +192,16 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmap: :class:`int`
+        beatmap: int
             Id of the beatmap
 
-        user: :class:`int`
+        user: int
             Id of the user
 
-        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+        mode: Optional[Union[str, :class:`GameModeStr`]]
             The game mode to get scores for
 
-        mods: Optional[Sequence[:class:`str`]]
+        mods: Optional[Sequence[str]]
             An array of matching mods, or none. Currently doesn't do anything.
 
         **Returns**
@@ -261,13 +223,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmap: :class:`int`
+        beatmap: int
             Id of the beatmap
 
-        user: :class:`int`
+        user: int
             Id of the user
 
-        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+        mode: Optional[Union[str, :class:`GameModeStr`]]
             The game mode to get scores for
 
         **Returns**
@@ -309,20 +271,20 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmap: :class:`int`
+        beatmap: int
             Id of the beatmap
 
-        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+        mode: Optional[Union[str, :class:`GameModeStr`]]
             The game mode to get scores for
 
-        mods: Optional[Union[:class:`Mods`, Sequence[Union[:class:`Mods`, :class:`Mod`, :class:`str`]]]]
+        mods: Optional[Union[:class:`Mods`, Sequence[Union[:class:`Mods`, :class:`Mod`, str]]]]
             Must pass one of:
             a :class:`Mods` object,
             a list of string mod abbreviations,
             a list of :class:`Mods` objects,
             a list of :classL`Mod` objects
 
-        ranking_type: Optional[:class:`str`]
+        ranking_type: Optional[str]
             Beatmap score ranking type. Currently doesn't do anything.
 
         **Returns**
@@ -349,7 +311,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmap: :class:`int`
+        beatmap: int
             The ID of the beatmap
 
         **Returns**
@@ -367,7 +329,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        ids: Optional[List[:class:`int`]]
+        ids: Optional[List[int]]
             Beatmap id to be returned. Specify once for each beatmap id requested.
             Up to 50 beatmaps can be requested at once.
 
@@ -393,18 +355,18 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmap: :class:`int`
+        beatmap: int
             Beatmap id.
 
-        mods: Optional[Union[:class:`int`, Sequence[Union[:class:`str`, :class:`Mods`, :class:`int`]], :class:`Mods`]]
+        mods: Optional[Union[int, Sequence[Union[str, :class:`Mods`, int]], :class:`Mods`]]
             Mod combination. Can be either a bitset of mods, a Mods enum, or array of any. Defaults to no mods.
             Some mods may cause the api to throw an HTTP 422 error depending on the map's gamemode.
 
-        ruleset: Optional[Union[:class:`GameModeStr`, :class:`str`]]
+        ruleset: Optional[Union[:class:`GameModeStr`, str]]
             Ruleset of the difficulty attributes. Only valid if it's the beatmap ruleset or the beatmap can be
             converted to the specified ruleset. Defaults to ruleset of the specified beatmap.
 
-        ruleset_id: Optional[Union[:class:`GameModeInt`, :class:`int`]]
+        ruleset_id: Optional[Union[:class:`GameModeInt`, int]]
             The same as `ruleset` but in integer form.
 
         **Returns**
@@ -429,7 +391,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmapset_id: :class:`int`
+        beatmapset_id: int
 
         **Returns**
 
@@ -455,28 +417,28 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmapset_discussion_id: Optional[:class:`int`]
+        beatmapset_discussion_id: Optional[int]
             id of the BeatmapsetDiscussion
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Maximum number of results
 
-        page: Optional[:class:`int`]
+        page: Optional[int]
             Search results page.
 
-        sort: Optional[:class:`str`]
+        sort: Optional[str]
             `id_desc` for newest first; `id_asc` for oldest first. Defaults to `id_desc`
 
-        type: Optional[Sequence[:class:`str`]]
+        type: Optional[Sequence[str]]
             `first`, `reply`, `system` are the valid values. Defaults to `reply`.
 
-        user: Optional[:class:`int`]
+        user: Optional[int]
             The id of the user
 
-        with_deleted: Optional[:class:`str`]
+        with_deleted: Optional[str]
             This param has no effect as api calls do not currently receive group permissions.
 
-        cursor: Optional[Dict[:class:`str`, :class:`int`]]
+        cursor: Optional[Dict[str, int]]
             A cursor object received from a previous call to get_beatmapset_discussion_posts
             (:class:`BeatmapsetDiscussionPostsResult`.cursor)
 
@@ -526,31 +488,31 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmapset_discussion_id: Optional[:class:`int`]
+        beatmapset_discussion_id: Optional[int]
             id of the BeatmapsetDiscussion
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Maximum number of results
 
-        page: Optional[:class:`int`]
+        page: Optional[int]
             Search results page.
 
-        receiver: Optional[:class:`int`]
+        receiver: Optional[int]
             The id of the User receiving the votes.
 
-        score: Optional[:class:`int`]
+        score: Optional[int]
             1 for upvote, -1 for downvote
 
-        sort: Optional[:class:`str`]
+        sort: Optional[str]
             `id_desc` for newest first; `id_asc` for oldest first. Defaults to `id_desc`
 
-        user: Optional[:class:`int`]
+        user: Optional[int]
             The id of the User giving the votes.
 
-        with_deleted: Optional[:class:`str`]
+        with_deleted: Optional[str]
             This param has no effect as api calls do not currently receive group permissions
 
-        cursor: Optional[Dict[:class:`str`, :class:`int`]]
+        cursor: Optional[Dict[str, int]]
             A cursor object received from a previous call to get_beatmapset_discussion_votes
             (:class:`BeatmapsetDiscussionVotesResult`.cursor)
 
@@ -603,37 +565,37 @@ class AsynchronousClient:
 
         **Parameters**
 
-        beatmap_id: Optional[:class:`int`]
+        beatmap_id: Optional[int]
             id of the beatmap
 
-        beatmapset_id: Optional[:class:`int`]
+        beatmapset_id: Optional[int]
             id of the beatmapset
 
-        beatmapset_status: Optional[:class:`str`]
+        beatmapset_status: Optional[str]
             One of `all`, `ranked`, `qualified`, `disqualified`, `never_qualified`. Defaults to `all`.
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Maximum number of results.
 
-        message_types: Optional[Sequence[Union[:class:`str`, :class:`MessageType`]]]
+        message_types: Optional[Sequence[Union[str, :class:`MessageType`]]]
             None defaults to all types.
 
-        only_unresolved: Optional[:class:`bool`]
+        only_unresolved: Optional[bool]
             true to show only unresolved issues; false, otherwise. Defaults to false.
 
-        page: Optional[:class:`int`]
+        page: Optional[int]
             Search result page.
 
-        sort: Optional[:class:`str`]
+        sort: Optional[str]
             `id_desc` for newest first; `id_asc` for oldest first. Defaults to `id_desc`.
 
-        user: Optional[:class:`int`]
+        user: Optional[int]
             The id of the User.
 
-        with_deleted: Optional[:class:`str`]
+        with_deleted: Optional[str]
             This param has no effect as api calls do not currently receive group permissions.
 
-        cursor: Optional[Dict[:class:`str`, :class:`int`]]
+        cursor: Optional[Dict[str, int]]
             A cursor object received from a previous call to get_beatmapset_discussions
             (:class:`BeatmapsetDiscussionsResult`.cursor)
 
@@ -679,10 +641,10 @@ class AsynchronousClient:
 
         **Parameters**
 
-        stream: :class:`str`
+        stream: str
             Update stream name.
 
-        build: :class:`str`
+        build: str
             Build version.
 
         **Returns**
@@ -704,19 +666,19 @@ class AsynchronousClient:
 
         **Parameters**
 
-        start: Optional[:class:`str`]
+        start: Optional[str]
             Minimum build version.
 
-        max_id: Optional[:class:`int`]
+        max_id: Optional[int]
             Maximum build ID.
 
-        stream: Optional[:class:`str`]
+        stream: Optional[str]
             Stream name to return builds from.
 
-        end: Optional[:class:`str`]
+        end: Optional[str]
             Maximum build version.
 
-        message_formats: Optional[Sequence[:class:`str`]]
+        message_formats: Optional[Sequence[str]]
             `html`, `markdown`. Default to both.
 
         **Returns**
@@ -753,13 +715,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        changelog: :class:`str`
+        changelog: str
             Build version, update stream name, or build ID.
 
-        key: Optional[:class:`str`]
+        key: Optional[str]
             Leave blank to query by build version or stream name, or `id` to query by build ID.
 
-        message_formats: Optional[Sequence[:class:`str`]]
+        message_formats: Optional[Sequence[str]]
             `html`, `markdown`. Default to both.
 
         **Returns**
@@ -787,21 +749,21 @@ class AsynchronousClient:
 
         **Parameter**
 
-        commentable_type: Optional[Union[:class:`ObjectType`, :class:`str`]
+        commentable_type: Optional[Union[:class:`ObjectType`, str]
             The type of resource to get comments for. Must be of the following types:
             beatmapset, build, news_post
 
-        commentable_id: Optional[:class:`int`]
+        commentable_id: Optional[int]
             The id of the resource to get comments for. Id correlates with commentable_type.
 
         cursor: Optional[:class:`dict`]
             Pagination option. See :class:`CommentSort` for detail.
             The format follows Cursor except it's not currently included in the response.
 
-        parent_id: Optional[:class:`int`]
+        parent_id: Optional[int]
             Limit to comments which are reply to the specified id. Specify 0 to get top level comments.
 
-        sort: Optional[Union[:class:`str`, :class:`CommentSort`]]
+        sort: Optional[Union[str, :class:`CommentSort`]]
             Sort option as defined in :class:`CommentSort`.
             Defaults to new for guests and user-specified default when authenticated.
 
@@ -836,7 +798,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        comment: :class:`int`
+        comment: int
             Comment id
 
         **Returns**
@@ -853,10 +815,10 @@ class AsynchronousClient:
 
         **Parameters**
 
-        topic: :class:`int`
+        topic: int
             Id of the topic to be replied to.
 
-        body: :class:`str`
+        body: str
             Content of the reply post.
 
         **Returns**
@@ -887,35 +849,35 @@ class AsynchronousClient:
 
         **Parameters**
 
-        body: :class:`str`
+        body: str
             Content of the topic.
 
-        forum_id: :class:`int`
+        forum_id: int
             Forum to create the topic in.
 
-        title: :class:`str`
+        title: str
             Title of the topic.
 
-        with_poll: Optional[:class:`bool`]
+        with_poll: Optional[bool]
             Enable this to also create poll in the topic (default: false).
 
-        hide_results: Optional[:class:`bool`]
+        hide_results: Optional[bool]
             Enable this to hide result until voting period ends (default: false).
 
-        length_days: Optional[:class:`int`]
+        length_days: Optional[int]
             Number of days for voting period. 0 means the voting will never ends (default: 0).
             This parameter is required if hide_results option is enabled.
 
-        max_options: Optional[:class:`int`]
+        max_options: Optional[int]
             Maximum number of votes each user can cast (default: 1).
 
-        poll_options: Optional[List[:class:`str`]]
+        poll_options: Optional[List[str]]
             List of voting options. BBCode is supported.
 
-        poll_title: Optional[:class:`str`]
+        poll_title: Optional[str]
             Title of the poll.
 
-        vote_change: Optional[:class:`bool`]
+        vote_change: Optional[bool]
             Enable this to allow user to change their votes (default: false).
 
         **Returns**
@@ -961,23 +923,23 @@ class AsynchronousClient:
 
         **Parameters**
 
-        topic: :class:`int`
+        topic: int
             Id of the topic.
 
-        cursor: Optional[:class:`str`]
+        cursor: Optional[str]
             Parameter for pagination.
 
-        sort: Optional[:class:`str`]
+        sort: Optional[str]
             Post sorting option. Valid values are id_asc (default) and id_desc.
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Maximum number of posts to be returned (20 default, 50 at most).
 
-        start: Optional[:class:`int`]
+        start: Optional[int]
             First post id to be returned with sort set to id_asc.
             This parameter is ignored if cursor_string is specified.
 
-        end: Optional[:class:`int`]
+        end: Optional[int]
             First post id to be returned with sort set to id_desc.
             This parameter is ignored if cursor_string is specified.
 
@@ -1008,10 +970,10 @@ class AsynchronousClient:
 
         **Parameters**
 
-        topic: :class:`int`
+        topic: int
             Id of the topic.
 
-        topic_title: :class:`str`
+        topic_title: str
             New topic title.
 
         **Returns**
@@ -1027,10 +989,10 @@ class AsynchronousClient:
 
         Requires OAuth and scope forum.write
 
-        post: :class:`int`
+        post: int
             Id of the post.
 
-        body: :class:`str`
+        body: str
             New post content in BBCode format.
 
         **Returns**
@@ -1053,13 +1015,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: Optional[Union[:class:`str`, :class:`WikiSearchMode`]]
+        mode: Optional[Union[str, :class:`WikiSearchMode`]]
             Either all, user, or wiki_page. Default is all.
 
-        query: Optional[:class:`str`]
+        query: Optional[str]
             Search keyword.
 
-        page: Optional[:class:`int`]
+        page: Optional[int]
             Search result page. Ignored for mode all.
 
         **Returns**
@@ -1086,18 +1048,18 @@ class AsynchronousClient:
 
         **Parameters**
 
-        room: :class:`int`
+        room: int
             Id of the room.
 
-        playlist: :class:`int`
+        playlist: int
             Id of the playlist item.
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Number of scores to be returned.
 
-        sort: Optional[Union[:class:`str`, :class:`MultiplayerScoresSort`]]
+        sort: Optional[Union[str, :class:`MultiplayerScoresSort`]]
 
-        cursor: Optional[:class:`str`]
+        cursor: Optional[str]
             :class:`MultiplayerScores`.cursor value from a previous call to get next page.
 
         **Returns**
@@ -1125,13 +1087,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Maximum number of posts (12 default, 1 minimum, 21 maximum).
 
-        year: Optional[:class:`int`]
+        year: Optional[int]
             Year to return posts from.
 
-        cursor: Optional[:class:`str`]
+        cursor: Optional[str]
             Cursor for pagination.
 
         **Returns**
@@ -1159,7 +1121,7 @@ class AsynchronousClient:
         news: class:`str`
             News post slug or ID.
 
-        key: Optional[:class:`str`]
+        key: Optional[str]
             Unset to query by slug, or `id` to query by ID.
 
         **Returns**
@@ -1191,24 +1153,24 @@ class AsynchronousClient:
 
         Requires OAuth and scope public
 
-        mode: Union[:class:`str`, :class:`GameModeStr`]
+        mode: Union[str, :class:`GameModeStr`]
 
-        type: Union[:class:`str`, :class:`RankingType`]
+        type: Union[str, :class:`RankingType`]
             :class:`RankingType`
 
-        country: Optional[:class:`str`]
+        country: Optional[str]
             Filter ranking by country code. Only available for `type` of `performance`.
 
         cursor: Optional[:class:`dict`]
 
-        filter: Optional[:class:`str`]
+        filter: Optional[str]
             Either `all` (default) or `friends`.
 
-        spotlight: Optional[:class:`int`]
+        spotlight: Optional[int]
             The id of the spotlight if `type` is `charts`.
             Ranking for latest spotlight will be returned if not specified.
 
-        variant: Optional[:class:`str`]
+        variant: Optional[str]
             Filter ranking to specified mode variant.
             For `mode` of `mania`, it's either `4k` or `7k`. Only available for `type` of `performance`.
 
@@ -1248,7 +1210,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: Optional[:class:`str`, :class:`GameModeStr`]
+        mode: Optional[str, :class:`GameModeStr`]
             GameMode. User default mode will be used if not specified.
 
         **Returns**
@@ -1266,13 +1228,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        user: :class:`int`
+        user: int
             Id of the user.
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Maximum number of results.
 
-        offset: Optional[:class:`int`]
+        offset: Optional[int]
             Result offset for pagination.
 
         **Returns**
@@ -1302,22 +1264,22 @@ class AsynchronousClient:
 
         **Parameters**
 
-        user: :class:`int`
+        user: int
             Id of the user.
 
-        type: Union[:class:`UserScoreType` :class:`str`]
+        type: Union[:class:`UserScoreType` str]
             Score type. Must be one of `best`, `firsts`, `recent`, `pinned`
 
-        include_fails: Optional[:class:`bool`]
+        include_fails: Optional[bool]
             Only for recent scores, include scores of failed plays. Defaults to False.
 
-        mode: Optional[Union[:class:`GameModeStr`, :class:`str`]]
+        mode: Optional[Union[:class:`GameModeStr`, str]]
             game mode of the scores to be returned. Defaults to the specified user's mode.
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Maximum number of results.
 
-        offset: Optional[:class:`int`]
+        offset: Optional[int]
             Result offset for pagination.
 
         **Returns**
@@ -1353,16 +1315,16 @@ class AsynchronousClient:
 
         **Parameters**
 
-        user: :class:`int`
+        user: int
             Id of the user.
 
-        type: Union[:class:`str`, :class:`UserBeatmapType`]
+        type: Union[str, :class:`UserBeatmapType`]
             Beatmap type. Can be one of `favourite`, `graveyard`, `guest`, `loved`, `most_played`, `nominated`, `pending`, `ranked`.
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Maximum number of results.
 
-        offset: Optional[:class:`int`]
+        offset: Optional[int]
             Result offset for pagination.
 
         **Returns**
@@ -1388,13 +1350,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        user: :class:`int`
+        user: int
             Id of the user.
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             Maximum number of results.
 
-        offset: Optional[:class:`int`]
+        offset: Optional[int]
             Result offset for pagination.
 
         **Returns**
@@ -1426,14 +1388,14 @@ class AsynchronousClient:
 
         **Parameters**
 
-        user: Union[:class:`int`, :class:`str`]
+        user: Union[int, str]
             Id or username of the user. Id lookup is prioritised unless key parameter is specified.
             Previous usernames are also checked in some cases.
 
-        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]
+        mode: Optional[Union[str, :class:`GameModeStr`]
             User default mode will be used if not specified.
 
-        key: Optional[:class:`str`]
+        key: Optional[str]
             **DEPRECATED**
             It's recommended to prefix usernames with @ instead of setting key
 
@@ -1465,7 +1427,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        ids: Sequence[:class:`int`]
+        ids: Sequence[int]
             User id to be returned. Specify once for each user id requested.
             Up to 50 users can be requested at once.
 
@@ -1482,7 +1444,7 @@ class AsynchronousClient:
         Lookup users by a mix of user ids and usernames.
         Can lookup maximum 50 at a time.
 
-        ids: Sequence[Union[:class:`int`, :class:`str`]]
+        ids: Sequence[Union[int, str]]
             Can be a list of user ids and usernames.
             Usernames should be prefixed with "@" to make sure they're interpreted as usernames by the api.
 
@@ -1501,10 +1463,10 @@ class AsynchronousClient:
 
         **Parameters**
 
-        locale: :class:`str`
+        locale: str
             Two-letter language code of the wiki page.
 
-        path: :class:`str`
+        path: str
             The path name of the wiki page.
 
         **Returns**
@@ -1529,14 +1491,14 @@ class AsynchronousClient:
 
         **Parameters**
 
-        page: Optional[:class:`int`]
+        page: Optional[int]
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
 
-        sort: Optional[Union[:class:`str`, :class:`BeatmapsetEventSort`]]
+        sort: Optional[Union[str, :class:`BeatmapsetEventSort`]]
             Specified a sort order.
 
-        type: Optional[Union[:class:`str`, :class:`BeatmapsetEventType`]]
+        type: Optional[Union[str, :class:`BeatmapsetEventType`]]
             Specifies for only a certain type of event to be returned.
 
         **Returns**
@@ -1573,9 +1535,9 @@ class AsynchronousClient:
 
         **Parameters**
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
 
-        sort: Optional[Union[:class:`str`, :class:`MatchSort`]]
+        sort: Optional[Union[str, :class:`MatchSort`]]
 
         cursor: Optional[Dict]
             Dictionary containing one key: `match_id`.
@@ -1600,7 +1562,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        match_id: :class:`int`
+        match_id: int
             The match id.
 
         **Returns**
@@ -1625,22 +1587,22 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+        mode: Optional[Union[str, :class:`GameModeStr`]]
             Game mode to filter rooms by.
 
-        sort: Optional[Union[:class:`str`, :class:`RoomSort`]]
+        sort: Optional[Union[str, :class:`RoomSort`]]
             Sort rooms by.
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             max number of rooms to return
 
-        room_type: Optional[Union[:class:`RoomType`, :class:`str`]]
+        room_type: Optional[Union[:class:`RoomType`, str]]
             type of room to look for
 
-        category: Optional[Union[:class:`RoomCategory`, :class:`str`]]
+        category: Optional[Union[:class:`RoomCategory`, str]]
             type of category of room to look for
 
-        filter_mode: Optional[Union[:class:`RoomFilterMode`, :class:`str`]]
+        filter_mode: Optional[Union[:class:`RoomFilterMode`, str]]
         """
         mode, sort, room_type, category, filter_mode = parse_enum_args(mode, sort, room_type, category, filter_mode)
         return list(
@@ -1677,7 +1639,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        room_id: :class:`int`
+        room_id: int
             The room id.
 
         **Returns**
@@ -1694,9 +1656,9 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: Union[:class:`str`, :class:`GameModeStr`]
+        mode: Union[str, :class:`GameModeStr`]
 
-        score_id: :class:`int`
+        score_id: int
 
         **Returns**
 
@@ -1714,7 +1676,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        score_id: :class:`int`
+        score_id: int
 
         **Returns**
 
@@ -1735,7 +1697,7 @@ class AsynchronousClient:
 
         filters: Optional[:class:`BeatmapsetSearchFilter`]
 
-        page: Optional[:class:`int`]
+        page: Optional[int]
 
         **Returns**
 
@@ -1765,7 +1727,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        room_id: :class:`int`
+        room_id: int
 
         **Returns**
 
@@ -1788,11 +1750,11 @@ class AsynchronousClient:
 
         **Parameters**
 
-        mode: Optional[Union[:class:`str`, :class:`GameModeStr`]]
+        mode: Optional[Union[str, :class:`GameModeStr`]]
 
-        score_id: :class:`int`
+        score_id: int
 
-        use_osrparse: :class:`bool`
+        use_osrparse: bool
             If true, returns an :class:`osrparse.Replay` object. Defaults to true.
 
         **Returns**
@@ -1827,9 +1789,9 @@ class AsynchronousClient:
 
         **Parameters**
 
-        score_id: :class:`int`
+        score_id: int
 
-        use_osrparse: :class:`bool`
+        use_osrparse: bool
             If true, returns an :class:`osrparse.Replay` object. Defaults to true.
 
         **Returns**
@@ -1874,11 +1836,11 @@ class AsynchronousClient:
 
         **Parameters**
 
-        history_since: Optional[:class:`int`]
+        history_since: Optional[int]
             :class:`UserSilence`s after the specified id to return.
             This field is preferred and takes precedence over `since`.
 
-        since: Optional[:class:`int`]
+        since: Optional[int]
             :class:`UserSilence`s after the specified :class:`ChatMessage`.message_id to return.
 
         **Returns**
@@ -1904,16 +1866,16 @@ class AsynchronousClient:
 
         **Parameters**
 
-        target_id: :class:`int`
+        target_id: int
             user_id of user to start PM with
 
-        message: :class:`str`
+        message: str
             message to send
 
-        is_action: :class:`bool`
+        is_action: bool
             whether the message is an action
 
-        uuid: Optional[:class:`str`]
+        uuid: Optional[str]
             client-side message identifier which will be sent back in response and websocket json.
 
         **Returns**
@@ -1940,16 +1902,16 @@ class AsynchronousClient:
 
         **Parameters**
 
-        channel_id: :class:`int`
+        channel_id: int
             The ID of the channel to retrieve messages for
 
-        limit: Optional[:class:`int`]
+        limit: Optional[int]
             number of messages to return (max of 50)
 
-        since: Optional[:class:`int`]
+        since: Optional[int]
             messages after the specified message id will be returned
 
-        until: Optional[:class:`int`]
+        until: Optional[int]
             messages up to but not including the specified message id will be returned
 
         **Returns**
@@ -1973,13 +1935,13 @@ class AsynchronousClient:
 
         **Parameters**
 
-        channel_id: :class:`int`
+        channel_id: int
             The id of the channel to send message to
 
         message: class:`str`
             message to send
 
-        is_action: :class:`bool`
+        is_action: bool
             whether the message is an action
         """
         return ChatMessage(
@@ -1997,10 +1959,10 @@ class AsynchronousClient:
 
         **Parameters**
 
-        channel_id: :class:`int`
+        channel_id: int
             The id of the channel to join
 
-        user_id: :class:`int`
+        user_id: int
             The id of the user to be joined
 
         **Returns**
@@ -2017,10 +1979,10 @@ class AsynchronousClient:
 
         **Parameters**
 
-        channel_id: :class:`int`
+        channel_id: int
             The id of the channel to join
 
-        user_id: :class:`int`
+        user_id: int
             The id of the user to be joined
         """
         await self.http.make_request(Path.leave_channel(channel_id, user_id))
@@ -2033,10 +1995,10 @@ class AsynchronousClient:
 
         **Parameters**
 
-        channel_id: :class:`int`
+        channel_id: int
             id of the channel to mark as read
 
-        message_id: :class:`int`
+        message_id: int
             most recent message to mark as read up to
         """
         await self.http.make_request(Path.mark_channel_read(channel_id, message_id))
@@ -2061,7 +2023,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        user_id: :class:`int`
+        user_id: int
             id of the user to open a PM channel with
 
         **Returns**
@@ -2088,13 +2050,13 @@ class AsynchronousClient:
         target_ids: :class:`List[int]`
             users to include in the channel
 
-        message: :class:`str`
+        message: str
             message to send with the announcement
 
-        name: :class:`str`
+        name: str
             the channel name
 
-        description: :class:`str`
+        description: str
             the channel description
 
         **Returns**
@@ -2122,7 +2084,7 @@ class AsynchronousClient:
 
         **Parameters**
 
-        channel_id: :class:`int`
+        channel_id: int
             id of the channel to get
 
         **Returns**
@@ -2141,9 +2103,9 @@ class AsynchronousClient:
 
         **Parameters**
 
-        ruleset: Optional[Union[:class:`GameModeStr`, :class:`str`]]
+        ruleset: Optional[Union[:class:`GameModeStr`, str]]
 
-        cursor: Optional[:class:`str`]
+        cursor: Optional[str]
 
         **Returns**
 

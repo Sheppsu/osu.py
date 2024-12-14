@@ -4,7 +4,7 @@ from typing import Callable, Optional, Union
 from collections.abc import Awaitable
 
 from .constants import DEFAULT_AUTH_URL, DEFAULT_TOKEN_URL, DEFAULT_DOMAIN, auth_url, token_url
-from .objects import Scope
+from .scope import Scope
 from .exceptions import ScopeException
 from .util import raise_aiohttp_error
 
@@ -16,10 +16,13 @@ except ImportError:
     has_aiohttp = False
 
 
-__all__ = ("BaseAuthHandler", "AuthHandler", "AsynchronousAuthHandler")
+__all__ = ("BaseAuthHandler", "FunctionalAuthHandler", "AuthHandler", "AsynchronousAuthHandler")
 
 
 class BaseAuthHandler:
+    """
+    An abstract class for implementing authentication logic.
+    """
     __slots__ = ("token", "domain", "auth_url", "token_url")
 
     scope: Scope
@@ -35,7 +38,7 @@ class BaseAuthHandler:
 
         **Parameters**
 
-        domain: :class:`str`
+        domain: str
         """
         self.domain = domain
         self.auth_url = auth_url(domain)
@@ -56,29 +59,38 @@ class FunctionalAuthHandler(BaseAuthHandler):
     Helps to go through the oauth process easily, as well as refresh
     tokens without the user needing to worry about it.
 
-    Note:
-    If you're not authorizing a user with a url for a code, this does not apply to you.
-    AuthHandler does not save refresh tokens past the program finishing.
-    AuthHandler will save the refresh token to refresh the access token
-    while the program is running, so make sure to save the refresh token
-    before shutting down the program so you can use it to get a valid access token
-    without having the user reauthorize.
+    .. note::
+        If you're not authorizing a user with a url for a code, this does not apply to you.
+        AuthHandler does not save refresh tokens past the program finishing.
+        AuthHandler will save the refresh token to refresh the access token
+        while the program is running, so make sure to save the refresh token
+        before shutting down the program, so you can use it to get a valid access token
+        without having the user reauthorize.
 
     **Init Parameters**
 
-    client_id: :class:`int`
+    client_id: int
         Client id
 
-    client_secret: :class:`str`
+    client_secret: str
         Client secret
 
-    redirect_uri: :class:`str`
+    redirect_uri: str
         Redirect uri
 
     scope: Optional[:class:`Scope`]
-        Scope object helps the program identify what requests you can
-        and can't make with your scope. Default is 'public' (Scope.default())
+        Scopes to authorize under. Default is :func:`Scope.default`.
     """
+    __slots__ = (
+        "client_id",
+        "client_secret",
+        "redirect_url",
+        "scope",
+        "refresh_token",
+        "_token",
+        "expire_time",
+        "_refresh_callback"
+    )
 
     SAVE_VERSION = 2
 
@@ -86,10 +98,13 @@ class FunctionalAuthHandler(BaseAuthHandler):
         self,
         client_id: int,
         client_secret: str,
-        redirect_url: str,
-        scope: Optional[Scope] = Scope.default(),
+        redirect_url: Optional[str],
+        scope: Optional[Scope] = None,
     ):
         super().__init__()
+
+        if scope is None:
+            scope = Scope.default()
 
         if scope == "lazer":
             raise ScopeException("The lazer scope signifies that an endpoint only meant for use by the lazer client.")
@@ -133,7 +148,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
 
         **Parameters**
 
-        state: Optional[:class:`str`]
+        state: Optional[str]
             Will be returned to the redirect_uri along with the code.
         """
         params = {
@@ -172,19 +187,19 @@ class FunctionalAuthHandler(BaseAuthHandler):
 
         {
 
-        'save_version': :class:`int`,
+        'save_version': int,
 
-        'client_id': :class:`int`,
+        'client_id': int,
 
-        'client_secret': :class:`str`,
+        'client_secret': str,
 
-        'redirect_url': :class:`str`,
+        'redirect_url': str,
 
-        'scope': :class:`str`,
+        'scope': str,
 
-        'refresh_token': :class:`str`,
+        'refresh_token': str,
 
-        'domain': :class:`str`,
+        'domain': str,
 
         }
         """
@@ -233,7 +248,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
 
         **Parameters**
 
-        code: Optional[:class:`str`]
+        code: Optional[str]
             code from user authorizing at a specific url
         """
         raise NotImplementedError()
@@ -246,7 +261,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
 
         **Parameters**
 
-        refresh_token: Optional[:class:`str`]
+        refresh_token: Optional[str]
             A refresh token used to get a new access token.
         """
         raise NotImplementedError()

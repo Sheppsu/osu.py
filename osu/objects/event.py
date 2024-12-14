@@ -9,15 +9,38 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = (
+    "Event",
+    "AchievementEvent",
+    "BeatmapPlaycountEvent",
+    "BeatmapsetApproveEvent",
+    "BeatmapsetDeleteEvent",
+    "BeatmapsetReviveEvent",
+    "BeatmapsetUpdateEvent",
+    "BeatmapsetUploadEvent",
+    "RankEvent",
+    "RankLostEvent",
+    "UserSupportAgain",
+    "UserSupportFirst",
+    "UserSupportGift",
+    "UsernameChangeEvent",
+    "EventUser",
+    "EventBeatmap",
+    "EventBeatmapset",
+    "EVENT_TYPE",
+    "get_event_object",
+)
+
+
 class Event:
     """
     Base class of an event
 
     **Attributes**
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
-    id: :class:`int`
+    id: int
 
     type:
         All types and the additional attributes they provide are listed under 'Event Types'
@@ -54,7 +77,7 @@ class BeatmapPlaycountEvent(Event):
 
     beatmap: :class:`EventBeatmap`
 
-    count: :class:`int`
+    count: int
     """
 
     __slots__ = ("beatmap", "count")
@@ -172,9 +195,9 @@ class RankEvent(Event):
     """
     **Attributes**
 
-    score_rank: :class:`str`
+    score_rank: str
 
-    rank: :class:`int`
+    rank: int
 
     mode: :class:`GameModeStr`
 
@@ -292,11 +315,11 @@ class EventUser:
     """
     **Attributes**
 
-    username: :class:`str`
+    username: str
 
-    url: :class:`str`
+    url: str
 
-    previous_username: Optional[:class:`str`]
+    previous_username: Optional[str]
         Only for UsernameChangeEvent.
     """
 
@@ -315,9 +338,9 @@ class EventBeatmap:
     """
     **Attributes**
 
-    title: :class:`str`
+    title: str
 
-    url: :class:`str`
+    url: str
     """
 
     __slots__ = ("title", "url")
@@ -334,9 +357,9 @@ class EventBeatmapset:
     """
     **Attributes**
 
-    title: :class:`str`
+    title: str
 
-    url: :class:`str`
+    url: str
     """
 
     __slots__ = ("title", "url")

@@ -13,7 +13,7 @@ except ImportError:
     has_aiohttp = False
 
 from ..auth import BaseAuthHandler
-from ..exceptions import ScopeException
+from ..exceptions import ScopeException, RequestException
 from ..constants import DEFAULT_BASE_URL, base_url
 from ..util import raise_aiohttp_error
 
@@ -22,6 +22,10 @@ __all__ = ("AsynchronousHTTPHandler",)
 
 
 class AsynchronousHTTPHandler:
+    """
+    Handles making asynchronous requests. Used by :class:`osu.AsynchronousClient`.
+    """
+
     def __init__(
         self,
         auth: Optional[BaseAuthHandler],
@@ -108,7 +112,7 @@ class AsynchronousHTTPHandler:
                         err = None
 
                     if err:
-                        raise RuntimeError(err) from e
+                        raise RequestException(err) from e
 
                     raise e
 
@@ -120,6 +124,30 @@ class AsynchronousHTTPHandler:
         return self.make_request_to_endpoint(self.base_url, path, *args, **kwargs)
 
     async def make_request(self, path, *args, **kwargs):
+        """
+        Make request to the api.
+
+        :param path:
+        :type path: :class:`osu.Path`
+
+        :param data: (Default None)
+            Json body of the request
+        :type data: Optional[Union[dict, list]]
+
+        :param headers: (Default None)
+            Headers to send in the request
+        :type headers: Optional[Dict[str, str]]
+
+        :param is_download: (Default False)
+            Returns response object if true
+        :type is_download: bool
+
+        :param files: (Default None)
+
+        :param kwargs:
+            All kwargs will be interpreted as query parameters for the request.
+        :type kwargs: Dict[str, str]
+        """
         gen = self.get_req_gen(path, *args, **kwargs)
         async for resp in gen:
             try:

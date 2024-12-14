@@ -10,43 +10,54 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = (
+    "BeatmapsetDiscussion",
+    "VotesSummary",
+    "VotersSummary",
+    "BeatmapsetDiscussionPost",
+    "SystemDiscussionPostMessage",
+    "BeatmapsetDiscussionVote",
+    "Review",
+)
+
+
 class BeatmapsetDiscussion:
     """
     Represents a Beatmapset modding discussion
 
     **Attributes**
 
-    beatmap_id: Optional[:class:`int`]
+    beatmap_id: Optional[int]
 
-    beatmapset_id: :class:`int`
+    beatmapset_id: int
 
-    can_be_resolved: :class:`bool`
+    can_be_resolved: bool
 
-    can_grant_kudosu: :class:`bool`
+    can_grant_kudosu: bool
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
-    deleted_at: Optional[:class:`datetime.datetime`]
+    deleted_at: Optional[:py:class:`datetime.datetime`]
 
-    deleted_by_id: Optional[:class:`int`]
+    deleted_by_id: Optional[int]
 
-    id: :class:`int`
+    id: int
 
-    kudosu_denied: :class:`bool`
+    kudosu_denied: bool
 
-    last_post_at: :class:`datetime.datetime`
+    last_post_at: :py:class:`datetime.datetime`
 
     message_type: :class:`MessageType`
 
-    parent_id: Optional[:class:`int`]
+    parent_id: Optional[int]
 
-    resolved: :class:`bool`
+    resolved: bool
 
-    timestamp: Optional[:class:`int`]
+    timestamp: Optional[int]
 
-    updated_at: :class:`datetime.datetime`
+    updated_at: :py:class:`datetime.datetime`
 
-    user_id: :class:`int`
+    user_id: int
 
     beatmap: Optional[:class:`BeatmapCompact`]
 
@@ -127,10 +138,10 @@ class VotesSummary:
 
     **Attributes**
 
-    down: :class:`int`
+    down: int
         Number of downvotes
 
-    up: :class:`int`
+    up: int
         Number of upvotes
 
     voters: :class:`VotersSummary`
@@ -151,10 +162,10 @@ class VotersSummary:
 
     **Attributes**
 
-    down: List[:class:`int`]
+    down: List[int]
         List of user IDs of users that downvoted
 
-    up: List[:class:`int`]
+    up: List[int]
         List of user IDs of users that upvoted
     """
 
@@ -171,26 +182,26 @@ class BeatmapsetDiscussionPost:
 
     **Attributes**
 
-    beatmapset_discussion_id: :class:`int`
+    beatmapset_discussion_id: int
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
-    deleted_at: Optional[:class:`datetime.datetime`]
+    deleted_at: Optional[:py:class:`datetime.datetime`]
 
-    deleted_by_id: Optional[:class:`int`]
+    deleted_by_id: Optional[int]
 
-    id: :class:`int`
+    id: int
 
-    last_editor_id: Optional[:class:`int`]
+    last_editor_id: Optional[int]
 
-    updated_at: :class:`datetime.datetime`
+    updated_at: :py:class:`datetime.datetime`
 
-    user_id: :class:`int`
+    user_id: int
 
-    message: Union[:class:`str`, :class:`SystemDiscussionPostMessage`]
+    message: Union[str, :class:`SystemDiscussionPostMessage`]
         String when `system` is false and :class:`SystemDiscussionPostMessage` otherwise.
 
-    system: :class:`bool`
+    system: bool
 
     beatmap_discussion: Optional[:class:`BeatmapsetDiscussion`]
     """
@@ -238,9 +249,9 @@ class SystemDiscussionPostMessage:
 
     **Attributes**
 
-    type: :class:`str`
+    type: str
 
-    value: :class:`bool`
+    value: bool
     """
 
     __slots__ = ("type", "value")
@@ -256,17 +267,17 @@ class BeatmapsetDiscussionVote:
 
     **Attributes**
 
-    beatmapset_discussion_id: :class:`int`
+    beatmapset_discussion_id: int
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
-    id: :class:`int`
+    id: int
 
-    score: :class:`int`
+    score: int
 
-    updated_at: :class:`datetime.datetime`
+    updated_at: :py:class:`datetime.datetime`
 
-    user_id: :class:`int`
+    user_id: int
     """
 
     __slots__ = (
@@ -294,7 +305,7 @@ class Review:
     """
     **Attributes**
 
-    max_blocks: :class:`int`
+    max_blocks: int
     """
 
     __slots__ = ("max_blocks",)

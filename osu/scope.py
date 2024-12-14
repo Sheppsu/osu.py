@@ -1,3 +1,6 @@
+__all__ = ("Scope",)
+
+
 class Scope:
     """
     Scope object for telling the program what scopes you are using
@@ -41,10 +44,12 @@ class Scope:
 
     @classmethod
     def default(cls):
+        """Initializes with ``public`` scope"""
         return cls("public")
 
     @classmethod
     def identify(cls):
+        """Initializes with ``public`` and ``identify`` scopes"""
         return cls("public", "identify")
 
     def __iter__(self):

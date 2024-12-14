@@ -5,32 +5,35 @@ from ..enums import GameModeStr
 from .forum import TextFormat
 
 
+__all__ = ("Group", "UserGroup")
+
+
 class Group:
     """
     This object isn't returned by any endpoints yet, it is here purely as a reference for :class:`UserGroup`
 
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
-    identifier: :class:`str`
+    identifier: str
         Unique string to identify the group.
 
-    is_probationary: :class:`bool`
+    is_probationary: bool
         Whether members of this group are considered probationary.
 
-    has_playmodes: :class:`bool`
+    has_playmodes: bool
         If this group associates GameModes with a user's membership, e.g. BN/NAT members
 
-    has_listing: :class:`bool`
+    has_listing: bool
         Whether this group displays a listing at /groups/{id}
 
-    name: :class:`str`
+    name: str
 
-    short_name: :class:`str`
+    short_name: str
         Short name of the group for display.
 
-    colour: Optional[:class:`str`]
+    colour: Optional[str]
 
     description: Optional[:class:`TextFormat`]
         A dictionary with keys html and markdown.

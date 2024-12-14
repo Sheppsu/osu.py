@@ -8,25 +8,41 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = ("Forum", "ForumPost", "TextFormat", "ForumTopic", "Poll", "PollOption")
+
+
+class Forum:
+    __slots__ = ("id", "name", "description", "subforums")
+
+    def __init__(self, data):
+        self.id: int = get_required(data, "id")
+        self.name: str = get_required(data, "name")
+        self.description: str = get_required(data, "description")
+        self.subforums: List[Forum] = list(map(Forum, get_required(data, "subforums")))
+
+    def __repr__(self):
+        return prettify(self, "id", "name", "subforums")
+
+
 class ForumPost:
     """
     **Attributes**
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
-    deleted_at: Optional[:class:`datetime.datetime`]
+    deleted_at: Optional[:py:class:`datetime.datetime`]
 
-    edited_at: Optional[:class:`datetime.datetime`]
+    edited_at: Optional[:py:class:`datetime.datetime`]
 
-    edited_by_id: Optional[:class:`int`]
+    edited_by_id: Optional[int]
 
-    forum_id: :class:`int`
+    forum_id: int
 
-    id: :class:`int`
+    id: int
 
-    topic_id: :class:`int`
+    topic_id: int
 
-    user_id: :class:`int`
+    user_id: int
 
     body: Optional[:class:`TextFormat`]
     """
@@ -64,9 +80,9 @@ class TextFormat:
 
     **Attributes**
 
-    html: :class:`str`
+    html: str
 
-    raw: :class:`str`
+    raw: str
     """
 
     __slots__ = ("html", "raw")
@@ -88,31 +104,31 @@ class ForumTopic:
     """
     **Attributes**
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
-    deleted_at: Optional[:class:`datetime.datetime`]
+    deleted_at: Optional[:py:class:`datetime.datetime`]
 
-    first_post_id: :class:`int`
+    first_post_id: int
 
-    forum_id: :class:`int`
+    forum_id: int
 
-    id: :class:`int`
+    id: int
 
-    is_locked: :class:`bool`
+    is_locked: bool
 
-    last_post_id: :class:`int`
+    last_post_id: int
 
     poll: Optional[:class:`Poll`]
 
-    post_count: :class:`int`
+    post_count: int
 
-    title: :class:`str`
+    title: str
 
     type: :class:`ForumTopicType`
 
-    updated_at: :class:`datetime.datetime`
+    updated_at: :py:class:`datetime.datetime`
 
-    user_id: :class:`int`
+    user_id: int
     """
 
     __slots__ = (
@@ -154,23 +170,23 @@ class Poll:
     """
     **Attributes**
 
-    allow_vote_change: :class:`bool`
+    allow_vote_change: bool
 
-    ended_at: Optional[:class:`datetime.datetime`]
+    ended_at: Optional[:py:class:`datetime.datetime`]
 
-    hide_incomplete_results: :class:`bool`
+    hide_incomplete_results: bool
 
-    last_vote_at: Optional[:class:`datetime.datetime`]
+    last_vote_at: Optional[:py:class:`datetime.datetime`]
 
-    max_votes: :class:`int`
+    max_votes: int
 
     options: List[:class:`PollOption`]
 
-    started_at: :class:`datetime.datetime`
+    started_at: :py:class:`datetime.datetime`
 
     title: :class:`TextFormat`
 
-    total_vote_count: :class:`int`
+    total_vote_count: int
     """
 
     __slots__ = (
@@ -204,11 +220,11 @@ class PollOption:
     """
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
     text: :class:`TextFormat`
 
-    vote_count: Optional[:class:`int`]
+    vote_count: Optional[int]
         Not present if the poll is incomplete and results are hidden.
     """
 

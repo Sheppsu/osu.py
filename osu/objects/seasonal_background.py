@@ -7,13 +7,16 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = ("SeasonalBackgrounds", "SeasonalBackground")
+
+
 class SeasonalBackgrounds:
     """
     Contains data on the seasonal backgrounds.
 
     **Attributes**
 
-    ends_at: :class:`datetime.datetime`
+    ends_at: :py:class:`datetime.datetime`
         The date when the seasonal backgrounds will end.
 
     backgrounds: List[:class:`SeasonalBackground`]
@@ -36,7 +39,7 @@ class SeasonalBackground:
 
     **Attributes**
 
-    url: :class:`str`
+    url: str
         The url of the background.
 
     user: :class:`UserCompact`
