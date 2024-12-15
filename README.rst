@@ -19,16 +19,15 @@ Has a high-level interface while still allowing ways to do more complex things.
 
 Major features/capabilities
 ---------------------------
-- Compatible with Python 3.8+
-- Client class which carries out all api requests
-- AsynchronousClient class for asynchronous requests (install with async feature)
-- NotificationWebsocket class for using the notification websocket feature of osu api v2
-- Support for Authorization Code Grant, Client Credentials Grant, and all scopes (except lazer)
-- Builtin rate limit handling and ability to tweak
-- Uses storage efficient objects
-- Refresh and access token is automatically managed
-- Utility functions and classes that make your life easier
-- Documentation that covers everything osu.py is capable of
+- Python 3.8+
+- Client class that supports all endpoints
+- ``AsynchronousClient`` for async requests
+- Supports Authorization Code Grant, Client Credentials Grant, and all scopes (except lazer)
+- Builtin rate limit handling and ability to tweak it
+- Storage-efficient objects
+- Refresh and access tokens are automatically managed
+- Quality of life functions, enums, and designs
+- Extensive documentation
 
 Installation
 ------------
