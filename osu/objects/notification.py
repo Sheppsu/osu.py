@@ -14,6 +14,36 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = (
+    "Notification",
+    "ReadNotification",
+    "NotificationsDetailsBase",
+    "BeatmapOwnerChangeDetails",
+    "BeatmapsetNotificationDetails",
+    "BeatmapsetDiscussionPostNotificationDetails",
+    "ReviewStats",
+    "BeatmapsetDiscussionReviewNewDetails",
+    "ChannelAnnouncementDetails",
+    "ChannelMessageDetails",
+    "CommentNewDetails",
+    "ForumTopicReplyDetails",
+    "UserAchievementUnlockDetails",
+    "UserBeatmapsetNewDetails",
+    "BeatmapsetDiscussionLockDetails",
+    "BeatmapsetDiscussionPostNewDetails",
+    "BeatmapsetDiscussionQualifiedProblemDetails",
+    "BeatmapsetDiscussionUnlockDetails",
+    "BeatmapsetDisqualifyDetails",
+    "BeatmapsetLoveDetails",
+    "BeatmapsetNominateDetails",
+    "BeatmapsetQualifyDetails",
+    "BeatmapsetRankDetails",
+    "BeatmapsetRemoveFromLovedDetails",
+    "BeatmapsetResetNominationsDetails",
+    "UserBeatmapsetReviveDetails",
+)
+
+
 class Notification:
     """
     Represents a notification object.
@@ -21,20 +51,20 @@ class Notification:
 
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
     name: :class:`NotificationType`
         The type of event
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
     object_type: :class:`ObjectType`
 
-    object_id: :class:`int`
+    object_id: int
 
-    source_user_id: Optional[:class:`int`]
+    source_user_id: Optional[int]
 
-    is_read: :class:`bool`
+    is_read: bool
 
     details: Union[
     :class:`BeatmapOwnerChangeDetails`, :class:`BeatmapsetDiscussionLockDetails`,
@@ -142,9 +172,9 @@ class ReadNotification:
 
     category: :class:`NotificationCategory`
 
-    id: :class:`int`
+    id: int
 
-    object_id: :class:`int`
+    object_id: int
 
     object_type: :class:`ObjectType`
     """
@@ -167,7 +197,7 @@ class NotificationsDetailsBase:
 
     **Attributes**
 
-    username: :class:`str`
+    username: str
     """
 
     __slots__ = ("username",)
@@ -188,15 +218,15 @@ class BeatmapOwnerChangeDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    beatmap_id: :class:`int`
+    beatmap_id: int
 
-    cover_url: :class:`str`
+    cover_url: str
 
-    title: :class:`str`
+    title: str
 
-    title_unicode: :class:`str`
+    title_unicode: str
 
-    version: :class:`str`
+    version: str
     """
 
     __slots__ = ("beatmap_id", "cover_url", "title", "title_unicode", "version")
@@ -218,11 +248,11 @@ class BeatmapsetNotificationDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    title: :class:`str`
+    title: str
 
-    title_unicode: :class:`str`
+    title_unicode: str
 
-    cover_url: :class:`str`
+    cover_url: str
     """
 
     __slots__ = ("title", "title_unicode", "cover_url")
@@ -242,19 +272,19 @@ class BeatmapsetDiscussionPostNotificationDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    content: :class:`str`
+    content: str
 
-    title: :class:`str`
+    title: str
 
-    title_unicode: :class:`str`
+    title_unicode: str
 
-    post_id: :class:`int`
+    post_id: int
 
-    discussion_id: :class:`int`
+    discussion_id: int
 
-    beatmap_id: :class:`int`
+    beatmap_id: int
 
-    cover_url: :class:`str`
+    cover_url: str
     """
 
     __slots__ = (
@@ -282,11 +312,11 @@ class ReviewStats:
     """
     **Attributes**
 
-    praises: :class:`int`
+    praises: int
 
-    suggestions: :class:`int`
+    suggestions: int
 
-    problems: :class:`int`
+    problems: int
     """
 
     __slots__ = ("praises", "suggestions", "problems")
@@ -305,17 +335,17 @@ class BeatmapsetDiscussionReviewNewDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    title: :class:`str`
+    title: str
 
-    title_unicode: :class:`str`
+    title_unicode: str
 
-    post_id: :class:`int`
+    post_id: int
 
-    discussion_id: :class:`int`
+    discussion_id: int
 
-    beatmap_id: :class:`int`
+    beatmap_id: int
 
-    cover_url: :class:`str`
+    cover_url: str
 
     embeds: :class:`ReviewStats`
     """
@@ -349,15 +379,15 @@ class ChannelAnnouncementDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    channel_id: :class:`int`
+    channel_id: int
 
-    name: :class:`str`
+    name: str
 
-    title: :class:`str`
+    title: str
 
     type: :class:`ChatChannelType`
 
-    cover_url: :class:`str`
+    cover_url: str
     """
 
     __slots__ = ("channel_id", "name", "title", "type", "cover_url")
@@ -379,11 +409,11 @@ class ChannelMessageDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    title: :class:`str`
+    title: str
 
     type: :class:`ChatChannelType`
 
-    cover_url: :class:`str`
+    cover_url: str
     """
 
     __slots__ = ("title", "type", "cover_url")
@@ -403,13 +433,13 @@ class CommentNewDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    comment_id: :class:`int`
+    comment_id: int
 
-    title: :class:`str`
+    title: str
 
-    content: :class:`str`
+    content: str
 
-    cover_url: :class:`str`
+    cover_url: str
     """
 
     __slots__ = ("comment_id", "title", "content", "cover_url")
@@ -430,11 +460,11 @@ class ForumTopicReplyDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    title: :class:`str`
+    title: str
 
-    post_id: :class:`int`
+    post_id: int
 
-    cover_url: :class:`str`
+    cover_url: str
     """
 
     __slots__ = ("title", "post_id", "cover_url")
@@ -454,17 +484,17 @@ class UserAchievementUnlockDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    achievement_id: :class:`int`
+    achievement_id: int
 
     achievement_mode: Optional[:class:`GameModeStr`]
 
-    cover_url: :class:`str`
+    cover_url: str
 
-    slug: :class:`str`
+    slug: str
 
-    title: :class:`str`
+    title: str
 
-    user_id: :class:`int`
+    user_id: int
     """
 
     __slots__ = (
@@ -494,13 +524,13 @@ class UserBeatmapsetNewDetails(NotificationsDetailsBase):
 
     **Attributes**
 
-    beatmapset_id: :class:`int`
+    beatmapset_id: int
 
-    title: :class:`str`
+    title: str
 
-    title_unicode: :class:`str`
+    title_unicode: str
 
-    cover_url: :class:`str`
+    cover_url: str
     """
 
     __slots__ = ("beatmapset_id", "title", "title_unicode", "cover_url")

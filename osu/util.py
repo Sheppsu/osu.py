@@ -20,7 +20,7 @@ import os
 import re
 
 
-__all__ = ("BeatmapsetSearchFilter", "PlaylistItemUtil", "NotificationsUtil", "IdentitiesUtil", "raise_aiohttp_error")
+__all__ = ("BeatmapsetSearchFilter", "PlaylistItemUtil", "NotificationsUtil", "IdentitiesUtil")
 
 
 _T = TypeVar("_T")
@@ -126,7 +126,7 @@ class BeatmapsetSearchFilter:
         """
         Set the query to search for.
 
-        query: :class:`str`
+        query: str
         """
         self._filters["query"] = query
         return self
@@ -135,9 +135,9 @@ class BeatmapsetSearchFilter:
         """
         Set the sort order of the search.
 
-        sort: Union[:class:`BeatmapsetSearchSort`, :class:`str`]
+        sort: Union[:class:`BeatmapsetSearchSort`, str]
 
-        order: :class:`str`
+        order: str
             "desc" or "asc"
         """
         self._filters["sort"] = (sort.value if isinstance(sort, BeatmapsetSearchSort) else sort) + "_" + order
@@ -147,7 +147,7 @@ class BeatmapsetSearchFilter:
         """
         Set whether to include NSFW in the search.
 
-        nsfw: :class:`bool`
+        nsfw: bool
         """
         self._filters["nsfw"] = nsfw
         return self
@@ -156,7 +156,7 @@ class BeatmapsetSearchFilter:
         """
         Set whether to include played and unplayed beatmapsets in the search.
 
-        played: Union[:class:`BeatmapsetSearchPlayed`, :class:`str`]
+        played: Union[:class:`BeatmapsetSearchPlayed`, str]
         """
         self._filters["played"] = played.value if isinstance(played, BeatmapsetSearchPlayed) else played
         return self
@@ -165,7 +165,7 @@ class BeatmapsetSearchFilter:
         """
         Filter by rank achieved.
 
-        rank: Union[:class:`ScoreRank`, :class:`str`]
+        rank: Union[:class:`ScoreRank`, str]
         """
         self._filters["r"] = rank.value if isinstance(rank, ScoreRank) else rank
         return self
@@ -174,7 +174,7 @@ class BeatmapsetSearchFilter:
         """
         Set the game mode to filter by.
 
-        mode: Union[:class:`GameModeStr`, :class:`str`]
+        mode: Union[:class:`GameModeStr`, str]
         """
         self._filters["m"] = mode.value if isinstance(mode, GameModeInt) else mode
         return self
@@ -183,7 +183,7 @@ class BeatmapsetSearchFilter:
         """
         Set the language to filter by.
 
-        language: :class:`str`
+        language: str
         """
         self._filters["l"] = language.value if isinstance(language, BeatmapsetLanguage) else language
         return self
@@ -192,7 +192,7 @@ class BeatmapsetSearchFilter:
         """
         Set the genre to filter by.
 
-        genre: :class:`str`
+        genre: str
         """
         self._filters["g"] = genre.value if isinstance(genre, BeatmapsetGenre) else genre
         return self
@@ -201,7 +201,7 @@ class BeatmapsetSearchFilter:
         """
         Set the extras to filter by.
 
-        extras: Sequence[Union[:class:`BeatmapsetSearchExtra`, :class:`str`]]
+        extras: Sequence[Union[:class:`BeatmapsetSearchExtra`, str]]
         """
         self._filters["e"] = ".".join(
             list(
@@ -217,7 +217,7 @@ class BeatmapsetSearchFilter:
         """
         Set the generals to filter by.
 
-        generals: Sequence[Union[:class:`BeatmapsetSearchGeneral`, :class:`str`]]
+        generals: Sequence[Union[:class:`BeatmapsetSearchGeneral`, str]]
         """
         self._filters["c"] = ".".join(
             list(
@@ -233,7 +233,7 @@ class BeatmapsetSearchFilter:
         """
         Set the status to filter by.
 
-        status: Union[:class:`BeatmapsetSearchStatus`, :class:`str`]
+        status: Union[:class:`BeatmapsetSearchStatus`, str]
         """
         self._filters["s"] = status.value if isinstance(status, BeatmapsetSearchStatus) else status
         return self
@@ -253,9 +253,9 @@ class PlaylistItemUtil:
 
     **Init Parameters**
 
-    beatmap_id: :class:`int`
+    beatmap_id: int
 
-    ruleset_id: Union[:class:`GameModeInt`, :class:`int`]
+    ruleset_id: Union[:class:`GameModeInt`, int]
 
     allowed_mods: Sequence[:class:`Mod`]
 
@@ -340,16 +340,16 @@ class NotificationsUtil(JsonUtil):
     """
     **Init parameters**
 
-    category: Optional[Union[:class:`str`, :class:`NotificationCategory`]]
+    category: Optional[Union[str, :class:`NotificationCategory`]]
         Notification category.
 
-    id: Optional[:class:`id`]
+    id: Optional[int]
         Id of notification to be marked as read
 
-    object_id: Optional[:class:`str`]
+    object_id: Optional[str]
         Id of the object that triggered the notification
 
-    object_type: Optional[Union[:class:`str`, :class:`ObjectType`]]
+    object_type: Optional[Union[str, :class:`ObjectType`]]
         Type of the object that triggered the notification
     """
 
@@ -369,13 +369,13 @@ class IdentitiesUtil(JsonUtil):
     """
     **Init parameters**
 
-    category: Optional[Union[:class:`str`, :class:`NotificationCategory`]]
+    category: Optional[Union[str, :class:`NotificationCategory`]]
         Notification category.
 
-    object_id: Optional[:class:`str`]
+    object_id: Optional[str]
         Id of the object that triggered the notification
 
-    object_type: Optional[Union[:class:`str`, :class:`ObjectType`]]
+    object_type: Optional[Union[str, :class:`ObjectType`]]
         Type of the object that triggered the notification
     """
 

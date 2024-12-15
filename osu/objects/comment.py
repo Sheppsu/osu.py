@@ -10,62 +10,65 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = ("Comment", "CommentBundle", "CommentableMeta")
+
+
 class Comment:
     """
     Represents a single comment.
 
     **Attributes**
 
-    commentable_id: :class:`int`
+    commentable_id: int
         ID of the object the comment is attached to
 
-    commentable_type: :class:`str`
+    commentable_type: str
         type of object the comment is attached to
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
-    deleted_at: Option[:class:`datetime.datetime`]
+    deleted_at: Option[:py:class:`datetime.datetime`]
 
-    deleted_by_id: Optional[:class:`int`]
+    deleted_by_id: Optional[int]
         user id of the user that deleted the post; null, otherwise
 
-    edited_at: Optional[:class:`datetime.datetime`]
+    edited_at: Optional[:py:class:`datetime.datetime`]
 
-    edited_by_id: Optional[:class:`int`]
+    edited_by_id: Optional[int]
         user id of the user that edited the post; null, otherwise
 
-    id: :class:`int`
+    id: int
         the ID of the comment
 
-    legacy_name: Optional[:class:`str`]
+    legacy_name: Optional[str]
         username displayed on legacy comments
 
-    message: Optional[:class:`str`]
+    message: Optional[str]
         markdown of the comment's content
 
-    message_html: Optional[:class:`str`]
+    message_html: Optional[str]
         html version of the comment's content
 
-    parent_id: Optional[:class:`int`]
+    parent_id: Optional[int]
         ID of the comment's parent
 
-    pinned: :class:`bool`
+    pinned: bool
         Pin status of the comment
 
-    replies_count: :class:`int`
+    replies_count: int
         number of replies to the comment
 
-    updated_at: :class:`datetime.datetime`
+    updated_at: :py:class:`datetime.datetime`
 
     user: Optional[:class:`UserCompact`]
 
-    user_id: :class:`int`
+    user_id: int
         user ID of the poster
 
-    votes_count: :class:`int`
+    votes_count: int
         number of votes
 
-    url: :class:`str`
+    url: str
         URL to the comment
     """
 
@@ -130,10 +133,10 @@ class CommentBundle:
     comments: List[:class:`Comment`]
         List of comments ordered according to sort
 
-    has_more: :class:`bool`
+    has_more: bool
         If there are more comments or replies available
 
-    has_more_id: :class:`int`
+    has_more_id: int
 
     included_comments: List[:class:`Comment`]
         Related comments; e.g. parent comments and nested replies
@@ -143,16 +146,18 @@ class CommentBundle:
 
     sort: :class:`CommentSort`
 
-    top_level_count: Optional[:class:`int`]
+    cursor: :class:`dict`
+
+    top_level_count: Optional[int]
         Number of comments at the top level. Not returned for replies.
 
-    total: Optional[:class:`int`]
+    total: Optional[int]
         Total number of comments. Not returned for replies.
 
-    user_follow: :class:`bool`
+    user_follow: bool
         is the current user watching the comment thread?
 
-    user_votes: List[:class:`int`]
+    user_votes: List[int]
         IDs of the comments in the bundle the current user has upvoted
 
     users: List[:class:`UserCompact`]
@@ -167,6 +172,7 @@ class CommentBundle:
         "included_comments",
         "pinned_comments",
         "sort",
+        "cursor",
         "top_level_count",
         "total",
         "user_follow",
@@ -184,6 +190,7 @@ class CommentBundle:
         self.included_comments: List[Comment] = list(map(Comment, get_required(data, "included_comments")))
         self.pinned_comments: List[Comment] = list(map(Comment, get_required(data, "pinned_comments")))
         self.sort: CommentSort = CommentSort(get_required(data, "sort"))
+        self.cursor: dict = get_required(data, "cursor")
         self.top_level_count: Optional[int] = data.get("top_level_count")
         self.total: Optional[int] = data.get("total")
         self.user_follow: bool = get_required(data, "user_follow")
@@ -201,22 +208,22 @@ class CommentableMeta:
 
     **Attributes**
 
-    id: Optional[:class:`int`]
+    id: Optional[int]
         the ID of the object
 
-    owner_id: Optional[:class:`int`]
+    owner_id: Optional[int]
         the ID of the owner of the object
 
-    owner_title: Optional[:class:`int`]
+    owner_title: Optional[int]
         undocumented
 
-    title: Optional[:class:`str`]
+    title: Optional[str]
         display title
 
-    type: Optional[:class:`str`]
+    type: Optional[str]
         the type of the object
 
-    url: Optional[:class:`str`]
+    url: Optional[str]
         url of the object
 
     current_user_attributes: :class:`CommentableMetaAttributes`

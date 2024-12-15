@@ -6,21 +6,24 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = ("Build", "Versions", "UpdateStream", "ChangelogEntry", "GithubUser")
+
+
 class Build:
     """
     **Attributes**
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
-    display_version: :class:`str`
+    display_version: str
 
-    id: :class:`int`
+    id: int
 
     update_stream: Optional[:class:`UpdateStream`]
 
-    users: :class:`int`
+    users: int
 
-    version Optional[:class:`str`]
+    version Optional[str]
 
     changelog_entries: Optional[List[:class:`ChangelogEntry`]]
         If the build has no changelog entries, a placeholder is generated.
@@ -81,17 +84,17 @@ class UpdateStream:
     """
     **Attributes**
 
-    display_name: Optional[:class:`str`]
+    display_name: Optional[str]
 
-    id: :class:`int`
+    id: int
 
-    is_featured: :class:`bool`
+    is_featured: bool
 
-    name: :class:`str`
+    name: str
 
     latest_build: Optional[:class:`Build`]
 
-    user_count: Optional[:class:`int`]
+    user_count: Optional[int]
     """
 
     __slots__ = (
@@ -119,33 +122,33 @@ class ChangelogEntry:
     """
     **Attributes**
 
-    category: :class:`str`
+    category: str
 
-    created_at: Optional[:class:`datetime.datetime`]
+    created_at: Optional[:py:class:`datetime.datetime`]
 
-    github_pull_request_id: Optional[:class:`int`]
+    github_pull_request_id: Optional[int]
 
-    github_url: Optional[:class:`str`]
+    github_url: Optional[str]
 
-    id: Optional[:class:`int`]
+    id: Optional[int]
 
-    major: :class:`bool`
+    major: bool
 
-    repository: Optional[:class:`str`]
+    repository: Optional[str]
 
-    title: Optional[:class:`str`]
+    title: Optional[str]
 
-    type: :class:`str`
+    type: str
 
-    url: Optional[:class:`str`]
+    url: Optional[str]
 
     github_user: Optional[:class:`GithubUser`]
         If the changelog entry has no GitHub user, a placeholder is generated.
 
-    message: Optional[:class:`str`]
+    message: Optional[str]
         Entry message in Markdown format. Embedded HTML is allowed.
 
-    message_html: Optional[:class:`str`]
+    message_html: Optional[str]
         Entry message in HTML format.
     """
 
@@ -189,17 +192,17 @@ class GithubUser:
     """
     **Attributes**
 
-    display_name: :class:`str`
+    display_name: str
 
-    github_url: Optional[:class:`str`]
+    github_url: Optional[str]
 
-    id: Optional[:class:`int`]
+    id: Optional[int]
 
-    osu_username: Optional[:class:`str`]
+    osu_username: Optional[str]
 
-    user_id: Optional[:class:`int`]
+    user_id: Optional[int]
 
-    user_url: Optional[:class:`str`]
+    user_url: Optional[str]
     """
 
     __slots__ = (

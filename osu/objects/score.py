@@ -10,6 +10,19 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = (
+    "BeatmapScores",
+    "LegacyScore",
+    "SoloScore",
+    "PpWeight",
+    "ScoreStatistics",
+    "ScoreDataStatistics",
+    "LazerMod",
+    "BeatmapUserScore",
+    "get_score_object",
+)
+
+
 class BeatmapScores:
     """
     Contains a list of scores as well as, possibly, a :class:`BeatmapUserScore` object.
@@ -46,46 +59,46 @@ class LegacyScore:
 
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
-    best_id: :class:`int`
+    best_id: int
 
-    user_id: :class:`int`
+    user_id: int
 
-    accuracy: :class:`float`
+    accuracy: float
 
     mods: :class:`Mods`
 
-    score: :class:`int`
+    score: int
 
-    max_combo: :class:`int`
+    max_combo: int
 
-    perfect: :class:`bool`
+    perfect: bool
 
     statistics: :class:`ScoreStatistics`
 
-    passed :class:`bool`
+    passed bool
 
-    pp: :class:`float`
+    pp: float
 
     rank: :class:`ScoreRank`
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
     mode: :class:`GameModeStr`
 
     mode_int: :class:`GameModeInt`
 
-    has_replay: :class:`bool`
+    has_replay: bool
         is the replay is available
 
     beatmap: Optional[:class:`BeatmapCompact`]
 
     beatmapset: Optional[:class:`BeatmapsetCompact`]
 
-    rank_country: Optional[:class:`int`]
+    rank_country: Optional[int]
 
-    rank_global: Optional[:class:`int`]
+    rank_global: Optional[int]
 
     weight: Optional[:class:`PpWeight`]
 
@@ -171,55 +184,55 @@ class SoloScore:
 
     **Attributes**
 
-    accuracy: :class:`float`
+    accuracy: float
 
-    beatmap_id: Optional[:class:`int`]
+    beatmap_id: Optional[int]
 
     beatmap: Optional[:class:`Beatmap`]
 
     beatmapset: Optional[:class:`BeatmapsetCompact`]
 
-    ended_at: :class:`datetime.datetime`
+    ended_at: :py:class:`datetime.datetime`
 
-    max_combo: :class:`int`
+    max_combo: int
 
     maximum_statistics: :class:`ScoreDataStatistics`
 
     mods: List[:class:`LazerMod`]
 
-    passed: :class:`bool`
+    passed: bool
 
     rank: :class:`ScoreRank`
 
-    ruleset_id: :class:`int`
+    ruleset_id: int
 
     statistics: :class:`ScoreDataStatistics`
 
-    total_score: :class:`int`
+    total_score: int
 
-    user_id: :class:`int`
+    user_id: int
 
-    best_id: Optional[:class:`int`]
+    best_id: Optional[int]
 
-    id: :class:`int`
+    id: int
 
-    legacy_perfect: Optional[:class:`bool`]
+    legacy_perfect: Optional[bool]
 
-    pp: Optional[:class:`float`]
+    pp: Optional[float]
 
-    replay: :class:`bool`
+    replay: bool
 
     type: :class:`ObjectType`
 
     user: Optional[:class:`UserCompact`]
 
-    build_id: Optional[:class:`int`]
+    build_id: Optional[int]
 
-    legacy_score_id: Optional[:class:`int`]
+    legacy_score_id: Optional[int]
 
-    legacy_total_score: Optional[:class:`int`]
+    legacy_total_score: Optional[int]
 
-    started_at: Optional[:class:`datetime.datetime`]
+    started_at: Optional[:py:class:`datetime.datetime`]
 
     current_user_attributes: Optional[:class:`ScoreUserAttributes`]
 
@@ -298,10 +311,10 @@ class PpWeight:
 
     **Attributes**
 
-    percentage: :class:`int`
+    percentage: int
         number (0-100) that tells percentage weighed
 
-    pp: :class:`float`
+    pp: float
         amount of pp after being weighted
     """
 
@@ -323,17 +336,17 @@ class ScoreStatistics:
     """
     **Attributes**
 
-    count_50: :class:`int`
+    count_50: int
 
-    count_100: :class:`int`
+    count_100: int
 
-    count_300: :class:`int`
+    count_300: int
 
-    count_geki: :class:`int`
+    count_geki: int
 
-    count_katu: :class:`int`
+    count_katu: int
 
-    count_miss: :class:`int`
+    count_miss: int
     """
 
     __slots__ = (
@@ -361,35 +374,35 @@ class ScoreDataStatistics:
     """
     **Attributes**
 
-    ok: Optional[:class:`int`]
+    ok: Optional[int]
 
-    meh: Optional[:class:`int`]
+    meh: Optional[int]
 
-    good: Optional[:class:`int`]
+    good: Optional[int]
 
-    miss: Optional[:class:`int`]
+    miss: Optional[int]
 
-    none: Optional[:class:`int`]
+    none: Optional[int]
 
-    great: Optional[:class:`int`]
+    great: Optional[int]
 
-    perfect: Optional[:class:`int`]
+    perfect: Optional[int]
 
-    ignore_hit: Optional[:class:`int`]
+    ignore_hit: Optional[int]
 
-    ignore_miss: Optional[:class:`int`]
+    ignore_miss: Optional[int]
 
-    large_bonus: Optional[:class:`int`]
+    large_bonus: Optional[int]
 
-    small_bonus: Optional[:class:`int`]
+    small_bonus: Optional[int]
 
-    large_tick_hit: Optional[:class:`int`]
+    large_tick_hit: Optional[int]
 
-    small_tick_hit: Optional[:class:`int`]
+    small_tick_hit: Optional[int]
 
-    large_tick_miss: Optional[:class:`int`]
+    large_tick_miss: Optional[int]
 
-    small_tick_miss: Optional[:class:`int`]
+    small_tick_miss: Optional[int]
     """
 
     __slots__ = (
@@ -436,7 +449,7 @@ class LazerMod:
     """
     **Attributes**
 
-    mod: Union[:class:`Mod`]
+    mod: :class:`Mod`
 
     settings: Optional[Dict]
     """
@@ -455,7 +468,7 @@ class BeatmapUserScore:
     """
     **Attributes**
 
-    position: :class:`int`
+    position: int
         The position of the score within the requested beatmap ranking.
 
     score: :class:`LegacyScore`

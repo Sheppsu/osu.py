@@ -4,6 +4,7 @@ import json
 import traceback
 
 from .objects import Notification, ChatChannel, UserCompact, ChatMessage
+from .util import fromisoformat
 
 try:
     import websockets
@@ -11,6 +12,9 @@ try:
     has_websockets = True
 except ImportError:
     has_websockets = False
+
+
+__all__ = ("NotificationWebsocket",)
 
 
 class NotificationWebsocket:
@@ -45,7 +49,7 @@ class NotificationWebsocket:
         notifications: Sequence[:class:`ReadNotification`]
             list of notifications that were read
 
-        timestamp: :class:`datetime.datetime`
+        timestamp: :py:class:`datetime.datetime`
             time at which the notifications were read
 
     on_chat_channel_join
@@ -102,7 +106,7 @@ class NotificationWebsocket:
         """
         **Arguments**
 
-        notification_url: :class:`str`
+        notification_url: str
             url endpoint to connect to. Can obtain one via get_notifications
 
         auth: :class:`AuthHandler`
@@ -141,13 +145,11 @@ class NotificationWebsocket:
                 event_type = event["event"].replace(".", "_")
                 del event["event"]
 
-                # TODO: run event funcs using run_coroutine_threadsafe
-
                 func = getattr(self, "_on_" + event_type)
                 if func is None:
                     return print(f"Received {event_type} event but cannot parse it.")
                 try:
-                    await func(event)
+                    self.loop.create_task(func(event))
                 except:
                     traceback.print_exc()
 
@@ -216,7 +218,7 @@ class NotificationWebsocket:
             users = list(map(UserCompact, data["users"]))
             await self.on_chat_message_new(messages, users)
 
-    # Event fired by NotificationWebsocket object when connection without having been sent a logout event.
+    # Event fired by NotificationWebsocket object when connection is lost without having been sent a logout event.
     async def _on_unplanned_disconnect(self):
         if hasattr(self, "on_unplanned_disconnect"):
             await self.on_unplanned_disconnect()

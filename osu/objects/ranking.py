@@ -8,6 +8,9 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = ("Rankings", "Spotlight", "Spotlights")
+
+
 class Rankings:
     """
     **Attributes**
@@ -25,7 +28,7 @@ class Rankings:
     spotlight: Optional[:class:`Spotlight`]
         Spotlight details; only available if type is charts
 
-    total: :class:`int`
+    total: int
         An approximate count of ranks available
     """
 
@@ -48,25 +51,25 @@ class Spotlight:
 
     **Attributes**
 
-    end_date: :class:`datetime.datetime`
+    end_date: :py:class:`datetime.datetime`
         In DateTime format. The end date of the spotlight.
 
-    id: :class:`int`
+    id: int
         The ID of this spotlight.
 
-    mode_specific: :class:`bool`
+    mode_specific: bool
         If the spotlight has different modes specific to each game mode.
 
-    participant_count: Optional[:class:`int`]
+    participant_count: Optional[int]
         The number of users participating in this spotlight. This is only shown when viewing a single spotlight.
 
-    name: :class:`str`
+    name: str
         The name of the spotlight.
 
-    start_date: :class:`datetime.datetime`
+    start_date: :py:class:`datetime.datetime`
         In DatTime format. The starting date of the spotlight.
 
-    type: :class:`str`
+    type: str
         The type of spotlight.
     """
 

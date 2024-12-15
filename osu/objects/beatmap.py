@@ -10,52 +10,76 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = (
+    "BeatmapsetCompact",
+    "Beatmapset",
+    "BeatmapCompact",
+    "Beatmap",
+    "BeatmapDifficultyAttributes",
+    "OsuBeatmapDifficultyAttributes",
+    "TaikoBeatmapDifficultyAttributes",
+    "ManiaBeatmapDifficultyAttributes",
+    "FruitsBeatmapDifficultyAttributes",
+    "Failtimes",
+    "Covers",
+    "BaseNominations",
+    "LegacyNominations",
+    "Nominations",
+    "CurrentNomination",
+    "BeatmapPlaycount",
+    "BeatmapsetRequiredNominations",
+    "BeatmapsetRequirement",
+    "BeatmapsetAvailability",
+    "MetadataAttribute",
+)
+
+
 class BeatmapsetCompact:
     """
     Represents a beatmapset.
 
     **Attributes**
 
-    artist: :class:`str`
+    artist: str
 
-    artist_unicode: :class:`str`
+    artist_unicode: str
 
-    background_url: :class:`str`
+    background_url: str
         Not given by api but created locally based on beatmapset id.
 
     covers: :class:`Covers`
 
-    creator: :class:`str`
+    creator: str
 
-    favourite_count: :class:`int`
+    favourite_count: int
 
     hype: Optional[:class:`BeatmapsetRequirement`]
 
-    id: :class:`int`
+    id: int
 
-    nsfw: :class:`bool`
+    nsfw: bool
 
-    offset: :class:`int`
+    offset: int
 
-    play_count: :class:`int`
+    play_count: int
 
-    preview_url: :class:`str`
+    preview_url: str
 
-    source: :class:`str`
+    source: str
 
-    spotlight: :class:`bool`
+    spotlight: bool
 
     status: :class:`RankStatus`
 
-    title: :class:`str`
+    title: str
 
-    title_unicode: :class:`str`
+    title_unicode: str
 
-    track_id: Optional[:class:`int`]
+    track_id: Optional[int]
 
-    user_id: :class:`int`
+    user_id: int
 
-    video: :class:`bool`
+    video: bool
 
     availability: Optional[:class:`BeatmapsetAvailability`]
 
@@ -68,9 +92,9 @@ class BeatmapsetCompact:
 
     current_user_attributes: Optional[:class:`BeatmapsetDiscussionPermissions`]
 
-    description: Optional[:class:`str`]
+    description: Optional[str]
 
-    description_bbcode: Optional[:class:`str`]
+    description_bbcode: Optional[str]
 
     discussions: Optional[:class:`BeatmapsetDiscussion`]
 
@@ -78,13 +102,13 @@ class BeatmapsetCompact:
 
     genre: Optional[:class:`MetadataAttribute`]
 
-    has_favourited: Optional[:class:`bool`]
+    has_favourited: Optional[bool]
 
     language: Optional[:class:`MetadataAttribute`]
 
     nominations: Optional[Union[:class:`LegacyNominations`, :class:`Nominations`]]
 
-    ratings: Optional[List[:class:`int`]]
+    ratings: Optional[List[int]]
 
     recent_favourites: Optional[List[:class:`UserCompact`]]
 
@@ -199,34 +223,34 @@ class Beatmapset(BeatmapsetCompact):
     beatmaps: Optional[List[:class:`Beatmap`]]
         null when this :class:`Beatmapset` object comes from a :class:`Beatmap` object
 
-    bpm: :class:`float`
+    bpm: float
 
-    can_be_hyped: :class:`bool`
+    can_be_hyped: bool
 
-    deleted_at: :class:`datetime.datetime`
+    deleted_at: :py:class:`datetime.datetime`
 
-    discussion_enabled: :class:`bool`
+    discussion_enabled: bool
         Deprecated. Is always true.
 
-    discussion_locked: :class:`bool`
+    discussion_locked: bool
 
-    is_scoreable: :class:`bool`
+    is_scoreable: bool
 
-    last_updated: Optional[:class:`datetime.datetime`]
+    last_updated: Optional[:py:class:`datetime.datetime`]
 
-    legacy_thread_url: :class:`str`
+    legacy_thread_url: str
 
-    nominations_summary: :class:`NominationsSummary`
+    nominations_summary: :class:`BeatmapsetRequirement`
 
     ranked: :class:`RankStatus`
 
-    ranked_date: Optional[:class:`datetime.datetime`]
+    ranked_date: Optional[:py:class:`datetime.datetime`]
 
-    storyboard: :class:`bool`
+    storyboard: bool
 
-    submitted_date: Optional[:class:`datetime.datetime`]
+    submitted_date: Optional[:py:class:`datetime.datetime`]
 
-    tags: :class:`str`
+    tags: str
     """
 
     __slots__ = (
@@ -276,29 +300,29 @@ class BeatmapCompact:
 
     **Attributes**
 
-    beatmapset_id: :class:`int`
+    beatmapset_id: int
 
-    difficulty_rating: :class:`float`
+    difficulty_rating: float
 
-    id: :class:`int`
+    id: int
 
     mode: :class:`GameModeStr`
 
     status: :class:`RankStatus`
 
-    total_length: :class:`int`
+    total_length: int
 
-    user_id: :class:`int`
+    user_id: int
 
-    version: :class:`str`
+    version: str
 
     beatmapset: Optional[:class:`BeatmapsetCompact`]
 
-    checksum: Optional[:class:`str`]
+    checksum: Optional[str]
 
     failtimes: Optional[:class:`Failtimes`]
 
-    max_combo: Optional[:class:`int`]
+    max_combo: Optional[int]
 
     user: Optional[:class:`UserCompact`]
     """
@@ -350,43 +374,43 @@ class Beatmap(BeatmapCompact):
 
     **Attributes**
 
-    accuracy: :class:`float`
+    accuracy: float
 
-    ar: :class:`float`
+    ar: float
 
     beatmapset: Optional[:class:`Beatmapset`]
 
-    bpm: :class:`float`
+    bpm: float
 
-    convert: Optional[:class:`bool`]
+    convert: Optional[bool]
 
-    count_circles: :class:`int`
+    count_circles: int
 
-    count_sliders: :class:`int`
+    count_sliders: int
 
-    count_spinners: :class:`int`
+    count_spinners: int
 
-    cs: :class:`float`
+    cs: float
 
-    deleted_at: Optional[:class:`datetime.datetime`]
+    deleted_at: Optional[:py:class:`datetime.datetime`]
 
-    drain: :class:`float`
+    drain: float
 
-    hit_length: :class:`int`
+    hit_length: int
 
-    is_scoreable: :class:`bool`
+    is_scoreable: bool
 
-    last_updated: :class:`datetime.datetime`
+    last_updated: :py:class:`datetime.datetime`
 
     mode_int: :class:`GameModeInt`
 
-    passcount: :class:`int`
+    passcount: int
 
-    playcount: :class:`int`
+    playcount: int
 
     ranked: :class:`RankStatus`
 
-    url: :class:`str`
+    url: str
     """
 
     __slots__ = (
@@ -440,9 +464,9 @@ class MetadataAttribute:
 
     **Attributes**
 
-    id: Optional[:class:`int`]
+    id: Optional[int]
 
-    name: :class:`str`
+    name: str
     """
 
     __slots__ = ("id", "name")
@@ -459,19 +483,19 @@ class OsuBeatmapDifficultyAttributes:
 
     **Attributes**
 
-    aim_difficulty: :class:`float`
+    aim_difficulty: float
 
-    approach_rate: :class:`float`
+    approach_rate: float
 
-    flashlight_difficulty: :class:`float`
+    flashlight_difficulty: float
 
-    overall_difficulty: :class:`float`
+    overall_difficulty: float
 
-    slider_factor: :class:`float`
+    slider_factor: float
 
-    speed_difficulty: :class:`float`
+    speed_difficulty: float
 
-    speed_note_count: :class:`float`
+    speed_note_count: float
     """
 
     __slots__ = (
@@ -504,15 +528,15 @@ class TaikoBeatmapDifficultyAttributes:
 
     **Attributes**
 
-    stamina_difficulty: :class:`float`
+    stamina_difficulty: float
 
-    rhythm_difficulty: :class:`float`
+    rhythm_difficulty: float
 
-    colour_difficulty: :class:`float`
+    colour_difficulty: float
 
-    great_hit_window: :class:`float`
+    great_hit_window: float
 
-    peak_difficulty: :class:`float`
+    peak_difficulty: float
     """
 
     __slots__ = (
@@ -541,7 +565,7 @@ class FruitsBeatmapDifficultyAttributes:
 
     **Attributes**
 
-    approach_rate: :class:`float`
+    approach_rate: float
     """
 
     __slots__ = "approach_rate"
@@ -560,9 +584,9 @@ class ManiaBeatmapDifficultyAttributes:
 
     **Attributes**
 
-    great_hit_window: :class:`float`
+    great_hit_window: float
 
-    score_multiplier: :class:`float`
+    score_multiplier: float
     """
 
     __slots__ = ("great_hit_window", "score_multiplier")
@@ -582,11 +606,9 @@ class BeatmapDifficultyAttributes:
 
     **Attributes**
 
-    The parameters depend on the ruleset, but the following two attributes are present in all rulesets.
+    max_combo: int
 
-    max_combo: :class:`int`
-
-    star_rating: :class:`float`
+    star_rating: float
 
     mode_attributes: Optional[Union[:class:`OsuBeatmapDifficultyAttributes`, :class:`TaikoBeatmapDifficultyAttributes`,
     :class:`FruitsBeatmapDifficultyAttributes`, :class:`ManiaBeatmapDifficultyAttributes`]]
@@ -639,10 +661,10 @@ class Failtimes:
     """
     **Attributes**
 
-    exit: Optional[List[:class:`int`]]
+    exit: Optional[List[int]]
         List of 100 integers.
 
-    fail: Optional[List[:class:`int`]]
+    fail: Optional[List[int]]
         List of 100 integers.
     """
 
@@ -660,21 +682,21 @@ class Covers:
     """
     **Attributes**
 
-    cover: :class:`str`
+    cover: str
 
-    cover_2x: :class:`str`
+    cover_2x: str
 
-    card: :class:`str`
+    card: str
 
-    card_2x: :class:`str`
+    card_2x: str
 
-    list: :class:`str`
+    list: str
 
-    list_2x: :class:`str`
+    list_2x: str
 
-    slimcover: :class:`str`
+    slimcover: str
 
-    slimcover_2x: :class:`str`
+    slimcover_2x: str
     """
 
     __slots__ = (
@@ -708,13 +730,13 @@ class BeatmapPlaycount:
 
     **Attributes**
 
-    beatmap_id: :class:`int`
+    beatmap_id: int
 
     beatmap: Optional[:class:`BeatmapCompact`]
 
     beatmapset: Optional[:class:`BeatmapsetCompact`]
 
-    count: :class:`int`
+    count: int
     """
 
     __slots__ = ("beatmap_id", "beatmap", "beatmapset", "count")
@@ -735,9 +757,9 @@ class BeatmapsetRequirement:
 
     **Attributes**
 
-    current: :class:`int`
+    current: int
 
-    required: Optional[:class:`int`]
+    required: Optional[int]
         If this is None, then required_meta and eligible_main_rulesets should have values
 
     required_meta: Optional[:class:`BeatmapsetRequiredNominations`]
@@ -768,9 +790,9 @@ class BeatmapsetRequiredNominations:
 
     **Attributes**
 
-    main_ruleset: :class:`int`
+    main_ruleset: int
 
-    non_main_ruleset: :class:`int`
+    non_main_ruleset: int
     """
 
     ___slots__ = ("main_ruleset", "non_main_ruleset")
@@ -786,9 +808,9 @@ class BeatmapsetAvailability:
 
     **Attributes**
 
-    download_disabled: :class:`bool`
+    download_disabled: bool
 
-    more_information: Optional[:class:`str`]
+    more_information: Optional[str]
     """
 
     __slots__ = ("download_disabled", "more_information")
@@ -809,15 +831,15 @@ class BaseNominations:
 
     disqualification: Optional[:class:`BeatmapsetEvent`]
 
-    nominated: Optional[:class:`bool`]
+    nominated: Optional[bool]
 
     nomination_reset: Optional[:class:`BeatmapsetEvent`]
 
-    ranking_eta: Optional[:class:`str`]
+    ranking_eta: Optional[str]
 
-    ranking_queue_position: Optional[:class:`int`]
+    ranking_queue_position: Optional[int]
 
-    required_hype: :class:`int`
+    required_hype: int
     """
 
     __slots__ = (
@@ -849,12 +871,12 @@ class LegacyNominations(BaseNominations):
 
     **Attributes**
 
-    is_legacy: :class:`bool`
+    is_legacy: bool
         True
 
-    current: :class:`int`
+    current: int
 
-    required: :class:`int`
+    required: int
     """
 
     __slots__ = ("current", "required")
@@ -875,12 +897,12 @@ class Nominations(BaseNominations):
 
     **Attributes**
 
-    is_legacy: :class:`bool`
+    is_legacy: bool
         False
 
-    current: Union[:class:`int`, Dict[:class:`GameModeStr`, :class:`int`]]
+    current: Union[int, Dict[:class:`GameModeStr`, int]]
 
-    required: :class:`int`
+    required: int
     """
 
     __slots__ = ("current", "required")
@@ -908,13 +930,13 @@ class CurrentNomination:
 
     **Attributes**
 
-    beatmapset_id: :class:`int`
+    beatmapset_id: int
 
     rulesets: Optional[List[:class:`GameModeStr`]]
 
-    reset: :class:`bool`
+    reset: bool
 
-    user_id: :class:`int`
+    user_id: int
     """
 
     def __init__(self, data):

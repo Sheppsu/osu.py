@@ -8,20 +8,23 @@ if TYPE_CHECKING:
     from datetime import datetime
 
 
+__all__ = ("KudosuHistory", "KudosuPost", "KudosuGiver")
+
+
 class KudosuHistory:
     """
     **Attributes**
 
-    id: :class:`int`
+    id: int
 
     action: :class:`KudosuAction`
 
-    amount: :class:`int`
+    amount: int
 
     model: :class:`ObjectType`
         Object type which the exchange happened on (forum_post, etc).
 
-    created_at: :class:`datetime.datetime`
+    created_at: :py:class:`datetime.datetime`
 
     giver: Optional[:class:`KudosuGiver`]
         Simple detail of the user who started the exchange.
@@ -49,10 +52,10 @@ class KudosuPost:
     """
     **Attributes**
 
-    url: Optional[:class:`str`]
+    url: Optional[str]
         Url of the object.
 
-    title: :class:`str`
+    title: str
         Title of the object. It'll be "[deleted beatmap]" for deleted beatmaps.
     """
 
@@ -70,9 +73,9 @@ class KudosuGiver:
     """
     **Attributes**
 
-    url: :class:`str`
+    url: str
 
-    username: :class:`str`
+    username: str
     """
 
     __slots__ = ("url", "username")

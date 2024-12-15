@@ -4,6 +4,52 @@ from typing import Sequence, Union
 from .constants import incompatible_mods
 
 
+__all__ = (
+    "Mod",
+    "Mods",
+    "RankStatus",
+    "GameModeStr",
+    "GameModeInt",
+    "WikiSearchMode",
+    "UserBeatmapType",
+    "RankingType",
+    "CommentSort",
+    "MultiplayerScoresSort",
+    "BeatmapsetEventType",
+    "BeatmapsetEventSort",
+    "MatchSort",
+    "MatchEventType",
+    "RoomSort",
+    "RoomType",
+    "RoomCategory",
+    "RoomFilterMode",
+    "RoomStatus",
+    "RealTimeQueueMode",
+    "PlaylistQueueMode",
+    "BeatmapsetGenre",
+    "BeatmapsetLanguage",
+    "BeatmapsetSearchGeneral",
+    "BeatmapsetSearchStatus",
+    "BeatmapsetSearchExtra",
+    "BeatmapsetSearchPlayed",
+    "BeatmapsetSearchSort",
+    "ScoreRank",
+    "ObjectType",
+    "UserScoreType",
+    "ForumTopicType",
+    "ChatChannelType",
+    "NotificationType",
+    "NotificationCategory",
+    "UserAccountHistoryType",
+    "MessageType",
+    "KudosuAction",
+    "ScoringType",
+    "TeamType",
+    "UserRelationType",
+    "ChatMessageType",
+)
+
+
 class PartialEnum:
     __slots__ = ("value",)
 
@@ -308,7 +354,7 @@ class Mods(IntFlag):
 
         **Parameters**
 
-        abbreviation: :class:`str`
+        abbreviation: str
             Abbreviation of the mod (must be capitalized)
 
         **Returns**
@@ -347,8 +393,8 @@ class Mods(IntFlag):
 
         **Parameters**
 
-        mods: Sequence[Union[:class:`Mods`, :class:`str`, :class:`int`]]
-            Sequence of :class:`Mods`, :class:`str`, and/or :class:`int` objects
+        mods: Sequence[Union[:class:`Mods`, str, int]]
+            Sequence of :class:`Mods`, str, and/or int objects
             to be parsed and returned as a :class:`Mods` object.
 
         **Returns**
@@ -399,7 +445,7 @@ class Mods(IntFlag):
 
         **Returns**
 
-        :class:`bool`
+        bool
         """
         if self.name is None or other.name is None:
             raise ValueError("Cannot check compatibility of a multi-mods enum object.")
@@ -411,7 +457,7 @@ class Mods(IntFlag):
 
         **Returns**
 
-        :class:`bool`
+        bool
         """
         mods = list(self)
 
@@ -428,7 +474,7 @@ class Mods(IntFlag):
 
         **Returns**
 
-        :class:`str`
+        str
         """
         return "".join(map(lambda mod: Mod[mod.name].value, sorted(self, key=lambda m: m.value)))
 

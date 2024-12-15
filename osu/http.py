@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from typing import Optional, List
 
 from .auth import BaseAuthHandler
-from .exceptions import ScopeException
+from .exceptions import ScopeException, RequestException
 from .constants import DEFAULT_BASE_URL, base_url
 
 
@@ -12,6 +12,9 @@ __all__ = ("HTTPHandler",)
 
 
 class HTTPHandler:
+    """
+    Handles making requests. Used by :class:`osu.Client`.
+    """
     __slots__ = ("auth", "rate_limit", "api_version", "base_url")
 
     def __init__(
@@ -28,6 +31,8 @@ class HTTPHandler:
 
     def set_domain(self, domain: str) -> None:
         self.base_url = base_url(domain)
+        if self.auth is not None:
+            self.auth.set_domain(domain)
 
     def get_headers(self, path, is_files=False, **kwargs):
         headers = {
@@ -85,15 +90,40 @@ class HTTPHandler:
                 err = None
 
             if err:
-                raise RuntimeError(err) from e
+                raise RequestException(err) from e
 
             raise e
 
         if response.content == b"":
             return
+
         return response.json() if not is_download else response
 
     def make_request(self, path, *args, **kwargs):
+        """
+        Make request to the api.
+
+        :param path:
+        :type path: :class:`osu.Path`
+
+        :param data: (Default None)
+            Json body of the request
+        :type data: Optional[Union[dict, list]]
+
+        :param headers: (Default None)
+            Headers to send in the request
+        :type headers: Optional[Dict[str, str]]
+
+        :param is_download: (Default False)
+            Returns response object if true
+        :type is_download: bool
+
+        :param files: (Default None)
+
+        :param kwargs:
+            All kwargs will be interpreted as query parameters for the request.
+        :type kwargs: Dict[str, str]
+        """
         return self.make_request_to_endpoint(self.base_url, path, *args, **kwargs)
 
 

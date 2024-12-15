@@ -4,27 +4,30 @@ from ..util import prettify, get_optional, get_required
 from ..enums import GameModeStr
 
 
+__all__ = ("Achievement",)
+
+
 class Achievement:
     """
     **Attributes**
 
-    icon_url: :class:`str`
+    icon_url: str
 
-    id: :class:`int`
+    id: int
 
-    name: :class:`str`
+    name: str
 
-    grouping: :class:`str`
+    grouping: str
 
-    ordering: :class:`int`
+    ordering: int
 
-    slug: :class:`str`
+    slug: str
 
-    description: :class:`str`
+    description: str
 
     mode: Optional[:class:`GameModeStr`]
 
-    instructions: Optional[:class:`str`]
+    instructions: Optional[str]
     """
 
     __slots__ = (
