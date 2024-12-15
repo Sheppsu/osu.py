@@ -52,14 +52,16 @@ intersphinx_mapping = {
     'py': ('https://docs.python.org/3', None),
 }
 
-add_module_names = False
-
 # -- Options for HTML output -------------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
 html_theme = 'sphinx_rtd_theme'
+
+html_theme_options = {
+    "navigation_depth": 5
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -69,8 +71,10 @@ html_static_path = ['_static']
 master_doc = 'index'
 
 autodoc_default_options = {
-    "imported-members": True
+    "imported-members": True,
 }
+
+
 
 from sphinx.application import Sphinx
 from typing import List
@@ -80,11 +84,15 @@ import re
 TYPE_RE = re.compile(r'(:py)?:class:`([a-zA-Z_][a-zA-Z0-9_.]*)`')
 
 
-def autodoc_process_docstring(app: Sphinx, what: str, name: str, obj: object, options: dict, lines: List[str]):
-    if what != "class":
-        return
+def _process_type_text(i: int, lines: List[str], typ: str):
+    # account for types that take up multiple lines
+    while i + 1 < len(lines) and len(lines[i + 1]) > 0 and not lines[i + 1].startswith("    "):
+        typ += lines.pop(i + 1)
 
-    # Reformat attribute docs
+    return re.sub(TYPE_RE, r"\2", typ)
+
+
+def _reformat_attribute_docs(lines: List[str]):
     is_attribute = False
     i = 0
     while i < len(lines):
@@ -100,18 +108,58 @@ def autodoc_process_docstring(app: Sphinx, what: str, name: str, obj: object, op
             lines[i] = f".. py:attribute:: {attr_name[:-1]}"
 
             if attr_type is not None:
-                # account for types that take up multiple lines
-                while i + 1 < len(lines) and len(lines[i + 1]) > 0 and not lines[i + 1].startswith("    "):
-                    attr_type += lines.pop(i + 1)
-
-                attr_type = re.sub(TYPE_RE, r"\2", attr_type)
-                lines.insert(i + 1, f"    :type: {attr_type}")
+                attr_type = _process_type_text(i, lines, attr_type)
                 i += 1
+                lines.insert(i, f"    :type: {attr_type}")
 
-            lines.insert(i + 1, "")
             i += 1
+            lines.insert(i, "")
 
         i += 1
+
+
+def _reformat_function_docs(lines: List[str]):
+    state = None
+    i = 0
+    while i < len(lines):
+        if lines[i].startswith("**Parameters**"):
+            lines[i] = ""
+            state = "param"
+            i += 1
+        elif lines[i].startswith("**Returns**"):
+            lines[i] = ""
+            state = "return"
+            i += 1
+
+        if len(lines[i]) == 0:
+            i += 1
+            continue
+
+        if state == "param" and not lines[i].startswith("    "):
+            param = lines[i].split()
+            param_name, param_type = (param[0], " ".join(param[1:])) if len(param) > 1 else (param[0], None)
+
+            lines[i] = f":param {param_name}:"
+
+            if param_type is not None:
+                param_type = _process_type_text(i, lines, param_type)
+                lines.insert(i, f":type {param_name}: {param_type}")
+                i += 1
+        elif state == "return":
+            if lines[i].startswith(" "):
+                lines.insert(i, ":return:")
+                return
+            else:
+                lines[i] = ":rtype: " + _process_type_text(i, lines, lines[i])
+
+        i += 1
+
+
+def autodoc_process_docstring(app: Sphinx, what: str, name: str, obj: object, options: dict, lines: List[str]):
+    if what == "class":
+        _reformat_attribute_docs(lines)
+    elif what == "method":
+        _reformat_function_docs(lines)
 
 
 def setup(app):

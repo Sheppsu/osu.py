@@ -4,6 +4,12 @@ API Reference
 
 This page covers basically everything osu.py is capable of.
 
+.. note::
+
+    Some cross-references in the docs may be broken and certain parts
+    may have inconsistent formatting. I'm working on cleaning it up,
+    but it's not high priority and takes a while because of the sheer
+    amount of documentation.
 
 Core Classes
 ------------
@@ -46,7 +52,12 @@ Authentication
 
 Endpoint results
 ----------------
-Some endpoints return specific responses that don't represent any specific objects.
+.. note::
+
+    These can be imported directly from ``osu``
+
+    Some endpoints return responses that don't represent any specific objects;
+    that's what these are for.
 
 .. automodule:: osu.results
     :members:
@@ -54,17 +65,29 @@ Some endpoints return specific responses that don't represent any specific objec
 Objects
 -------
 
+.. note::
+
+    These can be imported directly from ``osu``
+
 .. automodule:: osu.objects
     :members:
 
 Utility
 -------
 
+.. note::
+
+    These can be imported directly from ``osu``
+
 .. automodule:: osu.util
     :members:
 
 Enums
 -----
+
+.. note::
+
+    These can be imported directly from ``osu``
 
 .. automodule:: osu.enums
     :members:

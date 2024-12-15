@@ -245,6 +245,7 @@ class Client:
         **Returns**
 
         List[Union[:class:`LegacyScore`, :class:`SoloScore`]]
+            Will be SoloScore unless using an older api version
         """
         mode = parse_enum_args(mode)
         resp = self.http.make_request(Path.user_beatmap_scores(beatmap, user), mode=mode)
@@ -300,7 +301,8 @@ class Client:
         **Returns**
 
         :class:`BeatmapScores`
-            :class:`LegacyScore` object inside includes "user" and the included user includes "country" and "cover".
+            :class:`osu.objects.LegacyScore` object inside includes ``user`` and the
+            included user includes ``country`` and ``cover``.
         """
         mode = parse_enum_args(mode)
         mods = self._parse_mods_list(mods)
