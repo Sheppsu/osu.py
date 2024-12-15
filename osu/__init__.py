@@ -11,4 +11,4 @@ from .path import *
 from .scope import *
 
 
-__version__ = "3.2.0"
+__version__ = "3.2.1"
