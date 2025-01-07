@@ -14,7 +14,7 @@ osu.py
    :target: https://osupy.readthedocs.io
    :alt: Documentation
 
-Easy to use API wrapper for osu!api v2 written in Python.
+Easy-to-use API wrapper for osu!api v2 written in Python.
 Has a high-level interface while still allowing ways to do more complex things.
 
 Major features/capabilities
