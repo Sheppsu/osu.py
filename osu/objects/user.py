@@ -167,6 +167,8 @@ class UserCompact:
 
     support_level: Optional[int]
 
+    team: Optional[:class:`UserTeam`]
+
     unread_pm_count: Optional[int]
 
     user_achievements: Optional[List[:class:`UserAchievement`]]
@@ -232,6 +234,7 @@ class UserCompact:
         "statistics",
         "statistics_rulesets",
         "support_level",
+        "team",
         "unread_pm_count",
         "user_achievements",
         "user_preferences",
@@ -311,6 +314,7 @@ class UserCompact:
             data, "statistics_rulesets", UserStatisticsRulesets
         )
         self.support_level: Optional[int] = data.get("support_level")
+        self.team: Optional[dict] = get_optional(data, "team", UserTeam)
         self.unread_pm_count: Optional[int] = data.get("unread_pm_count")
         self.user_achievements: Optional[List[UserAchievement]] = get_optional_list(
             data, "user_achievements", UserAchievement
@@ -1089,3 +1093,25 @@ class DailyChallengeUserStats:
 
     def __repr__(self):
         return prettify(self, "daily_streak_best", "daily_streak_current")
+
+
+class UserTeam:
+    """
+    **Attributes**
+
+    id: int
+
+    logo: Optional[str]
+
+    name: str
+
+    short_name: str
+    """
+
+    __slots__ = ("id", "logo", "name", "short_name")
+
+    def __init__(self, data):
+        self.id: int = get_required(data, "id")
+        self.logo: Optional[str] = get_required(data, "logo")
+        self.name: str = get_required(data, "name")
+        self.short_name: str = get_required(data, "short_name")
