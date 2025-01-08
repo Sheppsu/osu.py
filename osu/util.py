@@ -174,7 +174,7 @@ class BeatmapsetSearchFilter:
         """
         Set the game mode to filter by.
 
-        mode: Union[:class:`GameModeStr`, str]
+        mode: Union[:class:`GameModeInt`, str]
         """
         self._filters["m"] = mode.value if isinstance(mode, GameModeInt) else mode
         return self
