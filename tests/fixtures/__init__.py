@@ -7,3 +7,4 @@ from .chat import *
 from .comments import *
 from .misc import *
 from .changelog import *
+from .forum import *
