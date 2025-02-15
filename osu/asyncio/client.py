@@ -9,7 +9,7 @@ from ..util import (
     BeatmapsetSearchFilter,
     create_multipart_formdata,
     get_optional_list,
-    get_optional
+    get_optional,
 )
 from ..results import *
 from ..scope import Scope

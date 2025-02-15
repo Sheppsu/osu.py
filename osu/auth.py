@@ -23,6 +23,7 @@ class BaseAuthHandler:
     """
     An abstract class for implementing authentication logic.
     """
+
     __slots__ = ("token", "domain", "auth_url", "token_url")
 
     scope: Scope
@@ -81,6 +82,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
     scope: Optional[:class:`Scope`]
         Scopes to authorize under. Default is :func:`Scope.default`.
     """
+
     __slots__ = (
         "client_id",
         "client_secret",
@@ -89,7 +91,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
         "refresh_token",
         "_token",
         "expire_time",
-        "_refresh_callback"
+        "_refresh_callback",
     )
 
     SAVE_VERSION = 2

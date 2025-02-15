@@ -15,6 +15,7 @@ class HTTPHandler:
     """
     Handles making requests. Used by :class:`osu.Client`.
     """
+
     __slots__ = ("auth", "rate_limit", "api_version", "base_url")
 
     def __init__(
