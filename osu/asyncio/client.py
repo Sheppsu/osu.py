@@ -2115,3 +2115,70 @@ class AsynchronousClient:
 
         ret = await self.http.make_request(Path.get_all_scores(), ruleset=ruleset, cursor_string=cursor)
         return GetAllScoresResult(list(map(get_score_object, ret["scores"])), ret["cursor_string"])
+
+    async def get_forums(self) -> GetForumsResult:
+        """
+        Returns top-level forums and their sub-forums (max 2 deep).
+
+        **Returns**
+
+        :class:`GetForumsResult`
+        """
+        ret = await self.http.make_request(Path.get_forums())
+        return GetForumsResult(list(map(Forum, ret["forums"])))
+
+    async def get_forum(self, forum_id: int) -> GetForumResult:
+        """
+        Get a forum, its recent topics, and pinned topics.
+
+        **Parameters**
+
+        forum_id: int
+
+        **Returns**
+
+        :class:`GetForumResult`
+        """
+        ret = await self.http.make_request(Path.get_forum(forum_id))
+        return GetForumResult(
+            Forum(ret["forum"]),
+            list(map(ForumTopic, ret["topics"])),
+            list(map(ForumTopic, ret["pinned_topics"])),
+        )
+
+    async def get_forum_topics(
+        self,
+        forum_id: Optional[int] = None,
+        cursor: Optional[str] = None,
+        sort: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> GetForumTopicsResult:
+        """
+        Get a list of topics, optionally under a specified forum.
+
+        **Parameters**
+
+        forum_id: Optional[int]
+            Id of forum to get topics from.
+            Will retrieve topics from all forums if not specified.
+
+        cursor: Optional[str]
+            Pass cursor value of last call to continue
+
+        sort: Optional[str]
+            'new' (default) or 'old'
+
+        limit: Optional[int]
+            50 at most and by default
+
+        **Returns**
+
+        :class:`GetForumTopicsResult`
+        """
+        ret = await self.http.make_request(
+            Path.get_forum_topics(), forum_id=forum_id, cursor_string=cursor, sort=sort, limit=limit
+        )
+        return GetForumTopicsResult(
+            list(map(ForumTopic, ret["topics"])),
+            ret["cursor_string"],
+        )
