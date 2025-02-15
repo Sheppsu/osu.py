@@ -22,11 +22,6 @@ def sample_wiki_page():
 
 
 @fixture
-def sample_topic():
-    yield dict(id=1699086, title="[STD] Roundtable II Qualifier Tournament | [Registrations closed]")
-
-
-@fixture
 def sample_match():
     yield dict(
         id=16161232,
