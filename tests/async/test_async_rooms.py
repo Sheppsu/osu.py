@@ -6,9 +6,7 @@ from osu import RoomType
 class TestAsynchronousRooms:
     @pytest.mark.asyncio
     async def test_get_scores(self, async_user_client, sample_user_highscore):
-        await async_user_client.get_scores(
-            sample_user_highscore["room_id"], sample_user_highscore["playlist_id"]
-        )
+        await async_user_client.get_scores(sample_user_highscore["room_id"], sample_user_highscore["playlist_id"])
 
     @pytest.mark.asyncio
     async def test_get_rooms(self, async_user_client):

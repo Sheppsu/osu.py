@@ -24,7 +24,7 @@ class TestUser:
             assert user.username == sample_user["username"]
 
     def test_lookup_users(self, client, sample_users):
-        users = [sample_users[0]["id"], "@"+sample_users[1]["username"]]
+        users = [sample_users[0]["id"], "@" + sample_users[1]["username"]]
         users = sorted(client.lookup_users(users), key=lambda u: 0 if u.id == sample_users[0]["id"] else 1)
         for user, sample_user in zip(users, sample_users[:2]):
             assert user

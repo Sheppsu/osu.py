@@ -3,7 +3,7 @@ import pytest
 from osu import ChatChannelType
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def create_new_pm(dev_user_client, sample_dev_user):
     ret = dev_user_client.create_new_pm(sample_dev_user["id"], "testing create_new_pm", False)
 
@@ -14,7 +14,7 @@ def create_new_pm(dev_user_client, sample_dev_user):
     yield ret.channel
 
 
-@pytest.fixture(scope='module')
+@pytest.fixture(scope="module")
 def get_channel_messages(dev_user_client, sample_channel):
     messages = dev_user_client.get_channel_messages(sample_channel["id"])
     if len(messages) == 0:
