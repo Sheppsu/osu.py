@@ -1,4 +1,5 @@
 import pytest
+import asyncio
 
 from osu import SoloScore, LegacyScore, Mods
 
@@ -54,6 +55,8 @@ class TestAsynchronousScore:
     async def test_get_all_scores(self, async_client):
         ret = await async_client.get_all_scores()
         assert ret
+
+        await asyncio.sleep(0.5)
 
         new_ret = await async_client.get_all_scores(cursor=ret.cursor)
         assert new_ret

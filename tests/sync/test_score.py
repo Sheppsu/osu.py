@@ -1,4 +1,5 @@
 from osu import SoloScore, LegacyScore, Mods
+import time
 
 
 class TestScore:
@@ -47,6 +48,8 @@ class TestScore:
     def test_get_all_scores(self, client):
         ret = client.get_all_scores()
         assert ret
+
+        time.sleep(0.5)
 
         new_ret = client.get_all_scores(cursor=ret.cursor)
         assert new_ret
