@@ -1,11 +1,27 @@
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_required, fromisoformat
+from ..util import prettify, get_optional, get_required, get_optional_list, fromisoformat
 from ..enums import ForumTopicType
 
 
 if TYPE_CHECKING:
     from datetime import datetime
+
+
+
+class Forum:
+    __slots__ = (
+        "id", "name", "description", "subforums"
+    )
+
+    def __init__(self, data):
+        self.id = data["id"]
+        self.name = data["name"]
+        self.description = data["description"]
+        self.subforums = get_optional_list(data, "subforums", Forum)
+
+    def __repr__(self):
+        return prettify(self, "name", "subforums")
 
 
 class ForumPost:

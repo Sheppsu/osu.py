@@ -12,6 +12,7 @@ from .objects import (
     Build,
     ChatChannel,
     ChatMessage,
+    Forum,
     ForumPost,
     ForumTopic,
     Match,
@@ -69,6 +70,9 @@ __all__ = (
     "GetRoomLeaderboardResult",
     "GetChannelResult",
     "GetAllScoresResult",
+    "GetForumsResult",
+    "GetForumResult",
+    "GetForumTopicsResult",
 )
 
 
@@ -472,3 +476,21 @@ class GetAllScoresResult(ResultBase):
 
     scores: List[SoloScore]
     cursor: str
+
+
+@dataclass
+class GetForumsResult(ResultBase):
+    forums: List[Forum]
+
+
+@dataclass
+class GetForumResult(ResultBase):
+    forum: Forum
+    topics: List[ForumTopic]
+    pinned_topics: List[ForumTopic]
+
+
+@dataclass
+class GetForumTopicsResult(ResultBase):
+    topics: List[ForumTopic]
+    cursor_string: str

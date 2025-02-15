@@ -271,3 +271,15 @@ class Path:
     @classmethod
     def get_all_scores(cls):
         return cls("get", "scores", "public")
+
+    @classmethod
+    def get_forums(cls):
+        return cls("get", "forums", "public")
+
+    @classmethod
+    def get_forum(cls, forum_id):
+        return cls("get", f"forums/{forum_id}", "public")
+
+    @classmethod
+    def get_forum_topics(cls):
+        return cls("get", "forums/topics", "public")

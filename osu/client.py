@@ -2115,3 +2115,30 @@ class Client:
 
         ret = self.http.make_request(Path.get_all_scores(), ruleset=ruleset, cursor_string=cursor)
         return GetAllScoresResult(list(map(get_score_object, ret["scores"])), ret["cursor_string"])
+
+    def get_forums(self) -> GetForumsResult:
+        ret = self.http.make_request(Path.get_forums())
+        return GetForumsResult(list(map(Forum, ret["forums"])))
+
+    def get_forum(self, forum_id: int):
+        ret = self.http.make_request(Path.get_forum(forum_id))
+        return GetForumResult(
+            Forum(ret["forum"]),
+            list(map(ForumTopic, ret["topics"])),
+            list(map(ForumTopic, ret["pinned_topics"])),
+        )
+
+    def get_forum_topics(
+        self,
+        forum_id: Optional[int] = None,
+        cursor: Optional[str] = None,
+        sort: Optional[str] = None,
+        limit: Optional[int] = None,
+    ):
+        ret = self.http.make_request(
+            Path.get_forum_topics(), forum_id=forum_id, cursor_string=cursor, sort=sort, limit=limit
+        )
+        return GetForumTopicsResult(
+            list(map(ForumTopic, ret["topics"])),
+            ret["cursor_string"],
+        )
