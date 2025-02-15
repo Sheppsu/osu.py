@@ -324,7 +324,8 @@ class BeatmapCompact:
 
     max_combo: Optional[int]
 
-    user: Optional[:class:`UserCompact`]
+    owners: Optional[List[:class:`BeatmapOwner`]]
+        List of owners (mappers) for the Beatmap.
     """
 
     __slots__ = (
@@ -341,6 +342,7 @@ class BeatmapCompact:
         "failtimes",
         "max_combo",
         "user",
+        "owners",
     )
 
     def __init__(self, data):
@@ -357,7 +359,11 @@ class BeatmapCompact:
         self.checksum: Optional[str] = data.get("checksum")
         self.failtimes: Optional[Failtimes] = get_optional(data, "failtimes", Failtimes)
         self.max_combo: Optional[int] = data.get("max_combo")
-        self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
+        self.owners: Optional[List[BeatmapOwner]] = get_optional_list(data, "owners", BeatmapOwner)
+
+        # no longer used, but kept for backwards compatibility
+        # TODO: remove in the next major version update
+        self.user: Optional[UserCompact] = None
 
     def __repr__(self):
         return prettify(
@@ -956,3 +962,26 @@ def get_beatmapset_nominations(data) -> _NOMINATIONS_TYPE:
     if data.get("legacy_mode", False):
         return LegacyNominations(data)
     return Nominations(data)
+
+
+class BeatmapOwner:
+    """
+    Describes the owner of a beatmap
+
+    **Attributes**
+
+    id: int
+        User id of the Beatmap owner.
+
+    username: str
+        Username of the Beatmap owner.
+    """
+
+    __slots__ = ("id", "username")
+
+    def __init__(self, data):
+        self.id: int = get_required(data, "id")
+        self.username: str = get_required(data, "username")
+
+    def __repr__(self):
+        return prettify(self, "id", "username")
