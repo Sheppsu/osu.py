@@ -1,6 +1,6 @@
 from typing import Optional, List, TYPE_CHECKING
 
-from ..util import prettify, get_optional, get_required, fromisoformat
+from ..util import prettify, get_optional, get_required, get_optional_list, fromisoformat
 from ..enums import ForumTopicType
 
 
@@ -21,7 +21,7 @@ class Forum:
 
     description: str
 
-    subforums: List[:class:`Forum`]
+    subforums: Optional[List[:class:`Forum`]]
     """
 
     __slots__ = ("id", "name", "description", "subforums")
@@ -30,7 +30,7 @@ class Forum:
         self.id: int = get_required(data, "id")
         self.name: str = get_required(data, "name")
         self.description: str = get_required(data, "description")
-        self.subforums: List[Forum] = list(map(Forum, get_required(data, "subforums")))
+        self.subforums: List[Forum] = get_optional_list(data, "subforums", Forum)
 
     def __repr__(self):
         return prettify(self, "id", "name", "subforums")
