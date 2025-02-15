@@ -59,3 +59,23 @@ class TestAsynchronousForum:
         assert ret.topic.id == sample_topic["id"]
         assert ret.topic.title == sample_topic["title"]
         assert ret.posts
+
+    @pytest.mark.asyncio
+    async def test_get_forums(self, async_client):
+        ret = await async_client.get_forums()
+        assert ret.forums
+        assert isinstance(ret.forums, list)
+
+    @pytest.mark.asyncio
+    async def test_get_forum(self, async_client, sample_forum):
+        ret = await async_client.get_forum(sample_forum["id"])
+        assert ret.forum.id == sample_forum["id"]
+        assert ret.forum.name == sample_forum["name"]
+        assert ret.forum.description == sample_forum["description"]
+
+    @pytest.mark.asyncio
+    async def test_get_topics(self, async_client, sample_forum):
+        ret = await async_client.get_forum_topics(sample_forum["id"])
+        assert ret.topics
+        assert isinstance(ret.topics, list)
+        assert isinstance(ret.cursor, str)

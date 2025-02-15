@@ -50,3 +50,20 @@ class TestForum:
         assert ret.topic.id == sample_topic["id"]
         assert ret.topic.title == sample_topic["title"]
         assert ret.posts
+
+    def test_get_forums(self, client):
+        ret = client.get_forums()
+        assert ret.forums
+        assert isinstance(ret.forums, list)
+
+    def test_get_forum(self, client, sample_forum):
+        ret = client.get_forum(sample_forum["id"])
+        assert ret.forum.id == sample_forum["id"]
+        assert ret.forum.name == sample_forum["name"]
+        assert ret.forum.description == sample_forum["description"]
+
+    def test_get_topics(self, client, sample_forum):
+        ret = client.get_forum_topics(sample_forum["id"])
+        assert ret.topics
+        assert isinstance(ret.topics, list)
+        assert isinstance(ret.cursor, str)
