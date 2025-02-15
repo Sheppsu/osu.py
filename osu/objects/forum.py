@@ -12,6 +12,18 @@ __all__ = ("Forum", "ForumPost", "TextFormat", "ForumTopic", "Poll", "PollOption
 
 
 class Forum:
+    """
+    **Attributes**
+
+    id: int
+
+    name: str
+
+    description: str
+
+    subforums: List[:class:`Forum`]
+    """
+
     __slots__ = ("id", "name", "description", "subforums")
 
     def __init__(self, data):

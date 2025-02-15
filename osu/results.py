@@ -480,20 +480,47 @@ class GetAllScoresResult(ResultBase):
 
 @dataclass
 class GetForumsResult(ResultBase):
+    """
+    Result of :func:`osu.Client.get_forums`
+
+    **Attributes**
+
+    forums: List[:class:`Forum`]
+    """
+
     forums: List[Forum]
-    last_topics: List[ForumTopic]
 
 
 @dataclass
 class GetForumResult(ResultBase):
+    """
+    Result of :func:`osu.Client.get_forum`
+
+    **Attributes**
+
+    forum: :class:`Forum`
+
+    topics: List[:class:`ForumTopic`]
+
+    pinned_topics: List[:class:`ForumTopic`]
+    """
+
     forum: Forum
-    last_topics: List[ForumTopic]
     topics: List[ForumTopic]
     pinned_topics: List[ForumTopic]
 
 
 @dataclass
 class GetForumTopicsResult(ResultBase):
+    """
+    Result of :func:`osu.Client.get_forum_topics`
+
+    **Attributes**
+
+    topics: List[:class:`ForumTopic`]
+
+    cursor: Optional[str]
+    """
+
     topics: List[ForumTopic]
-    # params: dict
     cursor: Optional[str]
