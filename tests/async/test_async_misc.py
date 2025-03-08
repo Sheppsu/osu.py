@@ -37,6 +37,9 @@ class TestAsynchronousMisc:
         assert rankings
         assert rankings.ranking
         assert all(map(lambda r: r.user is not None, rankings.ranking))
+        await async_client.get_ranking(GameModeStr.TAIKO, RankingType.COUNTRY)
+        await async_client.get_ranking(GameModeStr.STANDARD, RankingType.SPOTLIGHT)
+        await async_client.get_ranking(GameModeStr.STANDARD, RankingType.TEAM)
 
     @pytest.mark.asyncio
     async def test_get_spotlights(self, async_client):

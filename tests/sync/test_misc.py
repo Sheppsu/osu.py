@@ -35,6 +35,9 @@ class TestMisc:
         assert rankings
         assert rankings.ranking
         assert all(map(lambda r: r.user is not None, rankings.ranking))
+        client.get_ranking(GameModeStr.TAIKO, RankingType.COUNTRY)
+        client.get_ranking(GameModeStr.STANDARD, RankingType.SPOTLIGHT)
+        client.get_ranking(GameModeStr.STANDARD, RankingType.TEAM)
 
     def test_get_spotlights(self, client):
         assert client.get_spotlights()
