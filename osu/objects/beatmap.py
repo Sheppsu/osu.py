@@ -108,6 +108,8 @@ class BeatmapsetCompact:
 
     nominations: Optional[Union[:class:`LegacyNominations`, :class:`Nominations`]]
 
+    pack_tags: Optional[List[str]]
+
     ratings: Optional[List[int]]
 
     recent_favourites: Optional[List[:class:`UserCompact`]]
@@ -151,6 +153,7 @@ class BeatmapsetCompact:
         "has_favourited",
         "language",
         "nominations",
+        "pack_tags",
         "ratings",
         "recent_favourites",
         "related_users",
@@ -202,6 +205,7 @@ class BeatmapsetCompact:
         self.has_favourited: Optional[bool] = data.get("has_favourited")
         self.language: Optional[MetadataAttribute] = get_optional(data, "language", MetadataAttribute)
         self.nominations: Optional[_NOMINATIONS_TYPE] = get_optional(data, "nominations", get_beatmapset_nominations)
+        self.pack_tags: Optional[List[str]] = data.get("pack_tags")
         self.ratings: Optional[List[int]] = data.get("ratings")
         self.recent_favourites: Optional[List[UserCompact]] = get_optional_list(data, "recent_favourites", UserCompact)
         self.related_users: Optional[List[UserCompact]] = get_optional_list(data, "related_users", UserCompact)
