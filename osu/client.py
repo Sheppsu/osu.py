@@ -1049,6 +1049,9 @@ class Client:
         cursor: Optional[str] = None,
     ) -> MultiplayerScores:
         """
+        If you're looking for the endpoint to get a list of 1000 recent scores,
+        check :func:`get_all_scores`.
+
         Requires OAuth, scope public, and a user (authorization code grant or delegate scope)
 
         **Parameters**
