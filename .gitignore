@@ -2,8 +2,13 @@
 auth.json
 dev-auth.json
 test_venv/
-test.py
 upload
+
+# ignore any py files in base directory except certain ones
+# basically just ignore my local test files
+/*.py
+!auth.py
+!setup.py
 
 changelog.md
 
