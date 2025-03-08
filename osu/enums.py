@@ -630,12 +630,15 @@ class RankingType(Enum, metaclass=FallbackEnum):
     PERFORMANCE = 'performance'
 
     SCORE = 'score'
+
+    TEAM = 'team'
     """
 
     SPOTLIGHT = "charts"
     COUNTRY = "country"
     PERFORMANCE = "performance"
     SCORE = "score"
+    TEAM = "team"
 
 
 class CommentSort(Enum, metaclass=FallbackEnum):

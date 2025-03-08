@@ -1147,7 +1147,7 @@ class AsynchronousClient:
         filter: Optional[str] = None,
         spotlight: Optional[int] = None,
         variant: Optional[str] = None,
-    ) -> Rankings:
+    ) -> Union[Rankings[UserStatistics], Rankings[CountryStatistics], Rankings[UserTeamStatistics], SpotlightRankings]:
         """
         Gets the current ranking for the specified type and game mode.
 
@@ -1176,18 +1176,22 @@ class AsynchronousClient:
 
         **Returns**
 
-        :class:`Rankings`
+        Union[:class:`Rankings`[:class:`UserStatistics`], :class:`Rankings`[:class:`CountryStatistics`], :class:`Rankings`[:class:`UserTeamStatistics`], :class:`SpotlightRankings`]
+            Ranking type that depends on `type` argument
         """
         mode, type = parse_enum_args(mode, type)
-        return Rankings(
-            await self.http.make_request(
-                Path.get_ranking(mode, type),
-                country=country,
-                **(cursor if cursor else {}),
-                filter=filter,
-                spotlight=spotlight,
-                variant=variant,
-            )
+        data = await self.http.make_request(
+            Path.get_ranking(mode, type),
+            country=country,
+            **(cursor if cursor else {}),
+            filter=filter,
+            spotlight=spotlight,
+            variant=variant,
+        )
+        return (
+            SpotlightRankings(data)
+            if type == "charts"
+            else Rankings(data, {"team": UserTeamStatistics, "country": CountryStatistics}.get(type, UserStatistics))
         )
 
     async def get_spotlights(self) -> Spotlights:

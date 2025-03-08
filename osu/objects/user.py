@@ -5,7 +5,7 @@ from collections import namedtuple
 from .group import UserGroup
 from .forum import TextFormat
 from ..util import prettify, get_optional, get_optional_list, get_required, fromisoformat
-from ..enums import GameModeStr, UserAccountHistoryType, UserRelationType
+from ..enums import GameModeStr, GameModeInt, UserAccountHistoryType, UserRelationType
 
 
 if TYPE_CHECKING:
@@ -33,6 +33,8 @@ __all__ = (
     "Country",
     "UserKudosu",
     "DailyChallengeUserStats",
+    "UserTeam",
+    "UserTeamStatistics",
 )
 
 
@@ -739,11 +741,11 @@ class UserStatistics:
 
     rank_change_since_30_days: Optional[int]
 
-    recommended_difficulty: float
+    recommended_difficulty: Optional[float]
         Recommended difficulty for a player. This value is not received from the api, but locally calculated.
         The formula is pp^0.4 * 0.195
 
-    recommended_difficulty_exp: float
+    recommended_difficulty_exp: Optional[float]
         Recommended difficulty based on the pp_exp value.
 
     ranked_score: int
@@ -811,8 +813,8 @@ class UserStatistics:
         self.play_time: int = get_required(data, "play_time")
         self.pp: int = get_required(data, "pp")
         self.pp_exp: Optional[int] = data.get("pp_exp")
-        self.recommended_difficulty: float = math.pow(self.pp, 0.4) * 0.195
-        self.recommended_difficulty_exp: float = math.pow(self.pp_exp, 0.4) * 0.195 if self.pp_exp is not None else None
+        self.recommended_difficulty: Optional[float] = self.calculate_recommended_difficulty(self.pp)
+        self.recommended_difficulty_exp: Optional[float] = self.calculate_recommended_difficulty(self.pp_exp)
         self.ranked_score: int = get_required(data, "ranked_score")
         self.replays_watched_by_others: int = get_required(data, "replays_watched_by_others")
         self.total_hits: int = get_required(data, "total_hits")
@@ -820,6 +822,10 @@ class UserStatistics:
         self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
         self.variants: Optional[List[UserStatisticVariant]] = get_optional_list(data, "variants", UserStatisticVariant)
         self.rank_change_since_30_days: Optional[int] = data.get("rank_change_since_30_days")
+
+    @staticmethod
+    def calculate_recommended_difficulty(pp):
+        return None if pp is None else math.pow(pp, 0.4) * 0.195
 
     def __repr__(self):
         return prettify(self, "pp", "global_rank", "user")
@@ -1118,3 +1124,31 @@ class UserTeam:
 
     def __repr__(self):
         return prettify(self, "id", "name")
+
+
+class UserTeamStatistics:
+    """
+    **Attributes**
+
+    team_id: int
+
+    ruleset: :class:`GameModeInt`
+
+    play_count: int
+
+    ranked_score: int
+
+    performance: int
+    """
+
+    __slots__ = ("team_id", "ruleset", "play_count", "ranked_score", "performance")
+
+    def __init__(self, data):
+        self.team_id: int = get_required(data, "team_id")
+        self.ruleset: GameModeInt = GameModeInt(get_required(data, "ruleset_id"))
+        self.play_count: int = get_required(data, "play_count")
+        self.ranked_score: int = get_required(data, "ranked_score")
+        self.performance: int = get_required(data, "performance")
+
+    def __repr__(self):
+        return prettify(self, "team_id", "performance")
