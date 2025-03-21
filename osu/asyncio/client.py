@@ -1,8 +1,9 @@
 from .http import AsynchronousHTTPHandler
+from .auth import AsynchronousAuthHandler
 from ..objects import *
 from ..path import Path
 from ..enums import *
-from ..auth import BaseAuthHandler, AsynchronousAuthHandler
+from ..auth import BaseAuthHandler
 from ..util import (
     parse_mods_arg,
     parse_enum_args,
@@ -37,7 +38,7 @@ class AsynchronousClient:
     except :func:`AsynchronousClient.from_credentials`
     """
 
-    __slots__ = ("http",)
+    __slots__ = ("_auth",)
 
     def __init__(
         self,
@@ -46,12 +47,14 @@ class AsynchronousClient:
         limit_per_minute: int = 60,
         api_version: Optional[str] = None,
     ):
-        self.http = AsynchronousHTTPHandler(auth, request_wait_time, limit_per_minute, api_version)
-        self.set_domain(auth.domain)
+        self._auth = auth
+
+        self.http.set_ratelimit(request_wait_time, limit_per_minute)
+        self.http.api_version = api_version
 
     @property
-    def auth(self):
-        return self.http.auth
+    def http(self) -> AsynchronousHTTPHandler:
+        return self._auth.http
 
     @classmethod
     async def from_client_credentials(
