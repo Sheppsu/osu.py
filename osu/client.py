@@ -60,7 +60,7 @@ class Client:
     :type api_version: Optional[str]
     """
 
-    __slots__ = ("http",)
+    __slots__ = ("_auth",)
 
     def __init__(
         self,
@@ -69,8 +69,14 @@ class Client:
         limit_per_minute: int = 60,
         api_version: Optional[str] = None,
     ):
-        self.http = HTTPHandler(auth, request_wait_time, limit_per_minute, api_version)
-        self.set_domain(auth.domain)
+        self._auth = auth
+
+        self.http.set_ratelimit(request_wait_time, limit_per_minute)
+        self.http.api_version = api_version
+
+    @property
+    def http(self) -> HTTPHandler:
+        return self._auth.http
 
     @classmethod
     def from_credentials(
@@ -130,15 +136,6 @@ class Client:
             Use :func:`from_credentials`
         """
         return cls.from_credentials(*args, **kwargs)
-
-    @property
-    def auth(self) -> Optional[BaseAuthHandler]:
-        """
-        Auth handler that's in use.
-
-        :return: :class:`BaseAuthHandler`
-        """
-        return self.http.auth
 
     def set_api_version(self, version: str) -> None:
         """

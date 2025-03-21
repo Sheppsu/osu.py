@@ -1,22 +1,14 @@
-import requests
 from time import monotonic
 from typing import Callable, Optional, Union
 from collections.abc import Awaitable
+import threading
 
-from .constants import DEFAULT_AUTH_URL, DEFAULT_TOKEN_URL, DEFAULT_DOMAIN, auth_url, token_url
 from .scope import Scope
 from .exceptions import ScopeException
-from .util import raise_aiohttp_error
-
-try:
-    import aiohttp
-
-    has_aiohttp = True
-except ImportError:
-    has_aiohttp = False
+from .http import HTTPHandler, BaseHTTPHandler
 
 
-__all__ = ("BaseAuthHandler", "FunctionalAuthHandler", "AuthHandler", "AsynchronousAuthHandler")
+__all__ = ("BaseAuthHandler", "FunctionalAuthHandler", "AuthHandler")
 
 
 class BaseAuthHandler:
@@ -24,26 +16,8 @@ class BaseAuthHandler:
     An abstract class for implementing authentication logic.
     """
 
-    __slots__ = ("token", "domain", "auth_url", "token_url")
-
     scope: Scope
-
-    def __init__(self):
-        self.domain = DEFAULT_DOMAIN
-        self.auth_url = DEFAULT_AUTH_URL
-        self.token_url = DEFAULT_TOKEN_URL
-
-    def set_domain(self, domain: str) -> None:
-        """
-        Set domain to use for requests, such as "dev.ppy.sh"
-
-        **Parameters**
-
-        domain: str
-        """
-        self.domain = domain
-        self.auth_url = auth_url(domain)
-        self.token_url = token_url(domain)
+    http: BaseHTTPHandler
 
     def get_token(self) -> Optional[str]:
         """
@@ -57,8 +31,10 @@ class BaseAuthHandler:
 
 class FunctionalAuthHandler(BaseAuthHandler):
     """
-    Helps to go through the oauth process easily, as well as refresh
+    Abstract class that helps to go through the oauth process easily, as well as refresh
     tokens without the user needing to worry about it.
+
+    Certain functions expect that the `_http` attribute is defined by classes implementing this one.
 
     .. note::
         If you're not authorizing a user with a url for a code, this does not apply to you.
@@ -162,7 +138,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
         }
         if not params["state"]:
             del params["state"]
-        return self.auth_url + "?" + "&".join([f"{key}={value}" for key, value in params.items()])
+        return self.http.auth_url + "?" + "&".join([f"{key}={value}" for key, value in params.items()])
 
     def has_user(self):
         """
@@ -212,7 +188,7 @@ class FunctionalAuthHandler(BaseAuthHandler):
             "redirect_url": self.redirect_url,
             "scope": self.scope.scopes,
             "refresh_token": self.refresh_token,
-            "domain": self.domain,
+            "domain": self.http.domain,
         }
 
     @classmethod
@@ -270,6 +246,20 @@ class FunctionalAuthHandler(BaseAuthHandler):
 
 
 class AuthHandler(FunctionalAuthHandler):
+    __slots__ = ("http", "_lock")
+
+    def __init__(
+        self,
+        client_id: int,
+        client_secret: str,
+        redirect_url: Optional[str],
+        scope: Optional[Scope] = None,
+    ):
+        super().__init__(client_id, client_secret, redirect_url, scope)
+
+        self.http: HTTPHandler = HTTPHandler(self)
+        self._lock: threading.Lock = threading.Lock()
+
     @staticmethod
     def _raise_for_status(resp):
         try:
@@ -284,7 +274,7 @@ class AuthHandler(FunctionalAuthHandler):
     def get_auth_token(self, code: Optional[str] = None) -> None:
         data = self._get_data("client_credentials" if code is None else "authorization_code", code)
 
-        response = requests.post(self.token_url, data=data)
+        response = self.http.get_auth_token(data)
         self._raise_for_status(response)
         response = response.json()
 
@@ -296,7 +286,7 @@ class AuthHandler(FunctionalAuthHandler):
 
         data = self._get_data("client_credentials" if self.refresh_token is None else "refresh_token")
 
-        response = requests.post(self.token_url, data=data)
+        response = self.http.get_auth_token(data)
         self._raise_for_status(response)
         response = response.json()
 
@@ -306,9 +296,10 @@ class AuthHandler(FunctionalAuthHandler):
             self._refresh_callback(self)
 
     def get_token(self) -> Optional[str]:
-        if self.expire_time - 5 <= monotonic():
-            self.refresh_access_token()
-        return self._token
+        with self._lock:
+            if self.expire_time - 5 <= monotonic():
+                self.refresh_access_token()
+            return self._token
 
     @classmethod
     def _from_save_data(cls, save_data: dict) -> "AuthHandler":
@@ -317,7 +308,7 @@ class AuthHandler(FunctionalAuthHandler):
         redirect_url = save_data["redirect_url"]
         scope = Scope(*save_data["scope"].split())
         auth = cls(client_id, client_secret, redirect_url, scope)
-        auth.set_domain(save_data["domain"])
+        auth.http.set_domain(save_data["domain"])
         auth.refresh_access_token(save_data["refresh_token"])
         return auth
 
@@ -329,84 +320,12 @@ class AuthHandler(FunctionalAuthHandler):
         """
         Return an asynchronous version of this auth handler
         """
+        from .asyncio.auth import AsynchronousAuthHandler
+
         auth = AsynchronousAuthHandler(self.client_id, self.client_secret, self.redirect_url, self.scope)
         auth.refresh_token = self.refresh_token
         auth._token = self._token
         auth.expire_time = self.expire_time
         auth._refresh_callback = self._refresh_callback
-        auth.set_domain(self.domain)
-        return auth
-
-
-class AsynchronousAuthHandler(FunctionalAuthHandler):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        if not has_aiohttp:
-            raise_aiohttp_error()
-
-    @staticmethod
-    async def _raise_for_status(resp):
-        try:
-            resp.raise_for_status()
-        except Exception as exc:
-            try:
-                msg = (await resp.json())["error"]
-            except:
-                msg = None
-            raise type(exc)(str(exc) + ": " + msg) if msg is not None else exc from None
-
-    async def _request(self, data, is_refresh=False):
-        async with aiohttp.ClientSession() as session:
-            async with session.request("POST", self.token_url, json=data) as resp:
-                await self._raise_for_status(resp)
-                json = await resp.json()
-                self._handle_response(json)
-
-                if is_refresh and self._refresh_callback:
-                    self._refresh_callback(self)
-
-    async def get_auth_token(self, code: Optional[str] = None):
-        data = self._get_data("client_credentials" if code is None else "authorization_code", code)
-        return await self._request(data)
-
-    async def refresh_access_token(self, refresh_token: Optional[str] = None):
-        if refresh_token:
-            self.refresh_token = refresh_token
-
-        data = self._get_data("client_credentials" if self.refresh_token is None else "refresh_token")
-
-        return await self._request(data, is_refresh=True)
-
-    async def get_token(self) -> Optional[str]:
-        if self.expire_time - 5 <= monotonic():
-            await self.refresh_access_token()
-        return self._token
-
-    @classmethod
-    async def _from_save_data(cls, save_data: dict) -> "AsynchronousAuthHandler":
-        client_id = save_data["client_id"]
-        client_secret = save_data["client_secret"]
-        redirect_url = save_data["redirect_url"]
-        scope = Scope(*save_data["scope"].split())
-        auth = cls(client_id, client_secret, redirect_url, scope)
-        auth.set_domain(save_data["domain"])
-        await auth.refresh_access_token(save_data["refresh_token"])
-        return auth
-
-    @classmethod
-    async def from_save_data(cls, save_data: dict) -> "AsynchronousAuthHandler":
-        awaitable = super().from_save_data(save_data)
-        return await awaitable  # type: ignore
-
-    def as_sync(self) -> AuthHandler:
-        """
-        Return a synchronous version of this auth handler
-        """
-        auth = AuthHandler(self.client_id, self.client_secret, self.redirect_url, self.scope)
-        auth.refresh_token = self.refresh_token
-        auth._token = self._token
-        auth.expire_time = self.expire_time
-        auth._refresh_callback = self._refresh_callback
-        auth.set_domain(self.domain)
+        auth.http.set_domain(self.http.domain)
         return auth
