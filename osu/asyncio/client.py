@@ -266,6 +266,7 @@ class AsynchronousClient:
         mode: Optional[Union[str, GameModeStr]] = None,
         mods: Optional[Union[Mods, Sequence[Union[Mods, Mod, str]]]] = None,
         ranking_type: Optional[str] = None,
+        legacy_only: Optional[bool] = None,
     ) -> BeatmapScores:
         """
         Returns the top scores for a beatmap
@@ -290,6 +291,9 @@ class AsynchronousClient:
         ranking_type: Optional[str]
             Beatmap score ranking type. Currently doesn't do anything.
 
+        legacy_only: Optional[bool]
+            Whether or not to exclude lazer scores. Defaults to false.
+
         **Returns**
 
         :class:`BeatmapScores`
@@ -303,6 +307,7 @@ class AsynchronousClient:
                 mode=mode,
                 **{"mods[]": mods},
                 type=ranking_type,
+                legacy_only=1 if legacy_only else 0,
             )
         )
 
