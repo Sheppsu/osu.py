@@ -40,6 +40,7 @@ class BeatmapScores:
 
     def __init__(self, data):
         self.scores: List[Union[LegacyScore, SoloScore]] = list(map(get_score_object, get_required(data, "scores")))
+        # supposedly will be switched to 'user_score' in the future
         var_name = "userScore" if "userScore" in data else "user_score"
         self.user_score: Optional[BeatmapUserScore] = get_optional(data, var_name, BeatmapUserScore)
 
