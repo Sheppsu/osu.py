@@ -328,7 +328,6 @@ class UserCompact:
 
 
 class User(UserCompact):
-    # TODO: playstyle enum, profile order enum
     """
     Represents a User. Extends :class:`UserCompact` with additional attributes.
     Includes `country`, `cover`, and `is_restricted` attributes of :class:`UserCompact`.
@@ -429,7 +428,6 @@ class User(UserCompact):
 
 
 class UserPreferences:
-    # TODO: enum for beatmapset_card_size, beatmapset_download, user_list_filter, user_list_sort, user_list_view
     """
     The settings preferences of a user
 
