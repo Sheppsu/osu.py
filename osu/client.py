@@ -1,8 +1,8 @@
-from .http import HTTPHandler
+from .http import BaseHTTPHandler
 from .objects import *
 from .path import Path
 from .enums import *
-from .auth import BaseAuthHandler, AuthHandler
+from .auth import BaseAuthHandler, AuthHandler, NoAuth
 from .util import (
     parse_mods_arg,
     parse_enum_args,
@@ -60,7 +60,7 @@ class Client:
     :type api_version: Optional[str]
     """
 
-    __slots__ = ("_auth",)
+    __slots__ = ("auth",)
 
     def __init__(
         self,
@@ -69,14 +69,14 @@ class Client:
         limit_per_minute: int = 60,
         api_version: Optional[str] = None,
     ):
-        self._auth = auth
+        self.auth: BaseAuthHandler = NoAuth() if auth is None else auth
 
         self.http.set_ratelimit(request_wait_time, limit_per_minute)
-        self.http.api_version = api_version
+        self.http.set_api_version(api_version)
 
     @property
-    def http(self) -> HTTPHandler:
-        return self._auth.http
+    def http(self) -> BaseHTTPHandler:
+        return self.auth.http
 
     @classmethod
     def from_credentials(
@@ -93,33 +93,33 @@ class Client:
         """
         Creates a :class:`Client` object from client id, client secret, redirect uri, and scope.
 
-        :param client_id: API client ID
-        :type client_id: int
+        **Parameters**
 
-        :param client_secret: API client secret
-        :type client_secret: str
+        client_id: int
+            API client ID
 
-        :param redirect_uri: API redirect uri
-        :type redirect_uri: Optional[str]
+        client_secret: str
+            API client secret
 
-        :param scope:
+        redirect_url: Optional[str]
+            API redirect url
+
+        scope: Optional[:class:`Scope`]
             Scopes to authenticate under. Default is :func:`Scope.default`, which is just the ``public`` scope.
-        :type scope: Optional[:class:`Scope`]
 
-        :param request_wait_time: (Default 1.0)
+        request_wait_time: float
             Read :class:`Client` for details.
-        :type request_wait_time: float
 
-        :param limit_per_minute: (Default 60)
+        limit_per_minute: int
             Do not change default before reading details in :class:`Client`.
-        :type limit_per_minute: int
 
-        :param lazily_authenticate: (Default True)
+        lazily_authenticate: bool
             If true, the :class:`AuthHandler` won't authenticate with the api until
             a request is made that requires it.
-        :type lazily_authenticate: bool
 
-        :return: :class:`Client`
+        **Returns**
+
+        :class:`Client`
         """
         if scope is None:
             scope = Scope.default()
@@ -143,9 +143,10 @@ class Client:
         You shouldn't have to change it from the default, but if you need to
         then the function is available.
 
-        :param version:
+        **Parameters**
+
+        version: str
             x-api-version header value in the format yyyymmdd
-        :type version: str
         """
         self.http.api_version = version
 
@@ -218,7 +219,9 @@ class Client:
         :class:`BeatmapUserScore`
         """
         mode = parse_enum_args(mode)
-        return BeatmapUserScore(self.http.make_request(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods))
+        return BeatmapUserScore(
+            self.http.make_request(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods), self.http.api_version
+        )
 
     def get_user_beatmap_scores(
         self, beatmap: int, user: int, mode: Optional[Union[str, GameModeStr]] = None
@@ -246,12 +249,7 @@ class Client:
         """
         mode = parse_enum_args(mode)
         resp = self.http.make_request(Path.user_beatmap_scores(beatmap, user), mode=mode)
-        return list(
-            map(
-                get_score_object,
-                resp["scores"],
-            )
-        )
+        return [get_score_object(score, self.http.api_version) for score in resp["scores"]]
 
     def _parse_mods_list(self, mods) -> Optional[List[str]]:
         if mods is None:
@@ -314,7 +312,8 @@ class Client:
                 **{"mods[]": mods},
                 type=ranking_type,
                 legacy_only=1 if legacy_only else 0,
-            )
+            ),
+            self.http.api_version,
         )
 
     def get_beatmap(self, beatmap: int) -> Beatmap:
@@ -1303,18 +1302,16 @@ class Client:
             Includes attributes `beatmap`, `beatmapset`. Additionally includes `weight` if `type` is `best`.
         """
         mode, type = parse_enum_args(mode, type)
-        return list(
-            map(
-                get_score_object,
-                self.http.make_request(
-                    Path.get_user_scores(user, type),
-                    include_fails=int(include_fails),
-                    mode=mode,
-                    limit=limit,
-                    offset=offset,
-                ),
+        return [
+            get_score_object(score, self.http.api_version)
+            for score in self.http.make_request(
+                Path.get_user_scores(user, type),
+                include_fails=int(include_fails),
+                mode=mode,
+                limit=limit,
+                offset=offset,
             )
-        )
+        ]
 
     def get_user_beatmaps(
         self,
@@ -1680,7 +1677,7 @@ class Client:
             Should be a SoloScore, unless for some strange reason it's not
         """
         mode = parse_enum_args(mode)
-        return get_score_object(self.http.make_request(Path.get_score_by_id(mode, score_id)))
+        return get_score_object(self.http.make_request(Path.get_score_by_id(mode, score_id)), self.http.api_version)
 
     def get_score_by_id_only(self, score_id: int) -> Union[LegacyScore, SoloScore]:
         """
@@ -1697,7 +1694,7 @@ class Client:
         Union[:class:`SoloScore`, :class:`LegacyScore`]
             Should be a SoloScore, unless for some strange reason it's not
         """
-        return get_score_object(self.http.make_request(Path.get_score_by_id_only(score_id)))
+        return get_score_object(self.http.make_request(Path.get_score_by_id_only(score_id)), self.http.api_version)
 
     def search_beatmapsets(
         self, filters: Optional[BeatmapsetSearchFilter] = None, page: Optional[int] = None
@@ -2117,7 +2114,9 @@ class Client:
         ruleset = parse_enum_args(ruleset)
 
         ret = self.http.make_request(Path.get_all_scores(), ruleset=ruleset, cursor_string=cursor)
-        return GetAllScoresResult(list(map(get_score_object, ret["scores"])), ret["cursor_string"])
+        return GetAllScoresResult(
+            [get_score_object(score, self.http.api_version) for score in ret["scores"]], ret["cursor_string"]
+        )
 
     def get_forums(self) -> GetForumsResult:
         """

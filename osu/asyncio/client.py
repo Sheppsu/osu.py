@@ -1,9 +1,6 @@
-from .http import AsynchronousHTTPHandler
-from .auth import AsynchronousAuthHandler
 from ..objects import *
 from ..path import Path
 from ..enums import *
-from ..auth import BaseAuthHandler
 from ..util import (
     parse_mods_arg,
     parse_enum_args,
@@ -14,6 +11,8 @@ from ..util import (
 )
 from ..results import *
 from ..scope import Scope
+from .auth import AsynchronousAuthHandler, BaseAsynchronousAuthHandler
+from .http import BaseAsynchronousHTTPHandler
 
 from typing import Union, Optional, Sequence, Dict, List, Awaitable
 from datetime import datetime
@@ -38,23 +37,23 @@ class AsynchronousClient:
     except :func:`AsynchronousClient.from_credentials`
     """
 
-    __slots__ = ("_auth",)
+    __slots__ = ("auth",)
 
     def __init__(
         self,
-        auth: Optional[BaseAuthHandler] = None,
+        auth: Optional[BaseAsynchronousAuthHandler] = None,
         request_wait_time: float = 1.0,
         limit_per_minute: int = 60,
         api_version: Optional[str] = None,
     ):
-        self._auth = auth
+        self.auth: Optional[BaseAsynchronousAuthHandler] = auth
 
         self.http.set_ratelimit(request_wait_time, limit_per_minute)
-        self.http.api_version = api_version
+        self.http.set_api_version(api_version)
 
     @property
-    def http(self) -> AsynchronousHTTPHandler:
-        return self._auth.http
+    def http(self) -> BaseAsynchronousHTTPHandler:
+        return self.auth.http
 
     @classmethod
     async def from_client_credentials(
@@ -88,36 +87,35 @@ class AsynchronousClient:
         lazily_authenticate: bool = True,
     ) -> Union["AsynchronousClient", Awaitable]:
         """
-        Creates an :class:`AsynchronousClient` from client id, client secret, redirect uri, and scope.
+        Creates a :class:`AsynchronousClient` object from client id, client secret, redirect uri, and scope.
 
-        :param client_id: API client ID
-        :type client_id: int
+        **Parameters**
 
-        :param client_secret: API client secret
-        :type client_secret: str
+        client_id: int
+            API client ID
 
-        :param redirect_uri: API redirect uri
-        :type redirect_uri: Optional[str]
+        client_secret: str
+            API client secret
 
-        :param scope:
+        redirect_url: Optional[str]
+            API redirect url
+
+        scope: Optional[:class:`Scope`]
             Scopes to authenticate under. Default is :func:`Scope.default`, which is just the ``public`` scope.
-        :type scope: Optional[:class:`Scope`]
 
-        :param request_wait_time: (Default 1.0)
+        request_wait_time: float
             Read :class:`Client` for details.
-        :type request_wait_time: float
 
-        :param limit_per_minute: (Default 60)
+        limit_per_minute: int
             Do not change default before reading details in :class:`Client`.
-        :type limit_per_minute: int
 
-        :param lazily_authenticate: (Default True)
+        lazily_authenticate: bool
             If true, the :class:`AuthHandler` won't authenticate with the api until
-            a request is made that requires it. Otherwise, an ``Awaitable`` is returned.
-        :type lazily_authenticate: bool
+            a request is made that requires it.
 
-        :return: Union[:class:`AsynchronousClient`, Awaitable[:class:`AsynchronousClient`]]
-            Awaitable if ``lazily_authenticate`` is false.
+        **Returns**
+
+        :class:`AsynchronousClient`
         """
         auth = AsynchronousAuthHandler(client_id, client_secret, redirect_url, scope)
         if not lazily_authenticate:
@@ -213,7 +211,8 @@ class AsynchronousClient:
         """
         mode = parse_enum_args(mode)
         return BeatmapUserScore(
-            await self.http.make_request(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods)
+            await self.http.make_request(Path.user_beatmap_score(beatmap, user), mode=mode, mods=mods),
+            self.http.api_version,
         )
 
     async def get_user_beatmap_scores(
@@ -241,12 +240,7 @@ class AsynchronousClient:
         """
         mode = parse_enum_args(mode)
         resp = await self.http.make_request(Path.user_beatmap_scores(beatmap, user), mode=mode)
-        return list(
-            map(
-                get_score_object,
-                resp["scores"],
-            )
-        )
+        return [get_score_object(score, self.http.api_version) for score in resp["scores"]]
 
     def _parse_mods_list(self, mods) -> Optional[List[str]]:
         if mods is None:
@@ -308,7 +302,8 @@ class AsynchronousClient:
                 **{"mods[]": mods},
                 type=ranking_type,
                 legacy_only=1 if legacy_only else 0,
-            )
+            ),
+            self.http.api_version,
         )
 
     async def get_beatmap(self, beatmap: int) -> Beatmap:
@@ -1300,18 +1295,16 @@ class AsynchronousClient:
             Includes attributes `beatmap`, `beatmapset`. Additionally includes `weight` if `type` is `best`.
         """
         mode, type = parse_enum_args(mode, type)
-        return list(
-            map(
-                get_score_object,
-                await self.http.make_request(
-                    Path.get_user_scores(user, type),
-                    include_fails=int(include_fails),
-                    mode=mode,
-                    limit=limit,
-                    offset=offset,
-                ),
+        return [
+            get_score_object(score, self.http.api_version)
+            for score in await self.http.make_request(
+                Path.get_user_scores(user, type),
+                include_fails=int(include_fails),
+                mode=mode,
+                limit=limit,
+                offset=offset,
             )
-        )
+        ]
 
     async def get_user_beatmaps(
         self,
@@ -1678,7 +1671,9 @@ class AsynchronousClient:
             Should be a SoloScore, unless for some strange reason it's not
         """
         mode = parse_enum_args(mode)
-        return get_score_object(await self.http.make_request(Path.get_score_by_id(mode, score_id)))
+        return get_score_object(
+            await self.http.make_request(Path.get_score_by_id(mode, score_id)), self.http.api_version
+        )
 
     async def get_score_by_id_only(self, score_id: int) -> Union[LegacyScore, SoloScore]:
         """
@@ -1695,7 +1690,9 @@ class AsynchronousClient:
         Union[:class:`SoloScore`, :class:`LegacyScore`]
             Should be a SoloScore, unless for some strange reason it's not
         """
-        return get_score_object(await self.http.make_request(Path.get_score_by_id_only(score_id)))
+        return get_score_object(
+            await self.http.make_request(Path.get_score_by_id_only(score_id)), self.http.api_version
+        )
 
     async def search_beatmapsets(
         self, filters: Optional[BeatmapsetSearchFilter] = None, page: Optional[int] = None
@@ -2126,7 +2123,9 @@ class AsynchronousClient:
         ruleset = parse_enum_args(ruleset)
 
         ret = await self.http.make_request(Path.get_all_scores(), ruleset=ruleset, cursor_string=cursor)
-        return GetAllScoresResult(list(map(get_score_object, ret["scores"])), ret["cursor_string"])
+        return GetAllScoresResult(
+            [get_score_object(score, self.http.api_version) for score in ret["scores"]], ret["cursor_string"]
+        )
 
     async def get_forums(self) -> GetForumsResult:
         """

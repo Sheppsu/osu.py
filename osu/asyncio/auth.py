@@ -2,15 +2,22 @@ from typing import Optional
 from time import monotonic
 import asyncio
 
-from .http import AsynchronousHTTPHandler
-from ..auth import FunctionalAuthHandler, AuthHandler
+from .http import AsynchronousHTTPHandler, BaseAsynchronousHTTPHandler
+from ..auth import BaseAuthHandler, AuthUtil, AuthHandler
 from ..scope import Scope
 
 
-__all__ = ("AsynchronousAuthHandler",)
+__all__ = ("AsynchronousAuthHandler", "BaseAsynchronousAuthHandler")
 
 
-class AsynchronousAuthHandler(FunctionalAuthHandler):
+class BaseAsynchronousAuthHandler(BaseAuthHandler):
+    http: BaseAsynchronousHTTPHandler
+
+    async def get_token(self) -> Optional[str]:
+        raise NotImplementedError()
+
+
+class AsynchronousAuthHandler(BaseAsynchronousAuthHandler, AuthUtil):
     __slots__ = ("http", "_lock")
 
     def __init__(
@@ -20,7 +27,7 @@ class AsynchronousAuthHandler(FunctionalAuthHandler):
         redirect_url: Optional[str],
         scope: Optional[Scope] = None,
     ):
-        super().__init__(client_id, client_secret, redirect_url, scope)
+        AuthUtil.__init__(self, client_id, client_secret, redirect_url, scope)
 
         self.http: AsynchronousHTTPHandler = AsynchronousHTTPHandler(self)
         self._lock: asyncio.Lock = asyncio.Lock()
@@ -41,10 +48,39 @@ class AsynchronousAuthHandler(FunctionalAuthHandler):
         self._handle_response(json)
 
     async def get_auth_token(self, code: Optional[str] = None):
+        """
+        `code` parameter is not required, but without a code the scopes are restricted to
+        public and delegate (more on delegation below). You can obtain a code by having
+        a user authorize themselves under a url which you can get with get_auth_url.
+        Read more about it under that function.
+
+        **Client Credentials Delegation**
+
+        Client Credentials Grant tokens may be allowed to act on behalf of the owner of the OAuth client
+        (delegation) by requesting the delegate scope, in addition to other scopes supporting delegation.
+        When using delegation, scopes that support delegation cannot be used together with scopes that do
+        not support delegation. Delegation is only available to Chat Bots. Currently, chat.write is the only
+        other scope that supports delegation.
+
+        **Parameters**
+
+        code: Optional[str]
+            code from user authorizing at a specific url
+        """
         data = self._get_data("client_credentials" if code is None else "authorization_code", code)
         await self._request(data)
 
     async def refresh_access_token(self, refresh_token: Optional[str] = None):
+        """
+        This function is usually executed by HTTPHandler, but if you have a
+        refresh token saved from the last session, then you can fill in the
+        `refresh_token` argument which this function will use to get a valid token.
+
+        **Parameters**
+
+        refresh_token: Optional[str]
+            A refresh token used to get a new access token.
+        """
         if refresh_token:
             self.refresh_token = refresh_token
 
@@ -61,29 +97,14 @@ class AsynchronousAuthHandler(FunctionalAuthHandler):
             return self._token
 
     @classmethod
-    async def _from_save_data(cls, save_data: dict) -> "AsynchronousAuthHandler":
-        client_id = save_data["client_id"]
-        client_secret = save_data["client_secret"]
-        redirect_url = save_data["redirect_url"]
-        scope = Scope(*save_data["scope"].split())
-        auth = cls(client_id, client_secret, redirect_url, scope)
-        auth.http.set_domain(save_data["domain"])
-        await auth.refresh_access_token(save_data["refresh_token"])
-        return auth
-
-    @classmethod
-    async def from_save_data(cls, save_data: dict) -> "AsynchronousAuthHandler":
-        awaitable = super().from_save_data(save_data)
-        return await awaitable  # type: ignore
+    def from_sync(cls, auth: AuthHandler):
+        new_auth = cls(auth.client_id, auth.client_secret, auth.redirect_url, auth.scope)
+        new_auth.refresh_token = auth.refresh_token
+        new_auth._token = auth._token
+        new_auth.expire_time = auth.expire_time
+        new_auth._refresh_callback = auth._refresh_callback
+        new_auth.http = auth.http.as_async(new_auth)
+        return new_auth
 
     def as_sync(self) -> AuthHandler:
-        """
-        Return a synchronous version of this auth handler
-        """
-        auth = AuthHandler(self.client_id, self.client_secret, self.redirect_url, self.scope)
-        auth.refresh_token = self.refresh_token
-        auth._token = self._token
-        auth.expire_time = self.expire_time
-        auth._refresh_callback = self._refresh_callback
-        auth.http.set_domain(self.http.domain)
-        return auth
+        return AuthHandler.from_async(self)

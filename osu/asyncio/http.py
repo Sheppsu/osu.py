@@ -1,48 +1,64 @@
 import time
 import asyncio
-from typing import Optional, List
-from inspect import isawaitable
+from typing import Optional, List, AsyncGenerator, TYPE_CHECKING
+from inspect import iscoroutinefunction
 
 try:
     import aiohttp
-    from aiohttp.client_exceptions import ContentTypeError
-
-    has_aiohttp = True
 except ImportError:
-    has_aiohttp = False
+    aiohttp = None
 
-from ..auth import BaseAuthHandler
-from ..http import BaseHTTPHandler
+from ..http import BaseHTTPHandler, HTTPHandler
 from ..exceptions import RequestException
-from ..util import raise_aiohttp_error
+
+if TYPE_CHECKING:
+    from .auth import BaseAsynchronousAuthHandler
+    from ..auth import BaseAuthHandler
 
 
-__all__ = ("AsynchronousHTTPHandler",)
+__all__ = ("AsynchronousHTTPHandler", "BaseAsynchronousHTTPHandler")
 
 
-class AsynchronousHTTPHandler(BaseHTTPHandler):
+class BaseAsynchronousHTTPHandler(BaseHTTPHandler):
+    auth: "BaseAsynchronousAuthHandler"
+
+    def __init__(
+        self,
+        auth: Optional["BaseAsynchronousAuthHandler"],
+        api_version: Optional[str] = None
+    ):
+        super().__init__(auth, api_version)
+
+        if not iscoroutinefunction(self.auth.get_token):
+            raise ValueError("auth must have an async get_token method")
+
+        if aiohttp is None:
+            raise RuntimeError(
+                "Missing aiohttp package, which is required to use asynchronous features."
+                'Install osu.py with the async feature: "pip install osu.py[async]"'
+            )
+
+    def get_req_gen(self, path, *args, **kwargs) -> AsyncGenerator:
+        raise NotImplementedError()
+
+    async def make_request(self, path, *args, **kwargs):
+        raise NotImplementedError()
+
+
+class AsynchronousHTTPHandler(BaseAsynchronousHTTPHandler):
     """
     Handles making asynchronous requests. Used by :class:`osu.AsynchronousClient`.
     """
 
     def __init__(
         self,
-        auth: Optional[BaseAuthHandler],
+        auth: Optional["BaseAsynchronousAuthHandler"],
         request_wait_time: float = 1.0,
         limit_per_minute: int = 60,
         api_version: Optional[str] = None,
     ):
         super().__init__(auth, api_version)
 
-        if not isawaitable(awaitable := auth.get_token()):
-            raise ValueError("auth passed to AsynchronousHTTPHandler must have an asynchronous get_token method")
-
-        if not has_aiohttp:
-            raise_aiohttp_error()
-
-        awaitable.close()  # type: ignore
-
-        self.auth: Optional[BaseAuthHandler] = auth
         self.rate_limit: RateLimitHandler = RateLimitHandler(request_wait_time, limit_per_minute)
 
     def set_ratelimit(self, request_wait_time: float = 1.0, limit_per_minute: int = 60):
@@ -55,16 +71,20 @@ class AsynchronousHTTPHandler(BaseHTTPHandler):
             "x-api-version": self.api_version,
             "Accept": path.accept,
         }
+
         if not is_files:  # otherwise let requests library handle it
             headers["Content-Type"] = path.content_type
+
         if path.requires_auth and "Authorization" not in headers:
-            token = await self.auth.get_token()  # type: ignore
+            token = await self.auth.get_token()
             if token is None:
                 raise ValueError("Cannot make request requiring authorization with a null token")
             headers["Authorization"] = f"Bearer {token}"
+
         for key, value in kwargs.items():
             if value is not None:
                 headers[str(key)] = str(value)
+
         return headers
 
     async def make_request_to_endpoint(self, endpoint, path, data=None, headers=None, files=None, **kwargs):
@@ -142,7 +162,7 @@ class AsynchronousHTTPHandler(BaseHTTPHandler):
         async for resp in gen:
             try:
                 return await resp.json()
-            except ContentTypeError:
+            except aiohttp.client_exceptions.ContentTypeError:
                 return
 
     async def make_auth_request(self, data):
@@ -151,6 +171,23 @@ class AsynchronousHTTPHandler(BaseHTTPHandler):
                 async with session.request("POST", self.token_url, json=data) as resp:
                     await self._raise_for_status(resp)
                     return await resp.json()
+
+    @classmethod
+    def from_sync(cls, http: HTTPHandler, auth: Optional["BaseAsynchronousAuthHandler"] = None):
+        new_http = cls(
+            auth,
+            http.rate_limit.wait_time,
+            http.rate_limit.limit,
+            http.api_version
+        )
+        new_http.rate_limit._requests_finished = http.rate_limit._requests_finished
+        new_http.base_url = http.base_url
+        new_http.auth_url = http.auth_url
+        new_http.token_url = http.token_url
+        return new_http
+
+    def as_sync(self, auth: Optional["BaseAuthHandler"]) -> HTTPHandler:
+        return HTTPHandler.from_async(self, auth)
 
 
 class RateLimitHandler:
@@ -161,7 +198,7 @@ class RateLimitHandler:
         "_waiting_lock",
         "_finish_evt",
         "_requests_in_progress",
-        "_requests_finished"
+        "_requests_finished",
     )
 
     def __init__(self, request_wait_time: float, limit_per_minute: int):
@@ -256,9 +293,9 @@ class RateLimitHandler:
         self._waiting_lock.release()
         await self._lock.acquire()
 
-    def __aexit__(self, exc_type, exc_val, exc_tb):
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
         finished_at = time.monotonic()
-        self._lock.acquire()
+        await self._lock.acquire()
         self._requests_in_progress -= 1
         self._get_requests_finished().append(finished_at)
         # alert any waiting requests that one has just finished

@@ -1,7 +1,6 @@
 import requests
 import time
 import threading
-import queue
 import logging
 from datetime import datetime, timezone
 from typing import Optional, List, TYPE_CHECKING
@@ -20,6 +19,8 @@ from .path import Path
 
 if TYPE_CHECKING:
     from .auth import BaseAuthHandler
+    from .asyncio.http import AsynchronousHTTPHandler
+    from .asyncio.auth import BaseAsynchronousAuthHandler
 
 
 __all__ = ("BaseHTTPHandler", "HTTPHandler")
@@ -29,11 +30,11 @@ _log = logging.getLogger(__name__)
 
 
 class BaseHTTPHandler:
-    __slots__ = ("_auth", "api_version", "domain", "base_url", "auth_url", "token_url")
+    __slots__ = ("auth", "api_version", "domain", "base_url", "auth_url", "token_url")
 
     def __init__(self, auth: Optional["BaseAuthHandler"], api_version: Optional[str] = None):
-        self._auth: Optional[BaseAuthHandler] = auth
-        self.api_version: str = api_version or datetime.now(tz=timezone.utc).strftime("%Y%m%d")
+        self.auth: Optional[BaseAuthHandler] = auth
+        self.set_api_version(api_version)
 
         self.domain = DEFAULT_DOMAIN
         self.auth_url = DEFAULT_AUTH_URL
@@ -46,21 +47,27 @@ class BaseHTTPHandler:
         self.token_url = token_url(domain)
         self.base_url = base_url(domain)
 
+    def set_api_version(self, api_version: Optional[str]):
+        self.api_version: str = api_version or datetime.now(tz=timezone.utc).strftime("%Y%m%d")
+
     def set_ratelimit(self, request_wait_time: float = 1.0, limit_per_minute: int = 60):
         raise NotImplementedError()
 
     def check_path_validity(self, path: Path):
-        if path.requires_auth and self._auth is None:
+        if path.requires_auth and self.auth is None:
             raise ScopeException("You need to be authenticated to make this request.")
 
-        if path.requires_auth and path.scope not in self._auth.scope:
+        if path.requires_auth and path.scope not in self.auth.scope:
             raise ScopeException(f"You don't have the {path.scope} scope, which is required to make this request.")
 
-        if path.requires_user and not self._auth.has_user():
+        if path.requires_user and not self.auth.has_user():
             raise ScopeException(
                 "This request requires a user. You need either a delegate scope or "
                 "to register OAuth with Authorization Code Grant."
             )
+
+    def make_request(self, path, *args, **kwargs):
+        raise NotImplementedError()
 
 
 class HTTPHandler(BaseHTTPHandler):
@@ -95,7 +102,7 @@ class HTTPHandler(BaseHTTPHandler):
             headers["Content-Type"] = path.content_type
 
         if path.requires_auth and "Authorization" not in headers:
-            token = self._auth.get_token()
+            token = self.auth.get_token()
             if token is None:
                 raise ValueError("Cannot make request requiring authorization with a null token")
             headers["Authorization"] = f"Bearer {token}"
@@ -148,6 +155,25 @@ class HTTPHandler(BaseHTTPHandler):
         with self.rate_limit:
             return requests.post(self.token_url, data=data)
 
+    @classmethod
+    def from_async(cls, http: "AsynchronousHTTPHandler", auth: Optional["BaseAuthHandler"] = None):
+        new_http = cls(
+            auth,
+            http.rate_limit.wait_time,
+            http.rate_limit.limit,
+            http.api_version
+        )
+        new_http.rate_limit._requests_finished = http.rate_limit._requests_finished
+        new_http.base_url = http.base_url
+        new_http.auth_url = http.auth_url
+        new_http.token_url = http.token_url
+        return new_http
+
+    def as_async(self, auth: Optional["BaseAsynchronousAuthHandler"]) -> "AsynchronousHTTPHandler":
+        from .asyncio.http import AsynchronousHTTPHandler
+
+        return AsynchronousHTTPHandler.from_sync(self, auth)
+
 
 class RateLimitHandler:
     __slots__ = (
@@ -157,7 +183,7 @@ class RateLimitHandler:
         "_waiting_lock",
         "_finish_evt",
         "_requests_in_progress",
-        "_requests_finished"
+        "_requests_finished",
     )
 
     def __init__(self, request_wait_time: float, limit_per_minute: int):

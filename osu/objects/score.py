@@ -38,8 +38,10 @@ class BeatmapScores:
 
     __slots__ = ("scores", "user_score")
 
-    def __init__(self, data):
-        self.scores: List[Union[LegacyScore, SoloScore]] = list(map(get_score_object, get_required(data, "scores")))
+    def __init__(self, data, api_version: str):
+        self.scores: List[Union[LegacyScore, SoloScore]] = [
+            get_score_object(score, api_version) for score in get_required(data, "scores")
+        ]
         # supposedly will be switched to 'user_score' in the future
         var_name = "userScore" if "userScore" in data else "user_score"
         self.user_score: Optional[BeatmapUserScore] = get_optional(data, var_name, BeatmapUserScore)
@@ -326,8 +328,8 @@ class PpWeight:
         self.pp: float = get_required(data, "pp")
 
 
-def get_score_object(data) -> Union[SoloScore, LegacyScore]:
-    if data["type"] == "solo_score":
+def get_score_object(data, api_version: str) -> Union[SoloScore, LegacyScore]:
+    if int(api_version) > 20220704:
         return SoloScore(data)
 
     return LegacyScore(data)
@@ -478,9 +480,9 @@ class BeatmapUserScore:
 
     __slots__ = ("position", "score")
 
-    def __init__(self, data):
+    def __init__(self, data, api_version: str):
         self.position: int = get_required(data, "position")
-        self.score: Union[LegacyScore, SoloScore] = get_score_object(get_required(data, "score"))
+        self.score: Union[LegacyScore, SoloScore] = get_score_object(get_required(data, "score"), api_version)
 
     def __repr__(self):
         return prettify(self, "position")

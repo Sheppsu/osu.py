@@ -2,7 +2,7 @@ from .auth import *
 from .client import *
 from .exceptions import *
 from .notification import NotificationWebsocket
-from .asyncio.client import *
+from .asyncio import *
 from .enums import *
 from .objects import *
 from .util import *
