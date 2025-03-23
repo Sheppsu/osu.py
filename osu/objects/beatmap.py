@@ -18,8 +18,6 @@ __all__ = (
     "BeatmapDifficultyAttributes",
     "OsuBeatmapDifficultyAttributes",
     "TaikoBeatmapDifficultyAttributes",
-    "ManiaBeatmapDifficultyAttributes",
-    "FruitsBeatmapDifficultyAttributes",
     "Failtimes",
     "Covers",
     "BaseNominations",
@@ -365,10 +363,6 @@ class BeatmapCompact:
         self.max_combo: Optional[int] = data.get("max_combo")
         self.owners: Optional[List[BeatmapOwner]] = get_optional_list(data, "owners", BeatmapOwner)
 
-        # no longer used, but kept for backwards compatibility
-        # TODO: remove in the next major version update
-        self.user: Optional[UserCompact] = None
-
     def __repr__(self):
         return prettify(
             self,
@@ -495,37 +489,37 @@ class OsuBeatmapDifficultyAttributes:
 
     aim_difficulty: float
 
-    approach_rate: float
-
-    flashlight_difficulty: float
-
-    overall_difficulty: float
-
-    slider_factor: float
+    aim_difficult_slider_count: float
 
     speed_difficulty: float
 
     speed_note_count: float
+
+    slider_factor: float
+
+    aim_difficult_strain_count: float
+
+    speed_difficult_strain_count: float
     """
 
     __slots__ = (
         "aim_difficulty",
-        "approach_rate",
-        "flashlight_difficulty",
-        "overall_difficulty",
-        "slider_factor",
+        "aim_difficult_slider_count",
         "speed_difficulty",
         "speed_note_count",
+        "slider_factor",
+        "aim_difficult_strain_count",
+        "speed_difficult_strain_count",
     )
 
     def __init__(self, data):
         self.aim_difficulty: float = get_required(data, "aim_difficulty")
-        self.approach_rate: float = get_required(data, "approach_rate")
-        self.flashlight_difficulty: float = get_required(data, "flashlight_difficulty")
-        self.overall_difficulty: float = get_required(data, "overall_difficulty")
-        self.slider_factor: float = get_required(data, "slider_factor")
+        self.aim_difficult_slider_count: float = get_required(data, "aim_difficult_slider_count")
         self.speed_difficulty: float = get_required(data, "speed_difficulty")
         self.speed_note_count: float = get_required(data, "speed_note_count")
+        self.slider_factor: float = get_required(data, "slider_factor")
+        self.aim_difficult_strain_count: float = get_required(data, "aim_difficult_strain_count")
+        self.speed_difficult_strain_count: float = get_required(data, "speed_difficult_strain_count")
 
     def __repr__(self):
         return prettify(self, "aim_difficulty", "speed_difficulty")
@@ -538,75 +532,18 @@ class TaikoBeatmapDifficultyAttributes:
 
     **Attributes**
 
-    stamina_difficulty: float
-
-    rhythm_difficulty: float
-
-    colour_difficulty: float
-
-    great_hit_window: float
-
-    peak_difficulty: float
+    mono_stamina_factor: float
     """
 
     __slots__ = (
-        "stamina_difficulty",
-        "rhythm_difficulty",
-        "colour_difficulty",
-        "great_hit_window",
-        "peak_difficulty",
+        "mono_stamina_factor",
     )
 
     def __init__(self, data):
-        self.stamina_difficulty: float = get_required(data, "stamina_difficulty")
-        self.rhythm_difficulty: float = get_required(data, "rhythm_difficulty")
-        self.colour_difficulty: float = get_required(data, "colour_difficulty")
-        self.great_hit_window: float = get_required(data, "great_hit_window")
-        self.peak_difficulty: float = get_required(data, "peak_difficulty")
+        self.mono_stamina_factor: float = get_required(data, "mono_stamina_factor")
 
     def __repr__(self):
-        return prettify(self, "stamina_difficulty")
-
-
-class FruitsBeatmapDifficultyAttributes:
-    """
-    osu!catch beatmap difficulty attributes.
-    See :class:`BeatmapDifficultyAttributes` for more information.
-
-    **Attributes**
-
-    approach_rate: float
-    """
-
-    __slots__ = "approach_rate"
-
-    def __init__(self, data):
-        self.approach_rate: float = get_required(data, "approach_rate")
-
-    def __repr__(self):
-        return prettify(self, "approach_rate")
-
-
-class ManiaBeatmapDifficultyAttributes:
-    """
-    osu!mania beatmap difficulty attributes.
-    See :class:`BeatmapDifficultyAttributes` for more information.
-
-    **Attributes**
-
-    great_hit_window: float
-
-    score_multiplier: float
-    """
-
-    __slots__ = ("great_hit_window", "score_multiplier")
-
-    def __init__(self, data):
-        self.great_hit_window: float = get_required(data, "great_hit_window")
-        self.score_multiplier: float = get_required(data, "score_multiplier")
-
-    def __repr__(self):
-        return prettify(self, "great_hit_window")
+        return prettify(self, "mono_stamina_factor")
 
 
 class BeatmapDifficultyAttributes:
@@ -620,45 +557,34 @@ class BeatmapDifficultyAttributes:
 
     star_rating: float
 
-    mode_attributes: Optional[Union[:class:`OsuBeatmapDifficultyAttributes`, :class:`TaikoBeatmapDifficultyAttributes`,
-    :class:`FruitsBeatmapDifficultyAttributes`, :class:`ManiaBeatmapDifficultyAttributes`]]
+    type: :class:`GameModeStr`
 
-        Can be none for some beatmaps that are bugged and have no difficulty attributes.
-
-    type: Optional[:class:`GameModeStr`]
+    mode_attributes: Optional[Union[:class:`OsuBeatmapDifficultyAttributes`, :class:`TaikoBeatmapDifficultyAttributes`]]
+        Other modes have no attributes
     """
 
     __slots__ = ("max_combo", "star_rating", "type", "mode_attributes")
+
     if TYPE_CHECKING:
         type: Optional[GameModeStr]
         mode_attributes: Optional[
             Union[
                 OsuBeatmapDifficultyAttributes,
                 TaikoBeatmapDifficultyAttributes,
-                ManiaBeatmapDifficultyAttributes,
-                FruitsBeatmapDifficultyAttributes,
             ]
         ]
 
-    def __init__(self, data):
+    def __init__(self, data, typ: GameModeStr):
+        print(data)
         data = get_required(data, "attributes")
         self.max_combo: int = get_required(data, "max_combo")
         self.star_rating: float = get_required(data, "star_rating")
-        if "aim_difficulty" in data:
-            self.type = GameModeStr.STANDARD
-            self.mode_attributes = OsuBeatmapDifficultyAttributes(data)
-        elif "stamina_difficulty" in data:
-            self.type = GameModeStr.TAIKO
-            self.mode_attributes = TaikoBeatmapDifficultyAttributes(data)
-        elif "great_hit_window" in data:
-            self.type = GameModeStr.MANIA
-            self.mode_attributes = ManiaBeatmapDifficultyAttributes(data)
-        elif "approach_rate" in data:
-            self.type = GameModeStr.CATCH
-            self.mode_attributes = FruitsBeatmapDifficultyAttributes(data)
-        else:
-            self.type = None
-            self.mode_attributes = None
+        self.type: GameModeStr = typ
+        mode_attributes_cls = {
+            GameModeStr.STANDARD: OsuBeatmapDifficultyAttributes,
+            GameModeStr.TAIKO: TaikoBeatmapDifficultyAttributes,
+        }.get(typ, None)
+        self.mode_attributes = None if mode_attributes_cls is None else mode_attributes_cls(data)
 
     def __getattr__(self, item):
         return getattr(self.mode_attributes, item)

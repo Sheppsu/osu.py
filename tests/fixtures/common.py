@@ -1,31 +1,30 @@
-from pytest import fixture, mark
+from pytest import fixture
 import asyncio
 import json
 import os
 
 from osu import AsynchronousClient, Client, AuthHandler
-from osu.constants import auth_url, token_url, base_url
 from tests.constants import CLIENT_SECRET, REDIRECT_URI, CLIENT_ID
 
 
 @fixture(scope="session")
 def event_loop():
-    yield asyncio.get_event_loop()
+    return asyncio.get_event_loop()
 
 
 @fixture(scope="session")
 def client() -> Client:
-    yield Client.from_client_credentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
+    return Client.from_credentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
 
 
-@fixture(scope="session")
+@fixture(scope="function")
 def async_client(client) -> AsynchronousClient:
     def update(auth):
-        client.http.auth = auth.as_sync()  # update auth
+        client.auth = auth.as_sync()  # update auth
 
     auth = client.auth.as_async()
     auth.set_refresh_callback(update)
-    yield AsynchronousClient(auth)
+    return AsynchronousClient(auth)
 
 
 def get_user_client(dev=False) -> Client:
@@ -51,20 +50,18 @@ def get_user_client(dev=False) -> Client:
 
 @fixture(scope="session")
 def user_client() -> Client:
-    yield get_user_client()
+    return get_user_client()
 
 
-@fixture(scope="session")
+@fixture(scope="function")
 def async_user_client(user_client) -> AsynchronousClient:
     def update(auth):
-        refresh_callback = user_client.http.auth._refresh_callback
-        user_client.http.auth = auth.as_sync()  # update auth
-        user_client.http.auth._refresh_callback = refresh_callback
-        refresh_callback(user_client.http.auth)  # since the auth data was just updated
+        user_client.auth = auth.as_sync()  # update auth
+        user_client.auth._refresh_callback(user_client.auth)  # since the auth data was just updated
 
     auth = user_client.auth.as_async()
     auth.set_refresh_callback(update)
-    yield AsynchronousClient(auth)
+    return AsynchronousClient(auth)
 
 
 @fixture(scope="session")
@@ -72,18 +69,15 @@ def dev_user_client(async_user_client) -> Client:
     yield get_user_client(dev=True)
 
 
-@fixture(scope="session")
+@fixture(scope="function")
 def dev_async_user_client(dev_user_client) -> AsynchronousClient:
     def update(auth):
-        refresh_callback = dev_user_client.http.auth._refresh_callback
-        dev_user_client.http.auth = auth.as_sync()  # update auth
-        dev_user_client.http.auth._refresh_callback = refresh_callback
-        refresh_callback(dev_user_client.http.auth)  # since the auth data was just updated
+        dev_user_client.auth = auth.as_sync()  # update auth
+        dev_user_client.auth._refresh_callback(dev_user_client.auth)  # since the auth data was just updated
 
     auth = dev_user_client.auth.as_async()
     auth.set_refresh_callback(update)
-    client = AsynchronousClient(auth)
-    return client
+    return AsynchronousClient(auth)
 
 
 @fixture(scope="session")

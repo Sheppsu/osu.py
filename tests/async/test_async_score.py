@@ -1,15 +1,20 @@
 import pytest
 import asyncio
 
-from osu import SoloScore, LegacyScore, Mods
+from osu import Mod
 
 
 class TestAsynchronousScore:
     @pytest.mark.asyncio
     async def test_get_beatmap_scores(self, async_client, sample_beatmap_scores):
-        scores = await async_client.get_beatmap_scores(sample_beatmap_scores["beatmap_id"])
-        assert scores
-        assert len(scores) == 50
+        ret = await async_client.get_beatmap_scores(sample_beatmap_scores["beatmap_id"])
+        assert ret.scores
+        assert len(ret.scores) == 50
+
+        ret = await async_client.get_beatmap_scores(sample_beatmap_scores["beatmap_id"], legacy_only=True)
+        assert ret.scores
+        assert len(ret.scores) == 50
+        assert all((any((mod.mod == Mod.Classic for mod in score.mods)) for score in ret.scores))
 
     @pytest.mark.asyncio
     async def test_get_user_beatmap_score(self, async_client, sample_user_beatmap_score):

@@ -75,7 +75,7 @@ def prettify(cls: object, *fields: str) -> str:
     return cls.__class__.__qualname__ + "(" + ", ".join([f"{k}={d[k]!r}" for k in d]) + ")"
 
 
-def parse_enum_args(*args: Enum) -> Union[List[Any], Any]:
+def parse_enum_args(*args) -> Union[List[Any], Any]:
     args = [arg.value if isinstance(arg, Enum) else arg for arg in args]
     return args if len(args) != 1 else args[0]
 
@@ -437,10 +437,3 @@ def fromisoformat(timestamp: str) -> datetime:
     # just in case
     except ValueError:
         return datetime.fromisoformat(timestamp)
-
-
-def raise_aiohttp_error():
-    raise RuntimeError(
-        "Missing aiohttp package, which is required to use asynchronous features."
-        'Install osu.py with the async feature: "pip install osu.py[async]"'
-    )

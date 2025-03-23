@@ -21,6 +21,12 @@ class TestBeatmap:
         attributes = client.get_beatmap_attributes(sample_beatmap["id"])
         assert attributes.max_combo == sample_beatmap["max_combo"]
         assert attributes.type.value == sample_beatmap["type"]
+        attributes = client.get_beatmap_attributes(sample_beatmap["id"], ruleset=GameModeStr.TAIKO)
+        assert attributes.type == GameModeStr.TAIKO
+        attributes = client.get_beatmap_attributes(sample_beatmap["id"], ruleset=GameModeStr.MANIA)
+        assert attributes.type == GameModeStr.MANIA
+        attributes = client.get_beatmap_attributes(sample_beatmap["id"], ruleset=GameModeStr.CATCH)
+        assert attributes.type == GameModeStr.CATCH
 
     def test_get_beatmaps(self, client, sample_beatmaps):
         beatmaps = client.get_beatmaps([beatmap["id"] for beatmap in sample_beatmaps])

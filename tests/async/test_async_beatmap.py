@@ -26,6 +26,12 @@ class TestAsynchronousBeatmap:
         attributes = await async_client.get_beatmap_attributes(sample_beatmap["id"])
         assert attributes.max_combo == sample_beatmap["max_combo"]
         assert attributes.type.value == sample_beatmap["type"]
+        attributes = await async_client.get_beatmap_attributes(sample_beatmap["id"], ruleset=GameModeStr.TAIKO)
+        assert attributes.type == GameModeStr.TAIKO
+        attributes = await async_client.get_beatmap_attributes(sample_beatmap["id"], ruleset=GameModeStr.MANIA)
+        assert attributes.type == GameModeStr.MANIA
+        attributes = await async_client.get_beatmap_attributes(sample_beatmap["id"], ruleset=GameModeStr.CATCH)
+        assert attributes.type == GameModeStr.CATCH
 
     @pytest.mark.asyncio
     async def test_get_beatmaps(self, async_client, sample_beatmaps):
