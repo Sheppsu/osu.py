@@ -252,7 +252,8 @@ class RateLimitHandler:
             if wait_time > 0:
                 self._lock.release()
                 time.sleep(wait_time)
-                await self._lock.acquire()
+
+            await self._lock.acquire()
 
         self._waiting_lock.release()
 
