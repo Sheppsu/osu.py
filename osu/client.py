@@ -387,13 +387,20 @@ class Client:
         :class:`BeatmapDifficultyAttributes`
         """
         ruleset, ruleset_id = parse_enum_args(ruleset, ruleset_id)
+        if ruleset is not None:
+            mode = GameModeStr(ruleset)
+        elif ruleset_id is not None:
+            mode = GameModeInt(ruleset_id).get_str_equivalent()
+        else:
+            mode = GameModeStr.STANDARD
         return BeatmapDifficultyAttributes(
             self.http.make_request(
                 Path.get_beatmap_attributes(beatmap),
                 mods=parse_mods_arg(mods),
                 ruleset=ruleset,
                 ruleset_id=ruleset_id,
-            )
+            ),
+            mode
         )
 
     def get_beatmapset(self, beatmapset_id: int) -> Beatmapset:
