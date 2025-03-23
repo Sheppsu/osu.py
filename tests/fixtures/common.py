@@ -1,8 +1,7 @@
-from pytest import fixture, mark
+from pytest import fixture
 import asyncio
 import json
 import os
-import sys
 
 from osu import AsynchronousClient, Client, AuthHandler
 from tests.constants import CLIENT_SECRET, REDIRECT_URI, CLIENT_ID
@@ -15,7 +14,7 @@ def event_loop():
 
 @fixture(scope="session")
 def client() -> Client:
-    return Client.from_client_credentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
+    return Client.from_credentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
 
 
 @fixture(scope="function")
