@@ -246,6 +246,9 @@ class AuthHandler(BaseAuthHandler, AuthUtil):
         self.http: HTTPHandler = HTTPHandler(self)
         self._lock: threading.Lock = threading.Lock()
 
+    def has_user(self) -> bool:
+        return AuthUtil.has_user(self)
+
     @staticmethod
     def _raise_for_status(resp):
         try:

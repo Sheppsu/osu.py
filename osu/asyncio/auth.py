@@ -32,6 +32,9 @@ class AsynchronousAuthHandler(BaseAsynchronousAuthHandler, AuthUtil):
         self.http: AsynchronousHTTPHandler = AsynchronousHTTPHandler(self)
         self._lock: asyncio.Lock = asyncio.Lock()
 
+    def has_user(self) -> bool:
+        return AuthUtil.has_user(self)
+
     @staticmethod
     async def _raise_for_status(resp):
         try:
