@@ -20,9 +20,9 @@ __all__ = (
     "BeatmapsetUploadEvent",
     "RankEvent",
     "RankLostEvent",
-    "UserSupportAgain",
-    "UserSupportFirst",
-    "UserSupportGift",
+    "UserSupportAgainEvent",
+    "UserSupportFirstEvent",
+    "UserSupportGiftEvent",
     "UsernameChangeEvent",
     "EventUser",
     "EventBeatmap",
@@ -243,7 +243,7 @@ class RankLostEvent(Event):
         return prettify(self, "beatmap", "user")
 
 
-class UserSupportAgain(Event):
+class UserSupportAgainEvent(Event):
     """
     **Attributes**
 
@@ -260,7 +260,7 @@ class UserSupportAgain(Event):
         return prettify(self, "user")
 
 
-class UserSupportFirst(Event):
+class UserSupportFirstEvent(Event):
     """
     **Attributes**
 
@@ -277,7 +277,7 @@ class UserSupportFirst(Event):
         return prettify(self, "user")
 
 
-class UserSupportGift(Event):
+class UserSupportGiftEvent(Event):
     """
     **Attributes**
 
@@ -382,14 +382,14 @@ EVENT_TYPE = Union[
     BeatmapsetUploadEvent,
     RankEvent,
     RankLostEvent,
-    UserSupportAgain,
-    UserSupportFirst,
-    UserSupportGift,
+    UserSupportAgainEvent,
+    UserSupportFirstEvent,
+    UserSupportGiftEvent,
     UsernameChangeEvent,
 ]
 
 
 def get_event_object(data) -> EVENT_TYPE:
     t = get_required(data, "type")
-    cls = globals()[t[0].upper() + t[1:] + "Event"]
+    cls = globals().get(t[0].upper() + t[1:] + "Event", data)
     return cls(data)
