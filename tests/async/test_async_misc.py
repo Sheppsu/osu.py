@@ -2,10 +2,13 @@ import pytest
 
 from osu import WikiSearchMode, GameModeStr, RankingType
 
+from tests.util import as_async
+
 
 class TestAsynchronousMisc:
     @pytest.mark.asyncio
-    async def test_search(self, async_client):
+    async def test_search(self, client):
+        async_client = as_async(client)
         result = await async_client.search(query="Hardrock")
         assert result.wiki_page is not None
         assert result.user is not None
@@ -17,13 +20,15 @@ class TestAsynchronousMisc:
         assert result.user is None
 
     @pytest.mark.asyncio
-    async def test_get_news_listing(self, async_client):
+    async def test_get_news_listing(self, client):
+        async_client = as_async(client)
         news = await async_client.get_news_listing(limit=5)
         assert news
         assert len(news["news_posts"]) == 5
 
     @pytest.mark.asyncio
-    async def test_get_news_post(self, async_client, sample_news_post):
+    async def test_get_news_post(self, client, sample_news_post):
+        async_client = as_async(client)
         news = await async_client.get_news_post(sample_news_post["id"], "id")
         assert news
         assert news.id == sample_news_post["id"]
@@ -32,7 +37,8 @@ class TestAsynchronousMisc:
         assert news.title == sample_news_post["title"]
 
     @pytest.mark.asyncio
-    async def test_get_ranking(self, async_client):
+    async def test_get_ranking(self, client):
+        async_client = as_async(client)
         rankings = await async_client.get_ranking(GameModeStr.STANDARD, RankingType.PERFORMANCE)
         assert rankings
         assert rankings.ranking
@@ -42,11 +48,13 @@ class TestAsynchronousMisc:
         await async_client.get_ranking(GameModeStr.STANDARD, RankingType.TEAM)
 
     @pytest.mark.asyncio
-    async def test_get_spotlights(self, async_client):
+    async def test_get_spotlights(self, client):
+        async_client = as_async(client)
         assert await async_client.get_spotlights()
 
     @pytest.mark.asyncio
-    async def test_get_wiki_page(self, async_client, sample_wiki_page):
+    async def test_get_wiki_page(self, client, sample_wiki_page):
+        async_client = as_async(client)
         page = await async_client.get_wiki_page(sample_wiki_page["locale"], sample_wiki_page["path"])
         assert page
         assert page.locale == sample_wiki_page["locale"]
@@ -54,13 +62,15 @@ class TestAsynchronousMisc:
         assert page.title == sample_wiki_page["title"]
 
     @pytest.mark.asyncio
-    async def test_get_matches(self, async_client):
+    async def test_get_matches(self, client):
+        async_client = as_async(client)
         matches = await async_client.get_matches(limit=5)
         assert matches
         assert len(matches["matches"]) == 5
 
     @pytest.mark.asyncio
-    async def test_get_match(self, async_client, sample_match):
+    async def test_get_match(self, client, sample_match):
+        async_client = as_async(client)
         match = await async_client.get_match(sample_match["id"])
         assert match
         assert match.id == sample_match["id"]
@@ -69,12 +79,14 @@ class TestAsynchronousMisc:
         assert match.end_time == sample_match["end_time"]
 
     @pytest.mark.asyncio
-    async def test_get_seasonal_backgrounds(self, async_client):
+    async def test_get_seasonal_backgrounds(self, client):
+        async_client = as_async(client)
         backgrounds = await async_client.get_seasonal_backgrounds()
         assert backgrounds
 
     @pytest.mark.asyncio
-    async def test_get_replay_data(self, async_client):
+    async def test_get_replay_data(self, client):
+        async_client = as_async(client)
         assert await async_client.get_replay_data(GameModeStr.STANDARD, 3693301831)
         assert await async_client.get_replay_data(None, 1267337687)
         assert await async_client.get_replay_data(GameModeStr.STANDARD, 3693301831, False)

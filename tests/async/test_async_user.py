@@ -2,10 +2,13 @@ import pytest
 
 from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType, SoloScore
 
+from tests.util import as_async
+
 
 class TestAsynchronousUser:
     @pytest.mark.asyncio
-    async def test_get_user(self, async_client, sample_user):
+    async def test_get_user(self, client, sample_user):
+        async_client = as_async(client)
         def check_user(user):
             assert user
             assert user.statistics
@@ -19,7 +22,8 @@ class TestAsynchronousUser:
         check_user(await async_client.get_user(sample_user["username"], key="username"))
 
     @pytest.mark.asyncio
-    async def test_get_users(self, async_client, sample_users):
+    async def test_get_users(self, client, sample_users):
+        async_client = as_async(client)
         sample_users = sorted(sample_users, key=lambda u: u["id"])
         users = await async_client.get_users([user["id"] for user in sample_users])
         for user, sample_user in zip(users, sample_users):
@@ -28,7 +32,8 @@ class TestAsynchronousUser:
             assert user.username == sample_user["username"]
 
     @pytest.mark.asyncio
-    async def test_lookup_users(self, async_client, sample_users):
+    async def test_lookup_users(self, client, sample_users):
+        async_client = as_async(client)
         users = [sample_users[0]["id"], "@" + sample_users[1]["username"]]
         users = sorted(await async_client.lookup_users(users), key=lambda u: 0 if u.id == sample_users[0]["id"] else 1)
         for user, sample_user in zip(users, sample_users[:2]):
@@ -37,7 +42,8 @@ class TestAsynchronousUser:
             assert user.username == sample_user["username"]
 
     @pytest.mark.asyncio
-    async def test_get_user_kudosu(self, async_client):
+    async def test_get_user_kudosu(self, client):
+        async_client = as_async(client)
         kudosu_list = await async_client.get_user_kudosu(user=2)
         assert kudosu_list
         for kudosu in kudosu_list:
@@ -46,14 +52,16 @@ class TestAsynchronousUser:
             assert kudosu.action
 
     @pytest.mark.asyncio
-    async def test_get_user_recent_activity(self, async_client):
+    async def test_get_user_recent_activity(self, client):
+        async_client = as_async(client)
         activity = await async_client.get_user_recent_activity(user=7562902)
         for a in activity:
             assert isinstance(a, Event)
             assert getattr(a, "user", None) or getattr(a, "beatmapset", None)
 
     @pytest.mark.asyncio
-    async def test_get_user_scores(self, async_client, sample_user):
+    async def test_get_user_scores(self, client, sample_user):
+        async_client = as_async(client)
         scores = await async_client.get_user_scores(user=sample_user["id"], type="best")
         assert scores
         for score in scores:
@@ -62,7 +70,8 @@ class TestAsynchronousUser:
             assert score.accuracy
 
     @pytest.mark.asyncio
-    async def test_get_user_beatmaps(self, async_client, sample_user_beatmaps):
+    async def test_get_user_beatmaps(self, client, sample_user_beatmaps):
+        async_client = as_async(client)
         beatmaps = await async_client.get_user_beatmaps(
             user=sample_user_beatmaps["user_id"],
             type=UserBeatmapType.GRAVEYARD,
@@ -75,12 +84,14 @@ class TestAsynchronousUser:
         assert target_beatmap.creator == expected_beatmap["creator"]
 
     @pytest.mark.asyncio
-    async def test_get_own_data(self, async_user_client):
+    async def test_get_own_data(self, user_client):
+        async_user_client = as_async(user_client)
         me = await async_user_client.get_own_data()
         assert me
         assert me.id
         assert me.username
 
     @pytest.mark.asyncio
-    async def test_get_friends(self, async_user_client):
+    async def test_get_friends(self, user_client):
+        async_user_client = as_async(user_client)
         await async_user_client.get_friends()

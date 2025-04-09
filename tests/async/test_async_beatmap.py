@@ -1,5 +1,4 @@
 import pytest
-import os
 
 from osu import (
     BeatmapsetEventType,
@@ -12,17 +11,21 @@ from osu import (
     GameModeInt,
 )
 
+from tests.util import as_async
+
 
 class TestAsynchronousBeatmap:
     @pytest.mark.asyncio
-    async def test_get_beatmap(self, async_client, sample_beatmap):
+    async def test_get_beatmap(self, client, sample_beatmap):
+        async_client = as_async(client)
         beatmap = await async_client.get_beatmap(sample_beatmap["id"])
         assert beatmap.id == sample_beatmap["id"]
         assert beatmap.beatmapset.title == sample_beatmap["title"]
         assert beatmap.beatmapset.artist == sample_beatmap["artist"]
 
     @pytest.mark.asyncio
-    async def test_get_beatmap_attributes(self, async_client, sample_beatmap):
+    async def test_get_beatmap_attributes(self, client, sample_beatmap):
+        async_client = as_async(client)
         attributes = await async_client.get_beatmap_attributes(sample_beatmap["id"])
         assert attributes.max_combo == sample_beatmap["max_combo"]
         assert attributes.type.value == sample_beatmap["type"]
@@ -34,7 +37,8 @@ class TestAsynchronousBeatmap:
         assert attributes.type == GameModeStr.CATCH
 
     @pytest.mark.asyncio
-    async def test_get_beatmaps(self, async_client, sample_beatmaps):
+    async def test_get_beatmaps(self, client, sample_beatmaps):
+        async_client = as_async(client)
         beatmaps = await async_client.get_beatmaps([beatmap["id"] for beatmap in sample_beatmaps])
         assert beatmaps
         for beatmap in beatmaps:
@@ -42,14 +46,16 @@ class TestAsynchronousBeatmap:
             assert {key: getattr(beatmap, key) for key in keys} in sample_beatmaps
 
     @pytest.mark.asyncio
-    async def test_get_beatmapset(self, async_client, sample_beatmapset):
+    async def test_get_beatmapset(self, client, sample_beatmapset):
+        async_client = as_async(client)
         beatmapset = await async_client.get_beatmapset(sample_beatmapset["id"])
         assert beatmapset.id == sample_beatmapset["id"]
         assert beatmapset.title == sample_beatmapset["title"]
         assert beatmapset.creator == sample_beatmapset["mapper"]
 
     @pytest.mark.asyncio
-    async def test_search_beatmapsets(self, async_client):
+    async def test_search_beatmapsets(self, client):
+        async_client = as_async(client)
         filters = (
             BeatmapsetSearchFilter()
             .set_mode(GameModeInt.MANIA)
@@ -69,7 +75,8 @@ class TestAsynchronousBeatmap:
         assert results["beatmapsets"][0].id != beatmapsets[0].id
 
     @pytest.mark.asyncio
-    async def test_get_beatmapset_discussion_posts(self, async_client, sample_beatmapset_discussion_post):
+    async def test_get_beatmapset_discussion_posts(self, client, sample_beatmapset_discussion_post):
+        async_client = as_async(client)
         data = await async_client.get_beatmapset_discussion_posts(
             beatmapset_discussion_id=sample_beatmapset_discussion_post["id"]
         )
@@ -89,7 +96,8 @@ class TestAsynchronousBeatmap:
         assert target_post
 
     @pytest.mark.asyncio
-    async def test_get_beatmapset_discussion_votes(self, async_client, sample_beatmapset_discussion_post):
+    async def test_get_beatmapset_discussion_votes(self, client, sample_beatmapset_discussion_post):
+        async_client = as_async(client)
         data = await async_client.get_beatmapset_discussion_votes(sample_beatmapset_discussion_post["id"])
         assert data["votes"]
         target_vote = data["votes"][0]
@@ -97,7 +105,8 @@ class TestAsynchronousBeatmap:
         assert target_vote.score == 1
 
     @pytest.mark.asyncio
-    async def test_get_beatmapset_discussions(self, async_client, sample_beatmapset_discussion_post):
+    async def test_get_beatmapset_discussions(self, client, sample_beatmapset_discussion_post):
+        async_client = as_async(client)
         ret = await async_client.get_beatmapset_discussions(
             beatmapset_id=sample_beatmapset_discussion_post["beatmapset_id"]
         )
@@ -113,7 +122,8 @@ class TestAsynchronousBeatmap:
         assert target_post
 
     @pytest.mark.asyncio
-    async def test_lookup_beatmap(self, async_client, sample_beatmap):
+    async def test_lookup_beatmap(self, client, sample_beatmap):
+        async_client = as_async(client)
         beatmap = await async_client.lookup_beatmap(checksum=sample_beatmap["md5_sum"])
         assert beatmap
         assert beatmap.beatmapset.title == sample_beatmap["title"]
@@ -121,7 +131,8 @@ class TestAsynchronousBeatmap:
         assert beatmap.id == sample_beatmap["id"]
 
     @pytest.mark.asyncio
-    async def test_get_beatmapset_events(self, async_client):
+    async def test_get_beatmapset_events(self, client):
+        async_client = as_async(client)
         for event_type in BeatmapsetEventType:
             data = await async_client.get_beatmapset_events(type=event_type)
             assert data

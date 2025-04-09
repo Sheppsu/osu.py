@@ -3,7 +3,7 @@ import asyncio
 import json
 import os
 
-from osu import AsynchronousClient, Client, AuthHandler
+from osu import Client, AuthHandler
 from tests.constants import CLIENT_SECRET, REDIRECT_URI, CLIENT_ID
 
 
@@ -15,16 +15,6 @@ def event_loop():
 @fixture(scope="session")
 def client() -> Client:
     return Client.from_credentials(client_id=CLIENT_ID, client_secret=CLIENT_SECRET, redirect_url=REDIRECT_URI)
-
-
-@fixture(scope="function")
-def async_client(client) -> AsynchronousClient:
-    def update(auth):
-        client.auth = auth.as_sync()  # update auth
-
-    auth = client.auth.as_async()
-    auth.set_refresh_callback(update)
-    return AsynchronousClient(auth)
 
 
 def get_user_client(dev=False) -> Client:
@@ -53,31 +43,9 @@ def user_client() -> Client:
     return get_user_client()
 
 
-@fixture(scope="function")
-def async_user_client(user_client) -> AsynchronousClient:
-    def update(auth):
-        user_client.auth = auth.as_sync()  # update auth
-        user_client.auth._refresh_callback(user_client.auth)  # since the auth data was just updated
-
-    auth = user_client.auth.as_async()
-    auth.set_refresh_callback(update)
-    return AsynchronousClient(auth)
-
-
 @fixture(scope="session")
-def dev_user_client(async_user_client) -> Client:
+def dev_user_client() -> Client:
     yield get_user_client(dev=True)
-
-
-@fixture(scope="function")
-def dev_async_user_client(dev_user_client) -> AsynchronousClient:
-    def update(auth):
-        dev_user_client.auth = auth.as_sync()  # update auth
-        dev_user_client.auth._refresh_callback(dev_user_client.auth)  # since the auth data was just updated
-
-    auth = dev_user_client.auth.as_async()
-    auth.set_refresh_callback(update)
-    return AsynchronousClient(auth)
 
 
 @fixture(scope="session")

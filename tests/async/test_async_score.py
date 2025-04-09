@@ -3,10 +3,13 @@ import asyncio
 
 from osu import Mod
 
+from tests.util import as_async
+
 
 class TestAsynchronousScore:
     @pytest.mark.asyncio
-    async def test_get_beatmap_scores(self, async_client, sample_beatmap_scores):
+    async def test_get_beatmap_scores(self, client, sample_beatmap_scores):
+        async_client = as_async(client)
         ret = await async_client.get_beatmap_scores(sample_beatmap_scores["beatmap_id"])
         assert ret.scores
         assert len(ret.scores) == 50
@@ -17,7 +20,8 @@ class TestAsynchronousScore:
         assert all((any((mod.mod == Mod.Classic for mod in score.mods)) for score in ret.scores))
 
     @pytest.mark.asyncio
-    async def test_get_user_beatmap_score(self, async_client, sample_user_beatmap_score):
+    async def test_get_user_beatmap_score(self, client, sample_user_beatmap_score):
+        async_client = as_async(client)
         score = (
             await async_client.get_user_beatmap_score(
                 beatmap=sample_user_beatmap_score["beatmap_id"],
@@ -29,7 +33,8 @@ class TestAsynchronousScore:
         assert round(score.accuracy, 4) == round(sample_user_beatmap_score["accuracy"], 4)
 
     @pytest.mark.asyncio
-    async def test_get_user_beatmap_scores(self, async_client, sample_user_beatmap_scores):
+    async def test_get_user_beatmap_scores(self, client, sample_user_beatmap_scores):
+        async_client = as_async(client)
         scores = await async_client.get_user_beatmap_scores(
             beatmap=sample_user_beatmap_scores["beatmap_id"],
             user=sample_user_beatmap_scores["user_id"],
@@ -49,7 +54,8 @@ class TestAsynchronousScore:
                 assert mod.mod in score2["mods"]
 
     @pytest.mark.asyncio
-    async def test_get_score_by_id(self, async_client, sample_scores):
+    async def test_get_score_by_id(self, client, sample_scores):
+        async_client = as_async(client)
         for sample_score in sample_scores:
             score = await async_client.get_score_by_id_only(sample_score["id"])
             assert score
@@ -57,7 +63,8 @@ class TestAsynchronousScore:
             assert score.user_id == sample_score["user_id"]
 
     @pytest.mark.asyncio
-    async def test_get_all_scores(self, async_client):
+    async def test_get_all_scores(self, client):
+        async_client = as_async(client)
         ret = await async_client.get_all_scores()
         assert ret
 
