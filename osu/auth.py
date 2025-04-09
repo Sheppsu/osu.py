@@ -226,6 +226,9 @@ class AuthUtil:
         auth.refresh_token = save_data["refresh_token"]
         return auth
 
+    def set_domain(self, domain: str):
+        self.http.set_domain(domain)
+
 
 # backwards compatibility
 FunctionalAuthHandler = AuthUtil
