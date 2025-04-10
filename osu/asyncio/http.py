@@ -295,12 +295,11 @@ class RateLimitHandler:
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
         finished_at = time.monotonic()
-        await self._lock.acquire()
-        self._requests_in_progress -= 1
-        self._get_requests_finished().append(finished_at)
-        # alert any waiting requests that one has just finished
-        self._finish_evt.set()
-        self._lock.release()
+        async with self._lock:
+            self._requests_in_progress -= 1
+            self._get_requests_finished().append(finished_at)
+            # alert any waiting requests that one has just finished
+            self._finish_evt.set()
 
     def _get_requests_finished(self):
         """expects self._lock is acquired when calling this function"""

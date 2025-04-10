@@ -44,6 +44,22 @@ class NoAuth(BaseAuthHandler):
         return False
 
 
+class AuthData:
+    def __init__(self):
+        self.refresh_token: Optional[str] = None
+        self.token: Optional[str] = None
+        self.expire_time: float = monotonic()
+
+    def set_data(self, token: Optional[str], refresh_token: Optional[str], expires_in: float) -> None:
+        self.token = token
+        self.refresh_token = refresh_token
+        self.expire_time = monotonic() + expires_in
+
+    @property
+    def has_expired(self):
+        return self.expire_time - 5 <= monotonic()
+
+
 class AuthUtil:
     """
     Abstract class that helps to go through the oauth process easily, as well as refresh
@@ -79,9 +95,7 @@ class AuthUtil:
     redirect_url: str
     scope: Scope
     http: BaseHTTPHandler
-    refresh_token: Optional[str]
-    _token: Optional[str]
-    expire_time: float
+    _data: AuthData
     _refresh_callback: Optional[Callable[["AuthUtil"], None]]
 
     SAVE_VERSION = 2
@@ -101,9 +115,7 @@ class AuthUtil:
         self.redirect_url = redirect_url
         self.scope = scope
 
-        self.refresh_token = None
-        self._token = None
-        self.expire_time = monotonic()
+        self._data = AuthData()
         self._refresh_callback = None
 
     def _get_data(self, grant_type, code=None):
@@ -117,17 +129,14 @@ class AuthUtil:
             {
                 "client_credentials": {"scope": self.scope.scopes},
                 "authorization_code": {"code": code, "redirect_uri": self.redirect_url},
-                "refresh_token": {"refresh_token": self.refresh_token},
+                "refresh_token": {"refresh_token": self._data.refresh_token},
             }[grant_type]
         )
 
         return data
 
     def _handle_response(self, data):
-        if "refresh_token" in data:
-            self.refresh_token = data["refresh_token"]
-        self._token = data["access_token"]
-        self.expire_time = monotonic() + data["expires_in"]
+        self._data.set_data(data["access_token"], data.get("refresh_token"), data["expires_in"])
 
     def get_auth_url(self, state: Optional[str] = ""):
         """
@@ -143,7 +152,7 @@ class AuthUtil:
             "client_id": self.client_id,
             "redirect_uri": self.redirect_url,
             "response_type": "code",
-            "scope": self.scope.scopes,
+            "scope": self.scope.scopes.replace(" ", "%20"),
             "state": state,
         }
         if not params["state"]:
@@ -154,7 +163,7 @@ class AuthUtil:
         """
         Returns whether this auth has access to endpoints requiring a user
         """
-        return "delegate" in self.scope or self.refresh_token is not None
+        return self.scope.has_user
 
     def set_refresh_callback(self, callback: Callable[["FunctionalAuthHandler"], None]):
         """
@@ -197,7 +206,7 @@ class AuthUtil:
             "client_secret": self.client_secret,
             "redirect_url": self.redirect_url,
             "scope": self.scope.scopes,
-            "refresh_token": self.refresh_token,
+            "refresh_token": self._data.refresh_token,
             "domain": self.http.domain,
         }
 
@@ -303,9 +312,9 @@ class AuthHandler(BaseAuthHandler, AuthUtil):
             A refresh token used to get a new access token.
         """
         if refresh_token:
-            self.refresh_token = refresh_token
+            self._data.refresh_token = refresh_token
 
-        data = self._get_data("client_credentials" if self.refresh_token is None else "refresh_token")
+        data = self._get_data("client_credentials" if self._data.refresh_token is None else "refresh_token")
 
         response = self.http.get_auth_token(data)
         self._raise_for_status(response)
@@ -318,23 +327,25 @@ class AuthHandler(BaseAuthHandler, AuthUtil):
 
     def get_token(self) -> Optional[str]:
         with self._lock:
-            if self.expire_time - 5 <= monotonic():
+            if self._data.has_expired:
                 self.refresh_access_token()
-            return self._token
+            return self._data.token
 
     @classmethod
     def from_async(cls, auth: "AsynchronousAuthHandler"):
         new_auth = cls(auth.client_id, auth.client_secret, auth.redirect_url, auth.scope)
-        new_auth.refresh_token = auth.refresh_token
-        new_auth._token = auth._token
-        new_auth.expire_time = auth.expire_time
+        new_auth._data = auth._data
         new_auth._refresh_callback = auth._refresh_callback
         new_auth.http = auth.http.as_sync(new_auth)
         return new_auth
 
     def as_async(self) -> "AsynchronousAuthHandler":
         """
-        Return an asynchronous version of this auth handler
+        Returns an asynchronous auth handler.
+        Credentials are shared and updates in one apply to the other.
+        This method primarily exists for running the library's tests.
+
+        NOTE: Using both auth handlers in different threads at the same time is not safe.
         """
         from .asyncio.auth import AsynchronousAuthHandler
 

@@ -85,9 +85,9 @@ class AsynchronousAuthHandler(BaseAsynchronousAuthHandler, AuthUtil):
             A refresh token used to get a new access token.
         """
         if refresh_token:
-            self.refresh_token = refresh_token
+            self._data.refresh_token = refresh_token
 
-        data = self._get_data("client_credentials" if self.refresh_token is None else "refresh_token")
+        data = self._get_data("client_credentials" if self._data.refresh_token is None else "refresh_token")
         await self._request(data)
 
         if self._refresh_callback:
@@ -95,19 +95,24 @@ class AsynchronousAuthHandler(BaseAsynchronousAuthHandler, AuthUtil):
 
     async def get_token(self) -> Optional[str]:
         async with self._lock:
-            if self.expire_time - 5 <= monotonic():
+            if self._data.has_expired:
                 await self.refresh_access_token()
-            return self._token
+            return self._data.token
 
     @classmethod
     def from_sync(cls, auth: AuthHandler):
         new_auth = cls(auth.client_id, auth.client_secret, auth.redirect_url, auth.scope)
-        new_auth.refresh_token = auth.refresh_token
-        new_auth._token = auth._token
-        new_auth.expire_time = auth.expire_time
+        new_auth._data = auth._data
         new_auth._refresh_callback = auth._refresh_callback
         new_auth.http = auth.http.as_async(new_auth)
         return new_auth
 
     def as_sync(self) -> AuthHandler:
+        """
+        Returns a synchronous auth handler.
+        Credentials are shared and updates in one apply to the other.
+        This method primarily exists for running the library's tests.
+
+        NOTE: Using both auth handlers in different threads at the same time is not safe.
+        """
         return AuthHandler.from_async(self)
