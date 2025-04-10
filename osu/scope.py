@@ -63,3 +63,7 @@ class Scope:
 
     def __contains__(self, scope: str):
         return scope in self.scopes_list or "*" in self.scopes_list
+
+    @property
+    def has_user(self):
+        return any((scope.lower() != "public" for scope in self.scopes_list))
