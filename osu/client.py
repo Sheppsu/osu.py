@@ -1438,7 +1438,7 @@ class Client:
         user = f"@{user}" if key is not None and key.lower() == "username" else user
         return User(self.http.make_request(Path.get_user(user, mode)))
 
-    def get_users(self, ids: Sequence[int], include_variant_statistics: bool) -> List[UserCompact]:
+    def get_users(self, ids: Sequence[int], include_variant_statistics: Optional[bool] = None) -> List[UserCompact]:
         """
         Returns list of users.
         Can get maximum 50 at a time.
@@ -1451,7 +1451,7 @@ class Client:
             User id to be returned. Specify once for each user id requested.
             Up to 50 users can be requested at once.
 
-        include_variant_statistics: bool
+        include_variant_statistics: Optional[bool]
             Whether to additionally include `statistics_rulesets.variants`. Defaults to false.
 
         **Returns**
