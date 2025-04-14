@@ -1569,7 +1569,7 @@ class AsynchronousClient:
         )
         return GetMatchesResult(list(map(Match, resp["matches"])), resp["params"], resp["cursor"])
 
-    async def get_match(self, match_id: int) -> MatchExtended:
+    async def get_match(self, match_id: int, before: Optional[int] = None, after: Optional[int] = None, limit: Optional[int] = None) -> MatchExtended:
         """
         Returns a match by id.
 
@@ -1580,11 +1580,20 @@ class AsynchronousClient:
         match_id: int
             The match id.
 
+        before: Optional[int]
+            Filter for match events before the specified MatchEvent.id.
+
+        after: Optional[int]
+            Filter for match events after the specified MatchEvent.id.
+
+        limit: Optional[int]
+            Maximum number of match events to return. 100 default, 101 maximum.
+
         **Returns**
 
         :class:`Match`
         """
-        return MatchExtended(await self.http.make_request(Path.get_match(match_id)))
+        return MatchExtended(await self.http.make_request(Path.get_match(match_id), before=before, after=after, limit=limit))
 
     async def get_rooms(
         self,
