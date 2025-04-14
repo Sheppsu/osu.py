@@ -1575,7 +1575,7 @@ class Client:
         resp = self.http.make_request(Path.get_matches(), limit=limit, sort=sort, **{"cursor[match_id]": match_id})
         return GetMatchesResult(list(map(Match, resp["matches"])), resp["params"], resp["cursor"])
 
-    def get_match(self, match_id: int) -> MatchExtended:
+    def get_match(self, match_id: int, before: Optional[int] = None, after: Optional[int] = None, limit: Optional[int] = None) -> MatchExtended:
         """
         Returns a match by id.
 
@@ -1586,11 +1586,20 @@ class Client:
         match_id: int
             The match id.
 
+        before: Optional[int]
+            Filter for match events before the specified MatchEvent.id.
+
+        after: Optional[int]
+            Filter for match events after the specified MatchEvent.id.
+
+        limit: Optional[int]
+            Maximum number of match events to return. 100 default, 101 maximum.
+
         **Returns**
 
         :class:`Match`
         """
-        return MatchExtended(self.http.make_request(Path.get_match(match_id)))
+        return MatchExtended(self.http.make_request(Path.get_match(match_id), before=before, after=after, limit=limit))
 
     def get_rooms(
         self,
