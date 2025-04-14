@@ -22,11 +22,7 @@ __all__ = ("AsynchronousHTTPHandler", "BaseAsynchronousHTTPHandler")
 class BaseAsynchronousHTTPHandler(BaseHTTPHandler):
     auth: "BaseAsynchronousAuthHandler"
 
-    def __init__(
-        self,
-        auth: Optional["BaseAsynchronousAuthHandler"],
-        api_version: Optional[str] = None
-    ):
+    def __init__(self, auth: Optional["BaseAsynchronousAuthHandler"], api_version: Optional[str] = None):
         super().__init__(auth, api_version)
 
         if not iscoroutinefunction(self.auth.get_token):
@@ -174,12 +170,7 @@ class AsynchronousHTTPHandler(BaseAsynchronousHTTPHandler):
 
     @classmethod
     def from_sync(cls, http: HTTPHandler, auth: Optional["BaseAsynchronousAuthHandler"] = None):
-        new_http = cls(
-            auth,
-            http.rate_limit.wait_time,
-            http.rate_limit.limit,
-            http.api_version
-        )
+        new_http = cls(auth, http.rate_limit.wait_time, http.rate_limit.limit, http.api_version)
         new_http.rate_limit._requests_finished = http.rate_limit._requests_finished
         new_http.base_url = http.base_url
         new_http.auth_url = http.auth_url

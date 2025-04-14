@@ -62,6 +62,8 @@ class TestMisc:
         assert match.start_time == sample_match["start_time"]
         assert match.end_time == sample_match["end_time"]
 
+        match = client.get_match(sample_match["id"])
+
     def test_get_seasonal_backgrounds(self, client):
         backgrounds = client.get_seasonal_backgrounds()
         assert backgrounds

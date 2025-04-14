@@ -400,7 +400,7 @@ class Client:
                 ruleset=ruleset,
                 ruleset_id=ruleset_id,
             ),
-            mode
+            mode,
         )
 
     def get_beatmapset(self, beatmapset_id: int) -> Beatmapset:
@@ -1459,7 +1459,9 @@ class Client:
         Sequence[:class:`UserCompact`]
             Includes attributes: country, cover, groups, statistics_rulesets.
         """
-        res = self.http.make_request(Path.get_users(), **{"ids[]": ids}, include_variant_statistics=include_variant_statistics)
+        res = self.http.make_request(
+            Path.get_users(), **{"ids[]": ids}, include_variant_statistics=include_variant_statistics
+        )
         return list(map(UserCompact, res["users"]))
 
     def lookup_users(self, users: List[Union[int, str]]):
@@ -1575,7 +1577,9 @@ class Client:
         resp = self.http.make_request(Path.get_matches(), limit=limit, sort=sort, **{"cursor[match_id]": match_id})
         return GetMatchesResult(list(map(Match, resp["matches"])), resp["params"], resp["cursor"])
 
-    def get_match(self, match_id: int, before: Optional[int] = None, after: Optional[int] = None, limit: Optional[int] = None) -> MatchExtended:
+    def get_match(
+        self, match_id: int, before: Optional[int] = None, after: Optional[int] = None, limit: Optional[int] = None
+    ) -> MatchExtended:
         """
         Returns a match by id.
 

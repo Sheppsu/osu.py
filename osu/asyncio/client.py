@@ -390,7 +390,7 @@ class AsynchronousClient:
                 ruleset=ruleset,
                 ruleset_id=ruleset_id,
             ),
-            mode
+            mode,
         )
 
     async def get_beatmapset(self, beatmapset_id: int) -> Beatmapset:
@@ -1431,7 +1431,9 @@ class AsynchronousClient:
         user = f"@{user}" if key is not None and key.lower() == "username" else user
         return User(await self.http.make_request(Path.get_user(user, mode)))
 
-    async def get_users(self, ids: Sequence[int], include_variant_statistics: Optional[bool] = None) -> List[UserCompact]:
+    async def get_users(
+        self, ids: Sequence[int], include_variant_statistics: Optional[bool] = None
+    ) -> List[UserCompact]:
         """
         Returns list of users.
 
@@ -1451,7 +1453,9 @@ class AsynchronousClient:
         Sequence[:class:`UserCompact`]
             Includes attributes: country, cover, groups, statistics_rulesets.
         """
-        res = await self.http.make_request(Path.get_users(), **{"ids[]": ids}, include_variant_statistics=include_variant_statistics)
+        res = await self.http.make_request(
+            Path.get_users(), **{"ids[]": ids}, include_variant_statistics=include_variant_statistics
+        )
         return list(map(UserCompact, res["users"]))
 
     async def lookup_users(self, users: List[Union[int, str]]):
@@ -1569,7 +1573,9 @@ class AsynchronousClient:
         )
         return GetMatchesResult(list(map(Match, resp["matches"])), resp["params"], resp["cursor"])
 
-    async def get_match(self, match_id: int, before: Optional[int] = None, after: Optional[int] = None, limit: Optional[int] = None) -> MatchExtended:
+    async def get_match(
+        self, match_id: int, before: Optional[int] = None, after: Optional[int] = None, limit: Optional[int] = None
+    ) -> MatchExtended:
         """
         Returns a match by id.
 
@@ -1593,7 +1599,9 @@ class AsynchronousClient:
 
         :class:`Match`
         """
-        return MatchExtended(await self.http.make_request(Path.get_match(match_id), before=before, after=after, limit=limit))
+        return MatchExtended(
+            await self.http.make_request(Path.get_match(match_id), before=before, after=after, limit=limit)
+        )
 
     async def get_rooms(
         self,

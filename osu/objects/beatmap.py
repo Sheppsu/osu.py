@@ -535,9 +535,7 @@ class TaikoBeatmapDifficultyAttributes:
     mono_stamina_factor: float
     """
 
-    __slots__ = (
-        "mono_stamina_factor",
-    )
+    __slots__ = ("mono_stamina_factor",)
 
     def __init__(self, data):
         self.mono_stamina_factor: float = get_required(data, "mono_stamina_factor")

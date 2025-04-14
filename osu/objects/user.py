@@ -382,6 +382,7 @@ class User(UserCompact):
 
     website:  Optional[str]
     """
+
     __slots__ = (
         "cover_url",
         "discord",
@@ -462,6 +463,7 @@ class UserPreferences:
     user_list_view: str
         brick, card, or list
     """
+
     __slots__ = (
         "audio_autoplay",
         "audio_muted",
