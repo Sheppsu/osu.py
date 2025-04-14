@@ -78,6 +78,16 @@ class TestAsynchronousMisc:
         assert match.start_time == sample_match["start_time"]
         assert match.end_time == sample_match["end_time"]
 
+        after_id = match.events[2].id
+        match = await async_client.get_match(sample_match["id"], limit=5, after=after_id)
+        assert len(match.events) <= 5
+        assert all((evt.id > after_id for evt in match.events))
+
+        before_id = match.events[2].id
+        match = await async_client.get_match(sample_match["id"], limit=5, before=before_id)
+        assert len(match.events) <= 5
+        assert all((evt.id < before_id for evt in match.events))
+
     @pytest.mark.asyncio
     async def test_get_seasonal_backgrounds(self, client):
         async_client = as_async(client)

@@ -62,7 +62,15 @@ class TestMisc:
         assert match.start_time == sample_match["start_time"]
         assert match.end_time == sample_match["end_time"]
 
-        match = client.get_match(sample_match["id"])
+        after_id = match.events[2].id
+        match = client.get_match(sample_match["id"], limit=5, after=after_id)
+        assert len(match.events) <= 5
+        assert all((evt.id > after_id for evt in match.events))
+
+        before_id = match.events[2].id
+        match = client.get_match(sample_match["id"], limit=5, before=before_id)
+        assert len(match.events) <= 5
+        assert all((evt.id < before_id for evt in match.events))
 
     def test_get_seasonal_backgrounds(self, client):
         backgrounds = client.get_seasonal_backgrounds()
