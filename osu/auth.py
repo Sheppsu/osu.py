@@ -232,7 +232,7 @@ class AuthUtil:
         scope = Scope(*save_data["scope"].split())
         auth = cls(client_id, client_secret, redirect_url, scope)
         auth.http.set_domain(save_data["domain"])
-        auth.refresh_token = save_data["refresh_token"]
+        auth._data.refresh_token = save_data["refresh_token"]
         return auth
 
     def set_domain(self, domain: str):
