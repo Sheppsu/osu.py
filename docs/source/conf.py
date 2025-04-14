@@ -21,11 +21,11 @@ sys.path.insert(0, path)
 # -- Project information -----------------------------------------------------
 
 project = 'osu.py'
-copyright = '2024, Sheppsu'
+copyright = '2025, Sheppsu'
 author = 'Sheppsu'
 
 # The full version, including alpha/beta/rc tags
-release = version = '3.4.0'
+release = version = '4.0.0'
 
 
 # -- General configuration ---------------------------------------------------
