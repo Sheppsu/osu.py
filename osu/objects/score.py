@@ -183,7 +183,7 @@ class LegacyScore:
 
 class SoloScore:
     """
-    Contains information about a lazer score.
+    Contains information about a score in lazer format (may be scores set on stable).
 
     **Attributes**
 
