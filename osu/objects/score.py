@@ -432,7 +432,7 @@ class ScoreDataStatistics:
         "small_tick_miss",
         "slider_tail_hit",
         "combo_break",
-        "legacy_combo_increase"
+        "legacy_combo_increase",
     )
 
     def __init__(self, data):
