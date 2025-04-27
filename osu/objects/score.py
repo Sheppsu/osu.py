@@ -406,6 +406,12 @@ class ScoreDataStatistics:
     large_tick_miss: Optional[int]
 
     small_tick_miss: Optional[int]
+
+    slider_tail_hit: Optional[int]
+
+    combo_break: Optional[int]
+
+    legacy_combo_increase: Optional[int]
     """
 
     __slots__ = (
@@ -424,6 +430,9 @@ class ScoreDataStatistics:
         "small_tick_hit",
         "large_tick_miss",
         "small_tick_miss",
+        "slider_tail_hit",
+        "combo_break",
+        "legacy_combo_increase"
     )
 
     def __init__(self, data):
@@ -442,6 +451,9 @@ class ScoreDataStatistics:
         self.small_tick_hit: Optional[int] = data.get("small_tick_hit")
         self.large_tick_miss: Optional[int] = data.get("large_tick_miss")
         self.small_tick_miss: Optional[int] = data.get("small_tick_miss")
+        self.slider_tail_hit: Optional[int] = data.get("slider_tail_hit")
+        self.combo_break: Optional[int] = data.get("combo_break")
+        self.legacy_combo_increase: Optional[int] = data.get("legacy_combo_increase")
 
     def __repr__(self):
         attrs = tuple(filter(lambda attr: getattr(self, attr) is not None, self.__slots__))
