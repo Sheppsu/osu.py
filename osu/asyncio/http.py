@@ -96,21 +96,21 @@ class AsynchronousHTTPHandler(BaseAsynchronousHTTPHandler):
         if files is not None:
             file_data = dict(map(lambda item: (item[0], item[1][1]), files.items()))
 
-        async with self.rate_limit:
-            async with aiohttp.ClientSession() as session:
-                async with session.request(
-                    path.method,
-                    endpoint + path.path,
-                    headers=headers,
-                    data=file_data,
-                    json=json,
-                    params=params,
-                ) as resp:
-                    await self._raise_for_status(resp)
+        await self.rate_limit.wait()
+        async with aiohttp.ClientSession() as session:
+            async with session.request(
+                path.method,
+                endpoint + path.path,
+                headers=headers,
+                data=file_data,
+                json=json,
+                params=params,
+            ) as resp:
+                await self._raise_for_status(resp)
 
-                    if resp.content_length == 0:
-                        return
-                    yield resp
+                if resp.content_length == 0:
+                    return
+                yield resp
 
     async def _raise_for_status(self, resp):
         try:
@@ -162,16 +162,16 @@ class AsynchronousHTTPHandler(BaseAsynchronousHTTPHandler):
                 return
 
     async def make_auth_request(self, data):
-        async with self.rate_limit:
-            async with aiohttp.ClientSession() as session:
-                async with session.request("POST", self.token_url, json=data) as resp:
-                    await self._raise_for_status(resp)
-                    return await resp.json()
+        await self.rate_limit.wait()
+        async with aiohttp.ClientSession() as session:
+            async with session.request("POST", self.token_url, json=data) as resp:
+                await self._raise_for_status(resp)
+                return await resp.json()
 
     @classmethod
     def from_sync(cls, http: HTTPHandler, auth: Optional["BaseAsynchronousAuthHandler"] = None):
         new_http = cls(auth, http.rate_limit.wait_time, http.rate_limit.limit, http.api_version)
-        new_http.rate_limit._requests_finished = http.rate_limit._requests_finished
+        new_http.rate_limit._requests_sent = http.rate_limit._requests_sent
         new_http.base_url = http.base_url
         new_http.auth_url = http.auth_url
         new_http.token_url = http.token_url
@@ -187,9 +187,7 @@ class RateLimitHandler:
         "limit",
         "_lock",
         "_waiting_lock",
-        "_finish_evt",
-        "_requests_in_progress",
-        "_requests_finished",
+        "_requests_sent",
     )
 
     def __init__(self, request_wait_time: float, limit_per_minute: int):
@@ -201,11 +199,9 @@ class RateLimitHandler:
         # to make sure only one request is waiting at a time
         # okay to acquire for long periods of time
         self._waiting_lock: asyncio.Lock = asyncio.Lock()
-        self._finish_evt: asyncio.Event = asyncio.Event()
-        self._requests_in_progress = 0
-        self._requests_finished: List[float] = []
+        self._requests_sent: List[float] = []
 
-    async def __aenter__(self):
+    async def wait(self):
         await self._lock.acquire()
 
         if self.wait_time > 0:
@@ -213,7 +209,7 @@ class RateLimitHandler:
         else:
             await self._wait_without_wait_time()
 
-        self._requests_in_progress += 1
+        self._get_requests_sent().append(time.monotonic())
 
         self._lock.release()
 
@@ -223,79 +219,44 @@ class RateLimitHandler:
         self._lock.release()
         # once acquired, we can choose the appropriate way to wait
         # without worry about race conditions. waiting one at a time
-        # is perfectly valid since wait time between requests is > 0
+        # is okay since wait time between requests is > 0
         await self._waiting_lock.acquire()
 
         await self._lock.acquire()
-        # wait for current request to finish
-        if self._requests_in_progress > 0:
-            # clear before releasing to make sure a request doesn't
-            # finish in between and cause a deadlock
-            self._finish_evt.clear()
-            self._lock.release()
-
-            await self._finish_evt.wait()
-            time.sleep(self.wait_time)
-            await self._lock.acquire()
-        # wait until enough time as passed since last request finished
-        elif len(requests_finished := self._get_requests_finished()) > 0:
-            wait_time = max(0.0, self.wait_time - (time.monotonic() - requests_finished[-1]))
+        if len(requests_sent := self._get_requests_sent()) > 0:
+            wait_time = max(0.0, self.wait_time - (time.monotonic() - requests_sent[-1]))
             if wait_time > 0:
                 self._lock.release()
-                time.sleep(wait_time)
+                await asyncio.sleep(wait_time)
                 await self._lock.acquire()
 
         self._waiting_lock.release()
 
     async def _wait_without_wait_time(self):
-        # under rate limit still
-        if self._requests_in_progress + len(self._get_requests_finished()) < self.limit:
+        # under rate limit still, good to send
+        if len(self._get_requests_sent()) < self.limit:
             return
 
         # acquiring _waiting_lock could take a bit
         # so let's release this one
         self._lock.release()
         await self._waiting_lock.acquire()
-
         await self._lock.acquire()
-        should_wait = len(self._get_requests_finished()) == 0
-        # if a request finishes between declaring should_wait
-        # and the if statement below, it will know because
-        # _finish_evt will be set
-        self._finish_evt.clear()
-        self._lock.release()
 
-        # can't wait based on request history
-        # so we wait until a request finishes and sets self._finish_evt
-        if should_wait:
-            await self._finish_evt.wait()
-
-        await self._lock.acquire()
-        oldest_req = None if len(requests_finished := self._get_requests_finished()) == 0 else requests_finished[0]
-        should_wait = len(requests_finished) + self._requests_in_progress >= self.limit
-        self._lock.release()
-
-        # wait until back under limit
-        if should_wait and oldest_req is not None:
-            wait_time = max(0.0, 60 - (time.monotonic() - oldest_req))
+        # check again, then wait till oldest request expires past 1 minute
+        if len(requests_sent := self._get_requests_sent()) >= self.limit:
+            wait_time = max(0.0, 60.0 - (time.monotonic() - requests_sent[0]))
             if wait_time > 0:
-                time.sleep(wait_time)
+                self._lock.release()
+                await asyncio.sleep(wait_time)
+                await self._lock.acquire()
 
         self._waiting_lock.release()
-        await self._lock.acquire()
 
-    async def __aexit__(self, exc_type, exc_val, exc_tb):
-        finished_at = time.monotonic()
-        async with self._lock:
-            self._requests_in_progress -= 1
-            self._get_requests_finished().append(finished_at)
-            # alert any waiting requests that one has just finished
-            self._finish_evt.set()
-
-    def _get_requests_finished(self):
+    def _get_requests_sent(self):
         """expects self._lock is acquired when calling this function"""
         # update list
-        while len(self._requests_finished) > 0 and time.monotonic() - self._requests_finished[0] >= 60:
-            self._requests_finished.pop(0)
+        while len(self._requests_sent) > 0 and time.monotonic() - self._requests_sent[0] >= 60:
+            self._requests_sent.pop(0)
 
-        return self._requests_finished
+        return self._requests_sent
