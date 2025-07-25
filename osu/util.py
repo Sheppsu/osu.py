@@ -149,7 +149,7 @@ class BeatmapsetSearchFilter:
 
         nsfw: bool
         """
-        self._filters["nsfw"] = nsfw
+        self._filters["nsfw"] = "1" if nsfw else "0"
         return self
 
     def set_played(self, played: Union[BeatmapsetSearchPlayed, str]) -> "BeatmapsetSearchFilter":
