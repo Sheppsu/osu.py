@@ -240,6 +240,8 @@ class SoloScore:
     current_user_attributes: Optional[:class:`ScoreUserAttributes`]
 
     weight: Optional[:class:`PpWeight`]
+
+    match: Optional[:class:`MatchGameScoreInfo`]
     """
 
     __slots__ = (
@@ -270,6 +272,7 @@ class SoloScore:
         "weight",
         "beatmap",
         "beatmapset",
+        "match"
     )
 
     def __init__(self, data):
@@ -292,6 +295,8 @@ class SoloScore:
         self.replay: bool = get_required(data, "replay")
         self.type: ObjectType = ObjectType(get_required(data, "type"))
 
+        from .match import MatchGameScoreInfo
+
         self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
         self.build_id: Optional[int] = data.get("build_id")
         self.legacy_score_id: Optional[int] = data.get("legacy_score_id")
@@ -303,6 +308,7 @@ class SoloScore:
         self.weight: Optional[PpWeight] = get_optional(data, "weight", PpWeight)
         self.beatmap: Optional[Beatmap] = get_optional(data, "beatmap", Beatmap)
         self.beatmapset: Optional[BeatmapsetCompact] = get_optional(data, "beatmapset", BeatmapsetCompact)
+        self.match: Optional[MatchGameScoreInfo] = get_optional(data, "match", MatchGameScoreInfo)
 
     def __repr__(self):
         return prettify(self, "beatmap_id", "statistics")

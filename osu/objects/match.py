@@ -1,4 +1,4 @@
-from typing import Optional, List, TYPE_CHECKING
+from typing import Optional, List, Union, TYPE_CHECKING
 
 from ..enums import (
     MatchEventType,
@@ -11,7 +11,7 @@ from ..enums import (
 from ..util import prettify, get_optional, get_required, fromisoformat
 from .user import UserCompact
 from .beatmap import BeatmapCompact
-from .score import LegacyScore
+from .score import LegacyScore, SoloScore, get_score_object
 
 
 if TYPE_CHECKING:
@@ -74,9 +74,9 @@ class MatchExtended(Match):
         "current_game_id",
     )
 
-    def __init__(self, data):
+    def __init__(self, data, api_version):
         super().__init__(get_required(data, "match"))
-        self.events: List[MatchEvent] = list(map(MatchEvent, get_required(data, "events")))
+        self.events: List[MatchEvent] = [MatchEvent(evt, api_version) for evt in get_required(data, "events")]
         self.users: List[UserCompact] = list(map(UserCompact, get_required(data, "users")))
         self.first_event_id: int = get_required(data, "first_event_id")
         self.latest_event_id: int = get_required(data, "latest_event_id")
@@ -106,7 +106,7 @@ class MatchEvent:
 
     __slots__ = ("id", "timestamp", "user_id", "type", "text", "game")
 
-    def __init__(self, data):
+    def __init__(self, data, api_version):
         self.id: int = get_required(data, "id")
         self.timestamp: datetime = fromisoformat(get_required(data, "timestamp"))
         self.user_id: int = get_required(data, "user_id")
@@ -114,7 +114,7 @@ class MatchEvent:
         self.text: Optional[str] = (
             get_required(data, "detail")["text"] if "text" in get_required(data, "detail") else None
         )
-        self.game: Optional[MatchGame] = get_optional(data, "game", MatchGame)
+        self.game: Optional[MatchGame] = get_optional(data, "game", lambda d: MatchGame(d, api_version))
 
     def __repr__(self):
         attributes = ("type",) if self.type != MatchEventType.OTHER else ("type", "game")
@@ -147,7 +147,7 @@ class MatchGame:
 
     beatmap: Optional[:class:`BeatmapCompact`]
 
-    scores: List[:class:`LegacyScore`]
+    scores: List[Union[:class:`LegacyScore`, :class:`SoloScore`]]
     """
 
     __slots__ = (
@@ -164,7 +164,7 @@ class MatchGame:
         "scores",
     )
 
-    def __init__(self, data):
+    def __init__(self, data, api_version):
         self.beatmap_id: int = get_required(data, "beatmap_id")
         self.id: int = get_required(data, "id")
         self.start_time: datetime = fromisoformat(get_required(data, "start_time"))
@@ -175,7 +175,9 @@ class MatchGame:
         self.team_type: TeamType = TeamType(get_required(data, "team_type"))
         self.mods: Mods = Mods.parse_any_list(get_required(data, "mods"))
         self.beatmap: Optional[BeatmapCompact] = get_optional(data, "beatmap", BeatmapCompact)
-        self.scores: List[LegacyScore] = list(map(LegacyScore, get_required(data, "scores")))
+        self.scores: List[Union[LegacyScore, SoloScore]] = [
+            get_score_object(score, api_version) for score in get_required(data, "scores")
+        ]
 
     def __repr__(self):
         return prettify(self, "beatmap", "scores")

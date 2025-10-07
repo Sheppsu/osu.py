@@ -1603,7 +1603,10 @@ class Client:
 
         :class:`Match`
         """
-        return MatchExtended(self.http.make_request(Path.get_match(match_id), before=before, after=after, limit=limit))
+        return MatchExtended(
+            self.http.make_request(Path.get_match(match_id), before=before, after=after, limit=limit),
+            self.http.api_version
+        )
 
     def get_rooms(
         self,

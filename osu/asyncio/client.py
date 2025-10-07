@@ -1600,7 +1600,8 @@ class AsynchronousClient:
         :class:`Match`
         """
         return MatchExtended(
-            await self.http.make_request(Path.get_match(match_id), before=before, after=after, limit=limit)
+            await self.http.make_request(Path.get_match(match_id), before=before, after=after, limit=limit),
+            self.http.api_version
         )
 
     async def get_rooms(
