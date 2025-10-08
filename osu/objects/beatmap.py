@@ -115,6 +115,8 @@ class BeatmapsetCompact:
     related_users: Optional[List[:class:`UserCompact`]]
 
     user: Optional[:class:`UserCompact`]
+
+    version_count: Optional[int]
     """
 
     __slots__ = (
@@ -156,6 +158,7 @@ class BeatmapsetCompact:
         "recent_favourites",
         "related_users",
         "user",
+        "version_count",
     )
 
     def __init__(self, data):
@@ -208,6 +211,7 @@ class BeatmapsetCompact:
         self.recent_favourites: Optional[List[UserCompact]] = get_optional_list(data, "recent_favourites", UserCompact)
         self.related_users: Optional[List[UserCompact]] = get_optional_list(data, "related_users", UserCompact)
         self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
+        self.version_count: Optional[int] = data.get("version_count")
 
     def __repr__(self):
         return prettify(self, "artist", "title", "creator")
