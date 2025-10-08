@@ -32,6 +32,8 @@ _log = logging.getLogger(__name__)
 class BaseHTTPHandler:
     __slots__ = ("auth", "api_version", "domain", "base_url", "auth_url", "token_url")
 
+    DEFAULT_API_VERSION = "20251007"
+
     def __init__(self, auth: Optional["BaseAuthHandler"], api_version: Optional[str] = None):
         self.auth: Optional[BaseAuthHandler] = auth
         self.set_api_version(api_version)
@@ -48,7 +50,7 @@ class BaseHTTPHandler:
         self.base_url = base_url(domain)
 
     def set_api_version(self, api_version: Optional[str]):
-        self.api_version: str = api_version or datetime.now(tz=timezone.utc).strftime("%Y%m%d")
+        self.api_version: str = api_version or self.DEFAULT_API_VERSION
 
     def set_ratelimit(self, request_wait_time: float = 1.0, limit_per_minute: int = 60):
         raise NotImplementedError()
