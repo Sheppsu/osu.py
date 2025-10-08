@@ -1551,7 +1551,11 @@ class Client:
         )
 
     def get_matches(
-        self, limit: Optional[int] = None, sort: Optional[Union[str, MatchSort]] = None, cursor: Optional[Dict] = None
+        self,
+        limit: Optional[int] = None,
+        sort: Optional[Union[str, MatchSort]] = None,
+        cursor: Optional[Dict] = None,
+        active: Optional[bool] = None,
     ) -> GetMatchesResult:
         """
         Returns a list of matches.
@@ -1568,13 +1572,18 @@ class Client:
             Dictionary containing one key: `match_id`.
             Can be obtained from a previous call to this function or manually created.
 
+        active: Optional[bool]
+            Specifies whether to return only active matches. Default returns active and unactive matches.
+
         **Returns**
 
         :class:`GetMatchesResult`
         """
         match_id = cursor.get("match_id") if cursor is not None else None
         sort = parse_enum_args(sort)
-        resp = self.http.make_request(Path.get_matches(), limit=limit, sort=sort, **{"cursor[match_id]": match_id})
+        resp = self.http.make_request(
+            Path.get_matches(), limit=limit, sort=sort, active=active, **{"cursor[match_id]": match_id}
+        )
         return GetMatchesResult(list(map(Match, resp["matches"])), resp["params"], resp["cursor"])
 
     def get_match(
@@ -1605,7 +1614,7 @@ class Client:
         """
         return MatchExtended(
             self.http.make_request(Path.get_match(match_id), before=before, after=after, limit=limit),
-            self.http.api_version
+            self.http.api_version,
         )
 
     def get_rooms(
