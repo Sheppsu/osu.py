@@ -882,11 +882,14 @@ class RoomType(Enum, metaclass=FallbackEnum):
     HEAD_TO_HEAD = "head_to_head"
 
     TEAM_VERSUS = "team_versus"
+
+    MATCHMAKING = "matchmaking"
     """
 
     PLAYLISTS = "playlists"
     HEAD_TO_HEAD = "head_to_head"
     TEAM_VERSUS = "team_versus"
+    MATCHMAKING = "matchmaking"
 
 
 class RoomFilterMode(Enum, metaclass=FallbackEnum):
