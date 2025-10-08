@@ -64,9 +64,14 @@ class TestAsynchronousMisc:
     @pytest.mark.asyncio
     async def test_get_matches(self, client):
         async_client = as_async(client)
-        matches = await async_client.get_matches(limit=5)
-        assert matches
-        assert len(matches["matches"]) == 5
+        result = await async_client.get_matches(limit=5)
+        assert result
+        assert len(result.matches) == 20
+
+        result = await async_client.get_matches(limit=25, active=True, cursor=result.cursor)
+        assert result
+        assert len(result.matches) == 25
+        assert all((match.end_time is None for match in result.matches))
 
     @pytest.mark.asyncio
     async def test_get_match(self, client, sample_match):

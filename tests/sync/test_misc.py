@@ -50,9 +50,14 @@ class TestMisc:
         assert page.title == sample_wiki_page["title"]
 
     def test_get_matches(self, client):
-        matches = client.get_matches(limit=5)
-        assert matches
-        assert len(matches.matches) == 5
+        result = client.get_matches(limit=20)
+        assert result
+        assert len(result.matches) == 20
+
+        result = client.get_matches(limit=25, active=True, cursor=result.cursor)
+        assert result
+        assert len(result.matches) == 25
+        assert all((match.end_time is None for match in result.matches))
 
     def test_get_match(self, client, sample_match):
         match = client.get_match(sample_match["id"])
