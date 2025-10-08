@@ -49,7 +49,7 @@ class TestScore:
         ret = client.get_all_scores()
         assert ret
 
-        time.sleep(0.5)
+        time.sleep(1)
 
         new_ret = client.get_all_scores(cursor=ret.cursor)
         assert new_ret

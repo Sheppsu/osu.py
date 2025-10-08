@@ -68,7 +68,7 @@ class TestAsynchronousScore:
         ret = await async_client.get_all_scores()
         assert ret
 
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(1)
 
         new_ret = await async_client.get_all_scores(cursor=ret.cursor)
         assert new_ret
