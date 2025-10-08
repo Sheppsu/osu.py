@@ -8,7 +8,7 @@ try:
 except ImportError:
     aiohttp = None
 
-from ..http import BaseHTTPHandler, HTTPHandler
+from ..http import BaseHTTPHandler, HTTPHandler, _convert_param_value
 from ..exceptions import RequestException
 
 if TYPE_CHECKING:
@@ -92,7 +92,7 @@ class AsynchronousHTTPHandler(BaseAsynchronousHTTPHandler):
         self.check_path_validity(path)
 
         headers = await self.get_headers(path, files is not None, **headers)
-        params = {str(key): value for key, value in kwargs.items() if value is not None}
+        params = {str(key): _convert_param_value(value) for key, value in kwargs.items() if value is not None}
         if files is not None:
             file_data = dict(map(lambda item: (item[0], item[1][1]), files.items()))
 

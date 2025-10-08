@@ -29,6 +29,12 @@ __all__ = ("BaseHTTPHandler", "HTTPHandler")
 _log = logging.getLogger(__name__)
 
 
+def _convert_param_value(value):
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    return value
+
+
 class BaseHTTPHandler:
     __slots__ = ("auth", "api_version", "domain", "base_url", "auth_url", "token_url")
 
@@ -126,7 +132,7 @@ class HTTPHandler(BaseHTTPHandler):
         self.check_path_validity(path)
 
         headers = self.get_headers(path, files is not None, **headers)
-        params = {str(key): value for key, value in kwargs.items() if value is not None}
+        params = {str(key): _convert_param_value(value) for key, value in kwargs.items() if value is not None}
 
         self.rate_limit.wait()
         response = getattr(requests, path.method)(
