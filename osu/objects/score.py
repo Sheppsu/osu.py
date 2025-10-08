@@ -272,7 +272,7 @@ class SoloScore:
         "weight",
         "beatmap",
         "beatmapset",
-        "match"
+        "match",
     )
 
     def __init__(self, data):
