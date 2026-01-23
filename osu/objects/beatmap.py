@@ -185,7 +185,7 @@ class BeatmapsetCompact:
         self.user_id: int = get_required(data, "user_id")
         self.video: bool = get_required(data, "video")
 
-        self.background_url: str = f"https://assets.ppy.sh/beatmaps/{self.id}/covers/raw.jpg"
+        self.background_url: str = f"https://assets.ppy.sh/beatmaps/{self.id}/covers/fullsize.jpg"
 
         self.availability: BeatmapsetAvailability = get_optional(data, "availability", BeatmapsetAvailability)
         self.beatmaps: Optional[List[BeatmapCompact]] = get_optional_list(data, "beatmaps", BeatmapCompact)
