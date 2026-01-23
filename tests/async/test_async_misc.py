@@ -66,7 +66,7 @@ class TestAsynchronousMisc:
         async_client = as_async(client)
         result = await async_client.get_matches(limit=5)
         assert result
-        assert len(result.matches) == 20
+        assert len(result.matches) == 5
 
         result = await async_client.get_matches(limit=25, active=True, cursor=result.cursor)
         assert result

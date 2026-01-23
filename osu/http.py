@@ -36,9 +36,12 @@ def _convert_param_value(value):
 
 
 class BaseHTTPHandler:
+    """
+    Abstract class for handling http requests.
+    """
     __slots__ = ("auth", "api_version", "domain", "base_url", "auth_url", "token_url")
 
-    DEFAULT_API_VERSION = "20251007"
+    DEFAULT_API_VERSION = "20260123"
 
     def __init__(self, auth: Optional["BaseAuthHandler"], api_version: Optional[str] = None):
         self.auth: Optional[BaseAuthHandler] = auth
@@ -50,12 +53,14 @@ class BaseHTTPHandler:
         self.base_url = DEFAULT_BASE_URL
 
     def set_domain(self, domain: str) -> None:
+        """Set the domain to use for requests."""
         self.domain = domain
         self.auth_url = auth_url(domain)
         self.token_url = token_url(domain)
         self.base_url = base_url(domain)
 
     def set_api_version(self, api_version: Optional[str]):
+        """Sets x-api-version header. Should be in the format YYYYMMDD. Pass `None` to set back to default."""
         self.api_version: str = api_version or self.DEFAULT_API_VERSION
 
     def set_ratelimit(self, request_wait_time: float = 1.0, limit_per_minute: int = 60):
