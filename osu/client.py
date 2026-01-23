@@ -1464,20 +1464,26 @@ class Client:
         )
         return list(map(UserCompact, res["users"]))
 
-    def lookup_users(self, users: List[Union[int, str]]):
+    def lookup_users(self, users: List[Union[int, str]], mode: Optional[GameModeInt] = None):
         """
         Lookup users by a mix of user ids and usernames.
         Can lookup maximum 50 at a time.
+
+        When mode is specified, `global_rank` on the :class:`UserCompact` is returned.
 
         ids: Sequence[Union[int, str]]
             Can be a list of user ids and usernames.
             Usernames should be prefixed with "@" to make sure they're interpreted as usernames by the api.
 
+        mode: Optional[GameModeInt]
+            Game mode to get data for
+
         **Returns**
 
         Sequence[:class:`UserCompact`]
         """
-        res = self.http.make_request(Path.lookup_users(), **{"ids[]": users})
+        mode = parse_enum_args(mode)
+        res = self.http.make_request(Path.lookup_users(), ruleset_id=mode, **{"ids[]": users})
         return list(map(UserCompact, res["users"]))
 
     def get_wiki_page(self, locale: str, path: str) -> WikiPage:
