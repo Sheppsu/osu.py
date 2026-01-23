@@ -890,6 +890,7 @@ class RoomType(Enum, metaclass=FallbackEnum):
     HEAD_TO_HEAD = "head_to_head"
     TEAM_VERSUS = "team_versus"
     MATCHMAKING = "matchmaking"
+    RANKED_PLAY = "ranked_play"
 
 
 class RoomFilterMode(Enum, metaclass=FallbackEnum):
