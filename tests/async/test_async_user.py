@@ -1,6 +1,6 @@
 import pytest
 
-from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType, SoloScore
+from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType, SoloScore, GameModeInt
 
 from tests.util import as_async
 
@@ -9,6 +9,7 @@ class TestAsynchronousUser:
     @pytest.mark.asyncio
     async def test_get_user(self, client, sample_user):
         async_client = as_async(client)
+
         def check_user(user):
             assert user
             assert user.statistics
@@ -35,7 +36,10 @@ class TestAsynchronousUser:
     async def test_lookup_users(self, client, sample_users):
         async_client = as_async(client)
         users = [sample_users[0]["id"], "@" + sample_users[1]["username"]]
-        users = sorted(await async_client.lookup_users(users), key=lambda u: 0 if u.id == sample_users[0]["id"] else 1)
+        users = sorted(
+            await async_client.lookup_users(users, mode=GameModeInt.MANIA),
+            key=lambda u: 0 if u.id == sample_users[0]["id"] else 1,
+        )
         for user, sample_user in zip(users, sample_users[:2]):
             assert user
             assert user.id == sample_user["id"]

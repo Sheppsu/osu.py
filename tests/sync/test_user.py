@@ -1,4 +1,4 @@
-from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType, SoloScore
+from osu import KudosuHistory, Event, LegacyScore, UserBeatmapType, SoloScore, GameModeInt
 
 
 class TestUser:
@@ -25,11 +25,14 @@ class TestUser:
 
     def test_lookup_users(self, client, sample_users):
         users = [sample_users[0]["id"], "@" + sample_users[1]["username"]]
-        users = sorted(client.lookup_users(users), key=lambda u: 0 if u.id == sample_users[0]["id"] else 1)
+        users = sorted(
+            client.lookup_users(users, mode=GameModeInt.MANIA), key=lambda u: 0 if u.id == sample_users[0]["id"] else 1
+        )
         for user, sample_user in zip(users, sample_users[:2]):
             assert user
             assert user.id == sample_user["id"]
             assert user.username == sample_user["username"]
+            assert user.global_rank is not None
 
     def test_get_user_kudosu(self, client):
         kudosu_list = client.get_user_kudosu(user=2)
