@@ -141,6 +141,8 @@ class ForumTopic:
     updated_at: :py:class:`datetime.datetime`
 
     user_id: int
+
+    views: int
     """
 
     __slots__ = (
@@ -157,6 +159,7 @@ class ForumTopic:
         "type",
         "updated_at",
         "user_id",
+        "views",
     )
 
     def __init__(self, data):
@@ -173,6 +176,7 @@ class ForumTopic:
         self.type: ForumTopicType = ForumTopicType(get_required(data, "type"))
         self.updated_at: datetime = fromisoformat(get_required(data, "updated_at"))
         self.user_id: int = get_required(data, "user_id")
+        self.views: int = get_required(data, "views")
 
     def __repr__(self):
         return prettify(self, "user_id", "title")
