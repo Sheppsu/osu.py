@@ -111,6 +111,8 @@ class UserCompact:
 
     friends: Optional[List[:class:`UserRelation`]]
 
+    global_rank: Optional[:class:`UserRank`]
+
     graveyard_beatmapset_count: Optional[int]
 
     groups: Optional[List[:class:`UserGroup`]]
@@ -206,6 +208,7 @@ class UserCompact:
         "follow_user_mapping",
         "follower_count",
         "friends",
+        "global_rank",
         "graveyard_beatmapset_count",
         "groups",
         "guest_beatmapset_count",
@@ -280,6 +283,7 @@ class UserCompact:
         self.follow_user_mapping: Optional[List[int]] = data.get("follower_user_mapping")
         self.follower_count: Optional[int] = data.get("follower_count")
         self.friends: Optional[List[UserRelation]] = get_optional_list(data, "friends", UserRelation)
+        self.global_rank: Optional[UserRank] = get_optional(data, "global_rank", UserRank)
         self.graveyard_beatmapset_count: Optional[int] = data.get("graveyard_beatmapset_count")
         self.groups: Optional[List[UserGroup]] = get_optional_list(data, "groups", UserGroup)
         self.guest_beatmapset_count: Optional[int] = data.get("guest_beatmapset_count")
@@ -680,6 +684,9 @@ class UserStatistics:
 
     **Attributes**
 
+    accuracy: float
+        Accuracy, as a decimal in [0, 1] range.
+
     count_300: int
 
     count_100: int
@@ -691,7 +698,7 @@ class UserStatistics:
     country_rank: Optional[int]
         Current country rank according to pp.
 
-     global_rank: Optional[int]
+    global_rank: Optional[int]
         Current global rank according to pp.
 
     global_rank_exp: Optional[int]
@@ -716,7 +723,8 @@ class UserStatistics:
             Number of Silver SS ranked scores.
 
     hit_accuracy: float
-        Hit accuracy percentage
+        **DEPRECATED:** use `accuracy`.
+        Hit accuracy percentage.
 
     is_ranked: bool
         Does the player have a rank
@@ -792,9 +800,11 @@ class UserStatistics:
         "recommended_difficulty_exp",
         "variants",
         "rank_change_since_30_days",
+        "accuracy",
     )
 
     def __init__(self, data):
+        self.accuracy: float = get_required(data, "accuracy")
         self.count_100: int = get_required(data, "count_100")
         self.count_300: int = get_required(data, "count_300")
         self.count_50: int = get_required(data, "count_50")
@@ -1152,3 +1162,22 @@ class UserTeamStatistics:
 
     def __repr__(self):
         return prettify(self, "team_id", "performance")
+
+
+class UserRank:
+    """
+    **Attributes**
+
+    rank: int
+
+    mode: :class:`GameModeInt`
+    """
+
+    __slots__ = ("rank", "mode")
+
+    def __init__(self, data):
+        self.rank: int = get_required(data, "rank")
+        self.mode: int = GameModeInt(get_required(data, "ruleset_id"))
+
+    def __repr__(self):
+        return prettify(self, "rank", "mode")
