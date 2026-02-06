@@ -32,6 +32,9 @@ Clients
 
 .. autoclass:: osu.Path
 
+.. autoclass:: osu.http.BaseHTTPHandler
+    :members:
+
 Authentication
 ^^^^^^^^^^^^^^
 
