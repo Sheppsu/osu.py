@@ -1169,6 +1169,8 @@ class Client:
 
         Requires OAuth and scope public
 
+        **Parameters**
+
         mode: Union[str, :class:`GameModeStr`]
 
         type: Union[str, :class:`RankingType`]
