@@ -767,7 +767,7 @@ class Client:
 
         Does not require OAuth
 
-        **Parameter**
+        **Parameters**
 
         commentable_type: Optional[Union[:class:`ObjectType`, str]
             The type of resource to get comments for. Must be of the following types:
@@ -1747,7 +1747,7 @@ class Client:
 
         Requires OAuth and scope public.
 
-        **Attributes**
+        **Parameters**
 
         filters: Optional[:class:`BeatmapsetSearchFilter`]
 

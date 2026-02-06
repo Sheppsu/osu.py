@@ -100,7 +100,7 @@ class Util:
 
 class BeatmapsetSearchFilter:
     """
-    Util class that helps for filtering in :func:`Client.search_beatmapsets`.
+    Util class that helps for filtering in :func:`osu.Client.search_beatmapsets`.
 
     Read about each filter under its corresponding function.
 

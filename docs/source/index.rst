@@ -11,6 +11,8 @@ If you're new to osu.py, consider checking out this `guide <guide.html>`_ on how
 Looking for something specific
 ==============================
 
+Visit the `examples page <examples.html>`_ or join the `discord <https://discord.gg/Z2J6SSRPcE>`_ and feel free to ping me (@sheppsu) or just dm me directly.
+
 There are some examples on the github `here <https://github.com/Sheepposu/osu.py/tree/main/examples>`_ that might help you find what you're looking for. Otherwise here are some common uses for the api that you might be looking for.
 
 * `Get a list of the top player's by score, spotlight, or pp <api.html#osu.Client.get_ranking>`_ (here's an `example <https://github.com/Sheepposu/osu.py/blob/main/examples/get_top_players.py>`_)
@@ -26,10 +28,6 @@ There are some examples on the github `here <https://github.com/Sheepposu/osu.py
 * Get `beatmapset discussion posts <api.html#osu.Client.get_beatmapset_discussion_posts>`_, `beatmapset discussion votes <api.html#osu.Client.get_beatmapset_discussion_votes>`_, or `beatmapset discussions <api.html#osu.Client.get_beatmapset_discussions>`_
 * `Get news listings <api.html#osu.Client.get_news_listing>`_ and `news post <api.html#osu.Client.get_news_post>`_
 
-Can't find what you're looking for or need help?
-================================================
-Join `the discord <https://discord.gg/Z2J6SSRPcE>`_ and feel free to ping me in the osu.py help channel.
-
 Documentation tree
 ==================
 
@@ -40,6 +38,7 @@ Documentation tree
    installation.rst
    guide.rst
    advanced.rst
+   examples.rst
    api.rst
 
 Indices and tables
