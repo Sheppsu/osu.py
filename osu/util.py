@@ -315,11 +315,11 @@ class JsonUtil:
         return map(lambda attr: (attr, getattr(self, attr)), self.__slots__)
 
     @staticmethod
-    def parse_list(l):
-        return list(map(lambda item: item.json if isinstance(item, JsonUtil) else item, l))
+    def parse_list(lst):
+        return list(map(lambda item: item.json if isinstance(item, JsonUtil) else item, lst))
 
     @staticmethod
-    def list_to_labeled_dict(l, name):
+    def list_to_labeled_dict(lst, name):
         return dict(
             sum(
                 map(
@@ -329,7 +329,7 @@ class JsonUtil:
                             filter(lambda i2: i2[1] is not None, i[1].items()),
                         )
                     ),
-                    enumerate(l),
+                    enumerate(lst),
                 ),
                 [],
             )

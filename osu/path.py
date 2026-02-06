@@ -315,4 +315,4 @@ class Path:
 
     @classmethod
     def get_forum_topics(cls):
-        return cls("get", f"forums/topics", "public")
+        return cls("get", "forums/topics", "public")

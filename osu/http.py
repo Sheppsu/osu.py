@@ -2,7 +2,6 @@ import requests
 import time
 import threading
 import logging
-from datetime import datetime, timezone
 from typing import Optional, List, TYPE_CHECKING
 
 from .exceptions import ScopeException, RequestException
@@ -39,6 +38,7 @@ class BaseHTTPHandler:
     """
     Abstract class for handling http requests.
     """
+
     __slots__ = ("auth", "api_version", "domain", "base_url", "auth_url", "token_url")
 
     DEFAULT_API_VERSION = "20260123"

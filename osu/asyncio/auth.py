@@ -1,5 +1,4 @@
 from typing import Optional
-from time import monotonic
 import asyncio
 
 from .http import AsynchronousHTTPHandler, BaseAsynchronousHTTPHandler
