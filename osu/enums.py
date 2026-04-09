@@ -129,7 +129,7 @@ class Mod(Enum, metaclass=FallbackEnum):
 
     Relax = 'RX'
 
-    Autopilot = 'AP'
+    AutoPilot = 'AP'
 
     SpunOut = 'SO'
 
@@ -227,7 +227,7 @@ class Mod(Enum, metaclass=FallbackEnum):
     Autoplay = "AT"
     Cinema = "CN"
     Relax = "RX"
-    Autopilot = "AP"
+    AutoPilot = "AP"
     SpunOut = "SO"
     Transform = "TR"
     Wiggle = "WG"
