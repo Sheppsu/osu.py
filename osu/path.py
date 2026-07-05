@@ -316,3 +316,7 @@ class Path:
     @classmethod
     def get_forum_topics(cls):
         return cls("get", "forums/topics", "public")
+
+    @classmethod
+    def get_all_tags(cls):
+        return cls("get", "tags", "public")

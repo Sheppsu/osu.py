@@ -142,3 +142,12 @@ class TestAsynchronousBeatmap:
                 and event_type != BeatmapsetEventType.DISCUSSION_UNLOCK
             ):
                 assert all([event.type == event_type for event in events])
+
+    @pytest.mark.asyncio
+    async def test_get_all_tags(self, client):
+        async_client = as_async(client)
+        tags = await async_client.get_all_tags()
+        for tag_id, tag_info in tags.items():
+            assert isinstance(tag_id, int)
+            assert isinstance(tag_info.name, str)
+            assert isinstance(tag_info.description, str)

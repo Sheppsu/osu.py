@@ -2227,3 +2227,15 @@ class Client:
             list(map(ForumTopic, ret["topics"])),
             ret["cursor_string"],
         )
+
+    def get_all_tags(self):
+        """
+        Get all tags including their id, name, description, and ruleset
+
+        **Returns**
+
+        dict[int, :class:`UserTagInfo`]
+            Key is the tag id
+        """
+        data = self.http.make_request(Path.get_all_tags())
+        return {tag["id"]: UserTagInfo(tag) for tag in data["tags"]}

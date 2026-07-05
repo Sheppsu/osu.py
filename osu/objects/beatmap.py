@@ -29,6 +29,8 @@ __all__ = (
     "BeatmapsetRequirement",
     "BeatmapsetAvailability",
     "MetadataAttribute",
+    "UserTag",
+    "UserTagInfo"
 )
 
 
@@ -312,6 +314,9 @@ class BeatmapCompact:
 
     id: int
 
+    lazer_only: bool
+        If true, only scores submitted on lazer can go on the leaderboard
+
     mode: :class:`GameModeStr`
 
     status: :class:`RankStatus`
@@ -332,12 +337,21 @@ class BeatmapCompact:
 
     owners: Optional[List[:class:`BeatmapOwner`]]
         List of owners (mappers) for the Beatmap.
+    
+    top_tag_ids: Optional[List[:class:`UserTag`]]
+    
+    user: Optional[:class:`UserCompact`]
+    
+    current_user_playcount: Optional[int]
+    
+    current_user_tag_ids: Optional[List[int]]
     """
 
     __slots__ = (
         "beatmapset_id",
         "difficulty_rating",
         "id",
+        "lazer_only",
         "mode",
         "status",
         "total_length",
@@ -349,12 +363,17 @@ class BeatmapCompact:
         "max_combo",
         "user",
         "owners",
+        "top_tag_ids",
+        "current_user_playcount",
+        "current_user_tag_ids"
     )
 
     def __init__(self, data):
+        print(data.get("lazer_only"))
         self.beatmapset_id: int = get_required(data, "beatmapset_id")
         self.difficulty_rating: float = get_required(data, "difficulty_rating")
         self.id: int = get_required(data, "id")
+        self.lazer_only: bool = get_required(data, "lazer_only")
         self.mode: GameModeStr = GameModeStr(get_required(data, "mode"))
         self.status: RankStatus = RankStatus[get_required(data, "status").upper()]
         self.total_length: int = get_required(data, "total_length")
@@ -366,6 +385,10 @@ class BeatmapCompact:
         self.failtimes: Optional[Failtimes] = get_optional(data, "failtimes", Failtimes)
         self.max_combo: Optional[int] = data.get("max_combo")
         self.owners: Optional[List[BeatmapOwner]] = get_optional_list(data, "owners", BeatmapOwner)
+        self.top_tag_ids: Optional[List[UserTag]] = get_optional_list(data, "top_tag_ids", UserTag)
+        self.user: Optional[UserCompact] = get_optional(data, "user", UserCompact)
+        self.current_user_playcount: Optional[int] = data.get("current_user_playcount")
+        self.current_user_tag_ids: Optional[int] = data.get("current_user_tag_ids")
 
     def __repr__(self):
         return prettify(
@@ -577,7 +600,6 @@ class BeatmapDifficultyAttributes:
         ]
 
     def __init__(self, data, typ: GameModeStr):
-        print(data)
         data = get_required(data, "attributes")
         self.max_combo: int = get_required(data, "max_combo")
         self.star_rating: float = get_required(data, "star_rating")
@@ -917,3 +939,52 @@ class BeatmapOwner:
 
     def __repr__(self):
         return prettify(self, "id", "username")
+
+
+class UserTag:
+    """
+    Contains id and count of a user tag (e.g. skillset/jumps).
+    
+    You can get tag information using :func:`osu.Client.get_tags`.
+    
+    **Attributes**
+    
+    id: int
+        Id of the tag
+        
+    count: int
+        Number of users that added the tag
+    """
+    
+    __slots__ = ("count", "id", "name", "ruleset", "description")
+    
+    def __init__(self, data):
+        self.id: int = get_required(data, "tag_id")
+        self.count: int = get_required(data, "count")
+
+    def __repr__(self):
+        return prettify(self, "id", "count")
+        
+
+class UserTagInfo:
+    """
+    Contains info about a :class:`UserTag`
+    
+    **Attributes**
+    
+    name: str
+
+    description: str
+
+    ruleset: :class:`GameModeInt`
+    """
+    
+    __slots__ = ("name", "description", "ruleset")
+    
+    def __init__(self, data):
+        self.name = get_required(data, "name")
+        self.description = get_required(data, "description")
+        self.ruleset = GameModeInt(get_required(data, "ruleset_id"))
+
+    def __repr__(self):
+        return prettify(self,  "name")
