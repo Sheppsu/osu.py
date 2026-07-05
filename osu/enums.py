@@ -268,6 +268,11 @@ class Mod(Enum, metaclass=FallbackEnum):
     NoRelease = "NR"
     Depth = "DP"
     Cover = "CO"
+    ScoreV2 = "SV2"
+    Synesthesia = "SY"
+    MovingFast = "MF"
+    Bubbles = "BU"
+    SimplifiedRhythm = "SR"
 
 
 class Mods(IntFlag):
