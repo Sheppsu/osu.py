@@ -369,7 +369,6 @@ class BeatmapCompact:
     )
 
     def __init__(self, data):
-        print(data.get("lazer_only"))
         self.beatmapset_id: int = get_required(data, "beatmapset_id")
         self.difficulty_rating: float = get_required(data, "difficulty_rating")
         self.id: int = get_required(data, "id")
