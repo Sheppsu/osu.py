@@ -318,5 +318,5 @@ class Path:
         return cls("get", "forums/topics", "public")
 
     @classmethod
-    def get_all_tags(cls):
+    def get_all_user_tags(cls):
         return cls("get", "tags", "public")

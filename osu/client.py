@@ -2228,14 +2228,14 @@ class Client:
             ret["cursor_string"],
         )
 
-    def get_all_tags(self):
+    def get_all_user_tags(self):
         """
-        Get all tags including their id, name, description, and ruleset
+        Get all user tags including their id, name, description, and ruleset
 
         **Returns**
 
         dict[int, :class:`UserTagInfo`]
             Key is the tag id
         """
-        data = self.http.make_request(Path.get_all_tags())
+        data = self.http.make_request(Path.get_all_user_tags())
         return {tag["id"]: UserTagInfo(tag) for tag in data["tags"]}
