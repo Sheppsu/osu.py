@@ -1340,7 +1340,8 @@ class Client:
             Id of the user.
 
         type: Union[str, :class:`UserBeatmapType`]
-            Beatmap type. Can be one of `favourite`, `graveyard`, `guest`, `loved`, `most_played`, `nominated`, `pending`, `ranked`.
+            Beatmap type. Can be one of `favourite`, `graveyard`, `guest`, `loved`, `most_played`, `nominated`,
+            `pending`, `ranked`.
 
         limit: Optional[int]
             Maximum number of results.

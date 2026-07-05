@@ -30,7 +30,7 @@ __all__ = (
     "BeatmapsetAvailability",
     "MetadataAttribute",
     "UserTag",
-    "UserTagInfo"
+    "UserTagInfo",
 )
 
 
@@ -337,13 +337,13 @@ class BeatmapCompact:
 
     owners: Optional[List[:class:`BeatmapOwner`]]
         List of owners (mappers) for the Beatmap.
-    
+
     top_tag_ids: Optional[List[:class:`UserTag`]]
-    
+
     user: Optional[:class:`UserCompact`]
-    
+
     current_user_playcount: Optional[int]
-    
+
     current_user_tag_ids: Optional[List[int]]
     """
 
@@ -365,7 +365,7 @@ class BeatmapCompact:
         "owners",
         "top_tag_ids",
         "current_user_playcount",
-        "current_user_tag_ids"
+        "current_user_tag_ids",
     )
 
     def __init__(self, data):
@@ -944,47 +944,47 @@ class BeatmapOwner:
 class UserTag:
     """
     Contains id and count of a user tag (e.g. skillset/jumps).
-    
+
     You can get tag information using :func:`osu.Client.get_tags`.
-    
+
     **Attributes**
-    
+
     id: int
         Id of the tag
-        
+
     count: int
         Number of users that added the tag
     """
-    
+
     __slots__ = ("count", "id", "name", "ruleset", "description")
-    
+
     def __init__(self, data):
         self.id: int = get_required(data, "tag_id")
         self.count: int = get_required(data, "count")
 
     def __repr__(self):
         return prettify(self, "id", "count")
-        
+
 
 class UserTagInfo:
     """
     Contains info about a :class:`UserTag`
-    
+
     **Attributes**
-    
+
     name: str
 
     description: str
 
     ruleset: :class:`GameModeInt`
     """
-    
+
     __slots__ = ("name", "description", "ruleset")
-    
+
     def __init__(self, data):
         self.name = get_required(data, "name")
         self.description = get_required(data, "description")
         self.ruleset = GameModeInt(get_required(data, "ruleset_id"))
 
     def __repr__(self):
-        return prettify(self,  "name")
+        return prettify(self, "name")
