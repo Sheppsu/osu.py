@@ -25,7 +25,7 @@ copyright = '2026, Sheppsu'
 author = 'Sheppsu'
 
 # The full version, including alpha/beta/rc tags
-release = version = '4.2.0'
+release = version = '4.3.1'
 
 
 # -- General configuration ---------------------------------------------------
