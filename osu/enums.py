@@ -202,6 +202,24 @@ class Mod(Enum, metaclass=FallbackEnum):
     HoldOff = 'HO'
 
     AccuracyChallenge = 'AC'
+    
+    Bloom = "BM"
+    
+    NoRelease = "NR"
+    
+    Depth = "DP"
+    
+    Cover = "CO"
+    
+    ScoreV2 = "SV2"
+    
+    Synesthesia = "SY"
+    
+    MovingFast = "MF"
+    
+    Bubbles = "BU"
+    
+    SimplifiedRhythm = "SR"
     """
 
     Easy = "EZ"
@@ -343,8 +361,16 @@ class Mods(IntFlag):
     AutoPilot = 1 << 13
     Perfect = 1 << 14
     FadeIn = 1 << 20
+    Random = 1 << 21
+    Cinema = 1 << 22
+    TargetPractice = 1 << 23
+    Coop = 1 << 25
+    ScoreV2 = 1 << 29
     Mirror = 1 << 30
 
+    OneKey = 1 << 26
+    TwoKeys = 1 << 28
+    ThreeKeys = 1 << 27
     FourKeys = 1 << 15
     FiveKeys = 1 << 16
     SixKeys = 1 << 17
