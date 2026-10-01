@@ -226,7 +226,10 @@ class RateLimitHandler:
 
         self._lock.acquire()
         if len(requests_sent := self._get_requests_sent()) > 0:
-            wait_time = max(0.0, self.wait_time - (time.monotonic() - requests_sent[-1]))
+            if len(requests_sent) >= self.limit:
+                wait_time = max(0.0, 60.0 - (time.monotonic() - requests_sent[0]))
+            else:
+                wait_time = max(0.0, self.wait_time - (time.monotonic() - requests_sent[-1]))
             if wait_time > 0:
                 self._lock.release()
                 time.sleep(wait_time)
